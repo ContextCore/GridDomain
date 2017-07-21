@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
@@ -9,13 +8,12 @@ using GridDomain.Node.Actors.Aggregates.Exceptions;
 using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Retry
+namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {

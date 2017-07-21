@@ -20,25 +20,25 @@ namespace GridDomain.Tests.Common
 {
     public static class GridNodeExtensions
     {
-        public static async Task<TExpect> SendToSaga<TExpect>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
+        public static async Task<TExpect> SendToProcessManager<TExpect>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
         {
             var res = await node.NewDebugWaiter(timeout)
                                 .Expect<TExpect>()
                                 .Create()
-                                .SendToSagas(msg);
+                                .SendToProcessManagers(msg);
 
             return res.Message<TExpect>();
         }
 
         public static async Task<TState> GetTransitedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
         {
-            var res = await node.SendToSaga<SagaReceivedMessage<TState>>(msg,timeout);
+            var res = await node.SendToProcessManager<ProcessReceivedMessage<TState>>(msg,timeout);
             return res.State;
         }
 
         public static async Task<TState> GetCreatedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
         {
-            var res = await node.SendToSaga<SagaCreated<TState>>(msg, timeout);
+            var res = await node.SendToProcessManager<ProcessManagerCreated<TState>>(msg, timeout);
             return res.State;
         }
 
@@ -122,33 +122,32 @@ namespace GridDomain.Tests.Common
             }
         }
 
-        public static async Task KillSaga<TSaga, TSagaData>(this GridDomainNode node, Guid id, TimeSpan? timeout = null)
-            where TSagaData : IProcessState
+        public static async Task KillProcessManager<TProcess, TState>(this GridDomainNode node, Guid id, TimeSpan? timeout = null)
+            where TState : IProcessState
         {
-            var sagaHub = await node.LookupSagaHubActor<TSaga>(timeout);
-            var saga = await node.LookupSagaActor<TSaga, TSagaData>(id, timeout);
+            var hub = await node.LookupProcessHubActor<TProcess>(timeout);
+            var processActor = await node.LookupProcessActor<TProcess, TState>(id, timeout);
 
             using (var inbox = Inbox.Create(node.System))
             {
-                inbox.Watch(saga);
-                sagaHub.Tell(new ShutdownChild(id));
-                inbox.ReceiveWhere(m => m is Terminated t && t.ActorRef.Path == saga.Path, timeout ?? node.Settings.DefaultTimeout);
+                inbox.Watch(processActor);
+                hub.Tell(new ShutdownChild(id));
+                inbox.ReceiveWhere(m => m is Terminated t && t.ActorRef.Path == processActor.Path, timeout ?? node.Settings.DefaultTimeout);
             }
         }
 
-        public static async Task<IActorRef> LookupSagaActor<TSaga, TData>(this GridDomainNode node,
+        public static async Task<IActorRef> LookupProcessActor<TProcess, TData>(this GridDomainNode node,
                                                                           Guid id,
                                                                           TimeSpan? timeout = null) where TData : IProcessState
         {
-            var sagaName = AggregateActorName.New<TData>(id).Name;
-            var sagaType = typeof(TSaga).BeautyName();
-            return await node.ResolveActor($"{sagaType}_Hub/{sagaName}", timeout);
+            var name = AggregateActorName.New<TData>(id).Name;
+            var type = typeof(TProcess).BeautyName();
+            return await node.ResolveActor($"{type}_Hub/{name}", timeout);
         }
 
-        public static async Task<IActorRef> LookupSagaHubActor<TSaga>(this GridDomainNode node, TimeSpan? timeout = null)
+        public static async Task<IActorRef> LookupProcessHubActor<TProcess>(this GridDomainNode node, TimeSpan? timeout = null)
         {
-            var sagaType = typeof(TSaga).BeautyName();
-            return await node.ResolveActor($"{sagaType}_Hub", timeout);
+            return await node.ResolveActor($"{typeof(TProcess).BeautyName()}_Hub", timeout);
         }
 
         public static async Task<IActorRef> ResolveActor(this GridDomainNode node, string actorPath, TimeSpan? timeout = null)

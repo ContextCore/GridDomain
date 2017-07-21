@@ -1,11 +1,10 @@
 using System;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
+namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
 {
     public class Given_aggregate_When_cancel_not_existing_future_event
     {

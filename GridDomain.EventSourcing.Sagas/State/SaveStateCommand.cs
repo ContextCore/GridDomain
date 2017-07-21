@@ -3,12 +3,12 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Processes.State
 {
-    public class SaveStateCommand<TSagaState> : Command, ISagaStateCommand<TSagaState> where TSagaState : IProcessState
+    public class SaveStateCommand<TState> : Command, IProcessStateCommand<TState> where TState : IProcessState
     {
-        public TSagaState State { get; }
+        public TState State { get; }
         public string PreviousState { get; }
         public object Message { get; }
-        public SaveStateCommand(Guid aggregateId, TSagaState state, string previousState, object message) : base(aggregateId)
+        public SaveStateCommand(Guid aggregateId, TState state, string previousState, object message) : base(aggregateId)
         {
             State = state;
             PreviousState = previousState;

@@ -10,7 +10,7 @@ using Shop.Domain.Aggregates.SkuAggregate.Events;
 using Shop.Domain.Aggregates.SkuStockAggregate;
 using Shop.Domain.Aggregates.SkuStockAggregate.Events;
 using Shop.Domain.Aggregates.UserAggregate;
-using Shop.Domain.Sagas;
+using Shop.Domain.ProcessManagers;
 using Shop.ReadModel;
 
 namespace Shop.Composition

@@ -183,7 +183,7 @@
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_builder_test.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_projection_tests.cs" />
     <Compile Include="AccountAggregate\ProjectionBuilder\Account_transactions_projection_tests.cs" />
-    <Compile Include="BuyNowSaga\BuyNowSaga_tests.cs" />
+    <Compile Include="BuyNowProcess_tests.cs" />
     <Compile Include="DomainServices\InMemoryPriceCalculator.cs" />
     <Compile Include="InMemory_sequence_provider_tests.cs" />
     <Compile Include="OrderAggregate\Aggregate\Commands\Completed_order_tests.cs" />

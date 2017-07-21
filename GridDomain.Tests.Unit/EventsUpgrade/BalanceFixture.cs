@@ -2,7 +2,6 @@ using System;
 using GridDomain.Node;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using Microsoft.Practices.Unity;
 using Quartz;
 

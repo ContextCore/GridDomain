@@ -1,10 +1,6 @@
-using System;
-using Akka.Actor;
 using GridDomain.Common;
-using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Logging;
@@ -17,61 +13,6 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling
 {
-    public class SchedulingExtension : IExtension
-    {
-        public IActorRef SchedulingActor { get; internal set; }
-
-        public IScheduler Scheduler { get; internal set; }
-    }
-
-    public class SchedulingExtensionProvider : ExtensionIdProvider<SchedulingExtension>
-    {
-        /// <summary>
-        ///     A static reference to the current provider.
-        /// </summary>
-        public static readonly SchedulingExtensionProvider Provider =
-            new SchedulingExtensionProvider();
-
-        public override SchedulingExtension CreateExtension(ExtendedActorSystem system)
-        {
-            return new SchedulingExtension();
-        }
-    }
-
-    public static class SchedulingExtensions
-    {
-        public static SchedulingExtension InitSchedulingExtension(this ActorSystem system,
-                                                                  IQuartzConfig eventAdapters,
-                                                                  ILogger logger,
-                                                                  IPublisher publisher,
-                                                                  ICommandExecutor executor)
-        {
-            if(system == null)
-                throw new ArgumentNullException(nameof(system));
-
-            var ext = (SchedulingExtension)system.RegisterExtension(SchedulingExtensionProvider.Provider);
-            var schedulingContainer = new UnityContainer();
-            schedulingContainer.Register(new SchedulingConfiguration(eventAdapters, logger, publisher, executor));
-
-            ext.Scheduler = schedulingContainer.Resolve<IScheduler>();
-            ext.SchedulingActor = system.ActorOf(Props.Create(() => new SchedulingActor(ext.Scheduler, publisher)), nameof(SchedulingActor));
-
-            system.RegisterOnTermination(() =>
-                                         {
-                                             try
-                                             {
-                                                 if(ext.Scheduler != null && ext.Scheduler.IsShutdown == false)
-                                                     ext.Scheduler.Shutdown();
-                                             }
-                                             catch(Exception ex)
-                                             {
-                                                 system.Log.Warning($"Got error on quartz scheduler shutdown:{ex}");
-                                             }
-                                         });
-            return ext;
-        }
-    }
-
     public class SchedulingConfiguration : IContainerConfiguration
     {
         private readonly IQuartzConfig _quartzConfig;

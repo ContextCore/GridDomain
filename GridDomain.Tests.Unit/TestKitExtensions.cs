@@ -35,10 +35,10 @@ namespace GridDomain.Tests.Unit
             return actor.UnderlyingActor;
         }
 
-        public static async Task<TSagaState> LoadSagaByActor<TSagaState>(this TestKit kit, Guid id)
-            where TSagaState : class, IProcessState
+        public static async Task<TState> LoadProcessByActor<TState>(this TestKit kit, Guid id)
+            where TState : class, IProcessState
         {
-            return (await kit.LoadAggregateByActor<ProcessStateAggregate<TSagaState>>(id)).State;
+            return (await kit.LoadAggregateByActor<ProcessStateAggregate<TState>>(id)).State;
         }
     }
 }

@@ -22,13 +22,13 @@ namespace GridDomain.Processes.Creation
             Add<TMessage>((msg, id) => factory.CreateNew((TMessage) msg, id));
         }
 
-        public IProcessManager<TState> CreateNew(object startMessage, Guid? id = null)
+        public IProcessManager<TState> CreateNew(object startMessage, Guid? processId = null)
         {
-            var sagaCreator = Get(startMessage);
-            if (sagaCreator == null)
+            var creator = Get(startMessage);
+            if (creator == null)
                 throw new CannotFindFactoryForProcessManagerCreation(typeof(TState), startMessage);
 
-            return sagaCreator.Invoke(startMessage, id);
+            return creator.Invoke(startMessage, processId);
         }
 
         public IProcessManager<TState> Create(TState state)

@@ -5,7 +5,6 @@ using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using Xunit;
 using Xunit.Abstractions;
 

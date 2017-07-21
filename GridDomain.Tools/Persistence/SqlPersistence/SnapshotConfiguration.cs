@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using GridDomain.Tools.Persistence.Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

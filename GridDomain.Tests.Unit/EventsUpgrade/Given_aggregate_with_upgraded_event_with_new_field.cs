@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 using Xunit;

@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.Serialization
             var ser = new DomainSerializer();
             var bytes = ser.ToBinary(_original);
             _restored = (SampleDomainEvent) ser.FromBinary(bytes, typeof(SampleDomainEvent));
-            //SagaId_should_be_equal()
+            //processId_should_be_equal()
             Assert.Equal(_original.ProcessId, _restored.ProcessId);
             //CreatedTime_should_be_equal()
             Assert.Equal(_original.CreatedTime, _restored.CreatedTime);

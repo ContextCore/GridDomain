@@ -62,12 +62,12 @@
     <Compile Include="DomainBind\ProcessManagerDescriptor.cs" />
     <Compile Include="State\CreateNewStateCommand.cs" />
     <Compile Include="IProcessState.cs" />
-    <Compile Include="State\ISagaStateCommand.cs" />
+    <Compile Include="State\IProcessStateCommand.cs" />
     <Compile Include="Process.cs" />
-    <Compile Include="State\SagaStateAggregate.cs" />
-    <Compile Include="State\SagaReceivedMessage.cs" />
+    <Compile Include="State\ProcessStateAggregate.cs" />
+    <Compile Include="State\ProcessReceivedMessage.cs" />
     <Compile Include="ProcessManager.cs" />
-    <Compile Include="State\SagaStateCommandHandler.cs" />
+    <Compile Include="State\ProcessStateCommandHandler.cs" />
     <Compile Include="ProcessTransitionException.cs" />
     <Compile Include="State\SaveStateCommand.cs" />
     <Compile Include="ProcessResult.cs" />
@@ -79,8 +79,8 @@
     <Compile Include="DomainBind\IProcessManagerDescriptor.cs" />
     <Compile Include="Creation\ISagaCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="State\SagaCreated.cs" />
-    <Compile Include="State\SagaStateEvent.cs" />
+    <Compile Include="State\ProcessManagerCreated.cs" />
+    <Compile Include="State\ProcessStateEvent.cs" />
     <Compile Include="UnbindedMessageReceivedException.cs" />
   </ItemGroup>
   <ItemGroup>

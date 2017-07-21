@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure
+namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
     public class CancelFutureEventCommand : Command
     {

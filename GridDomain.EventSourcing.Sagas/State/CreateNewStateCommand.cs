@@ -3,10 +3,10 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Processes.State
 {
-    public class CreateNewStateCommand<TSagaState> : Command, ISagaStateCommand<TSagaState> where TSagaState : IProcessState
+    public class CreateNewStateCommand<TState> : Command, IProcessStateCommand<TState> where TState : IProcessState
     {
-        public TSagaState State { get; }
-        public CreateNewStateCommand(Guid aggregateId, TSagaState state) : base(aggregateId)
+        public TState State { get; }
+        public CreateNewStateCommand(Guid aggregateId, TState state) : base(aggregateId)
         {
             State = state;
         }

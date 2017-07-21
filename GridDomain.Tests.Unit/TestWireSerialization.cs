@@ -4,8 +4,8 @@ using Akka.Serialization;
 using Akka.TestKit.Xunit2;
 using Automatonymous;
 using GridDomain.Processes;
-using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
-using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
+using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using Xunit;
 
 namespace GridDomain.Tests.Unit {
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit {
         }
         
         [Fact(Skip = "all exception should properly support ISerialization interface, will be done later")]
-        public void Saga_Faults_Should_be_deserializable()
+        public void Process_Faults_Should_be_deserializable()
         {
             //CoffeMakeFailedEvent
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());
@@ -33,11 +33,11 @@ namespace GridDomain.Tests.Unit {
             var undefinedCoffeMachineException = new UndefinedCoffeMachineException();
             CheckDeserialize(undefinedCoffeMachineException, nameof(undefinedCoffeMachineException));
 
-            var sagaTransitionException = new ProcessTransitionException(coffeMakeFailedEvent, undefinedCoffeMachineException);
+            var processTransitionException = new ProcessTransitionException(coffeMakeFailedEvent, undefinedCoffeMachineException);
 
-            CheckDeserialize(sagaTransitionException, nameof(sagaTransitionException));
+            CheckDeserialize(processTransitionException, nameof(processTransitionException));
 
-            var eventExecutionException = new EventExecutionException("test",sagaTransitionException);
+            var eventExecutionException = new EventExecutionException("test",processTransitionException);
             CheckDeserialize(eventExecutionException, nameof(eventExecutionException));
 
             var msg = new Akka.Actor.Status.Failure(new AggregateException(eventExecutionException));

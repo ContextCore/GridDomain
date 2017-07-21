@@ -128,11 +128,11 @@
     <Compile Include="DomainServices\PriceCalculator\ISkuPriceQuery.cs" />
     <Compile Include="DomainServices\PriceCalculator\SqlPriceCalculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sagas\BuyNow.cs" />
-    <Compile Include="Sagas\BuyNowState.cs" />
+    <Compile Include="ProcessManagers\BuyNow.cs" />
+    <Compile Include="ProcessManagers\BuyNowState.cs" />
     <Compile Include="DomainServices\PriceCalculator\IPriceCalculator.cs" />
     <Compile Include="DomainServices\PriceCalculator\SkuPriceNotFoundException.cs" />
-    <Compile Include="Sagas\BuyNowSagaFactory.cs" />
+    <Compile Include="ProcessManagers\BuyNowProcessManagerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scenarious.txt" />

@@ -88,7 +88,7 @@
     <Compile Include="IMessageProcessContext.cs" />
     <Compile Include="IPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="IRouteMapFactory.cs" />
-    <Compile Include="ISagaDependencyFactory.cs" />
+    <Compile Include="IProcessManagerDependencyFactory.cs" />
     <Compile Include="ISnapshotsPersistencePolicy.cs" />
     <Compile Include="MessageHandlerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

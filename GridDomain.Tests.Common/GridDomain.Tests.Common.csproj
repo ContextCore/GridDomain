@@ -131,7 +131,8 @@
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="Compare.cs" />
     <Compile Include="LoggerActorDummy.cs" />
-    <Compile Include="SagaScenarioExtensions.cs" />
+    <Compile Include="ProcessScenario.cs" />
+    <Compile Include="ProcessScenarioExtensions.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="AutoTestLocalDbConfiguration.cs" />
     <Compile Include="CannotCreateCommandHandlerExeption.cs" />

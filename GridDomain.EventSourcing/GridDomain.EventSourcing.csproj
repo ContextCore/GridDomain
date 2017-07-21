@@ -82,7 +82,7 @@
     <Compile Include="DomainException.cs" />
     <Compile Include="IAggregateCommandsHandler.cs" />
     <Compile Include="IAggregateCommandsHandlerDescriptor.cs" />
-    <Compile Include="IHaveSagaId.cs" />
+    <Compile Include="IHaveProcessId.cs" />
     <Compile Include="InvalidDefaultMementoException.cs" />
     <Compile Include="ISourcedEvent.cs" />
     <Compile Include="PersistenceDelegate.cs" />

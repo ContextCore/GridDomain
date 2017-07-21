@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
-using GridDomain.Tools.Persistence.Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Tools.Persistence.SqlPersistence

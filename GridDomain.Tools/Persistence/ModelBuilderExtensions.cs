@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace GridDomain.Tools.Persistence.Microsoft.EntityFrameworkCore {
+namespace GridDomain.Tools.Persistence {
     public static class ModelBuilderExtensions
     {
         public static void AddConfiguration<TEntity>(this ModelBuilder modelBuilder, IEntityTypeConfiguration<TEntity> configuration)

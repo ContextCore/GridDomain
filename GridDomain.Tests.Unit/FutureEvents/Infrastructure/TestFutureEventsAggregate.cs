@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Scheduling;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {

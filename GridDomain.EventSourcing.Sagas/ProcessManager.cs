@@ -28,7 +28,7 @@ namespace GridDomain.Processes
         public TState State { get; set; }
         
         /// <summary>
-        /// Transit saga to new state is possible only after state persistence
+        /// Transit process to new state is possible only after state persistence
         /// So we need to 'preview' it and save after due to mismathings in autonomyous \ akka persistence mechanics
         /// </summary>
         /// <typeparam name="TMessage"></typeparam>
@@ -58,13 +58,13 @@ namespace GridDomain.Processes
             if (!string.IsNullOrEmpty(CurrentStateName))
                 return true;
 
-            _log.Warning("Started saga {Type} {Id} without initialization.", GetType().Name, State.Id);
-            _log.Warning(State == null ? "Saga data is empty" : "Current state name is not specified");
+            _log.Warning("Started process manager {Type} {Id} without initialization.", GetType().Name, State.Id);
+            _log.Warning(State == null ? "Process manager state is empty" : "Current state name is not specified");
 
             if (!logUninitializedState)
                 return false;
 
-            _log.Warning("Saga will not process and only record incoming messages");
+            _log.Warning("Process manager will not process and only record incoming messages");
             return false;
         }
 

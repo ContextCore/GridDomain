@@ -59,13 +59,13 @@ namespace GridDomain.Processes.DomainBind
             AddStartMessage(typeof(T));
         }
 
-        public static ProcessManagerDescriptor<TSaga, TSagaData> CreateDescriptor<TSaga, TSagaData>()
-            where TSagaData : class, IProcessState where TSaga : Process<TSagaData>
+        public static ProcessManagerDescriptor<TProcess, TState> CreateDescriptor<TProcess, TState>()
+            where TState : class, IProcessState where TProcess : Process<TState>
         {
-            var sagaDescriptor = new ProcessManagerDescriptor<TSaga, TSagaData>();
+            var descriptor = new ProcessManagerDescriptor<TProcess, TState>();
 
             var domainBindedEvents =
-                typeof(TSaga).GetProperties()
+                typeof(TProcess).GetProperties()
                              .Where(
                                     p =>
                                         p.PropertyType.IsGenericType
@@ -73,10 +73,10 @@ namespace GridDomain.Processes.DomainBind
             foreach (var prop in domainBindedEvents)
             {
                 var domainEventType = prop.PropertyType.GetGenericArguments().First();
-                sagaDescriptor.AddAcceptedMessage(domainEventType);
+                descriptor.AddAcceptedMessage(domainEventType);
             }
 
-            return sagaDescriptor;
+            return descriptor;
         }
     }
 }

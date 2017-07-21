@@ -19,7 +19,7 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
-using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
 using Xunit;
@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Unit
         protected override Assembly[] AllAssemblies { get; } = {
                                                                    Assembly.GetAssembly(typeof(GridDomainNode)),
                                                                    Assembly.GetAssembly(typeof(SchedulingConfiguration)),
-                                                                   Assembly.GetAssembly(typeof(SagaReceivedMessage<>)),
+                                                                   Assembly.GetAssembly(typeof(ProcessReceivedMessage<>)),
                                                                    Assembly.GetAssembly(typeof(Balloon)),
                                                                    Assembly.GetAssembly(typeof(IProcessManagerCreatorCatalog<>)),
                                                                    Assembly.GetAssembly(typeof(DomainEvent)),
@@ -94,29 +94,10 @@ namespace GridDomain.Tests.Unit
         }
 
         [Fact]
-        public void SagaState_from_all_assemblies_should_be_deserializable_by_json_and_wire()
+        public void ProcessState_from_all_assemblies_should_be_deserializable_by_json_and_wire()
         {
             CheckAllChildrenOf<IProcessState>(Checker, AllAssemblies);
         }
-
-
-        //[Fact]
-        //public void Saga_commands_aggregates_and_events_should_be_deserializable_by_json()
-        //{
-        //    var state = Fixture.Create<SoftwareProgrammingState>();
-        //    var aggregate = new SagaStateAggregate<SoftwareProgrammingState>(state);
-        //    aggregate.PersistAll();
-        //    var checker = GetChecker(new DomainEventsJsonAkkaSerializer(_system));
-        //    checker.AfterRestore = o =>
-        //                           {
-        //                               ((IMemento) o).Version = 0;
-        //                               ((Aggregate) o).PersistAll();
-        //                           };
-        //
-        //    CheckResults(checker.IsRestorable(aggregate, out string difference1) ?
-        //                     RestoreResult.Ok(aggregate.GetType()) :
-        //                     RestoreResult.Diff(aggregate.GetType(), difference1));
-        //}
 
         [Fact]
         public void MessageMetadata_classes_should_be_deserializable()

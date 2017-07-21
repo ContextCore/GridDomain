@@ -6,7 +6,6 @@ using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
 using GridDomain.Tests.Unit.EventsUpgrade;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;

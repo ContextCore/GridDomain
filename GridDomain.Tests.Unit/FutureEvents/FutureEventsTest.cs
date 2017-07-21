@@ -1,6 +1,6 @@
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
+namespace GridDomain.Tests.Unit.FutureEvents
 {
     public class FutureEventsTest : NodeTestKit
     {

@@ -2,11 +2,11 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Scheduling.FutureEvents;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents
+namespace GridDomain.Tests.Unit.FutureEvents
 {
     public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest
     {

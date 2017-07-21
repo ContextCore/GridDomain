@@ -7,7 +7,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Processes
 {
-    public class Process<TSagaData> : AutomatonymousStateMachine<TSagaData> where TSagaData : class, IProcessState
+    public class Process<TState> : AutomatonymousStateMachine<TState> where TState : class, IProcessState
     {
         private readonly IDictionary<Type, Event> _messagesToEventsMap = new Dictionary<Type, Event>();
         public Action<Command> DispatchCallback { get; set; }

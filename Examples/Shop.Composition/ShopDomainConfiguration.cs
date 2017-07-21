@@ -29,7 +29,7 @@ namespace Shop.Composition {
             container.RegisterType<ISkuPriceQuery, SkuPriceQuery>(new ContainerControlledLifetimeManager());
             container.RegisterType<IPriceCalculator, SqlPriceCalculator>(new ContainerControlledLifetimeManager());
             container.RegisterType<ISequenceProvider, SqlSequenceProvider>();
-            container.RegisterType<BuyNowSagaDomainConfiguration>(new ContainerControlledLifetimeManager());
+            container.RegisterType<BuyNowProcessDomainConfiguration>(new ContainerControlledLifetimeManager());
             container.RegisterType<AccountDomainConfiguration>(new ContainerControlledLifetimeManager());
             container.RegisterType<SkuDomainConfiguration>(new ContainerControlledLifetimeManager());
             container.RegisterType<OrderDomainConfiguration>(new ContainerControlledLifetimeManager());
@@ -40,7 +40,7 @@ namespace Shop.Composition {
       
         public void Register(IDomainBuilder builder)
         {
-            builder.Register(_container.Resolve<BuyNowSagaDomainConfiguration>());
+            builder.Register(_container.Resolve<BuyNowProcessDomainConfiguration>());
             builder.Register(_container.Resolve<AccountDomainConfiguration>());
             builder.Register(_container.Resolve<SkuDomainConfiguration>());
             builder.Register(_container.Resolve<OrderDomainConfiguration>());

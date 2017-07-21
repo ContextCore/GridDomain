@@ -6,9 +6,8 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Configuration;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
+using GridDomain.Tests.Unit.FutureEvents;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 

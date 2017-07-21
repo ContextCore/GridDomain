@@ -1,18 +1,15 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.FutureEvents;
-using GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Infrastructure;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using Microsoft.Practices.Unity;
 using Quartz;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.DependencyInjection.FutureEvents.Cancelation
+namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
 {
     public class Given_future_event_in_aggregate_When_cancelling_it : NodeTestKit
     {
