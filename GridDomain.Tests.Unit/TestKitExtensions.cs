@@ -9,8 +9,8 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Processes;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Tests.Unit
 {

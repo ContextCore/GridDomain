@@ -1,6 +1,6 @@
 using System;
-using GridDomain.Processes;
-using GridDomain.Processes.Creation;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.Creation;
 using Serilog;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 using Shop.Domain.DomainServices.PriceCalculator;

@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Processes;
-using GridDomain.Processes.Creation;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.Creation;
 using Serilog;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers

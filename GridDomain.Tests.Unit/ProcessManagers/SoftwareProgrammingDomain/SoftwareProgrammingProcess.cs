@@ -1,8 +1,8 @@
 using System;
 using Automatonymous;
 using GridDomain.CQRS;
-using GridDomain.Processes;
-using GridDomain.Processes.DomainBind;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using Serilog;

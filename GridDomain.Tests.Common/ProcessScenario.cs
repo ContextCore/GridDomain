@@ -1,7 +1,7 @@
 using System;
-using GridDomain.Processes;
-using GridDomain.Processes.Creation;
-using GridDomain.Processes.DomainBind;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.Creation;
+using GridDomain.ProcessManagers.DomainBind;
 
 namespace GridDomain.Tests.Common {
     public static class ProcessScenario

@@ -5,8 +5,8 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
-using GridDomain.Processes;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {

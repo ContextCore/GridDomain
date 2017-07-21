@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Automatonymous;
-using GridDomain.Processes;
-using GridDomain.Processes.DomainBind;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests

@@ -1,6 +1,6 @@
 using Automatonymous;
-using GridDomain.Processes;
-using GridDomain.Processes.DomainBind;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.DomainBind;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {

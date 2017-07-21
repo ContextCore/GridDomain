@@ -174,6 +174,10 @@
       <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
       <Name>GridDomain.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GridDomain.Configuration\GridDomain.Configuration.csproj">
+      <Project>{254e5abe-9dbb-4951-ba91-50a2aa8909b5}</Project>
+      <Name>GridDomain.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
       <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
       <Name>GridDomain.CQRS.Messaging</Name>
@@ -182,14 +186,6 @@
       <Project>{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}</Project>
       <Name>GridDomain.CQRS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\GridDomain.DomainConfiguration\GridDomain.Configuration.csproj">
-      <Project>{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}</Project>
-      <Name>GridDomain.Configuration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GridDomain.EventSourcing.Sagas\GridDomain.Processes.csproj">
-      <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>
-      <Name>GridDomain.Processes</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}</Project>
       <Name>GridDomain.EventSourcing</Name>
@@ -197,6 +193,10 @@
     <ProjectReference Include="..\..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760BE08A-D943-4A71-944E-938590527153}</Project>
       <Name>GridDomain.Node</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj">
+      <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
+      <Name>GridDomain.ProcessManagers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
       <Project>{96037181-43d1-4ae5-a9e8-0660d4cc4c82}</Project>

@@ -1,6 +1,6 @@
 ﻿using Automatonymous;
-using GridDomain.Processes;
-using GridDomain.Processes.DomainBind;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.DomainBind;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;

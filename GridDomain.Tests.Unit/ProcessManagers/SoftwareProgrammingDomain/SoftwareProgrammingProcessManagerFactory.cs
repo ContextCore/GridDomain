@@ -1,6 +1,6 @@
 using System;
-using GridDomain.Processes;
-using GridDomain.Processes.Creation;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.Creation;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using Serilog;
 

@@ -9,9 +9,9 @@ using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.Actors.ProcessManagers;
-using GridDomain.Processes;
-using GridDomain.Processes.Creation;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.Creation;
+using GridDomain.ProcessManagers.State;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition

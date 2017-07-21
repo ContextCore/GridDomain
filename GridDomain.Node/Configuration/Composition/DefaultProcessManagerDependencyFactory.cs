@@ -2,10 +2,10 @@ using System;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS.Messaging;
-using GridDomain.Processes;
-using GridDomain.Processes.Creation;
-using GridDomain.Processes.DomainBind;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.Creation;
+using GridDomain.ProcessManagers.DomainBind;
+using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Configuration.Composition {
     public class DefaultProcessManagerDependencyFactory<TState> : IProcessManagerDependencyFactory<TState>

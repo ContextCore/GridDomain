@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.Processes;
+using GridDomain.ProcessManagers;
 using KellermanSoftware.CompareNetObjects;
 using KellermanSoftware.CompareNetObjects.TypeComparers;
 using Xunit;

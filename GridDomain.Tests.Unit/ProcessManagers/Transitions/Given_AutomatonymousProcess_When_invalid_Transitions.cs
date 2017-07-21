@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Processes;
+using GridDomain.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using Xunit;
 using Xunit.Abstractions;

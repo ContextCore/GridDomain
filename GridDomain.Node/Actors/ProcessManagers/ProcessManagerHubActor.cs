@@ -9,7 +9,7 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Processes;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {

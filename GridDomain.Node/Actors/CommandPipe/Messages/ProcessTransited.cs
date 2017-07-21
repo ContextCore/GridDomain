@@ -1,6 +1,6 @@
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Processes;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Actors.CommandPipe.Messages
 {

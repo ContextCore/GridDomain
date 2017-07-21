@@ -5,7 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;

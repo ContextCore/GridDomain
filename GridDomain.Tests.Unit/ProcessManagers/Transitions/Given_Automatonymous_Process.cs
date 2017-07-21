@@ -1,6 +1,6 @@
 using System;
 using Automatonymous;
-using GridDomain.Processes;
+using GridDomain.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using Serilog;
 

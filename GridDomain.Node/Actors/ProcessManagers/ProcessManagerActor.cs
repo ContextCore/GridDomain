@@ -15,9 +15,9 @@ using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.ProcessManagers.Exceptions;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Processes;
-using GridDomain.Processes.Creation;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.Creation;
+using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using GridDomain.Processes;
+using GridDomain.ProcessManagers;
 using KellermanSoftware.CompareNetObjects;
 using Xunit;
 

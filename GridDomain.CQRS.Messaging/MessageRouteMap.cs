@@ -1,6 +1,6 @@
 using GridDomain.Common;
 using GridDomain.EventSourcing;
-using GridDomain.Processes.DomainBind;
+using GridDomain.ProcessManagers.DomainBind;
 
 namespace GridDomain.CQRS.Messaging
 {

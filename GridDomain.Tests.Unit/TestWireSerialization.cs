@@ -3,7 +3,7 @@ using Akka.Actor;
 using Akka.Serialization;
 using Akka.TestKit.Xunit2;
 using Automatonymous;
-using GridDomain.Processes;
+using GridDomain.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using Xunit;

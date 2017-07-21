@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using Xunit;

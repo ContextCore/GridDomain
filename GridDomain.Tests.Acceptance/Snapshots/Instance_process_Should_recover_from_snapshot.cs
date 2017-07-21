@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;

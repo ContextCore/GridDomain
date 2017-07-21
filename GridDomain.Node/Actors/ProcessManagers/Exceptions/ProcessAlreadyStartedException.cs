@@ -1,5 +1,5 @@
 using System;
-using GridDomain.Processes;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Actors.ProcessManagers.Exceptions
 {

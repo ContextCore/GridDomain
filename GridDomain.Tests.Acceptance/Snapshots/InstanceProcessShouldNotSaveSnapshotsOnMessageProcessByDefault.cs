@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;

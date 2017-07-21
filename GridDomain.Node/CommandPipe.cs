@@ -15,7 +15,7 @@ using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.Actors.ProcessManagers;
-using GridDomain.Processes.DomainBind;
+using GridDomain.ProcessManagers.DomainBind;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node

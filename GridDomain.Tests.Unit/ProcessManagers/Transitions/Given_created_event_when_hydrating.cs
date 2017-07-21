@@ -1,6 +1,6 @@
 using System;
 using GridDomain.EventSourcing;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using Xunit;

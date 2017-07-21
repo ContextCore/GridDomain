@@ -5,7 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Acceptance.EventsUpgrade;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;

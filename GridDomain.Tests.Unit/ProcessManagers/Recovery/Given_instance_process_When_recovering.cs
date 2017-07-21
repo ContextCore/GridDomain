@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.Processes;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;

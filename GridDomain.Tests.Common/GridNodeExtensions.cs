@@ -11,8 +11,8 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Processes;
-using GridDomain.Processes.State;
+using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 

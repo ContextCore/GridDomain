@@ -1,7 +1,7 @@
 using System.Linq;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.Processes.DomainBind;
+using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
