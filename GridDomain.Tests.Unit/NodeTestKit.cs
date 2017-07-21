@@ -31,6 +31,7 @@ namespace GridDomain.Tests.Unit
         {
             Fixture.Output.WriteLine($"after test {GetType().Name}");
             DumpMemoryUsage(Fixture.Output);
+            Fixture.Dispose();
         }
 
         private void DumpMemoryUsage(ITestOutputHelper output)
