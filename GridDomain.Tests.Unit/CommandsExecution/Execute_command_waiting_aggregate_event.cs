@@ -74,7 +74,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                              .Expect<IMessageMetadataEnvelop<BalloonTitleChanged>>(e => e.Message.SourceId == cmd.AggregateId)
                              .Create();
 
-            Node.Execute(cmd);
+            await Node.Execute(cmd);
 
             var res = await waiter;
 

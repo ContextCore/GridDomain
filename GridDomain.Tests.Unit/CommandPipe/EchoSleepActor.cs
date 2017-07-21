@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
        
         public EchoSleepActor(TimeSpan sleepTime, IActorRef watcher)
         {
-            Receive<IMessageMetadataEnvelop>(m => Task.Delay(sleepTime).ContinueWith(t =>
+            ReceiveAsync<IMessageMetadataEnvelop>(m => Task.Delay(sleepTime).ContinueWith(t =>
                                                                        {
                                                                            var handlerExecuted = new MarkedHandlerExecutedMessage(Self.Path.ToString(),m);
                                                                            watcher.Tell(handlerExecuted);

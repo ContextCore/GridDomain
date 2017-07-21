@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public async Task Async_execute_dont_wait_for_command_finish()
         {
             var syncCommand = new PlanTitleChangeCommand(42, Guid.NewGuid());
-            Node.Execute(syncCommand);
+            await Node.Execute(syncCommand);
             var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
             Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Title);
         }

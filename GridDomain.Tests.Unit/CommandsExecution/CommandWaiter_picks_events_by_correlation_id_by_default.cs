@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             var commandA = new PlanTitleWriteCommand(10, Guid.NewGuid());
             var commandB = new PlanTitleWriteCommand(10, Guid.NewGuid());
 
-            Node.Execute(commandB);
+            await Node.Execute(commandB);
             var res = await Node.Prepare(commandA)
                                 .Expect<BalloonTitleChangedNotification>()
                                 .Execute(false);

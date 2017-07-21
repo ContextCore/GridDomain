@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public async Task Aggregate_will_apply_events_later_than_command_execution_finish()
         {
             var syncCommand = new PlanTitleWriteCommand(42, Guid.NewGuid());
-            Node.Execute(syncCommand);
+            await Node.Execute(syncCommand);
             var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
             Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Title);
         }

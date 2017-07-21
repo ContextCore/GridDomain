@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
                                                                           received.Add(e.Id);
                                                                           return received.Count == 2;
                                                                       }).Create();
-            Node.Execute(asyncCommand);
+            await Node.Execute(asyncCommand);
 
             var res = waiter.Result;
 
