@@ -15,7 +15,10 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public async Task Async_execute_dont_wait_for_command_finish()
         {
             var syncCommand = new PlanTitleChangeCommand(42, Guid.NewGuid());
-            await Node.Execute(syncCommand);
+            //intentionally dont wait for command execution finish
+#pragma warning disable 4014
+            Node.Execute(syncCommand);
+#pragma warning restore 4014
             var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
             Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Title);
         }

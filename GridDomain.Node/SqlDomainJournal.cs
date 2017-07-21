@@ -20,6 +20,7 @@ namespace GridDomain.Node
                                                                   "Timestamp",
                                                                   "IsDeleted",
                                                                   "Tags",
+                                                                  "Ordering",
                                                                   config.GetTimeSpan("connection-timeout")),
                                            Context.System.Serialization,
                                            GetTimestampProvider(config.GetString("timestamp-provider")));
