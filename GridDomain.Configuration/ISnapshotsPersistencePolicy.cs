@@ -1,8 +1,15 @@
 ﻿using System;
-using Akka.Persistence;
 
 namespace GridDomain.Configuration
 {
+    public class SnapshotSelectionCriteria
+    {
+        public long MaxSequenceNr;
+        public DateTime MaxTimeStamp;
+        public long MinSequenceNr;
+        public DateTime? MinTimestamp;
+    }
+
     public interface ISnapshotsPersistencePolicy
     {
         bool TryDelete(Action<SnapshotSelectionCriteria> deleteDelegate);

@@ -144,7 +144,8 @@ namespace GridDomain.Node.Actors.EventSourced
                                                   }
 
 
-                                                  if (_snapshotsPolicy.TryDelete(DeleteSnapshots))
+                                                  if (_snapshotsPolicy.TryDelete(c =>
+                                                  DeleteSnapshots(new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr,c.MaxTimeStamp,c.MinSequenceNr,c.MinTimestamp))))
                                                   {
                                                       Log.Debug("started snapshots delete");
                                                   }

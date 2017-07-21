@@ -1,6 +1,7 @@
 using System;
 using Akka.Persistence;
 using GridDomain.Configuration;
+using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotSelectionCriteria;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
@@ -8,8 +9,7 @@ namespace GridDomain.Node.Actors.EventSourced
     {
         public bool TryDelete(Action<SnapshotSelectionCriteria> deleteDelegate)
         {
-            deleteDelegate(SnapshotSelectionCriteria.None);
-            return true;
+            return false;
         }
 
         public void MarkSnapshotApplied(long sequenceNr) {}

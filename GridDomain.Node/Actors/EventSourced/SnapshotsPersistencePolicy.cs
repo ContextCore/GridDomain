@@ -3,6 +3,7 @@ using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using Serilog;
+using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotSelectionCriteria;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
@@ -53,7 +54,7 @@ namespace GridDomain.Node.Actors.EventSourced
         public bool TryDelete(Action<SnapshotSelectionCriteria> deleteDelegate)
         {
             var maxSnapshotNumToDelete = Math.Max(_lastSavedSnapshot - _eventsToKeep, 0);
-            var criteria = new SnapshotSelectionCriteria(maxSnapshotNumToDelete);
+            var criteria = new SnapshotSelectionCriteria(){MaxSequenceNr = maxSnapshotNumToDelete };
             deleteDelegate(criteria);
             return true;
         }
