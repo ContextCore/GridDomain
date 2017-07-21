@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26711.1
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventSourcing", "GridDomain.EventSourcing\GridDomain.EventSourcing.csproj", "{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}"
 EndProject
@@ -51,11 +51,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.ProcessManagers"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{28F615CF-F5FA-4252-89CE-0595F491BD80}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "GridDomain.Core", "Nuget\GridDomain.Core\GridDomain.Core.nuproj", "{24FD66A8-DC40-4549-A12F-105060DAF70D}"
+Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "Nuget.Core", "Nuget\GridDomain.Core\Nuget.Core.nuproj", "{24FD66A8-DC40-4549-A12F-105060DAF70D}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "GridDomain.Node", "Nuget\GridDomain.Node\GridDomain.Node.nuproj", "{7C1F6BA4-BE5F-4655-A895-99113BE2F2B9}"
+Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "Nuget.Node", "Nuget\GridDomain.Node\Nuget.Node.nuproj", "{7C1F6BA4-BE5F-4655-A895-99113BE2F2B9}"
 EndProject
-Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "GridDomain.Tools", "Nuget\GridDomain.Tools\GridDomain.Tools.nuproj", "{AC561E7F-68BC-4FB9-A954-2135E0E8F42E}"
+Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "Nuget.Tools", "Nuget\GridDomain.Tools\Nuget.Tools.nuproj", "{AC561E7F-68BC-4FB9-A954-2135E0E8F42E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
