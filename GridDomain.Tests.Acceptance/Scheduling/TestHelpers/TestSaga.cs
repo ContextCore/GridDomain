@@ -1,14 +1,14 @@
 using Automatonymous;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.DomainBind;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TestSaga : Process<TestSagaState>
+    public class TestSaga : Process<TestProcessState>
     {
         static TestSaga()
         {
-            var descriptor = SagaDescriptor.CreateDescriptor<TestSaga, TestSagaState>();
+            var descriptor = ProcessManagerDescriptor.CreateDescriptor<TestSaga, TestProcessState>();
             descriptor.AddStartMessage<TestSagaStartMessage>();
             descriptor.AddAcceptedMessage(typeof(TestEvent));
             Descriptor = descriptor;
@@ -25,6 +25,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         public Event<TestEvent> Process { get; private set; }
 
         public State Started { get; set; }
-        public static ISagaDescriptor Descriptor { get; }
+        public static IProcessManagerDescriptor Descriptor { get; }
     }
 }

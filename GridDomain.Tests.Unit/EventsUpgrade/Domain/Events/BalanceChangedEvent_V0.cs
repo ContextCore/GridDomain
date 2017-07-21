@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Events
                                       Guid sourceId,
                                       decimal koefficient = 1,
                                       DateTime? createdTime = null,
-                                      Guid sagaId = new Guid()) : base(sourceId, sagaId: sagaId, createdTime: createdTime)
+                                      Guid processId = new Guid()) : base(sourceId, processId: processId, createdTime: createdTime)
         {
             Koefficient = koefficient;
             AmountChange = amountChange;

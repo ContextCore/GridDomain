@@ -3,20 +3,20 @@ using GridDomain.Common;
 
 namespace GridDomain.EventSourcing
 {
-    public class DomainEvent : ISourcedEvent, IHaveId, IHaveSagaId
+    public class DomainEvent : ISourcedEvent, IHaveId, IHaveProcessId
     {
-        protected DomainEvent(Guid sourceId, Guid? sagaId = null, Guid? id = null, DateTime? createdTime = null)
+        protected DomainEvent(Guid sourceId, Guid? processId = null, Guid? id = null, DateTime? createdTime = null)
         {
             SourceId = sourceId;
             CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
-            SagaId = sagaId ?? Guid.Empty;
+            ProcessId = processId ?? Guid.Empty;
             Id = id ?? Guid.NewGuid();
         }
 
         //Source of the event - aggregate that created it
         //private setter for serializers
         public Guid SourceId { get; private set; }
-        public Guid SagaId { get; internal set; }
+        public Guid ProcessId { get; internal set; }
         public DateTime CreatedTime { get; private set; }
         public Guid Id { get; private set; }
 
@@ -34,10 +34,10 @@ namespace GridDomain.EventSourcing
             return Id.GetHashCode();
         }
 
-        public DomainEvent CloneWithSaga(Guid sagaId)
+        public DomainEvent CloneForProcess(Guid processId)
         {
             var evt = (DomainEvent) MemberwiseClone();
-            evt.SagaId = sagaId;
+            evt.ProcessId = processId;
             return evt;
         }
 

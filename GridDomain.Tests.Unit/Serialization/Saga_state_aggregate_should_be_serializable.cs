@@ -1,6 +1,6 @@
 using System;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Newtonsoft.Json;
 using Xunit;
@@ -14,12 +14,12 @@ namespace GridDomain.Tests.Unit.Serialization
         {
             var state = new SoftwareProgrammingState(Guid.NewGuid(), "123", Guid.NewGuid(), Guid.NewGuid());
 
-            var sagaState = new SagaStateAggregate<SoftwareProgrammingState>(state);
+            var sagaState = new ProcessStateAggregate<SoftwareProgrammingState>(state);
             sagaState.ReceiveMessage(state, typeof(Object));
             sagaState.PersistAll();
 
             var json = JsonConvert.SerializeObject(sagaState);
-            var restoredState = JsonConvert.DeserializeObject<SagaStateAggregate<SoftwareProgrammingState>>(json);
+            var restoredState = JsonConvert.DeserializeObject<ProcessStateAggregate<SoftwareProgrammingState>>(json);
             restoredState.PersistAll();
 
             //CoffeMachineId_should_be_equal()

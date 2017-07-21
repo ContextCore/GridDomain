@@ -8,7 +8,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
-using GridDomain.Node.Actors.CommandPipe.Processors;
+using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.AkkaMessaging;
@@ -44,14 +44,14 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
             var fault = FishForMessage<IMessageMetadataEnvelop<IFault>>(m => true);
 
-            Assert.Equal(message.SagaId, fault.Message.SagaId);
+            Assert.Equal(message.ProcessId, fault.Message.ProcessId);
             Assert.IsAssignableFrom<Fault<BalloonTitleChanged>>(fault.Message);
         }
 
         [Fact]
         public void Aggregate_actor_produce_fault_with_sagaId_from_command()
         {
-            var command = new GoSleepCommand(Guid.Empty, Guid.Empty).CloneWithSaga(Guid.NewGuid());
+            var command = new GoSleepCommand(Guid.Empty, Guid.Empty).CloneForProcess(Guid.NewGuid());
 
             var transport = new LocalAkkaEventBusTransport(Sys);
             transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
@@ -68,7 +68,7 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
             var fault = FishForMessage<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(m => true,TimeSpan.FromMinutes(100));
 
-            Assert.Equal(command.SagaId, fault.Message.SagaId);
+            Assert.Equal(command.ProcessId, fault.Message.ProcessId);
         }
     }
 }

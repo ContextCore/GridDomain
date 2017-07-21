@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.Serialization
 
         private class SampleDomainEvent : DomainEvent
         {
-            public SampleDomainEvent(int parameter, Guid aggregateId) : base(aggregateId, sagaId: aggregateId, createdTime: null)
+            public SampleDomainEvent(int parameter, Guid aggregateId) : base(aggregateId, processId: aggregateId, createdTime: null)
             {
                 Parameter = parameter;
             }
@@ -22,12 +22,12 @@ namespace GridDomain.Tests.Unit.Serialization
         [Fact]
         public void Test()
         {
-            _original = (SampleDomainEvent) new SampleDomainEvent(1223, Guid.NewGuid()).CloneWithSaga(Guid.NewGuid());
+            _original = (SampleDomainEvent) new SampleDomainEvent(1223, Guid.NewGuid()).CloneForProcess(Guid.NewGuid());
             var ser = new DomainSerializer();
             var bytes = ser.ToBinary(_original);
             _restored = (SampleDomainEvent) ser.FromBinary(bytes, typeof(SampleDomainEvent));
             //SagaId_should_be_equal()
-            Assert.Equal(_original.SagaId, _restored.SagaId);
+            Assert.Equal(_original.ProcessId, _restored.ProcessId);
             //CreatedTime_should_be_equal()
             Assert.Equal(_original.CreatedTime, _restored.CreatedTime);
             //SourceId_should_be_equal()

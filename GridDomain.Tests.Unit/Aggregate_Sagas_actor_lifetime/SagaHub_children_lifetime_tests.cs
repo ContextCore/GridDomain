@@ -4,7 +4,7 @@ using Akka.DI.Core;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
-using GridDomain.Node.Actors.Sagas;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit.Abstractions;
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
             {
                 return
-                    system.DI().Props<SagaHubActor<SoftwareProgrammingState>>();
+                    system.DI().Props<ProcessManagerHubActor<SoftwareProgrammingState>>();
             }
 
             public object ChildCreateMessage { get; }

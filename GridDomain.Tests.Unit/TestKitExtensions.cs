@@ -5,11 +5,12 @@ using Akka.DI.Core;
 using Akka.Persistence;
 using Akka.TestKit.Xunit2;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Processes;
+using GridDomain.Processes.State;
 
 namespace GridDomain.Tests.Unit
 {
@@ -35,9 +36,9 @@ namespace GridDomain.Tests.Unit
         }
 
         public static async Task<TSagaState> LoadSagaByActor<TSagaState>(this TestKit kit, Guid id)
-            where TSagaState : class, ISagaState
+            where TSagaState : class, IProcessState
         {
-            return (await kit.LoadAggregateByActor<SagaStateAggregate<TSagaState>>(id)).State;
+            return (await kit.LoadAggregateByActor<ProcessStateAggregate<TSagaState>>(id)).State;
         }
     }
 }

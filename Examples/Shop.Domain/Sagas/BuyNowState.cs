@@ -1,13 +1,13 @@
 ﻿using System;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Processes;
 using Serilog;
 using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {
   
-    public class BuyNowState : ISagaState
+    public class BuyNowState : IProcessState
     {
         public BuyNowState(Guid id, string currentStateName)
         {

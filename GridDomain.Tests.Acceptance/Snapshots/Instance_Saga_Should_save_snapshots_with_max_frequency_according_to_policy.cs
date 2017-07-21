@@ -3,9 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Acceptance.EventsUpgrade;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
@@ -47,7 +46,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                                                                  new AggregateFactory()).Load<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+                                                                  new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(sagaId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Equal(1, snapshots.Length);

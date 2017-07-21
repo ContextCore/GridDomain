@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.Sagas.Recovery
             var aggregateFactory = new AggregateFactory();
             var sagaId = Guid.NewGuid();
 
-            var data = aggregateFactory.Build<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+            var data = aggregateFactory.Build<ProcessStateAggregate<SoftwareProgrammingState>>(sagaId);
             var saga = new SoftwareProgrammingProcess();
             var initialState = new SoftwareProgrammingState(sagaId, saga.MakingCoffee.Name);
 
@@ -37,11 +37,11 @@ namespace GridDomain.Tests.Unit.Sagas.Recovery
 
             data.ApplyEvents(eventsToReplay);
 
-            var sagaInstance = new Saga<SoftwareProgrammingState>(saga,data.State, _logger);
+            var sagaInstance = new ProcessManager<SoftwareProgrammingState>(saga,data.State, _logger);
 
             //Try to transit saga by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());
-            var newState = await sagaInstance.PreviewTransit(coffeMakeFailedEvent);
+            var newState = await sagaInstance.Transit(coffeMakeFailedEvent);
             var dispatchedCommands = newState.ProducedCommands;
             //Saga_produce_commands_only_one_command()
             Assert.Equal(1, dispatchedCommands.Count);

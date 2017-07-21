@@ -71,7 +71,7 @@ namespace GridDomain.Scheduling.Akka
                 else
                     Sender.Tell(new Status.Failure(e));
 
-                 var fault = Fault.New(message, e, message.Command.SagaId, typeof(SchedulingActor));
+                 var fault = Fault.New(message, e, message.Command.ProcessId, typeof(SchedulingActor));
                  _publisher.Publish(fault);
             }
         }

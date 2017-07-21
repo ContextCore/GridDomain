@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.EventSourcing.Sagas
+namespace GridDomain.Processes
 {
     public class UnbindedMessageReceivedException : Exception
     {

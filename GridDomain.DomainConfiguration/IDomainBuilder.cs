@@ -1,13 +1,12 @@
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 
 namespace GridDomain.Configuration
 {
     public interface IDomainBuilder
     {
-        void RegisterSaga<TState, TProcess>(ISagaDependencyFactory<TProcess, TState> factory) where TProcess : Process<TState>
-                                                                                              where TState : class, ISagaState;
+        void RegisterProcessManager<TState>(IProcessManagerDependencyFactory<TState> factory)where TState : class, IProcessState;
         void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate;
        
         void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage>;

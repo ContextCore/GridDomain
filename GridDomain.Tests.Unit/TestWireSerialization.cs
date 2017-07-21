@@ -3,7 +3,7 @@ using Akka.Actor;
 using Akka.Serialization;
 using Akka.TestKit.Xunit2;
 using Automatonymous;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit;
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit {
             var undefinedCoffeMachineException = new UndefinedCoffeMachineException();
             CheckDeserialize(undefinedCoffeMachineException, nameof(undefinedCoffeMachineException));
 
-            var sagaTransitionException = new SagaTransitionException(coffeMakeFailedEvent, undefinedCoffeMachineException);
+            var sagaTransitionException = new ProcessTransitionException(coffeMakeFailedEvent, undefinedCoffeMachineException);
 
             CheckDeserialize(sagaTransitionException, nameof(sagaTransitionException));
 

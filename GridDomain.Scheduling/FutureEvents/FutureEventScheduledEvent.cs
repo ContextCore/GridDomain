@@ -11,7 +11,7 @@ namespace GridDomain.Scheduling.FutureEvents
                                          DomainEvent @event,
                                          string sourceName = null,
                                          DateTime? createdTime = null,
-                                         Guid? sagaId = null) : base(sourceId, sagaId, id, createdTime)
+                                         Guid? processId = null) : base(sourceId, processId, id, createdTime)
         {
             RaiseTime = raiseTime;
             Event = @event;

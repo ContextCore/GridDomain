@@ -6,13 +6,13 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Processes;
+using GridDomain.Processes.State;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 
@@ -30,13 +30,13 @@ namespace GridDomain.Tests.Common
             return res.Message<TExpect>();
         }
 
-        public static async Task<TState> GetTransitedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : ISagaState
+        public static async Task<TState> GetTransitedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
         {
             var res = await node.SendToSaga<SagaReceivedMessage<TState>>(msg,timeout);
             return res.State;
         }
 
-        public static async Task<TState> GetCreatedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : ISagaState
+        public static async Task<TState> GetCreatedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
         {
             var res = await node.SendToSaga<SagaCreated<TState>>(msg, timeout);
             return res.State;
@@ -123,7 +123,7 @@ namespace GridDomain.Tests.Common
         }
 
         public static async Task KillSaga<TSaga, TSagaData>(this GridDomainNode node, Guid id, TimeSpan? timeout = null)
-            where TSagaData : ISagaState
+            where TSagaData : IProcessState
         {
             var sagaHub = await node.LookupSagaHubActor<TSaga>(timeout);
             var saga = await node.LookupSagaActor<TSaga, TSagaData>(id, timeout);
@@ -138,7 +138,7 @@ namespace GridDomain.Tests.Common
 
         public static async Task<IActorRef> LookupSagaActor<TSaga, TData>(this GridDomainNode node,
                                                                           Guid id,
-                                                                          TimeSpan? timeout = null) where TData : ISagaState
+                                                                          TimeSpan? timeout = null) where TData : IProcessState
         {
             var sagaName = AggregateActorName.New<TData>(id).Name;
             var sagaType = typeof(TSaga).BeautyName();

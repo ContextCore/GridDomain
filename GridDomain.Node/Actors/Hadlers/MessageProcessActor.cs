@@ -10,7 +10,7 @@ using GridDomain.EventSourcing;
 namespace GridDomain.Node.Actors.Hadlers
 {
     public class MessageProcessActor<TMessage, THandler> : ReceiveActor where THandler : IHandler<TMessage>
-                                                                        where TMessage : class, IHaveSagaId, IHaveId
+                                                                        where TMessage : class, IHaveProcessId, IHaveId
     {
         private static readonly ProcessEntry FaltProcessEntry = new ProcessEntry(typeof(THandler).Name,
                                                                                  MessageHandlingConstants.PublishingFault,
@@ -63,7 +63,7 @@ namespace GridDomain.Node.Actors.Hadlers
 
             var faultMetadata = metadata.CreateChild(msg.Id, FaltProcessEntry);
 
-            var fault = Fault.NewGeneric(msg, ex, msg.SagaId, typeof(THandler));
+            var fault = Fault.NewGeneric(msg, ex, msg.ProcessId, typeof(THandler));
 
             Publisher.Publish(fault, faultMetadata);
         }

@@ -8,14 +8,14 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.CommandPipe.Processors;
 using GridDomain.Node.Actors.Hadlers;
-using GridDomain.Node.Actors.Sagas;
+using GridDomain.Node.Actors.ProcessManagers;
+using GridDomain.Processes.DomainBind;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
@@ -27,7 +27,7 @@ namespace GridDomain.Node
         private readonly ProcessorListCatalog _handlersCatalog = new ProcessorListCatalog();
 
         private readonly ILoggingAdapter _log;
-        private readonly ProcessorListCatalog<ISagaTransitCompleted> _sagaCatalog = new ProcessorListCatalog<ISagaTransitCompleted>();
+        private readonly ProcessorListCatalog<IProcessCompleted> _processCatalog = new ProcessorListCatalog<IProcessCompleted>();
         private readonly ActorSystem _system;
 
         public CommandPipe(ActorSystem system, IUnityContainer container)
@@ -37,8 +37,8 @@ namespace GridDomain.Node
             _log = system.Log;
         }
 
-        public IActorRef SagaProcessor { get; private set; }
-        public IActorRef HandlersProcessor { get; private set; }
+        public IActorRef ProcessesPipeActor { get; private set; }
+        public IActorRef HandlersPipeActor { get; private set; }
         public IActorRef CommandExecutor { get; private set; }
 
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
@@ -55,31 +55,31 @@ namespace GridDomain.Node
             return Task.CompletedTask;
         }
 
-        public Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null)
+        public Task RegisterProcess(IProcessManagerDescriptor processManagerDescriptor, string name = null)
         {
-            var sagaActorType = typeof(SagaHubActor<>).MakeGenericType(sagaDescriptor.StateType);
+            var processActorType = typeof(ProcessManagerHubActor<>).MakeGenericType(processManagerDescriptor.StateType);
 
-            var sagaActor = CreateActor(sagaActorType, name ?? sagaDescriptor.StateMachineType.BeautyName() + "_Hub");
-            var processor = new SynchronousMessageProcessor<ISagaTransitCompleted>(sagaActor);
+            var processManagerActor = CreateActor(processActorType, name ?? processManagerDescriptor.ProcessType.BeautyName() + "_Hub");
+            var processor = new SynchronousMessageProcessor<IProcessCompleted>(processManagerActor);
 
-            foreach (var acceptMsg in sagaDescriptor.AcceptMessages)
-                _sagaCatalog.Add(acceptMsg.MessageType, processor);
+            foreach (var acceptMsg in processManagerDescriptor.AcceptMessages)
+                _processCatalog.Add(acceptMsg.MessageType, processor);
 
             return Task.CompletedTask;
         }
 
         public Task RegisterSyncHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                                                 where TMessage : class, IHaveSagaId, IHaveId
+                                                                                 where TMessage : class, IHaveProcessId, IHaveId
         {
             return RegisterHandler<TMessage, THandler>(actor => new SynchronousMessageProcessor<HandlerExecuted>(actor));
         }
         public Task RegisterFireAndForgetHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                              where TMessage : class, IHaveSagaId, IHaveId
+                                                              where TMessage : class, IHaveProcessId, IHaveId
         {
             return RegisterHandler<TMessage, THandler>(actor => new FireAndForgetMessageProcessor(actor));
         }
         public Task RegisterParralelHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                                       where TMessage : class, IHaveSagaId, IHaveId
+                                                                       where TMessage : class, IHaveProcessId, IHaveId
         {
             return RegisterHandler<TMessage, THandler>(actor => new ParallelMessageProcessor<HandlerExecuted>(actor));
         }
@@ -91,23 +91,23 @@ namespace GridDomain.Node
         {
             _log.Debug("Command pipe is starting");
 
-            SagaProcessor = _system.ActorOf(Props.Create(() => new SagaPipeActor(_sagaCatalog)), nameof(SagaPipeActor));
+            ProcessesPipeActor = _system.ActorOf(Props.Create(() => new ProcessManagersPipeActor(_processCatalog)), nameof(ProcessManagersPipeActor));
 
-            HandlersProcessor = _system.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, SagaProcessor)),
-                                                nameof(HandlersPipeActor));
+            HandlersPipeActor = _system.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, ProcessesPipeActor)),
+                                                nameof(Actors.CommandPipe.HandlersPipeActor));
 
             CommandExecutor = _system.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
                                               nameof(AggregatesPipeActor));
 
-            _container.RegisterInstance(HandlersPipeActor.CustomHandlersProcessActorRegistrationName, HandlersProcessor);
-            _container.RegisterInstance(SagaPipeActor.SagaProcessActorRegistrationName, SagaProcessor);
+            _container.RegisterInstance(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName, HandlersPipeActor);
+            _container.RegisterInstance(ProcessManagersPipeActor.ProcessManagersPipeActorRegistrationName, ProcessesPipeActor);
 
-            await SagaProcessor.Ask<Initialized>(new Initialize(CommandExecutor));
+            await ProcessesPipeActor.Ask<Initialized>(new Initialize(CommandExecutor));
             return CommandExecutor;
         }
 
         private Task RegisterHandler<TMessage, THandler>(Func<IActorRef, IMessageProcessor> processorCreator) where THandler : IHandler<TMessage>
-                                                                           where TMessage : class, IHaveSagaId, IHaveId
+                                                                           where TMessage : class, IHaveProcessId, IHaveId
         {
             var handlerActorType = typeof(MessageProcessActor<TMessage, THandler>);
             var handlerActor = CreateActor(handlerActorType, handlerActorType.BeautyName());

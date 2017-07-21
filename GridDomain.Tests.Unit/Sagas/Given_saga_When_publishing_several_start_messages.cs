@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.Sagas;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var saga  = new SoftwareProgrammingProcess();
             var state = new SoftwareProgrammingState(Guid.NewGuid(), saga.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
 
-            var sagaState = new SagaStateAggregate<SoftwareProgrammingState>(state);
+            var sagaState = new ProcessStateAggregate<SoftwareProgrammingState>(state);
             sagaState.ReceiveMessage(state, new object());
             sagaState.PersistAll();
 

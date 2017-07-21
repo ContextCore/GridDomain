@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         public async Task Register(IMessagesRouter router)
         {
             await router.RegisterAggregate<TestAggregate, TestAggregateCommandHandler>();
-            await router.RegisterSaga(TestSaga.Descriptor);
+            await router.RegisterProcess(TestSaga.Descriptor);
         }
 
         public string Name { get; } = nameof(TestRouter);

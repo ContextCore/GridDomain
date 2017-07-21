@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 using KellermanSoftware.CompareNetObjects;
 using KellermanSoftware.CompareNetObjects.TypeComparers;
 using Xunit;
@@ -49,7 +49,7 @@ namespace GridDomain.Tests.Common
         private static readonly ComparisonConfig IgnoreStateNameConfig
             = new ComparisonConfig
               {
-                  MembersToIgnore = new[] {nameof(ISagaState.CurrentStateName)}.ToList(),
+                  MembersToIgnore = new[] {nameof(IProcessState.CurrentStateName)}.ToList(),
                   CustomComparers =
                       new List<BaseTypeComparer>
                       {

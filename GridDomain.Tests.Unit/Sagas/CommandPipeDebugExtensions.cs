@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.Sagas
     {
         public static async Task SetCommandActorForSagas(this Node.CommandPipe pipe, IActorRef actor)
         {
-            await pipe.SagaProcessor.Ask<Initialized>(new Initialize(actor));
+            await pipe.ProcessesPipeActor.Ask<Initialized>(new Initialize(actor));
         }
     }
 }

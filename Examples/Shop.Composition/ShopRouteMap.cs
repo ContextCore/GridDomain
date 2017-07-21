@@ -24,7 +24,7 @@ namespace Shop.Composition
             await router.RegisterAggregate(new SkuCommandsHandler(null));
             await router.RegisterAggregate<SkuStock, SkuStockCommandsHandler>();
             await router.RegisterAggregate(new UserCommandsHandler(null));
-            await router.RegisterSaga(BuyNow.Descriptor);
+            await router.RegisterProcess(BuyNow.Descriptor);
 
             await router.RegisterSyncHandler<AccountCreated, AccountProjectionBuilder>();
             await router.RegisterSyncHandler<AccountReplenish, AccountProjectionBuilder>();

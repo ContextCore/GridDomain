@@ -1,6 +1,6 @@
 ﻿using Automatonymous;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.DomainBind;
 using Shop.Domain.Aggregates.AccountAggregate.Commands;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;
@@ -15,7 +15,7 @@ namespace Shop.Domain.Sagas
 {
     public class BuyNow : Process<BuyNowState>
     {
-        public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
+        public static readonly IProcessManagerDescriptor Descriptor = CreateDescriptor();
 
         public BuyNow(IPriceCalculator calculator)
         {
@@ -91,9 +91,9 @@ namespace Shop.Domain.Sagas
         public State Paying { get; private set; }
         public State TakingStock { get; private set; }
 
-        private static SagaDescriptor CreateDescriptor()
+        private static ProcessManagerDescriptor CreateDescriptor()
         {
-            var descriptor = SagaDescriptor.CreateDescriptor<BuyNow, BuyNowState>();
+            var descriptor = ProcessManagerDescriptor.CreateDescriptor<BuyNow, BuyNowState>();
 
             descriptor.AddStartMessage<SkuPurchaseOrdered>();
 

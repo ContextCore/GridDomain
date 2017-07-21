@@ -1,7 +1,7 @@
 using System.Linq;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
+using GridDomain.Processes.DomainBind;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.Sagas
 {
     public class Given_saga_When_extracting_descriptor
     {
-        private readonly ISagaDescriptor _descriptor = SoftwareProgrammingProcess.Descriptor;
+        private readonly IProcessManagerDescriptor _descriptor = SoftwareProgrammingProcess.Descriptor;
 
         [Fact]
         public void Descriptor_can_be_created_from_saga()
@@ -53,11 +53,11 @@ namespace GridDomain.Tests.Unit.Sagas
         {
             var expectedEvents = new[]
                                  {
-                                     nameof(DomainEvent.SagaId),
-                                     nameof(DomainEvent.SagaId),
-                                     nameof(DomainEvent.SagaId),
-                                     nameof(DomainEvent.SagaId),
-                                     nameof(Fault.SagaId)
+                                     nameof(DomainEvent.ProcessId),
+                                     nameof(DomainEvent.ProcessId),
+                                     nameof(DomainEvent.ProcessId),
+                                     nameof(DomainEvent.ProcessId),
+                                     nameof(Fault.ProcessId)
                                  };
 
             Assert.Equal(expectedEvents, _descriptor.AcceptMessages.Select(m => m.CorrelationField));
@@ -72,7 +72,7 @@ namespace GridDomain.Tests.Unit.Sagas
         [Fact]
         public void Descriptor_contains_saga_machine_type()
         {
-            Assert.Equal(typeof(SoftwareProgrammingProcess), _descriptor.StateMachineType);
+            Assert.Equal(typeof(SoftwareProgrammingProcess), _descriptor.ProcessType);
         }
     }
 }

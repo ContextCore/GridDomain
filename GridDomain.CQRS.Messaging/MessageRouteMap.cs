@@ -1,6 +1,6 @@
 using GridDomain.Common;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
+using GridDomain.Processes.DomainBind;
 
 namespace GridDomain.CQRS.Messaging
 {
@@ -12,9 +12,9 @@ namespace GridDomain.CQRS.Messaging
                 r => r.RegisterAggregate(descriptor));
         }
 
-        public static IMessageRouteMap New(ISagaDescriptor descriptor, string name = null)
+        public static IMessageRouteMap New(IProcessManagerDescriptor descriptor, string name = null)
         {
-            return new CustomRouteMap(name ?? $"map for {descriptor.GetType().Name}", r => r.RegisterSaga(descriptor));
+            return new CustomRouteMap(name ?? $"map for {descriptor.GetType().Name}", r => r.RegisterProcess(descriptor));
         }
 
         public static IMessageRouteMap New<TAggregateCommandsHandler>(string name = null)
@@ -25,7 +25,7 @@ namespace GridDomain.CQRS.Messaging
         }
 
         public static IMessageRouteMap NewSync<TMessage, THandler>(string name) where THandler : IHandler<TMessage>
-                                                                            where TMessage : class, IHaveSagaId, IHaveId
+                                                                            where TMessage : class, IHaveProcessId, IHaveId
         {
             return new CustomRouteMap(name, r => r.RegisterSyncHandler<TMessage, THandler>());
         }

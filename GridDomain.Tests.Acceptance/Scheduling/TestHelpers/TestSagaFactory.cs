@@ -1,35 +1,35 @@
 using System;
 using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.Creation;
 using Serilog;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TestSagaFactory : ISagaCreator<TestSagaState, TestSagaStartMessage>,
-                                   ISagaCreator<TestSagaState, Guid>,
-                                   ISagaCreator<TestSagaState>
+    public class TestProcessManagerFactory : IProcessManagerCreator<TestProcessState, TestSagaStartMessage>,
+                                   IProcessManagerCreator<TestProcessState, Guid>,
+                                   IProcessManagerCreator<TestProcessState>
     {
         private readonly ILogger _log;
 
-        public TestSagaFactory(ILogger log)
+        public TestProcessManagerFactory(ILogger log)
         {
             _log = log;
         }
 
-        public ISaga<TestSagaState> CreateNew(Guid message, Guid? id = null)
+        public IProcessManager<TestProcessState> CreateNew(Guid message, Guid? id = null)
         {
             return CreateNew(new TestSagaStartMessage(id ?? Guid.NewGuid(), null, id ?? message));
         }
 
-        public ISaga<TestSagaState> Create(TestSagaState message)
+        public IProcessManager<TestProcessState> Create(TestProcessState message)
         {
-            return new Saga<TestSagaState>(new TestSaga(), message, _log);
+            return new ProcessManager<TestProcessState>(new TestSaga(), message, _log);
         }
 
-        public ISaga<TestSagaState> CreateNew(TestSagaStartMessage message, Guid? id = null)
+        public IProcessManager<TestProcessState> CreateNew(TestSagaStartMessage message, Guid? id = null)
         {
-            return Create(new TestSagaState(id ?? message.SagaId, nameof(TestSaga.Initial)));
+            return Create(new TestProcessState(id ?? message.ProcessId, nameof(TestSaga.Initial)));
         }
     }
 }

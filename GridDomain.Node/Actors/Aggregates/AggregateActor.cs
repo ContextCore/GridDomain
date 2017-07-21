@@ -15,7 +15,7 @@ using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.EventSourced.Messages;
-using GridDomain.Node.Actors.Sagas.Messages;
+using GridDomain.Node.Actors.ProcessManagers.Messages;
 
 namespace GridDomain.Node.Actors.Aggregates
 {
@@ -93,7 +93,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
                                        //dirty hack, but we know nobody will modify domain events before us 
                                        foreach (var evt in domainEvents)
-                                           evt.SagaId = ExecutionContext.Command.SagaId;
+                                           evt.ProcessId = ExecutionContext.Command.ProcessId;
 
                                        ExecutionContext.MessagesToProject.AddRange(domainEvents);
 
@@ -173,7 +173,7 @@ namespace GridDomain.Node.Actors.Aggregates
             Log.Error(commandExecutionException, "{Aggregate} raised an error while executing {@Command}", PersistenceId, command);
 
             var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
-            var fault = Fault.NewGeneric(command, commandExecutionException, command.SagaId, typeof(TAggregate));
+            var fault = Fault.NewGeneric(command, commandExecutionException, command.ProcessId, typeof(TAggregate));
             return Project(fault, producedFaultMetadata)
                         .ContinueWith(t =>
                                      {

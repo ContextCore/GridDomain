@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Xunit;
@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Unit.Sagas
             Node.Transport.Publish(coffeMadeEvent);
             await Task.Delay(200);
             var sagaDataAggregate =
-                await this.LoadAggregateByActor<SagaStateAggregate<SoftwareProgrammingState>>(coffeMadeEvent.SagaId);
+                await this.LoadAggregateByActor<ProcessStateAggregate<SoftwareProgrammingState>>(coffeMadeEvent.ProcessId);
             Assert.Null(sagaDataAggregate.State);
         }
     }

@@ -3,15 +3,15 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.Actors.CommandPipe.Messages
 {
-    public class SagasProcessComplete
+    public class ProcessTransitComplete
     {
-        public SagasProcessComplete(IMessageMetadataEnvelop<ICommand>[] producedCommands)
+        public ProcessTransitComplete(IMessageMetadataEnvelop<ICommand>[] producedCommands)
         {
             ProducedCommands = producedCommands;
         }
 
         public IMessageMetadataEnvelop<ICommand>[] ProducedCommands { get; }
 
-        public static SagasProcessComplete NoResults { get; } = new SagasProcessComplete(new IMessageMetadataEnvelop<ICommand>[] { });
+        public static ProcessTransitComplete NoResults { get; } = new ProcessTransitComplete(new IMessageMetadataEnvelop<ICommand>[] { });
     }
 }

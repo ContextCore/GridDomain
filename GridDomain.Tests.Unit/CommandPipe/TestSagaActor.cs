@@ -22,12 +22,12 @@ namespace GridDomain.Tests.Unit.CommandPipe
                                                           m =>
                                                           {
                                                               Task.Delay(sleep)
-                                                                  .ContinueWith(t => new SagaTransited(commandFactory(m.Message), m.Metadata, ProcessEntry.Empty,null))
+                                                                  .ContinueWith(t => new ProcessTransited(commandFactory(m.Message), m.Metadata, ProcessEntry.Empty,null))
                                                                   .PipeTo(Self, Sender);
                                                           });
 
 
-            Receive<SagaTransited>(m =>
+            Receive<ProcessTransited>(m =>
                                    {
                                        watcher.Tell(m);
                                        Sender.Tell(m);

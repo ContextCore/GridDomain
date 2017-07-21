@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.Sagas;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.Sagas
         [Fact]
         public async Task When_dispatch_command_than_command_should_have_right_sagaId()
         {
-            Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
+            Node.Pipe.ProcessesPipeActor.Tell(new Initialize(TestActor));
 
             var sagaCreatedMsg = await Node.NewDebugWaiter()
                                            .Expect<SagaCreated<SoftwareProgrammingState>>()
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.Sagas
             var sagaCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
             var command = sagaCompleteMsg.Message;
 
-            Assert.Equal(sagaCreatedMsg.Message<SagaStateEvent>().SourceId, command.SagaId);
+            Assert.Equal(sagaCreatedMsg.Message<SagaStateEvent>().SourceId, command.ProcessId);
             Assert.IsAssignableFrom<MakeCoffeCommand>(command);
         }
 
@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Unit.Sagas
                                         .Create()
                                         .SendToSagas(domainEvent);
 
-            Assert.NotEqual(domainEvent.SagaId, waitResults.Message<SagaCreated<SoftwareProgrammingState>>().State.Id);
+            Assert.NotEqual(domainEvent.ProcessId, waitResults.Message<SagaCreated<SoftwareProgrammingState>>().State.Id);
         }
     }
 }

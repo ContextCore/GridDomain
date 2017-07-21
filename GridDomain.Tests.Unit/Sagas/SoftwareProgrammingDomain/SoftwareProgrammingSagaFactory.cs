@@ -1,18 +1,18 @@
 using System;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.Creation;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Serilog;
 
 namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingSagaFactory : ISagaCreator<SoftwareProgrammingState>,
-                                                  ISagaCreator<SoftwareProgrammingState, GotTiredEvent>,
-                                                  ISagaCreator<SoftwareProgrammingState, SleptWellEvent>
+    public class SoftwareProgrammingProcessManagerFactory : IProcessManagerCreator<SoftwareProgrammingState>,
+                                                  IProcessManagerCreator<SoftwareProgrammingState, GotTiredEvent>,
+                                                  IProcessManagerCreator<SoftwareProgrammingState, SleptWellEvent>
     {
         private readonly ILogger _log;
 
-        public SoftwareProgrammingSagaFactory(ILogger log)
+        public SoftwareProgrammingProcessManagerFactory(ILogger log)
         {
             _log = log;
         }
@@ -23,15 +23,15 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
         /// <param name="message"></param>
         /// <param name="sagaId">id of creating saga</param>
         /// <returns></returns>
-        public ISaga<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? sagaId = null)
+        public IProcessManager<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? sagaId = null)
         {
             return Create(new SoftwareProgrammingState(sagaId ?? Guid.NewGuid(),
                                                            nameof(SoftwareProgrammingProcess.Coding)));
         }
 
-        public ISaga<SoftwareProgrammingState> Create(SoftwareProgrammingState message)
+        public IProcessManager<SoftwareProgrammingState> Create(SoftwareProgrammingState message)
         {
-            return new Saga<SoftwareProgrammingState>(new SoftwareProgrammingProcess(), message, _log);
+            return new ProcessManager<SoftwareProgrammingState>(new SoftwareProgrammingProcess(), message, _log);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public ISaga<SoftwareProgrammingState> CreateNew(SleptWellEvent message, Guid? sagaId = null)
+        public IProcessManager<SoftwareProgrammingState> CreateNew(SleptWellEvent message, Guid? sagaId = null)
         {
             return Create(new SoftwareProgrammingState(sagaId ?? Guid.NewGuid(),
                                                            nameof(SoftwareProgrammingProcess.Coding)));

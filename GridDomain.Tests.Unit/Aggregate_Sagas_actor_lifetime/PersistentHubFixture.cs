@@ -1,8 +1,6 @@
 using System;
 using GridDomain.Common;
 using GridDomain.Configuration;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.Configuration.Composition;
@@ -28,11 +26,11 @@ namespace GridDomain.Tests.Unit.Aggregate_Sagas_actor_lifetime
         private IDomainConfiguration CreateDomainConfiguration()
         {
             var balloonDependencyFactory = new BalloonDependencyFactory() {RecycleConfigurationCreator = () => new TestPersistentChildsRecycleConfiguration()};
-            var sagaDependencyFactory = new SoftwareProgrammingSagaDependenciesFactory(Logger);
+            var sagaDependencyFactory = new SoftwareProgrammingProcessManagerDependenciesFactory(Logger);
             sagaDependencyFactory.StateDependencyFactory.RecycleConfigurationCreator = () => new TestPersistentChildsRecycleConfiguration();
 
             return new DomainConfiguration(b => b.RegisterAggregate(balloonDependencyFactory),
-                                           b => b.RegisterSaga(sagaDependencyFactory));
+                                           b => b.RegisterProcessManager(sagaDependencyFactory));
         }
 
         private class TestPersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration

@@ -1,8 +1,9 @@
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.State;
 
 namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
-    public class SagaDataAggregateCommandsHandlerDummy<T> : AggregateCommandsHandler<SagaStateAggregate<T>>
-        where T : ISagaState {}
+    public class SagaDataAggregateCommandsHandlerDummy<T> : AggregateCommandsHandler<ProcessStateAggregate<T>>
+        where T : IProcessState {}
 }

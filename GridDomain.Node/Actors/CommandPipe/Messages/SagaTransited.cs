@@ -1,23 +1,23 @@
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 
 namespace GridDomain.Node.Actors.CommandPipe.Messages
 {
-    public class SagaTransited : MessageMetadataEnvelop<ICommand[]>,
-                                 ISagaTransitCompleted
+    public class ProcessTransited : MessageMetadataEnvelop<ICommand[]>,
+                                 IProcessCompleted
     {
-        public SagaTransited(ICommand[] producedCommands,
+        public ProcessTransited(ICommand[] producedCommands,
                              IMessageMetadata metadata,
-                             ProcessEntry sagaProcesEntry, 
-                             ISagaState newSagaState) : base(producedCommands, metadata)
+                             ProcessEntry procesTransitEntry, 
+                             IProcessState newProcessState) : base(producedCommands, metadata)
         {
-            SagaProcessEntry = sagaProcesEntry;
-            NewSagaState = newSagaState;
+            ProcessTransitEntry = procesTransitEntry;
+            NewProcessState = newProcessState;
         }
 
         public ICommand[] ProducedCommands => Message;
-        public ISagaState NewSagaState { get; }
-        public ProcessEntry SagaProcessEntry { get; }
+        public IProcessState NewProcessState { get; }
+        public ProcessEntry ProcessTransitEntry { get; }
     }
 }

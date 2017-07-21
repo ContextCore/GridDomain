@@ -5,8 +5,8 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events
 {
     public class SleptWellEvent : DomainEvent
     {
-        public SleptWellEvent(Guid sourceId, Guid sofaId, Guid sagaId = new Guid(), DateTime? createdTime = null)
-            : base(sourceId, sagaId, createdTime: createdTime)
+        public SleptWellEvent(Guid sourceId, Guid sofaId, Guid processId = new Guid(), DateTime? createdTime = null)
+            : base(sourceId, processId, createdTime: createdTime)
         {
             SofaId = sofaId;
         }

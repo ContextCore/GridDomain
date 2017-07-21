@@ -22,14 +22,14 @@ namespace GridDomain.Tests.Common
 
         public async Task<IWaitResult> SendToSagas(DomainEvent message, Guid sagaId, IMessageMetadata metadata = null)
         {
-            return await SendToSagas(message.CloneWithSaga(sagaId), metadata);
+            return await SendToSagas(message.CloneForProcess(sagaId), metadata);
         }
 
         public async Task<IWaitResult> SendToSagas(DomainEvent message, IMessageMetadata metadata = null)
         {
             var task = _waiter.Start();
 
-            _commandPipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent>(message,
+            _commandPipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<DomainEvent>(message,
                                                                                     metadata ?? MessageMetadata.Empty));
 
             return await task;
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Common
         {
             var task = _waiter.Start();
 
-            _commandPipe.SagaProcessor.Tell(new MessageMetadataEnvelop<IFault>(message, metadata ?? MessageMetadata.Empty));
+            _commandPipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<IFault>(message, metadata ?? MessageMetadata.Empty));
 
             return await task;
         }

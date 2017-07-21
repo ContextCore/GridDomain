@@ -220,36 +220,36 @@
     <Compile Include="Actors\Aggregates\AggregateHubActor.cs" />
     <Compile Include="Actors\Aggregates\Messages\CommandExecuted.cs" />
     <Compile Include="Actors\Aggregates\Messages\CommandProducedEventsPersisted.cs" />
-    <Compile Include="Actors\BehaviorBag.cs" />
+    <Compile Include="Actors\BehaviorQueue.cs" />
     <Compile Include="Actors\BehaviorStack.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\FireAndForgetMessageProcessor.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\IMessageProcessor.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\MessageProcessor.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\ParallelMessageProcessor.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\ProcessorListCatalogBase.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\SynchronousMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\FireAndForgetMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\IMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\MessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\ParallelMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\ProcessorListCatalogBase.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\SynchronousMessageProcessor.cs" />
     <Compile Include="Actors\CommandPipe\ProcessorListCatalogExtensions.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\SyncProjectionProcessor.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\SyncSagaProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\SyncProjectionProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\SyncProcessManagerProcessor.cs" />
     <Compile Include="Actors\EventSourced\Messages\CancelShutdownRequest.cs" />
     <Compile Include="Actors\IActorBehavior.cs" />
     <Compile Include="Actors\IActorState.cs" />
-    <Compile Include="Actors\Sagas\Exceptions\SagaNotStartedException.cs" />
-    <Compile Include="Actors\Sagas\Messages\CommandCompleted.cs" />
+    <Compile Include="Actors\ProcessManagers\Exceptions\SagaNotStartedException.cs" />
+    <Compile Include="Actors\ProcessManagers\Messages\CommandCompleted.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Initialize.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Initialized.cs" />
-    <Compile Include="Actors\CommandPipe\Messages\ISagaTransitCompleted.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\IProcessCompleted.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Project.cs" />
     <Compile Include="Actors\CommandPipe\Messages\SagaTransited.cs" />
-    <Compile Include="Actors\CommandPipe\Messages\SagaTransitFault.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\ProcessFault.cs" />
     <Compile Include="Actors\EventSourced\Exceptions\EventApplyException.cs" />
     <Compile Include="Actors\EventSourced\Messages\HealthStatus.cs" />
     <Compile Include="Actors\Hadlers\MessageProcessFailedException.cs" />
-    <Compile Include="Actors\Sagas\Messages\GetSagaState.cs" />
+    <Compile Include="Actors\ProcessManagers\Messages\GetSagaState.cs" />
     <Compile Include="Actors\Hadlers\HandlerExecuted.cs" />
     <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExсeption.cs" />
     <Compile Include="Actors\CommandPipe\AggregatesPipeActor.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\IProcessorListCatalog.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\IProcessorListCatalog.cs" />
     <Compile Include="Actors\Hadlers\MessageHandlingConstants.cs" />
     <Compile Include="Actors\EventSourced\Messages\Persisted.cs" />
     <Compile Include="Actors\EventSourced\Messages\CheckHealth.cs" />
@@ -260,21 +260,21 @@
     <Compile Include="Actors\EventSourced\EventSourcedActor.cs" />
     <Compile Include="Actors\EventSourced\NoSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourced\Messages\NotifyOnPersistenceEvents.cs" />
-    <Compile Include="Actors\Sagas\Messages\RedirectToNewSaga.cs" />
-    <Compile Include="Actors\CommandPipe\Processors\ProcessorListCatalog.cs" />
+    <Compile Include="Actors\ProcessManagers\Messages\RedirectToNewSaga.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\ProcessorListCatalog.cs" />
     <Compile Include="Actors\CommandPipe\SagaPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\Messages\SagasProcessComplete.cs" />
     <Compile Include="Actors\CommandPipe\HandlersPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\Messages\AllHandlersCompleted.cs" />
-    <Compile Include="Actors\Sagas\SagaActorConstants.cs" />
-    <Compile Include="Actors\Sagas\Exceptions\SagaAlreadyStartedException.cs" />
-    <Compile Include="Actors\Sagas\SagaState.cs" />
-    <Compile Include="Actors\Sagas\SagaStateActor.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcessManagerActorConstants.cs" />
+    <Compile Include="Actors\ProcessManagers\Exceptions\SagaAlreadyStartedException.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcesStateMessage.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcessStateActor.cs" />
     <Compile Include="Actors\Aggregates\Messages\PersistEventPack.cs" />
     <Compile Include="Actors\EventSourced\Messages\ShutdownCanceled.cs" />
     <Compile Include="Actors\PersistentHub\ShutdownChild.cs" />
     <Compile Include="Actors\EventSourced\SnapshotsPersistencePolicy.cs" />
-    <Compile Include="Actors\Sagas\Exceptions\SagaIdMismatchException.cs" />
+    <Compile Include="Actors\ProcessManagers\Exceptions\SagaIdMismatchException.cs" />
     <Compile Include="AkkaCommandPipeExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
@@ -312,8 +312,8 @@
     <Compile Include="Serializers\DomainEventsJsonSerializationExtensionProvider.cs" />
     <Compile Include="Serializers\DomainEventsJsonSerializationExtensions.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
-    <Compile Include="Actors\Sagas\SagaActor.cs" />
-    <Compile Include="Actors\Sagas\SagaHubActor.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcessManagerActor.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcessManagerHubActor.cs" />
     <Compile Include="Actors\EventSourced\Messages\GracefullShutdownRequest.cs" />
     <Compile Include="AkkaCluster.cs" />
     <Compile Include="AkkaConfigurationExtensions.cs" />
@@ -394,9 +394,9 @@
       <Project>{254e5abe-9dbb-4951-ba91-50a2aa8909b5}</Project>
       <Name>GridDomain.Configuration</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.Processes.csproj">
       <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>
-      <Name>GridDomain.EventSourcing.Sagas</Name>
+      <Name>GridDomain.Processes</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>

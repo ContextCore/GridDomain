@@ -8,16 +8,15 @@ using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.CommandPipe.Processors;
 using GridDomain.Node.Actors.EventSourced;
-using GridDomain.Node.Actors.Sagas;
-using GridDomain.Node.Actors.Sagas.Messages;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Processes.Creation;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Microsoft.Practices.Unity;
@@ -31,8 +30,8 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
         public Saga_actor_should_execute_async_sagas_with_block(ITestOutputHelper output):base("", output)
         {
             var logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
-            var creator = new AsyncLongRunningSagaFactory(logger);
-            var producer = new Saga—reatorsCatalog<TestState>(AsyncLongRunningProcess.Descriptor, creator);
+            var creator = new AsyncLongRunningProcessManagerFactory(logger);
+            var producer = new ProcessManager—reatorsCatalog<TestState>(AsyncLongRunningProcess.Descriptor, creator);
             producer.RegisterAll(creator);
 
             _localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
@@ -43,20 +42,20 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
             var container = new UnityContainer();
 
-            container.RegisterType<SagaStateActor<TestState>>(new InjectionFactory(cnt =>
-                                                                                       new SagaStateActor<TestState>(new SagaStateCommandHandler<TestState>(),
+            container.RegisterType<ProcessStateActor<TestState>>(new InjectionFactory(cnt =>
+                                                                                       new ProcessStateActor<TestState>(new ProcessStateCommandHandler<TestState>(),
                                                                                                                      _localAkkaEventBusTransport,
                                                                                                                      new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
                                                                                                                      messageProcessActor)));
             Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
 
-            var name = AggregateActorName.New<SagaStateAggregate<TestState>>(_sagaId).Name;
-            _sagaActor = ActorOfAsTestActorRef(() => new SagaActor<TestState>(producer,
+            var name = AggregateActorName.New<ProcessStateAggregate<TestState>>(_sagaId).Name;
+            _sagaActor = ActorOfAsTestActorRef(() => new ProcessManagerActor<TestState>(producer,
                                                                               _localAkkaEventBusTransport),
                                                name);
         }
 
-        private readonly TestActorRef<SagaActor<TestState>> _sagaActor;
+        private readonly TestActorRef<ProcessManagerActor<TestState>> _sagaActor;
         private readonly Guid _sagaId;
         private readonly LocalAkkaEventBusTransport _localAkkaEventBusTransport;
 
@@ -70,11 +69,11 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
             _sagaActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
 
             //A was received first and should be processed first
-            var msg = ExpectMsg<SagaTransited>();
-            Assert.Equal(domainEventA.SourceId,((TestState)msg.NewSagaState).ProcessingId);
+            var msg = ExpectMsg<ProcessTransited>();
+            Assert.Equal(domainEventA.SourceId,((TestState)msg.NewProcessState).ProcessingId);
             //B should not be processed after A is completed
-            var msgB = ExpectMsg<SagaTransited>();
-            Assert.Equal(domainEventB.SourceId,((TestState)msgB.NewSagaState).ProcessingId);
+            var msgB = ExpectMsg<ProcessTransited>();
+            Assert.Equal(domainEventB.SourceId,((TestState)msgB.NewProcessState).ProcessingId);
         }
 
         [Fact]
@@ -84,9 +83,9 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 
             _sagaActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA));
 
-            var msg = ExpectMsg<SagaTransited>();
+            var msg = ExpectMsg<ProcessTransited>();
 
-            Assert.Equal(domainEventA.SourceId, ((TestState)msg.NewSagaState).ProcessingId);
+            Assert.Equal(domainEventA.SourceId, ((TestState)msg.NewProcessState).ProcessingId);
         }
 
         [Fact]

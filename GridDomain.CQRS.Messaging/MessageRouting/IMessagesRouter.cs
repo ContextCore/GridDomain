@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
+using GridDomain.Processes.DomainBind;
 
 namespace GridDomain.CQRS.Messaging.MessageRouting
 {
@@ -9,13 +9,13 @@ namespace GridDomain.CQRS.Messaging.MessageRouting
     {
         Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor);
 
-        Task RegisterSaga(ISagaDescriptor sagaDescriptor, string name = null);
+        Task RegisterProcess(IProcessManagerDescriptor processManagerDescriptor, string name = null);
 
         Task RegisterSyncHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                       where TMessage : class, IHaveSagaId, IHaveId;
+                                                       where TMessage : class, IHaveProcessId, IHaveId;
         Task RegisterFireAndForgetHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                                where TMessage : class, IHaveSagaId, IHaveId;
+                                                                where TMessage : class, IHaveProcessId, IHaveId;
         Task RegisterParralelHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                           where TMessage : class, IHaveSagaId, IHaveId;
+                                                           where TMessage : class, IHaveProcessId, IHaveId;
     }
 }

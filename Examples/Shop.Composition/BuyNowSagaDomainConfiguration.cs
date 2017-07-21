@@ -17,7 +17,7 @@ namespace Shop.Composition {
 
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterSaga(new DefaultSagaDependencyFactory<BuyNow, BuyNowState>(new BuyNowSagaFactory(_calculator, _log), BuyNow.Descriptor));
+            builder.RegisterProcessManager(new DefaultProcessManagerDependencyFactory<BuyNowState>(new BuyNowProcessManagerFactory(_calculator, _log), BuyNow.Descriptor));
         }
     }
 }

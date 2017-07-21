@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit
                                           {
                                               //supress errors raised by commands not reaching aggregates
                                               var nullActor = fixture.Node.System.ActorOf(BlackHoleActor.Props);
-                                              fixture.Node.Pipe.SagaProcessor.Ask<Initialized>(new Initialize(nullActor))
+                                              fixture.Node.Pipe.ProcessesPipeActor.Ask<Initialized>(new Initialize(nullActor))
                                                      .Wait();
                                           };
 

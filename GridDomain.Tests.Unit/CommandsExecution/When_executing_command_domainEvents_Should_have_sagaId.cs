@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 
             var domainEvent = waitResults.Message<BalloonTitleChanged>();
 
-            Assert.Equal(externalCallCommand.SagaId, domainEvent.SagaId);
+            Assert.Equal(externalCallCommand.ProcessId, domainEvent.ProcessId);
         }
     }
 }

@@ -1,11 +1,11 @@
 using System;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TestSagaState : ISagaState
+    public class TestProcessState : IProcessState
     {
-        public TestSagaState(Guid id, string currentStateName)
+        public TestProcessState(Guid id, string currentStateName)
         {
             CurrentStateName = currentStateName;
             Id = id;

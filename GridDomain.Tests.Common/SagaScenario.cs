@@ -6,8 +6,10 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.Creation;
+using GridDomain.Processes.DomainBind;
+using GridDomain.Processes.State;
 using KellermanSoftware.CompareNetObjects;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Dsl;
@@ -17,21 +19,21 @@ namespace GridDomain.Tests.Common
 {
     public static class SagaScenario
     {
-        public static SagaScenario<TSaga, TState> New<TSaga, TState,TFactory>(ISagaDescriptor descriptor)
+        public static SagaScenario<TSaga, TState> New<TSaga, TState,TFactory>(IProcessManagerDescriptor descriptor)
             where TSaga : Process<TState>
-            where TState : class, ISagaState
-            where TFactory : ISagaCreator<TState>
+            where TState : class, IProcessState
+            where TFactory : IProcessManagerCreator<TState>
         {
             var factory = CreateSagaFactory<TFactory>();
             return New<TSaga,TState>(descriptor, factory);
         }
 
-        public static SagaScenario<TSaga, TState> New<TSaga, TState>(ISagaDescriptor descriptor,
-                                                                     ISagaCreator<TState> factory)
+        public static SagaScenario<TSaga, TState> New<TSaga, TState>(IProcessManagerDescriptor descriptor,
+                                                                     IProcessManagerCreator<TState> factory)
             where TSaga : Process<TState> 
-            where TState : class, ISagaState
+            where TState : class, IProcessState
         {
-            var producer = new Saga—reatorsCatalog<TState>(descriptor, factory);
+            var producer = new ProcessManager—reatorsCatalog<TState>(descriptor, factory);
             producer.RegisterAll(factory);
             return new SagaScenario<TSaga, TState>(producer);
         }
@@ -49,17 +51,17 @@ namespace GridDomain.Tests.Common
     }
 
     public class SagaScenario<TSaga, TState> where TSaga : Process<TState>
-                                             where TState : class, ISagaState
+                                             where TState : class, IProcessState
     {
-        internal SagaScenario(ISagaCreatorCatalog<TState> ÒreatorCatalog)
+        internal SagaScenario(IProcessManagerCreatorCatalog<TState> ÒreatorCatalog)
         {
-            Saga—reatorCatalog = ÒreatorCatalog;
-            StateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(Guid.NewGuid());
+            ProcessManager—reatorCatalog = ÒreatorCatalog;
+            StateAggregate = Aggregate.Empty<ProcessStateAggregate<TState>>(Guid.NewGuid());
         }
 
-        protected ISagaCreatorCatalog<TState> Saga—reatorCatalog { get; }
-        public ISaga<TState> Saga { get; private set; }
-        protected SagaStateAggregate<TState> StateAggregate { get; private set; }
+        protected IProcessManagerCreatorCatalog<TState> ProcessManager—reatorCatalog { get; }
+        public IProcessManager<TState> ProcessManager { get; private set; }
+        protected ProcessStateAggregate<TState> StateAggregate { get; private set; }
 
         public ICommand[] ExpectedCommands { get; private set; } = { };
         public ICommand[] ProducedCommands { get; private set; } = { };
@@ -87,7 +89,7 @@ namespace GridDomain.Tests.Common
         public SagaScenario<TSaga, TState> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
-            StateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(Guid.NewGuid());
+            StateAggregate = Aggregate.Empty<ProcessStateAggregate<TState>>(Guid.NewGuid());
             StateAggregate.ApplyEvents(events);
             StateAggregate.ClearEvents();
             InitialState = StateAggregate.State;
@@ -98,40 +100,40 @@ namespace GridDomain.Tests.Common
         {
             Condition.NotNull(()=>state);
             InitialState = state;
-            StateAggregate = Aggregate.Empty<SagaStateAggregate<TState>>(state.Id);
+            StateAggregate = Aggregate.Empty<ProcessStateAggregate<TState>>(state.Id);
             StateAggregate.ApplyEvents(new SagaCreated<TState>(state, state.Id));
             return this;
         }
 
         public SagaScenario<TSaga, TState> When(params DomainEvent[] events)
         {
-            ReceivedEvents = events.Select(e => e.CloneWithSaga(StateAggregate.Id)).ToArray();
+            ReceivedEvents = events.Select(e => e.CloneForProcess(StateAggregate.Id)).ToArray();
             return this;
         }
 
         public SagaScenario<TSaga, TState> Then(params Command[] expectedCommands)
         {
-            ExpectedCommands = expectedCommands.Select(c => c.CloneWithSaga(StateAggregate.Id)).ToArray();
+            ExpectedCommands = expectedCommands.Select(c => c.CloneForProcess(StateAggregate.Id)).ToArray();
             return this;
         }
 
         public async Task<SagaScenario<TSaga, TState>> Run()
         {
             if (StateAggregate?.State != null)
-                Saga = Saga—reatorCatalog.Create(StateAggregate.State);
+                ProcessManager = ProcessManager—reatorCatalog.Create(StateAggregate.State);
 
-            foreach (var evt in ReceivedEvents.Where(e => Saga—reatorCatalog.CanCreateFrom(e)))
-                Saga = Saga—reatorCatalog.CreateNew(evt);
+            foreach (var evt in ReceivedEvents.Where(e => ProcessManager—reatorCatalog.CanCreateFrom(e)))
+                ProcessManager = ProcessManager—reatorCatalog.CreateNew(evt);
 
             //When
             var producedCommands = new List<Command>();
             foreach (var evt in ReceivedEvents)
                 //cast to allow dynamic to locate Transit method
             {
-                Task<TransitionResult<TState>> newStateFromEventTask = Saga.PreviewTransit((dynamic) evt);
+                Task<ProcessResult<TState>> newStateFromEventTask = ProcessManager.Transit((dynamic) evt);
                 var newState = await newStateFromEventTask;
                 producedCommands.AddRange(newState.ProducedCommands);
-                Saga.ApplyTransit(newState.State);
+                ProcessManager.State = newState.State;
             }
 
             //Then
@@ -142,7 +144,7 @@ namespace GridDomain.Tests.Common
 
         public SagaScenario<TSaga, TState> CheckProducedStateIsNotChanged()
         {
-            EventsExtensions.CompareState(InitialState, Saga.State);
+            EventsExtensions.CompareState(InitialState, ProcessManager.State);
             return this;
         }
     }

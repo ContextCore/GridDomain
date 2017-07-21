@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Automatonymous;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.DomainBind;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
@@ -23,11 +23,11 @@ namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
                                        }).TransitionTo(Final));
         }
 
-        public static ISagaDescriptor Descriptor
+        public static IProcessManagerDescriptor Descriptor
         {
             get
             {
-                var descriptor = SagaDescriptor.CreateDescriptor<AsyncLongRunningProcess, TestState>();
+                var descriptor = ProcessManagerDescriptor.CreateDescriptor<AsyncLongRunningProcess, TestState>();
                 descriptor.AddStartMessage<BalloonCreated>();
                 descriptor.AddAcceptedMessage<BalloonTitleChanged>();
                 return descriptor;

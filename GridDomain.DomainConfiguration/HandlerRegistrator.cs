@@ -6,7 +6,7 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Configuration {
     public class HandlerRegistrator<TMessage,THandler> where THandler : IHandler<TMessage>
-                                                       where TMessage : class, IHaveSagaId, IHaveId
+                                                       where TMessage : class, IHaveProcessId, IHaveId
     {
         private readonly Func<IMessageProcessContext, THandler> _producer;
         private readonly IDomainBuilder _builder;

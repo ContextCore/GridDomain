@@ -4,7 +4,7 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.Node.Actors.Sagas.Messages;
+using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node

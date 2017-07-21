@@ -2,13 +2,12 @@ using System;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.EventSourced.Messages;
-using GridDomain.Node.Actors.Sagas;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
@@ -24,9 +23,9 @@ namespace GridDomain.Tests.Unit.Sagas
         [Fact]
         public void Instance_saga_actor_can_be_created()
         {
-            var actorType = typeof(SagaActor<SoftwareProgrammingState>);
+            var actorType = typeof(ProcessManagerActor<SoftwareProgrammingState>);
             var props = Node.System.DI().Props(actorType);
-            var name = new AggregateActorName(typeof(SagaStateAggregate<SoftwareProgrammingState>), Guid.NewGuid()).ToString();
+            var name = new AggregateActorName(typeof(ProcessStateAggregate<SoftwareProgrammingState>), Guid.NewGuid()).ToString();
             var actor = Node.System.ActorOf(props, name);
             actor.Tell(new CheckHealth());
             ExpectMsg<HealthStatus>();

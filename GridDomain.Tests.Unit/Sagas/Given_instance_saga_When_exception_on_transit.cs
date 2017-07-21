@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Automatonymous;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Processes;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.Sagas
                            };
 
             var sagaDataEvent = new SagaCreated<SoftwareProgrammingState>(sagaData, sagaId);
-            await Node.SaveToJournal<SagaStateAggregate<SoftwareProgrammingState>>(sagaId, sagaDataEvent);
+            await Node.SaveToJournal<ProcessStateAggregate<SoftwareProgrammingState>>(sagaId, sagaDataEvent);
 
             var results = await Node.NewDebugWaiter()
                                     .Expect<Fault<CoffeMakeFailedEvent>>()
@@ -41,9 +41,9 @@ namespace GridDomain.Tests.Unit.Sagas
             Assert.NotNull(fault);
             //Fault_exception_should_contains_stack_trace()
             var exception = fault.Exception.UnwrapSingle();
-            Assert.IsAssignableFrom<SagaTransitionException>(exception);
+            Assert.IsAssignableFrom<ProcessTransitionException>(exception);
             //Fault_should_have_saga_as_producer()
-            Assert.Equal(typeof(Saga<SoftwareProgrammingState>), fault.Processor);
+            Assert.Equal(typeof(ProcessManager<SoftwareProgrammingState>), fault.Processor);
             Assert.True(exception.StackTrace.Contains("Saga"));
             //Fault_should_contains_exception_from_saga()
             var innerException = exception.InnerException.UnwrapSingle();

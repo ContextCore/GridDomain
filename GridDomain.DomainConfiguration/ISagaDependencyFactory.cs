@@ -1,11 +1,12 @@
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.Creation;
+using GridDomain.Processes.State;
 
 namespace GridDomain.Configuration {
-    public interface ISagaDependencyFactory<TProcess, TState>: IRouteMapFactory where TState : class, ISagaState
-                                                              where TProcess : Process<TState>
+    public interface IProcessManagerDependencyFactory<TState>: IRouteMapFactory where TState : class, IProcessState
     {
-        ISagaCreatorCatalog<TState> CreateCatalog();
-        IAggregateDependencyFactory<SagaStateAggregate<TState>> StateDependencyFactory { get; }
+        IProcessManagerCreatorCatalog<TState> CreateCatalog();
+        IAggregateDependencyFactory<ProcessStateAggregate<TState>> StateDependencyFactory { get; }
+        string ProcessName { get; }
     }
 }

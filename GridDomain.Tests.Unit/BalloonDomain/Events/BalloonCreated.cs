@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain.Events
         public BalloonCreated(string value,
                               Guid sourceId,
                               DateTime? createdTime = default(DateTime?),
-                              Guid sagaId = default(Guid)) : base(sourceId, sagaId, null, createdTime)
+                              Guid processId = default(Guid)) : base(sourceId, processId, null, createdTime)
         {
             Value = value;
         }

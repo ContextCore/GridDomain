@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Node.Actors.CommandPipe.Processors;
+using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {

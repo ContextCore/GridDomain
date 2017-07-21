@@ -5,8 +5,8 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events
 {
     public class CoffeMadeEvent : DomainEvent
     {
-        public CoffeMadeEvent(Guid sourceId, Guid forPersonId, DateTime? createdTime = null, Guid sagaId = new Guid())
-            : base(sourceId, sagaId: sagaId, createdTime: createdTime)
+        public CoffeMadeEvent(Guid sourceId, Guid forPersonId, DateTime? createdTime = null, Guid processId = new Guid())
+            : base(sourceId, processId: processId, createdTime: createdTime)
         {
             ForPersonId = forPersonId;
         }

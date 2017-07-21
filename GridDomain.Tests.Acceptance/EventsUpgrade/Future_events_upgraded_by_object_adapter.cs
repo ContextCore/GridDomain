@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V1 evt)
             {
-                return new BalanceChangedEvent_V1(evt.AmountChange + 100, evt.SourceId, evt.CreatedTime, evt.SagaId);
+                return new BalanceChangedEvent_V1(evt.AmountChange + 100, evt.SourceId, evt.CreatedTime, evt.ProcessId);
             }
         }
 

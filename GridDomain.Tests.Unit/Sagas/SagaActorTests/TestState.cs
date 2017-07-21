@@ -1,9 +1,9 @@
 using System;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 
 namespace GridDomain.Tests.Unit.Sagas.SagaActorTests
 {
-    public class TestState : ISagaState
+    public class TestState : IProcessState
     {
         public TestState(Guid id, string currentStateName)
         {

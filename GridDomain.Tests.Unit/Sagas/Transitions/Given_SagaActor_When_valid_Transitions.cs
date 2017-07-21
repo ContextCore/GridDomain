@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
@@ -26,7 +25,7 @@ namespace GridDomain.Tests.Unit.Sagas.Transitions
             var given = new Given_AutomatonymousSaga(m => m.Coding, _log);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var newState = await ((ISaga<SoftwareProgrammingState>) given.SagaInstance).PreviewTransit(subscriptionExpiredEvent);
+            var newState = await ((IProcessManager<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(subscriptionExpiredEvent);
 
             Assert.NotEmpty(newState.ProducedCommands);
         }
@@ -37,7 +36,7 @@ namespace GridDomain.Tests.Unit.Sagas.Transitions
             var given = new Given_AutomatonymousSaga(m => m.Coding, _log);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var newState = await ((ISaga<SoftwareProgrammingState>) given.SagaInstance).PreviewTransit(subscriptionExpiredEvent);
+            var newState = await ((IProcessManager<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(subscriptionExpiredEvent);
 
             Assert.Equal(subscriptionExpiredEvent.SourceId, newState.State.PersonId);
         }
@@ -46,7 +45,7 @@ namespace GridDomain.Tests.Unit.Sagas.Transitions
         public async Task State_in_transition_result_is_changed()
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee, _log);
-            var newState = await ((ISaga<SoftwareProgrammingState>) given.SagaInstance).PreviewTransit(new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
+            var newState = await ((IProcessManager<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), newState.State.CurrentStateName);
         }
 
@@ -55,11 +54,11 @@ namespace GridDomain.Tests.Unit.Sagas.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee, _log);
 
-            var stateBefore = given.SagaInstance.State.CurrentStateName;
+            var stateBefore = given.ProcessManagerInstance.State.CurrentStateName;
 
-            await given.SagaInstance.PreviewTransit(new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
+            await given.ProcessManagerInstance.Transit(new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
 
-            var stateAfter = given.SagaInstance.State.CurrentStateName;
+            var stateAfter = given.ProcessManagerInstance.State.CurrentStateName;
 
             Assert.Equal(stateBefore, stateAfter);
         }
@@ -69,7 +68,7 @@ namespace GridDomain.Tests.Unit.Sagas.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.MakingCoffee, _log);
             object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
-            var newState =  await given.SagaInstance.PreviewTransit((dynamic)msg);
+            var newState =  await given.ProcessManagerInstance.Transit((dynamic)msg);
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), newState.State.CurrentStateName);
         }
 
@@ -78,7 +77,7 @@ namespace GridDomain.Tests.Unit.Sagas.Transitions
         {
             var given = new Given_AutomatonymousSaga(m => m.Sleeping, _log);
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
-            await XUnitAssertExtensions.ShouldThrow<SagaTransitionException>(given.SagaInstance.PreviewTransit(gotTiredEvent));
+            await XUnitAssertExtensions.ShouldThrow<ProcessTransitionException>(given.ProcessManagerInstance.Transit(gotTiredEvent));
         }
     }
 }

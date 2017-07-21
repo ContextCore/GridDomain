@@ -1,8 +1,8 @@
 using System;
 using Automatonymous;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.DomainBind;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
 using Serilog;
@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingProcess : Process<SoftwareProgrammingState>
     {
-        public static readonly ISagaDescriptor Descriptor = CreateDescriptor();
+        public static readonly IProcessManagerDescriptor Descriptor = CreateDescriptor();
         private readonly ILogger Log = Serilog.Log.ForContext<SoftwareProgrammingProcess>();
 
         public SoftwareProgrammingProcess()
@@ -55,9 +55,9 @@ namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
         public State MakingCoffee { get; private set; }
         public State Sleeping { get; private set; }
 
-        private static ISagaDescriptor CreateDescriptor()
+        private static IProcessManagerDescriptor CreateDescriptor()
         {
-            var descriptor = SagaDescriptor.CreateDescriptor<SoftwareProgrammingProcess, SoftwareProgrammingState>();
+            var descriptor = ProcessManagerDescriptor.CreateDescriptor<SoftwareProgrammingProcess, SoftwareProgrammingState>();
 
             descriptor.AddStartMessage<GotTiredEvent>();
             descriptor.AddStartMessage<SleptWellEvent>();

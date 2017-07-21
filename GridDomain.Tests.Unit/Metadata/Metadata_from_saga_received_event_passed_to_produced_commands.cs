@@ -7,7 +7,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.Sagas;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Unit.Sagas;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
@@ -31,8 +31,8 @@ namespace GridDomain.Tests.Unit.Metadata
                                                             Guid.NewGuid(),
                                                             Guid.NewGuid());
 
-            Node.Pipe.SagaProcessor.Tell(new Initialize(TestActor));
-            Node.Pipe.SagaProcessor.Tell(new MessageMetadataEnvelop<DomainEvent>(gotTiredEvent,
+            Node.Pipe.ProcessesPipeActor.Tell(new Initialize(TestActor));
+            Node.Pipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<DomainEvent>(gotTiredEvent,
                                                                                  gotTiredEventMetadata));
 
             var answer = FishForMessage<MessageMetadataEnvelop<ICommand>>(m => true);
@@ -54,11 +54,11 @@ namespace GridDomain.Tests.Unit.Metadata
             Assert.Equal(1, answer.Metadata.History?.Steps.Count);
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = answer.Metadata.History.Steps.First();
-            var name = AggregateActorName.New<SoftwareProgrammingState>(command.SagaId);
+            var name = AggregateActorName.New<SoftwareProgrammingState>(command.ProcessId);
 
             Assert.Equal(name.Name, step.Who);
-            Assert.Equal(SagaActorConstants.SagaProducedACommand, step.Why);
-            Assert.Equal(SagaActorConstants.PublishingCommand, step.What);
+            Assert.Equal(ProcessManagerActorConstants.ProcessProducedACommand, step.Why);
+            Assert.Equal(ProcessManagerActorConstants.PublishingCommand, step.What);
         }
     }
 }

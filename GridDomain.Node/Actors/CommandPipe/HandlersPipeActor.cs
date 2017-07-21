@@ -6,8 +6,8 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.CommandPipe.Processors;
 using GridDomain.Node.Actors.Hadlers;
 
 namespace GridDomain.Node.Actors.CommandPipe
@@ -21,7 +21,7 @@ namespace GridDomain.Node.Actors.CommandPipe
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
 
-        public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef sagasProcessActor)
+        public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef processManagerPipeActor)
         {
             ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
                                                            {
@@ -35,7 +35,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                return chain.ContinueWith(t =>
                                                                                          {
                                                                                              foreach (var env in envelops)
-                                                                                                 sagasProcessActor.Tell(env);
+                                                                                                 processManagerPipeActor.Tell(env);
 
                                                                                              return new AllHandlersCompleted(project.ProjectId);
                                                                                          })

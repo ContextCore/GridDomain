@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.Sagas
                                                             TimeSpan? maxSaveFrequency = null,
                                                             int saveOnEach = 1)
         {
-            _softwareProgrammingSagaDomainConfiguration.SoftwareProgrammingSagaDependenciesFactory
+            _softwareProgrammingSagaDomainConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory
                                                        .StateDependencyFactory
                                                        .SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
             return this;

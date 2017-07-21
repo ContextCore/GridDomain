@@ -9,10 +9,11 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node;
 using GridDomain.Node.Serializers;
+using GridDomain.Processes;
+using GridDomain.Processes.Creation;
+using GridDomain.Processes.State;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Tests.Common;
@@ -36,7 +37,7 @@ namespace GridDomain.Tests.Unit
             Fixture.Customizations.Add(new TypeRelay(typeof(ICommand), typeof(FakeCommand)));
             Fixture.Customizations.Add(new TypeRelay(typeof(Command), typeof(FakeCommand)));
             Fixture.Customizations.Add(new TypeRelay(typeof(DomainEvent), typeof(BalloonCreated)));
-            Fixture.Customizations.Add(new TypeRelay(typeof(ISagaState), typeof(SoftwareProgrammingState)));
+            Fixture.Customizations.Add(new TypeRelay(typeof(IProcessState), typeof(SoftwareProgrammingState)));
 
 
             _system = (ExtendedActorSystem)ActorSystem.Create("test");
@@ -61,7 +62,7 @@ namespace GridDomain.Tests.Unit
                                                                    Assembly.GetAssembly(typeof(SchedulingConfiguration)),
                                                                    Assembly.GetAssembly(typeof(SagaReceivedMessage<>)),
                                                                    Assembly.GetAssembly(typeof(Balloon)),
-                                                                   Assembly.GetAssembly(typeof(ISagaCreatorCatalog<>)),
+                                                                   Assembly.GetAssembly(typeof(IProcessManagerCreatorCatalog<>)),
                                                                    Assembly.GetAssembly(typeof(DomainEvent)),
                                                                    Assembly.GetAssembly(typeof(ExecutionOptions))
                                                                };
@@ -95,7 +96,7 @@ namespace GridDomain.Tests.Unit
         [Fact]
         public void SagaState_from_all_assemblies_should_be_deserializable_by_json_and_wire()
         {
-            CheckAllChildrenOf<ISagaState>(Checker, AllAssemblies);
+            CheckAllChildrenOf<IProcessState>(Checker, AllAssemblies);
         }
 
 

@@ -1,9 +1,9 @@
 using System;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 
 namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingState : ISagaState
+    public class SoftwareProgrammingState : IProcessState
     {
         public SoftwareProgrammingState(Guid id,
                                         string currentStateName,

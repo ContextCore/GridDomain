@@ -6,9 +6,9 @@ using GridDomain.CQRS;
 using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
+using GridDomain.Processes;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -21,11 +21,10 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
         public IReadOnlyCollection<IContainerConfiguration> ContainerConfigurations => _containerConfigurations;
         
-        public void RegisterSaga<TProcess, TSaga>(ISagaDependencyFactory<TSaga, TProcess> factory) where TProcess : class, ISagaState
-                                                                                                   where TSaga : Process<TProcess>
+        public void RegisterProcessManager<TState>(IProcessManagerDependencyFactory<TState> factory) where TState : class, IProcessState
         {
-            _containerConfigurations.Add(new SagaConfiguration<TProcess>(c => factory.CreateCatalog(),
-                                                                         typeof(TSaga).BeautyName(),
+            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(c => factory.CreateCatalog(),
+                                                                         factory.ProcessName,
                                                                          () => factory.StateDependencyFactory.CreatePersistencePolicy(),
                                                                          factory.StateDependencyFactory.CreateFactory(),
                                                                          factory.StateDependencyFactory.CreateRecycleConfiguration()));

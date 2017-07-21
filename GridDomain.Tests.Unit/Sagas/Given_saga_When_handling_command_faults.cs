@@ -6,8 +6,8 @@ using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.Common;
 using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Events;
@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.Sagas
         public async Task When_saga_produce_command_and_waiting_for_it_fault()
         {
 
-            var givenSagaStateAggregate = new SagaStateAggregate<SoftwareProgrammingState>(new SoftwareProgrammingState(Guid.NewGuid(), 
+            var givenSagaStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(new SoftwareProgrammingState(Guid.NewGuid(), 
                                                                                             nameof(SoftwareProgrammingProcess.MakingCoffee))
                                                                                           {
                                                                                               PersonId = Guid.NewGuid()

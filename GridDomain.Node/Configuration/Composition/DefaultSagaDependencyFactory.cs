@@ -1,41 +1,45 @@
 using System;
+using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.Creation;
+using GridDomain.Processes.DomainBind;
+using GridDomain.Processes.State;
 
 namespace GridDomain.Node.Configuration.Composition {
-    public class DefaultSagaDependencyFactory<TProcess, TState> : ISagaDependencyFactory<TProcess, TState>
-        where TState : class, ISagaState
-        where TProcess : Process<TState>
+    public class DefaultProcessManagerDependencyFactory<TState> : IProcessManagerDependencyFactory<TState>
+        where TState : class, IProcessState
     {
-        private readonly ISagaCreatorCatalog<TState> _saga—reatorCatalog;
+        private readonly IProcessManagerCreatorCatalog<TState> _processManager—reatorCatalog;
         public Func<IMessageRouteMap> RouteMapCreator { get; set; }
        
-        public DefaultSagaDependencyFactory(ISagaCreatorCatalog<TState> catalog)
+        public DefaultProcessManagerDependencyFactory(IProcessManagerCreatorCatalog<TState> catalog, string processName)
         {
-            _saga—reatorCatalog = catalog;
+            _processManager—reatorCatalog = catalog;
+            ProcessName = processName;
         }
-        public DefaultSagaDependencyFactory(ISagaCreator<TState> creator, ISagaDescriptor descriptor):this(BuildCatalog(creator,descriptor))
+        public DefaultProcessManagerDependencyFactory(IProcessManagerCreator<TState> creator, IProcessManagerDescriptor descriptor):this(BuildCatalog(creator,descriptor),descriptor.ProcessType.BeautyName())
         {
             RouteMapCreator = () => MessageRouteMap.New(descriptor);
         }
 
-        public ISagaCreatorCatalog<TState> CreateCatalog()
+        public IProcessManagerCreatorCatalog<TState> CreateCatalog()
         {
-            return _saga—reatorCatalog;
+            return _processManager—reatorCatalog;
         }
 
-        private static Saga—reatorsCatalog<TState> BuildCatalog(ISagaCreator<TState> factoryCreator, ISagaDescriptor descriptor)
+        private static ProcessManager—reatorsCatalog<TState> BuildCatalog(IProcessManagerCreator<TState> factoryCreator, IProcessManagerDescriptor descriptor)
         {
-            var producer = new Saga—reatorsCatalog<TState>(descriptor, factoryCreator);
+            var producer = new ProcessManager—reatorsCatalog<TState>(descriptor, factoryCreator);
             producer.RegisterAll(factoryCreator);
             return producer;
         }
      
-        public virtual SagaStateDependencyFactory<TState> StateDependencyFactory { get; } = new SagaStateDependencyFactory<TState>();
+        public virtual ProcessStateDependencyFactory<TState> StateDependencyFactory { get; } = new ProcessStateDependencyFactory<TState>();
+        public string ProcessName { get; }
 
-        IAggregateDependencyFactory<SagaStateAggregate<TState>> ISagaDependencyFactory<TProcess, TState>.StateDependencyFactory => StateDependencyFactory;
+        IAggregateDependencyFactory<ProcessStateAggregate<TState>> IProcessManagerDependencyFactory<TState>.StateDependencyFactory => StateDependencyFactory;
         public virtual IMessageRouteMap CreateRouteMap()
         {
             return RouteMapCreator();

@@ -6,8 +6,8 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.CommandPipe.Processors;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Xunit;
 
@@ -33,23 +33,23 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var testSagaActorC =
                 Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
 
-            var catalog = new ProcessorListCatalog<ISagaTransitCompleted>();
+            var catalog = new ProcessorListCatalog<IProcessCompleted>();
 
-            catalog.Add<BalloonCreated>(new SyncSagaProcessor(testSagaActorA));
+            catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testSagaActorA));
             //two commands per one event will be produced
-            catalog.Add<BalloonTitleChanged>(new SyncSagaProcessor(testSagaActorB));
-            catalog.Add<BalloonTitleChanged>(new SyncSagaProcessor(testSagaActorC));
+            catalog.Add<BalloonTitleChanged>(new SyncProcessManagerProcessor(testSagaActorB));
+            catalog.Add<BalloonTitleChanged>(new SyncProcessManagerProcessor(testSagaActorC));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
             sagaProcessActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new BalloonCreated("1", Guid.NewGuid())));
             sagaProcessActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new BalloonTitleChanged("2", Guid.NewGuid())));
 
             //first we received complete message from all saga actors in undetermined sequence
-            ExpectMsg<SagaTransited>();
-            ExpectMsg<SagaTransited>();
-            ExpectMsg<SagaTransited>();
+            ExpectMsg<ProcessTransited>();
+            ExpectMsg<ProcessTransited>();
+            ExpectMsg<ProcessTransited>();
 
             //after all sagas complets, SagaProcessActor should notify sender (TestActor) of initial messages that work is done
             //ExpectMsg<SagasProcessComplete>();
@@ -70,10 +70,10 @@ namespace GridDomain.Tests.Unit.CommandPipe
         public async Task SagaProcessor_does_not_support_domain_event_inheritance()
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
-            var catalog = new ProcessorListCatalog<ISagaTransitCompleted>();
-            catalog.Add<BalloonCreated>(new SyncSagaProcessor(testSagaActor));
+            var catalog = new ProcessorListCatalog<IProcessCompleted>();
+            catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testSagaActor));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
             var msg = MessageMetadataEnvelop.New<DomainEvent>(new Inherited());
@@ -90,10 +90,10 @@ namespace GridDomain.Tests.Unit.CommandPipe
         {
             var testSagaActor = Sys.ActorOf(Props.Create(() => new TestSagaActor(TestActor, null, null)));
 
-            var catalog = new ProcessorListCatalog<ISagaTransitCompleted>();
-            catalog.Add<BalloonCreated>(new SyncSagaProcessor(testSagaActor));
+            var catalog = new ProcessorListCatalog<IProcessCompleted>();
+            catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testSagaActor));
 
-            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new SagaPipeActor(catalog)));
+            var sagaProcessActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
             await sagaProcessActor.Ask<Initialized>(new Initialize(TestActor));
 
 
@@ -103,7 +103,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             sagaProcessActor.Tell(msg);
 
             //TestActor from testSagaActor processor receives message after work is done
-            ExpectMsg<SagaTransited>();
+            ExpectMsg<ProcessTransited>();
             //SagaProcessActor should notify sender (TestActor) of initial messages that work is done
             //ExpectMsg<SagasProcessComplete>();
             //SagaProcessActor should send next step - command execution actor that new commands should be executed

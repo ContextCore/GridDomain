@@ -1,30 +1,30 @@
 using System;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.Creation;
 using Serilog;
 using Shop.Domain.Aggregates.UserAggregate.Events;
 using Shop.Domain.DomainServices.PriceCalculator;
 
 namespace Shop.Domain.Sagas
 {
-    public class BuyNowSagaFactory : ISagaCreator<BuyNowState>,
-                                     ISagaCreator<BuyNowState,SkuPurchaseOrdered>
+    public class BuyNowProcessManagerFactory : IProcessManagerCreator<BuyNowState>,
+                                     IProcessManagerCreator<BuyNowState,SkuPurchaseOrdered>
     {
         private readonly ILogger _log;
         private readonly IPriceCalculator _priceCalculator;
 
-        public BuyNowSagaFactory(IPriceCalculator priceCalculator, ILogger log)
+        public BuyNowProcessManagerFactory(IPriceCalculator priceCalculator, ILogger log)
         {
             _log = log;
             _priceCalculator = priceCalculator;
         }
 
-        public ISaga<BuyNowState> Create(BuyNowState state)
+        public IProcessManager<BuyNowState> Create(BuyNowState state)
         {
-            return new Saga<BuyNowState>(new BuyNow(_priceCalculator),state, _log);
+            return new ProcessManager<BuyNowState>(new BuyNow(_priceCalculator),state, _log);
         }
 
-        public ISaga<BuyNowState> CreateNew(SkuPurchaseOrdered message, Guid? sagaid = null)
+        public IProcessManager<BuyNowState> CreateNew(SkuPurchaseOrdered message, Guid? sagaid = null)
         {
             return Create(new BuyNowState(sagaid ?? Guid.NewGuid(), nameof(BuyNow.Initial)));
         }

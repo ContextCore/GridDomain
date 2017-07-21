@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Logging", "GridD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Node", "GridDomain.Node\GridDomain.Node.csproj", "{760BE08A-D943-4A71-944E-938590527153}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventSourcing.Sagas", "GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj", "{EBA75163-804C-4C58-8E5E-6764C1155BE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Processes", "GridDomain.EventSourcing.Sagas\GridDomain.Processes.csproj", "{EBA75163-804C-4C58-8E5E-6764C1155BE5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Scheduling", "GridDomain.Scheduling\GridDomain.Scheduling.csproj", "{96037181-43D1-4AE5-A9E8-0660D4CC4C82}"
 EndProject

@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers {
 
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterSaga(new DefaultSagaDependencyFactory<TestSaga, TestSagaState>(new TestSagaFactory(_logger),TestSaga.Descriptor));
+            builder.RegisterProcessManager(new DefaultProcessManagerDependencyFactory<TestProcessState>(new TestProcessManagerFactory(_logger),TestSaga.Descriptor));
         }
 
      

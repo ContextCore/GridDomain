@@ -1,6 +1,6 @@
 using System;
 using Automatonymous;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Serilog;
 
@@ -8,13 +8,13 @@ namespace GridDomain.Tests.Unit.Sagas.Transitions
 {
     public class Given_AutomatonymousSaga
     {
-        public readonly Saga<SoftwareProgrammingState> SagaInstance;
+        public readonly ProcessManager<SoftwareProgrammingState> ProcessManagerInstance;
 
         public Given_AutomatonymousSaga(Func<SoftwareProgrammingProcess, State> initialState, ILogger logger)
         {
             var sagaMachine = new SoftwareProgrammingProcess();
             var sagaData = new SoftwareProgrammingState(Guid.NewGuid(), initialState(sagaMachine).Name);
-            SagaInstance = new Saga<SoftwareProgrammingState>(sagaMachine,
+            ProcessManagerInstance = new ProcessManager<SoftwareProgrammingState>(sagaMachine,
                                                                  sagaData,
                                                                  logger);
         }

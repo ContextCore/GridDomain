@@ -9,7 +9,7 @@ namespace GridDomain.Scheduling.FutureEvents
                                         Guid sourceId,
                                         string sourceName,
                                         DateTime? createdTime = null,
-                                        Guid? sagaId = null) : base(sourceId,  sagaId, createdTime: createdTime)
+                                        Guid? processId = null) : base(sourceId,  processId, createdTime: createdTime)
         {
             FutureEventId = futureEventId;
             SourceName = sourceName;

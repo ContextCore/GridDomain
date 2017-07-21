@@ -2,8 +2,8 @@
 
 namespace GridDomain.EventSourcing
 {
-    public interface IHaveSagaId
+    public interface IHaveProcessId
     {
-        Guid SagaId { get; }
+        Guid ProcessId { get; }
     }
 }

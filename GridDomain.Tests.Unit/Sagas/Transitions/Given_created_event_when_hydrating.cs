@@ -1,7 +1,6 @@
 using System;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.Sagas;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain;
 using Xunit;
@@ -15,7 +14,7 @@ namespace GridDomain.Tests.Unit.Sagas.Transitions
         {
             var sagaId = Guid.NewGuid();
             var softwareProgrammingState = new SoftwareProgrammingState(sagaId, nameof(SoftwareProgrammingProcess.Sleeping));
-            var aggregate = Aggregate.Empty<SagaStateAggregate<SoftwareProgrammingState>>(sagaId);
+            var aggregate = Aggregate.Empty<ProcessStateAggregate<SoftwareProgrammingState>>(sagaId);
             aggregate.ApplyEvents(new SagaCreated<SoftwareProgrammingState>(softwareProgrammingState, sagaId));
 
             //Then_State_is_taken_from_event()

@@ -182,9 +182,9 @@
       <Project>{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}</Project>
       <Name>GridDomain.Configuration</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
+    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.Processes.csproj">
       <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
-      <Name>GridDomain.EventSourcing.Sagas</Name>
+      <Name>GridDomain.Processes</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>

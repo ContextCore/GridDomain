@@ -1,10 +1,11 @@
 using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing.Sagas.InstanceSagas;
+using GridDomain.Processes;
+using GridDomain.Processes.State;
 
 namespace GridDomain.Node.Configuration.Composition {
-    public class SagaStateDependencyFactory<TState> : DefaultAggregateDependencyFactory<SagaStateAggregate<TState>> where TState : ISagaState
+    public class ProcessStateDependencyFactory<TState> : DefaultAggregateDependencyFactory<ProcessStateAggregate<TState>> where TState : IProcessState
     {
-        public SagaStateDependencyFactory():base(() => new SagaStateCommandHandler<TState>(), () => EmptyRouteMap.Instance)
+        public ProcessStateDependencyFactory():base(() => new ProcessStateCommandHandler<TState>(), () => EmptyRouteMap.Instance)
         {
         }
     }

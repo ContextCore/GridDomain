@@ -5,15 +5,15 @@ using Serilog;
 namespace GridDomain.Tests.Unit.Sagas.SoftwareProgrammingDomain.Configuration {
     public class SoftwareProgrammingSagaDomainConfiguration : IDomainConfiguration
     {
-        public SoftwareProgrammingSagaDependenciesFactory SoftwareProgrammingSagaDependenciesFactory { get; }
+        public SoftwareProgrammingProcessManagerDependenciesFactory SoftwareProgrammingProcessManagerDependenciesFactory { get; }
 
         public SoftwareProgrammingSagaDomainConfiguration(ILogger log)
         {
-            SoftwareProgrammingSagaDependenciesFactory = new SoftwareProgrammingSagaDependenciesFactory(log);
+            SoftwareProgrammingProcessManagerDependenciesFactory = new SoftwareProgrammingProcessManagerDependenciesFactory(log);
         }
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterSaga(SoftwareProgrammingSagaDependenciesFactory);
+            builder.RegisterProcessManager(SoftwareProgrammingProcessManagerDependenciesFactory);
         }
     }
 }

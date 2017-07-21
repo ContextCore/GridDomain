@@ -19,12 +19,12 @@ namespace GridDomain.Configuration {
         }
 
         public static HandlerRegistrator<TMessage, THandler> RegisterHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandler<TMessage>, new()
-                                                                                            where TMessage : class, IHaveSagaId, IHaveId
+                                                                                            where TMessage : class, IHaveProcessId, IHaveId
         {
             return new HandlerRegistrator<TMessage, THandler>(c => new THandler(), builder);
         }
         public static HandlerRegistrator<TMessage, THandler> RegisterHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer) where THandler : IHandler<TMessage>
-                                                                                                                                where TMessage : class, IHaveSagaId, IHaveId
+                                                                                                                                where TMessage : class, IHaveProcessId, IHaveId
         {
             return new HandlerRegistrator<TMessage, THandler>(producer, builder);
         }
