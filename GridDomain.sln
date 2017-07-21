@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26711.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Routing", "GridDomain.CQRS.Messaging\GridDomain.Routing.csproj", "{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventSourcing", "GridDomain.EventSourcing\GridDomain.EventSourcing.csproj", "{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.CQRS", "GridDomain.CQRS\GridDomain.CQRS.csproj", "{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}"
@@ -61,10 +59,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}.Release|Any CPU.ActiveCfg = Release|Any CPU

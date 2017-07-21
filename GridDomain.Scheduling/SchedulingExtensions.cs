@@ -1,8 +1,8 @@
 using System;
 using Akka.Actor;
 using GridDomain.Configuration;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
-using GridDomain.Routing;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz.Configuration;
 using Microsoft.Practices.Unity;

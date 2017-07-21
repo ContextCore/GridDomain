@@ -4,13 +4,13 @@ using Akka.DI.Core;
 using Akka.DI.Unity;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 
 using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Transports;
-using GridDomain.Routing;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz;

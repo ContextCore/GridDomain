@@ -2,6 +2,7 @@ using System;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
@@ -9,7 +10,6 @@ using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.PersistentHub;
-using GridDomain.Routing;
 using GridDomain.Scheduling.Akka;
 using Microsoft.Practices.Unity;
 

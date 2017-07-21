@@ -212,9 +212,9 @@
       <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
       <Name>GridDomain.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.Routing.csproj">
-      <Project>{731d63e0-d750-40ca-b33e-1bbd6da93cf4}</Project>
-      <Name>GridDomain.Routing</Name>
+    <ProjectReference Include="..\GridDomain.Configuration\GridDomain.Configuration.csproj">
+      <Project>{254E5ABE-9DBB-4951-BA91-50A2AA8909B5}</Project>
+      <Name>GridDomain.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}</Project>

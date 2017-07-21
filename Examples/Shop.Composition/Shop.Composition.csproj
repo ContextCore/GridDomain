@@ -178,10 +178,6 @@
       <Project>{254e5abe-9dbb-4951-ba91-50a2aa8909b5}</Project>
       <Name>GridDomain.Configuration</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\GridDomain.CQRS.Messaging\GridDomain.Routing.csproj">
-      <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
-      <Name>GridDomain.Routing</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}</Project>
       <Name>GridDomain.CQRS</Name>

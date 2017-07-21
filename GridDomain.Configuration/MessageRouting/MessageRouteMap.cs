@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers.DomainBind;
 
-namespace GridDomain.Routing
+namespace GridDomain.Configuration.MessageRouting
 {
     public static class MessageRouteMap
     {

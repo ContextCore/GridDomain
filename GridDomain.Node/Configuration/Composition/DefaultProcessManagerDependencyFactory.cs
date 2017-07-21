@@ -1,11 +1,11 @@
 using System;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.ProcessManagers.State;
-using GridDomain.Routing;
 
 namespace GridDomain.Node.Configuration.Composition {
     public class DefaultProcessManagerDependencyFactory<TState> : IProcessManagerDependencyFactory<TState>

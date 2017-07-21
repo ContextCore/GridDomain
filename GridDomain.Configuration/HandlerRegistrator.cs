@@ -1,8 +1,8 @@
 using System;
 using GridDomain.Common;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.Routing;
 
 namespace GridDomain.Configuration {
     public class HandlerRegistrator<TMessage,THandler> where THandler : IHandler<TMessage>

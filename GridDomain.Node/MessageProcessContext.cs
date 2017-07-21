@@ -1,8 +1,7 @@
 using GridDomain.Configuration;
-
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Transports;
-using GridDomain.Routing;
 using Serilog;
 
 namespace GridDomain.Node {

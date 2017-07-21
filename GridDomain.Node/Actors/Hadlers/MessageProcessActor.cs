@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.Routing;
 
 namespace GridDomain.Node.Actors.Hadlers
 {

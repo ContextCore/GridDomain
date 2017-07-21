@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using GridDomain.Routing.MessageRouting;
 
-namespace GridDomain.Routing
+namespace GridDomain.Configuration.MessageRouting
 {
     public class CompositeRouteMap : IMessageRouteMap
     {

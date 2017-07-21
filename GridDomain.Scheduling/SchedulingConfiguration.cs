@@ -1,6 +1,6 @@
 using GridDomain.Common;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
-using GridDomain.Routing;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Logging;

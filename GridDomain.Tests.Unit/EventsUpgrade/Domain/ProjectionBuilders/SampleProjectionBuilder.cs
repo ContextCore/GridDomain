@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
-using GridDomain.Routing;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.ProjectionBuilders

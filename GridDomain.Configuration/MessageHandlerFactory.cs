@@ -1,6 +1,6 @@
 using System;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
-using GridDomain.Routing;
 
 namespace GridDomain.Configuration {
 

@@ -1,4 +1,4 @@
-using GridDomain.Routing;
+using GridDomain.Configuration.MessageRouting;
 
 namespace GridDomain.Configuration {
     public interface IRouteMapFactory

@@ -1,4 +1,4 @@
-using GridDomain.Routing;
+using GridDomain.Configuration.MessageRouting;
 using Serilog;
 
 namespace GridDomain.Configuration {

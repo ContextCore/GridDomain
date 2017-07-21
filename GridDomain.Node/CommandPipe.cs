@@ -5,6 +5,7 @@ using Akka.DI.Core;
 using Akka.Event;
 using Akka.Routing;
 using GridDomain.Common;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
@@ -15,7 +16,6 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers.DomainBind;
-using GridDomain.Routing.MessageRouting;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node

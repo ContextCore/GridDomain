@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GridDomain.Routing.MessageRouting;
 
-namespace GridDomain.Routing
+namespace GridDomain.Configuration.MessageRouting
 {
     public class CustomRouteMap : IMessageRouteMap
     {

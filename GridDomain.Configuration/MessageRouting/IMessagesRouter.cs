@@ -4,7 +4,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers.DomainBind;
 
-namespace GridDomain.Routing.MessageRouting
+namespace GridDomain.Configuration.MessageRouting
 {
     public interface IMessagesRouter
     {

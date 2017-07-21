@@ -7,6 +7,7 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Event;
 using GridDomain.Common;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe.Messages;
@@ -17,7 +18,6 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
-using GridDomain.Routing;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {

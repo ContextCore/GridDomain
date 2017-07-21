@@ -1,10 +1,10 @@
 using System;
 using GridDomain.Configuration;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.PersistentHub;
-using GridDomain.Routing;
 
 namespace GridDomain.Node.Configuration.Composition {
     public static class DefaultAggregateDependencyFactory
