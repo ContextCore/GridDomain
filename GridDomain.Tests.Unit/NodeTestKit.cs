@@ -22,5 +22,12 @@ namespace GridDomain.Tests.Unit
 
         protected GridDomainNode Node { get; }
         protected NodeTestFixture Fixture { get; }
+
+        protected override void AfterAll()
+        {
+            var memoryInBytes = System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
+            
+            Fixture.Output.WriteLine($"Total memory consumtion after test {GetType().Name}: {memoryInBytes / 1024000} Mb");
+        }
     }
 }
