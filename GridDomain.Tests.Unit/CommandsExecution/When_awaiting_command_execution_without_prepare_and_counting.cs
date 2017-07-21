@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
+using GridDomain.CQRS.Messaging;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
@@ -18,7 +19,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
             {
                 builder.RegisterAggregate(new BalloonDependencyFactory());
                 builder.RegisterHandler<BalloonCreated, CountingMessageHandler>().AsParallel();
-                builder.RegisterHandler<BalloonCreated, SlowCountingMessageHandler>().AsFireAndForget();
+                builder.RegisterHandler<BalloonCreated, SlowCountingMessageHandler>(c => new SlowCountingMessageHandler(c.Publisher)).AsFireAndForget();
                 builder.RegisterHandler<BalloonTitleChanged, CountingMessageHandler>().AsSync();
             }
         }
@@ -42,10 +43,17 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         }
         class SlowCountingMessageHandler : IHandler<BalloonCreated>
         {
+            public SlowCountingMessageHandler(IPublisher publisher)
+            {
+                _publisher = publisher;
+            }
             public static int CreatedCount;
+            private readonly IPublisher _publisher;
+
             public async Task Handle(BalloonCreated message, IMessageMetadata metadata = null)
             {
-                await Task.Delay(300);
+                await Task.Delay(500);
+                _publisher.Publish(500);
                 CreatedCount++;
             }
         }
@@ -57,7 +65,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         public async Task Then_command_executed_sync_and_parralel_message_processor_are_executed()
         {
             var aggregateId = Guid.NewGuid();
-
+            var slowCounterWaiter = Node.NewWaiter().Expect<int>().Create();
             //will produce one created message and two title changed
             await Node.Execute(new InflateCopyCommand(100, aggregateId),
                                new WriteTitleCommand(200, aggregateId));
@@ -66,7 +74,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
             Assert.Equal(2, CountingMessageHandler.ChangedCount);
             //will not wait antil Fire and Forget handlers
             Assert.Equal(0, SlowCountingMessageHandler.CreatedCount);
-            await Task.Delay(350);
+            await slowCounterWaiter;
             //but Fire and Forget handler was launched and will complete later
             Assert.Equal(1, SlowCountingMessageHandler.CreatedCount);
         }
