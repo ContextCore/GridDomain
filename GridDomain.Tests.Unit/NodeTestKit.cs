@@ -13,6 +13,9 @@ namespace GridDomain.Tests.Unit
 
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture) : base(fixture.SystemConfigFactory(), fixture.Name)
         {
+            output.WriteLine($"before test {GetType().Name}");
+            DumpMemoryUsage(output);
+
             Fixture = fixture;
             Fixture.ActorSystemCreator = () => Sys;
             Fixture.Output = output;
@@ -25,9 +28,17 @@ namespace GridDomain.Tests.Unit
 
         protected override void AfterAll()
         {
-            var memoryInBytes = System.Diagnostics.Process.GetCurrentProcess().VirtualMemorySize64;
-            
-            Fixture.Output.WriteLine($"Total memory consumtion after test {GetType().Name}: {memoryInBytes / 1024000} Mb");
+            Fixture.Output.WriteLine($"after test {GetType().Name}");
+            DumpMemoryUsage(Fixture.Output);
+        }
+
+        private void DumpMemoryUsage(ITestOutputHelper output)
+        {
+            var p = System.Diagnostics.Process.GetCurrentProcess();
+            double f = 1024.0;
+            output.WriteLine($"Private memory size64: {p.PrivateMemorySize64 / f:#,##0}");
+            output.WriteLine($"Working Set size64: {p.WorkingSet64 / f:#,##0}");
+            output.WriteLine($"Process: {p.ProcessName}");
         }
     }
 }
