@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Hadlers;

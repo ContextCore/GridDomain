@@ -1,4 +1,3 @@
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using Shop.Domain.Aggregates.OrderAggregate.Commands;
 using Shop.Infrastructure;

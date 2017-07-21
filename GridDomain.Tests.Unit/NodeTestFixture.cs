@@ -6,7 +6,6 @@ using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
 using GridDomain.Configuration;
-using GridDomain.CQRS.Messaging;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;

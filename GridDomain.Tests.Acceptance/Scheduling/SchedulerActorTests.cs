@@ -7,7 +7,7 @@ using Akka.DI.Unity;
 using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
+using GridDomain.Routing;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Akka.Messages;

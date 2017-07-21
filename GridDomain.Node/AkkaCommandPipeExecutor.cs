@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.Akka;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Node.Transports;
 
 namespace GridDomain.Node
 {

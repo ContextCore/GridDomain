@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.CQRS.Messaging.Akka.Remote;
+
 using GridDomain.Node;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Serializers;
+using GridDomain.Node.Transports;
+using GridDomain.Node.Transports.Remote;
 
 namespace GridDomain.Tools.Connector
 {

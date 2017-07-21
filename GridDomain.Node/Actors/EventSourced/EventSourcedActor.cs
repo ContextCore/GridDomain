@@ -5,11 +5,11 @@ using Akka.Actor;
 using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.Configuration;
-using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
+using SubscribeAck = GridDomain.Node.Transports.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {

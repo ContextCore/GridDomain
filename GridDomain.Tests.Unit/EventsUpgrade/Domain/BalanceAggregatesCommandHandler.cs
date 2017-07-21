@@ -1,6 +1,4 @@
 using System;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;

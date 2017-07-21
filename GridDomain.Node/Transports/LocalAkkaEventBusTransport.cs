@@ -4,7 +4,7 @@ using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
 
-namespace GridDomain.CQRS.Messaging.Akka
+namespace GridDomain.Node.Transports
 {
     public class LocalAkkaEventBusTransport : IActorTransport
     {

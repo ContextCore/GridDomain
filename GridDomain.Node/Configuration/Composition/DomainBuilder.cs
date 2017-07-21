@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.ProcessManagers;
+using GridDomain.Routing;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition

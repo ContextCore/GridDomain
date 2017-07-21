@@ -9,7 +9,6 @@ using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tools.Repositories.EventRepositories;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Xunit;

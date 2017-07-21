@@ -1,8 +1,7 @@
 using System;
 using GridDomain.Configuration;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Routing;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Acceptance.BalloonDomain {

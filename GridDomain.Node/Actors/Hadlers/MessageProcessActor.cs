@@ -4,8 +4,8 @@ using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.Routing;
 
 namespace GridDomain.Node.Actors.Hadlers
 {

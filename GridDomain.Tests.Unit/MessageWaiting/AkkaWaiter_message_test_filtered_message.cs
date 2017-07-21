@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using Akka.TestKit.Xunit2;
 using Akka.Util;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.Akka;
+
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Node.Transports;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.MessageWaiting

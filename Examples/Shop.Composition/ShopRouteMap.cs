@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.Routing;
+using GridDomain.Routing.MessageRouting;
 using Shop.Domain.Aggregates.AccountAggregate;
 using Shop.Domain.Aggregates.AccountAggregate.Events;
 using Shop.Domain.Aggregates.OrderAggregate;

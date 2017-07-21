@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;

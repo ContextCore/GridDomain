@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
+using GridDomain.Routing;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders

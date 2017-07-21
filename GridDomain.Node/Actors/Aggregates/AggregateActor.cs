@@ -7,7 +7,6 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.Aggregates.Exceptions;
@@ -16,6 +15,7 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
+using GridDomain.Routing;
 
 namespace GridDomain.Node.Actors.Aggregates
 {

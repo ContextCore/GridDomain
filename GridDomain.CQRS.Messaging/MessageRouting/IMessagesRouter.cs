@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers.DomainBind;
 
-namespace GridDomain.CQRS.Messaging.MessageRouting
+namespace GridDomain.Routing.MessageRouting
 {
     public interface IMessagesRouter
     {

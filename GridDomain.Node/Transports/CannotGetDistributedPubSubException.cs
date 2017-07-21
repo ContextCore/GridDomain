@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.CQRS.Messaging.Akka
+namespace GridDomain.Node.Transports
 {
     public class CannotGetDistributedPubSubException : Exception
     {

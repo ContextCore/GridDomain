@@ -1,8 +1,9 @@
 using GridDomain.Configuration;
-using GridDomain.CQRS.Messaging.Akka;
+
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Node.Transports;
 using Helios.Util;
 using Microsoft.Practices.Unity;
 using Serilog;

@@ -4,7 +4,7 @@ using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
 using GridDomain.Common;
 
-namespace GridDomain.CQRS.Messaging.Akka
+namespace GridDomain.Node.Transports
 {
     public class DistributedPubSubTransport : IActorTransport
     {

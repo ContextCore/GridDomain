@@ -3,7 +3,7 @@ using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.Akka;
+
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
@@ -11,6 +11,7 @@ using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Transports;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;

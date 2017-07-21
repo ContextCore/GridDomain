@@ -1,6 +1,6 @@
 ﻿using GridDomain.Common;
 
-namespace GridDomain.CQRS.Messaging
+namespace GridDomain.Routing
 {
     public interface IPublisher
     {

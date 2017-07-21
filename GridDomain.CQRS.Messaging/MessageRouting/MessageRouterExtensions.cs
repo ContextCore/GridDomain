@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-using GridDomain.Common;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.CQRS.Messaging.MessageRouting
+namespace GridDomain.Routing.MessageRouting
 {
     public static class MessageRouterExtensions
     {

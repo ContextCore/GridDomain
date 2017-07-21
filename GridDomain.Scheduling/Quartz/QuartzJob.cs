@@ -1,8 +1,8 @@
 using System;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
+using GridDomain.Routing;
 using GridDomain.Scheduling.Akka.Messages;
 using Quartz;
 using Serilog;

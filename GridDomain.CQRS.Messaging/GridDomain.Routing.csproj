@@ -7,8 +7,8 @@
     <ProjectGuid>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.CQRS.Messaging</RootNamespace>
-    <AssemblyName>GridDomain.CQRS.Messaging</AssemblyName>
+    <RootNamespace>GridDomain.Routing</RootNamespace>
+    <AssemblyName>GridDomain.Routing</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -97,7 +97,6 @@
     <Compile Include="EmptyRouteMap.cs" />
     <Compile Include="MessageRouteMap.cs" />
     <Compile Include="MessageRouting\AggregateCommandsHandlerDescriptor.cs" />
-    <Compile Include="MessageRouting\AggregateCommandInfo.cs" />
     <Compile Include="IMessageRouteMap.cs" />
     <Compile Include="IPublisher.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />

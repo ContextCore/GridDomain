@@ -1,8 +1,9 @@
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers.DomainBind;
 
-namespace GridDomain.CQRS.Messaging
+namespace GridDomain.Routing
 {
     public static class MessageRouteMap
     {

@@ -3,7 +3,6 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Node.AkkaMessaging;

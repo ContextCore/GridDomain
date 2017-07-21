@@ -1,7 +1,7 @@
 using System;
 using Akka.Actor;
 
-namespace GridDomain.CQRS.Messaging.Akka
+namespace GridDomain.Node.Transports
 {
     public class UnsuccessfullSubscribeException : Exception
     {

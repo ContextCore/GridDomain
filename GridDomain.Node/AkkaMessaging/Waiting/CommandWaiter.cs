@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.Akka;
+
+using GridDomain.Node.Transports;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {

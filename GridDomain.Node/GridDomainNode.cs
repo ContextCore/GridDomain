@@ -11,18 +11,17 @@ using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.CQRS.Messaging.Akka.Remote;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
+using GridDomain.Node.Transports;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.FutureEvents;
 using Microsoft.Practices.Unity;
+using ActorTransportProxy = GridDomain.Node.Transports.Remote.ActorTransportProxy;
 using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Node
@@ -102,7 +101,7 @@ namespace GridDomain.Node
 
 
             ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)),
-                                                 nameof(CQRS.Messaging.Akka.Remote.ActorTransportProxy));
+                                                 nameof(Transports.Remote.ActorTransportProxy));
 
 
             var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();

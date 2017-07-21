@@ -1,5 +1,4 @@
 using System;
-using GridDomain.CQRS.Messaging;
 using GridDomain.EventSourcing;
 using Microsoft.Practices.Unity;
 

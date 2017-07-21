@@ -3,7 +3,7 @@ using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
+using GridDomain.Routing;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz;
 using Quartz;
