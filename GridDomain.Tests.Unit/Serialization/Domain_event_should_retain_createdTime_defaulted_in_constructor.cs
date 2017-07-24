@@ -1,5 +1,6 @@
 using System;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Serializers;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.Serialization

@@ -6,6 +6,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Akka.Hocon;
+using GridDomain.Node.Serializers;
 using GridDomain.Tools.Persistence.SqlPersistence;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using Microsoft.EntityFrameworkCore;

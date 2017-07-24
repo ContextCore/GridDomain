@@ -1,5 +1,6 @@
 using System;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Serializers;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz;
 using Xunit;

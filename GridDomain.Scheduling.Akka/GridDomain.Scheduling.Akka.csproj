@@ -82,6 +82,7 @@
     <Compile Include="Messages\Unscheduled.cs" />
     <Compile Include="SchedulingActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SchedulingConfiguration.cs" />
     <Compile Include="SchedulingExtension.cs" />
     <Compile Include="SchedulingExtensionProvider.cs" />
     <Compile Include="SchedulingExtensions.cs" />

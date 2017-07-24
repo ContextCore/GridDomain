@@ -85,7 +85,6 @@
     <Compile Include="Quartz\Retry\RetryJobListener.cs" />
     <Compile Include="Quartz\ScheduleKey.cs" />
     <Compile Include="ScheduleKeyExtensions.cs" />
-    <Compile Include="SchedulingConfiguration.cs" />
     <Compile Include="Quartz\JobCompleted.cs" />
     <Compile Include="Quartz\Configuration\InMemoryQuartzConfig.cs" />
     <Compile Include="Quartz\JobFactory.cs" />

@@ -13,7 +13,7 @@ using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Scheduling
 {
-    public class SchedulingConfiguration : IContainerConfiguration
+    public class SchedulingConfiguration
     {
         private readonly IQuartzConfig _quartzConfig;
         private readonly ILogger _logger;

@@ -1,5 +1,6 @@
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.Node.Serializers;
 using Newtonsoft.Json;
 using Xunit;
 

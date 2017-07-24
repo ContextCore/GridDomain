@@ -1,4 +1,5 @@
 using GridDomain.Common;
+using GridDomain.Node.Configuration;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node

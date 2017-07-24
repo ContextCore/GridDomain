@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Configuration.Akka.Hocon;
+using GridDomain.Node.Serializers;
 using GridDomain.Tools.Persistence.SqlPersistence;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using Microsoft.EntityFrameworkCore;

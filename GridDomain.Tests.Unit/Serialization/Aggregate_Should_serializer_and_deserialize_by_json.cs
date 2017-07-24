@@ -1,5 +1,6 @@
 using System;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Serializers;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using Newtonsoft.Json;
