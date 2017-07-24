@@ -40,19 +40,16 @@
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
     <Reference Include="GridDomain.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.Core.1.0.0-alfa\lib\net461\GridDomain.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="GridDomain.Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.Core.1.0.0-alfa\lib\net461\GridDomain.Configuration.dll</HintPath>
+      <HintPath>..\packages\GridDomain.CQRS.1.0.0-alfa\lib\net461\GridDomain.Common.dll</HintPath>
     </Reference>
     <Reference Include="GridDomain.CQRS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.Core.1.0.0-alfa\lib\net461\GridDomain.CQRS.dll</HintPath>
+      <HintPath>..\packages\GridDomain.CQRS.1.0.0-alfa\lib\net461\GridDomain.CQRS.dll</HintPath>
     </Reference>
     <Reference Include="GridDomain.EventSourcing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.Core.1.0.0-alfa\lib\net461\GridDomain.EventSourcing.dll</HintPath>
+      <HintPath>..\packages\GridDomain.EventSourcing.1.0.0-alfa\lib\net461\GridDomain.EventSourcing.dll</HintPath>
     </Reference>
     <Reference Include="GridDomain.ProcessManagers, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.Core.1.0.0-alfa\lib\net461\GridDomain.ProcessManagers.dll</HintPath>
+      <HintPath>..\packages\GridDomain.ProcessManagers.1.0.0-alfa\lib\net461\GridDomain.ProcessManagers.dll</HintPath>
     </Reference>
     <Reference Include="GridDomain.Scheduling, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GridDomain.Scheduling.1.0.0-alfa\lib\net461\GridDomain.Scheduling.dll</HintPath>

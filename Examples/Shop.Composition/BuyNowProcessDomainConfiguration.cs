@@ -1,5 +1,4 @@
 using GridDomain.Configuration;
-using GridDomain.Node.Configuration.Composition;
 using Serilog;
 using Shop.Domain.DomainServices.PriceCalculator;
 using Shop.Domain.ProcessManagers;

@@ -1,4 +1,5 @@
-﻿using GridDomain.Node.Configuration.Composition;
+﻿using GridDomain.Configuration;
+using GridDomain.Node.Configuration.Composition;
 using Serilog;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Configuration

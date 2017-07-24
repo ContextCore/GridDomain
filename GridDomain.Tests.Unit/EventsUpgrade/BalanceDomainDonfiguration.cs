@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade {
 
         public BalanceDomainDonfiguration()
         {
-            DefaultAggregateDependencyFactory = Node.Configuration.Composition.DefaultAggregateDependencyFactory.New(new BalanceAggregatesCommandHandler(), new BalanceRouteMap());
+            DefaultAggregateDependencyFactory = Configuration.DefaultAggregateDependencyFactory.New(new BalanceAggregatesCommandHandler(), new BalanceRouteMap());
 
         }
         public void Register(IDomainBuilder builder)

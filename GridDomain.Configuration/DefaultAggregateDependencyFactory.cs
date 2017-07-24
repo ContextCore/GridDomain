@@ -1,12 +1,9 @@
 using System;
-using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.Node.Actors.EventSourced;
-using GridDomain.Node.Actors.PersistentHub;
 
-namespace GridDomain.Node.Configuration.Composition {
+namespace GridDomain.Configuration {
     public static class DefaultAggregateDependencyFactory
     {
         public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler, IMessageRouteMap mapProducer=null) where TAggregate : Aggregate

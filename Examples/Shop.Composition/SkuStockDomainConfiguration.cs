@@ -1,5 +1,4 @@
 using GridDomain.Configuration;
-using GridDomain.Node.Configuration.Composition;
 using Shop.Domain.Aggregates.SkuStockAggregate;
 
 namespace Shop.Composition {

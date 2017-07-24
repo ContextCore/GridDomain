@@ -208,10 +208,8 @@
     <Compile Include="Actors\EventSourced\Messages\Persisted.cs" />
     <Compile Include="Actors\EventSourced\Messages\CheckHealth.cs" />
     <Compile Include="Actors\PersistentHub\ChildInfo.cs" />
-    <Compile Include="Actors\PersistentHub\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\EventSourced\EachMessageSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourced\EventSourcedActor.cs" />
-    <Compile Include="Actors\EventSourced\NoSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourced\Messages\NotifyOnPersistenceEvents.cs" />
     <Compile Include="Actors\ProcessManagers\Messages\ProcessRedirect.cs" />
     <Compile Include="Actors\CommandPipe\MessageProcessors\ProcessorListCatalog.cs" />
@@ -253,8 +251,6 @@
     <Compile Include="Configuration\Akka\WriteDbConfigSection.cs" />
     <Compile Include="Configuration\Composition\AggregateConfiguration.cs" />
     <Compile Include="Configuration\Composition\ContainerConfiguration.cs" />
-    <Compile Include="Configuration\Composition\DefaultAggregateDependencyFactory.cs" />
-    <Compile Include="Configuration\Composition\DefaultProcessManagerDependencyFactory.cs" />
     <Compile Include="Configuration\Composition\DomainBuilder.cs" />
     <Compile Include="Configuration\Composition\ProcessStateDependencyFactory.cs" />
     <Compile Include="Configuration\IContainerConfiguration.cs" />
@@ -310,7 +306,6 @@
     <Compile Include="Configuration\Persistence\IDbConfiguration.cs" />
     <Compile Include="Configuration\Persistence\LocalDbConfiguration.cs" />
     <Compile Include="Configuration\Akka\AkkaConfiguration.cs" />
-    <Compile Include="Configuration\Composition\Container.cs" />
     <Compile Include="Configuration\Composition\EmptyContainerConfiguration.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />

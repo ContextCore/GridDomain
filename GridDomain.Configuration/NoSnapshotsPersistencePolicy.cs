@@ -1,9 +1,6 @@
 using System;
-using Akka.Persistence;
-using GridDomain.Configuration;
-using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotSelectionCriteria;
 
-namespace GridDomain.Node.Actors.EventSourced
+namespace GridDomain.Configuration
 {
     public class NoSnapshotsPersistencePolicy : ISnapshotsPersistencePolicy
     {
