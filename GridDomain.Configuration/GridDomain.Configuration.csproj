@@ -36,11 +36,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainBuilderExtensions.cs" />
@@ -79,10 +74,6 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
-      <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
-      <Name>GridDomain.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj">
       <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
