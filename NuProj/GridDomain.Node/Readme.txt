@@ -1,0 +1,1 @@
+﻿GridDomain.Node package contains evironment to run domain logic written with GridDomain.Core 
