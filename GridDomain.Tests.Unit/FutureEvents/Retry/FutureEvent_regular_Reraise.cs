@@ -19,11 +19,10 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 
         private class FastReraiseTestFixture : FutureEventsFixture
         {
-            public FastReraiseTestFixture()
+            public FastReraiseTestFixture():base(null, new InMemoryRetrySettings(2,
+                                                                                 TimeSpan.FromMilliseconds(10),
+                                                                                 new AlwaysRetryExceptionPolicy()))
             {
-                this.EnableScheduling(new InMemoryRetrySettings(2,
-                                                                TimeSpan.FromMilliseconds(10),
-                                                                new AlwaysRetryExceptionPolicy()));
             }
         }
 

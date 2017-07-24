@@ -11,6 +11,7 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Serilog;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,18 +20,19 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
         public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
-            : base(output, new Reraise_fixture()) {}
+            : base(output, new Reraise_fixture(output)) {}
 
         private static readonly TaskCompletionSource<int> _policyCallNumberChanged = new TaskCompletionSource<int>();
         private static int _policyCallNumber;
 
         private class Reraise_fixture : FutureEventsFixture
         {
-            public Reraise_fixture()
+            public Reraise_fixture(ITestOutputHelper output):base(output,new InMemoryRetrySettings(2,
+                                                                                                  TimeSpan.FromMilliseconds(10),
+                                                                                                  new StopOnTestExceptionPolicy(
+                                                                                                      new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Information).CreateLogger())))
             {
-                this.EnableScheduling(new InMemoryRetrySettings(2,
-                                                                TimeSpan.FromMilliseconds(10),
-                                                                new StopOnTestExceptionPolicy(Logger)));
+                
             }
 
             private class StopOnTestExceptionPolicy : IExceptionPolicy
