@@ -4,7 +4,6 @@ using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
-using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Quartz;
 using Xunit;

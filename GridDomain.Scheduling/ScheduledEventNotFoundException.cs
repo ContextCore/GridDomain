@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Scheduling.FutureEvents
+namespace GridDomain.Scheduling
 {
     public class ScheduledEventNotFoundException : Exception
     {

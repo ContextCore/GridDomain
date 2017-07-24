@@ -6,7 +6,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Actors.Aggregates.Exceptions;
-using GridDomain.Scheduling.FutureEvents;
+using GridDomain.Scheduling;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;

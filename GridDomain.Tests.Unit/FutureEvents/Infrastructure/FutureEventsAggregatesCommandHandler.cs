@@ -1,4 +1,4 @@
-using GridDomain.Scheduling.FutureEvents;
+using GridDomain.Scheduling;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {

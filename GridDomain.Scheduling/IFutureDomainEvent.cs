@@ -2,7 +2,7 @@
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Scheduling.FutureEvents {
+namespace GridDomain.Scheduling {
     public interface IFutureDomainEvent : ISourcedEvent, IHaveId, IHaveProcessId
     {
         string SourceName { get; }

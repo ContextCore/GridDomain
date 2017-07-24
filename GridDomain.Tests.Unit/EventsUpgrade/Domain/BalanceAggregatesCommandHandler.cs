@@ -1,6 +1,6 @@
 using System;
 using GridDomain.EventSourcing;
-using GridDomain.Scheduling.FutureEvents;
+using GridDomain.Scheduling;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain

@@ -1,6 +1,5 @@
 using Akka.Actor;
 using GridDomain.Configuration;
-using GridDomain.Scheduling.FutureEvents;
 
 namespace GridDomain.Scheduling.Akka {
     public class FutureAggregateHandlersDomainConfiguration : IDomainConfiguration

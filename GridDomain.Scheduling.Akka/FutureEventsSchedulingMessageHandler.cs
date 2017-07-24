@@ -4,7 +4,6 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Scheduling.Akka.Messages;
-using GridDomain.Scheduling.FutureEvents;
 using GridDomain.Scheduling.Quartz;
 
 namespace GridDomain.Scheduling.Akka

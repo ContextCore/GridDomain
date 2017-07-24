@@ -1,7 +1,7 @@
 ﻿using System;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Scheduling.FutureEvents
+namespace GridDomain.Scheduling
 {
     public class FutureEventOccuredEvent : DomainEvent
     {

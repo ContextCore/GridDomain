@@ -3,7 +3,6 @@ using GridDomain.CQRS;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Scheduling.WebUI;
 using Microsoft.Practices.Unity;
 using Quartz.Spi;
 using Serilog;
@@ -53,9 +52,6 @@ namespace GridDomain.Scheduling.Akka
 
             container.RegisterInstance<IRetrySettings>(_quartzConfig.RetryOptions);
             container.RegisterType<IRetryStrategy, ExponentialBackoffRetryStrategy>();
-
-            container.RegisterType<IWebUiConfig, WebUiConfig>();
-            container.RegisterType<IWebUiWrapper, WebUiWrapper>();
         }
     }
 }

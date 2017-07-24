@@ -1,7 +1,6 @@
 using System;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
-using GridDomain.Scheduling.FutureEvents;
 
 namespace GridDomain.Scheduling.Quartz.Retry
 {

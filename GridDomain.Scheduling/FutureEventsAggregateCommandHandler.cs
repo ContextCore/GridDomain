@@ -1,6 +1,6 @@
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Scheduling.FutureEvents
+namespace GridDomain.Scheduling
 {
     public class FutureEventsAggregateCommandHandler<TAggregate> : AggregateCommandsHandler<TAggregate> where TAggregate : FutureEventsAggregate
     {
