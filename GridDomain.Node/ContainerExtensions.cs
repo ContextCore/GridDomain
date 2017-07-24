@@ -1,7 +1,7 @@
 using GridDomain.Common;
 using Microsoft.Practices.Unity;
 
-namespace GridDomain.Configuration
+namespace GridDomain.Node
 {
     public static class ContainerExtensions
     {

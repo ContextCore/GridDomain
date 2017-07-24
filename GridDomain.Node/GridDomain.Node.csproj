@@ -302,6 +302,7 @@
     <Compile Include="Configuration\Composition\DefaultProcessManagerDependencyFactory.cs" />
     <Compile Include="Configuration\Composition\DomainBuilder.cs" />
     <Compile Include="Configuration\Composition\ProcessStateDependencyFactory.cs" />
+    <Compile Include="ContainerExtensions.cs" />
     <Compile Include="Serializers\DebugWireSerializer.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />

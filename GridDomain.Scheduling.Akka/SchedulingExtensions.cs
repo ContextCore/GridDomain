@@ -22,7 +22,7 @@ namespace GridDomain.Scheduling.Akka {
 
             var ext = (SchedulingExtension)system.RegisterExtension(SchedulingExtensionProvider.Provider);
             var schedulingContainer = new UnityContainer();
-            schedulingContainer.Register(new SchedulingConfiguration(quartzConfig, logger, publisher, executor));
+            new SchedulingConfiguration(quartzConfig, logger, publisher, executor).Register(schedulingContainer);
 
             ext.Scheduler = schedulingContainer.Resolve<IScheduler>();
             ext.SchedulingActor = system.ActorOf(Props.Create(() => new SchedulingActor(ext.Scheduler, publisher)), nameof(SchedulingActor));
