@@ -61,6 +61,7 @@
     <Compile Include="MessageRouting\MessageRouteMap.cs" />
     <Compile Include="MessageRouting\MessageRouterExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SnapshotSelectionCriteria.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
