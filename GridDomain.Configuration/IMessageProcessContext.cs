@@ -1,3 +1,4 @@
+using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
 using Serilog;
 

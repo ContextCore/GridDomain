@@ -57,7 +57,6 @@
     <Compile Include="MessageRouting\EmptyRouteMap.cs" />
     <Compile Include="MessageRouting\IMessageRouteMap.cs" />
     <Compile Include="MessageRouting\IMessagesRouter.cs" />
-    <Compile Include="MessageRouting\IPublisher.cs" />
     <Compile Include="MessageRouting\MessageRouteMap.cs" />
     <Compile Include="MessageRouting\MessageRouterExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

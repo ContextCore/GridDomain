@@ -1,6 +1,5 @@
 using System;
 using GridDomain.Common;
-using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using Quartz;

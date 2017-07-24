@@ -1,5 +1,5 @@
 using GridDomain.EventSourcing;
-using GridDomain.Scheduling.FutureEvents;
+using GridDomain.Scheduling;
 using Shop.Domain.Aggregates.SkuStockAggregate.Commands;
 
 namespace Shop.Domain.Aggregates.SkuStockAggregate

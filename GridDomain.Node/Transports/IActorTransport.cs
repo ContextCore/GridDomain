@@ -1,4 +1,5 @@
-﻿using GridDomain.Configuration.MessageRouting;
+﻿using GridDomain.Common;
+using GridDomain.Configuration.MessageRouting;
 
 namespace GridDomain.Node.Transports
 {

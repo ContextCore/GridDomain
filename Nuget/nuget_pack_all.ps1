@@ -1,5 +1,10 @@
-nuget pack GridDomain.Node.nuspec
-nuget pack GridDomain.Core.nuspec
-nuget pack GridDomain.Tools.nuspec
-nuget pack GridDomain.Scheduling.nuspec
-nuget pack GridDomain.Scheduling.Akka.nuspec
+nuget pack ..\GridDomain.CQRS\GridDomain.CQRS.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.Common\GridDomain.Common.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.EventSourcing\GridDomain.EventSourcing.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.Configuration\GridDomain.Configuration.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.Node\GridDomain.Node.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.Scheduling\GridDomain.Scheduling.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.Scheduling.Akka\GridDomain.Scheduling.Akka.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.Tools\GridDomain.Tools.nuspec  -OutputDirectory .\
+nuget pack ..\GridDomain.Tests.Common\GridDomain.Tests.Common.nuspec  -OutputDirectory .\

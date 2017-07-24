@@ -1,6 +1,4 @@
-﻿using GridDomain.Common;
-
-namespace GridDomain.Configuration.MessageRouting
+﻿namespace GridDomain.Common
 {
     public interface IPublisher
     {

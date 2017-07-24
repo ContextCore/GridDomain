@@ -1,3 +1,4 @@
+using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.Node.Configuration.Composition;

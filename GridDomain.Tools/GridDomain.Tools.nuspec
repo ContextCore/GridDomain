@@ -19,9 +19,7 @@
   </metadata>
 
 <files>
-  <file src="..\GridDomain.Tests.Common\bin\Release\GridDomain.Tests.Common.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Tools\bin\Release\GridDomain.Tools.dll" target="lib\net461" /> 
-   
+  <file src="bin\Release\GridDomain.Tools.dll" target="lib\net461" /> 
 </files>
 </package>
 

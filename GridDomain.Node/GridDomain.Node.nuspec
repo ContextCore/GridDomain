@@ -13,8 +13,8 @@
     <copyright>Copyright © aleskov</copyright>
     <tags>CQRS ES DDD Akka</tags>
     <dependencies>
-	  <dependency id="GridDomain.Core" version="1.0.0-alfa"/>
-	  <dependency id="GridDomain.Scheduling" version="1.0.0-alfa"/>
+	  <dependency id="GridDomain.Configuration" version="1.0.0-alfa"/>
+	  
       <dependency id="Akka" version="1.1.3"/>
       <dependency id="Akka.DI.Core" version="1.1.2"/>
       <dependency id="Akka.DI.Unity" version="1.1.0"/>
@@ -32,13 +32,13 @@
   </metadata>
 
 <files>
-  <file src="..\GridDomain.Node\bin\Release\GridDomain.Node.dll" target="lib\net461" /> 
+  <file src="bin\Release\GridDomain.Node.dll" target="lib\net461" /> 
   
  
-  <file src="app.config.install.xdt" target="content" /> 
-  <file src="web.config.install.xdt" target="content" /> 
-  <file src="app.config.uninstall.xdt" target="content" /> 
-  <file src="web.config.uninstall.xdt" target="content" /> 
+  <file src="nuget/app.config.install.xdt" target="content" /> 
+  <file src="nuget/web.config.install.xdt" target="content" /> 
+  <file src="nuget/app.config.uninstall.xdt" target="content" /> 
+  <file src="nuget/web.config.uninstall.xdt" target="content" /> 
 </files>
 </package>
 

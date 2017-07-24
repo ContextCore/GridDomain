@@ -1,5 +1,6 @@
 using System;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
