@@ -3,7 +3,7 @@ using Microsoft.Practices.Unity;
 using Quartz;
 using Quartz.Spi;
 
-namespace GridDomain.Scheduling.Quartz
+namespace GridDomain.Scheduling.Akka
 {
     public class JobFactory : IJobFactory
     {

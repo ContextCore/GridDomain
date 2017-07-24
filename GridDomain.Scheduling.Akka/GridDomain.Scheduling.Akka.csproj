@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="FutureAggregateHandlersDomainConfiguration.cs" />
     <Compile Include="FutureEventsSchedulingMessageHandler.cs" />
+    <Compile Include="JobFactory.cs" />
     <Compile Include="Messages\AlreadyScheduled.cs" />
     <Compile Include="Messages\CommandExecutionScheduled.cs" />
     <Compile Include="Messages\ScheduleCommandExecution.cs" />

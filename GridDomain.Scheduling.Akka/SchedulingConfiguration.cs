@@ -1,9 +1,7 @@
-using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;
-using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Scheduling.WebUI;
 using Microsoft.Practices.Unity;
@@ -11,7 +9,7 @@ using Quartz.Spi;
 using Serilog;
 using IScheduler = Quartz.IScheduler;
 
-namespace GridDomain.Scheduling
+namespace GridDomain.Scheduling.Akka
 {
     public class SchedulingConfiguration
     {
