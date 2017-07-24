@@ -41,4 +41,4 @@ using Xunit;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: InternalsVisibleTo("GridDomain.Tests.Acceptance")]
 [assembly: InternalsVisibleTo("GridDomain.Tests.Acceptance")]
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
