@@ -10,8 +10,9 @@ namespace GridDomain.Tests.Unit
     {
         private readonly BalloonDomainConfiguration _balloonDomainConfiguration;
 
-        public BalloonFixture() : base()
+        public BalloonFixture()
         {
+            this.EnableScheduling();
             this.ClearSheduledJobs();
             _balloonDomainConfiguration = new BalloonDomainConfiguration();
         }

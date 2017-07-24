@@ -1,6 +1,6 @@
 using Akka.Actor;
 
-namespace GridDomain.Scheduling {
+namespace GridDomain.Scheduling.Akka {
     public class SchedulingExtensionProvider : ExtensionIdProvider<SchedulingExtension>
     {
         /// <summary>

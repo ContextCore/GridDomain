@@ -1,8 +1,10 @@
+using GridDomain.Scheduling.Quartz;
+
 namespace GridDomain.Scheduling.Akka.Messages
 {
-    public class AlreadyScheduled
+    public class Unscheduled
     {
-        public AlreadyScheduled(ScheduleKey key)
+        public Unscheduled(ScheduleKey key)
         {
             Key = key;
         }

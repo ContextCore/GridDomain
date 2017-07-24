@@ -1,6 +1,4 @@
-using GridDomain.CQRS;
-
-namespace GridDomain.Scheduling.Akka.Messages
+namespace GridDomain.Scheduling.Quartz
 {
     public class ScheduleKey
     {

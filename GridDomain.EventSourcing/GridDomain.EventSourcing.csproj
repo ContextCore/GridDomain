@@ -63,6 +63,7 @@
     <Compile Include="CannotFindAggregateCreatorBySnapshotException.cs" />
     <Compile Include="Aggregate.cs" />
     <Compile Include="CommandExecutionDelegate.cs" />
+    <Compile Include="CommandExecutionFailedException.cs" />
     <Compile Include="CommonDomain\ConventionEventRouter.cs" />
     <Compile Include="CommonDomain\EventIsNotBelongingToAggregateException.cs" />
     <Compile Include="CommonDomain\ExtensionMethods.cs" />

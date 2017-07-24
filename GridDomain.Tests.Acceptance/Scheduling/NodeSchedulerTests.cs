@@ -7,6 +7,7 @@ using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Common;
@@ -14,7 +15,6 @@ using GridDomain.Tests.Unit;
 using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
-using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Tests.Acceptance.Scheduling
 {
@@ -26,14 +26,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             public SchedulerFixture()
             {
                 Add(new TestSchedulingAggregateDomainConfiguration());
+                this.EnableScheduling(new InMemoryRetrySettings(4, TimeSpan.Zero));
                 this.ClearSheduledJobs();
-            }
-
-            protected override NodeSettings CreateNodeSettings()
-            {
-                var settings = base.CreateNodeSettings();
-                settings.QuartzConfig.RetryOptions = new InMemoryRetrySettings(4, TimeSpan.Zero);
-                return settings;
             }
         }
 

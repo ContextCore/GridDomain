@@ -511,6 +511,10 @@
       <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
       <Name>GridDomain.ProcessManagers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Scheduling.Akka\GridDomain.Scheduling.Akka.csproj">
+      <Project>{C51A8074-95C0-4CFD-A66B-5FBCDED12E7E}</Project>
+      <Name>GridDomain.Scheduling.Akka</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
       <Project>{96037181-43d1-4ae5-a9e8-0660d4cc4c82}</Project>
       <Name>GridDomain.Scheduling</Name>

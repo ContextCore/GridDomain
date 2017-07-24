@@ -15,7 +15,7 @@ using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Scheduling;
-using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;

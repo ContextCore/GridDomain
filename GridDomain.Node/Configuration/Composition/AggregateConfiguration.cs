@@ -10,7 +10,6 @@ using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.PersistentHub;
-using GridDomain.Scheduling.Akka;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition

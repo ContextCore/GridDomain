@@ -21,7 +21,11 @@ namespace GridDomain.Tests.Acceptance.Snapshots {
                                                     TestDbTools.ClearData(e.AkkaConfig.Persistence).Wait();
                                                     fixture.ClearSheduledJobs();
                                                 };
-            fixture.OnNodePreparingEvent += (s,e) => e.NodeSettings.QuartzConfig = new PersistedQuartzConfig();
+            fixture.OnNodePreparingEvent += (s, e) =>
+                                            {
+                                                e.EnableScheduling(new PersistedQuartzConfig());
+                                            };
+
             fixture.SystemConfigFactory = () => fixture.AkkaConfig.ToStandAloneSystemConfig();
 
             return fixture;

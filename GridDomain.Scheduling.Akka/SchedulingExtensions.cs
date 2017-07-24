@@ -3,17 +3,16 @@ using Akka.Actor;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
-using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz.Configuration;
 using Microsoft.Practices.Unity;
 using Serilog;
 using IScheduler = Quartz.IScheduler;
 
-namespace GridDomain.Scheduling {
+namespace GridDomain.Scheduling.Akka {
     public static class SchedulingExtensions
     {
         public static SchedulingExtension InitSchedulingExtension(this ActorSystem system,
-                                                                  IQuartzConfig eventAdapters,
+                                                                  IQuartzConfig quartzConfig,
                                                                   ILogger logger,
                                                                   IPublisher publisher,
                                                                   ICommandExecutor executor)
@@ -23,7 +22,7 @@ namespace GridDomain.Scheduling {
 
             var ext = (SchedulingExtension)system.RegisterExtension(SchedulingExtensionProvider.Provider);
             var schedulingContainer = new UnityContainer();
-            schedulingContainer.Register(new SchedulingConfiguration(eventAdapters, logger, publisher, executor));
+            schedulingContainer.Register(new SchedulingConfiguration(quartzConfig, logger, publisher, executor));
 
             ext.Scheduler = schedulingContainer.Resolve<IScheduler>();
             ext.SchedulingActor = system.ActorOf(Props.Create(() => new SchedulingActor(ext.Scheduler, publisher)), nameof(SchedulingActor));

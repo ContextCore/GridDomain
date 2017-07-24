@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.Aggregates.Exceptions;
 using Xunit;
 

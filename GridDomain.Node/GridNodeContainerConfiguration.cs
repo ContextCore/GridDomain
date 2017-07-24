@@ -11,11 +11,6 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Transports;
-using GridDomain.Scheduling;
-using GridDomain.Scheduling.Akka;
-using GridDomain.Scheduling.Quartz;
-using GridDomain.Scheduling.Quartz.Configuration;
-using GridDomain.Scheduling.Quartz.Retry;
 using Microsoft.Practices.Unity;
 using Serilog;
 

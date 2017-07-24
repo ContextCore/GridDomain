@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 using GridDomain.Common;
@@ -8,6 +9,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing
 {
+    
     public class AggregateCommandsHandler<TAggregate> : TypeCatalog<CommandExecutionDelegate<TAggregate>, ICommand>,
                                                         IAggregateCommandsHandler<TAggregate> where TAggregate : Aggregate
                                                       
@@ -15,9 +17,17 @@ namespace GridDomain.EventSourcing
         public IReadOnlyCollection<Type> RegisteredCommands => Catalog.Keys.ToArray();
         public Type AggregateType { get; } = typeof(TAggregate);
 
-        public Task ExecuteAsync(TAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
+        public async Task ExecuteAsync(TAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
         {
-            return Get(command).Invoke(aggregate, command, persistenceDelegate);
+            try
+            {
+                await Get(command).Invoke(aggregate, command, persistenceDelegate);
+            }
+            catch (Exception ex)
+            {
+               throw new CommandExecutionFailedException(command, ex);
+            }
+
         }
 
         public override CommandExecutionDelegate<TAggregate> Get(ICommand command)

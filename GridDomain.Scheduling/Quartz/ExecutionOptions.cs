@@ -1,8 +1,6 @@
 using System;
-using System.Diagnostics;
-using GridDomain.EventSourcing;
 
-namespace GridDomain.Scheduling.Akka.Messages
+namespace GridDomain.Scheduling.Quartz
 {
     public class ExecutionOptions
     {

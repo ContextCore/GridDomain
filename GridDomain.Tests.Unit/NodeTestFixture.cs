@@ -86,7 +86,6 @@ namespace GridDomain.Tests.Unit
         {
             var settings = new NodeSettings(CreateSystem)
                            {
-                               QuartzConfig = new InMemoryQuartzConfig(),
                                DefaultTimeout = DefaultTimeout,
                                Log = Logger,
                                ContainerConfiguration = new ContainerConfiguration(_containerConfigurations.ToArray())

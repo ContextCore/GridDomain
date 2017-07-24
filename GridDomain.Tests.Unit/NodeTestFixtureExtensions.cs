@@ -1,15 +1,44 @@
+using System;
 using Akka.TestKit.TestActors;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using Microsoft.Practices.Unity;
 using Akka.Actor;
+using GridDomain.Node;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.Akka;
+using GridDomain.Scheduling.Quartz.Configuration;
+using GridDomain.Scheduling.Quartz.Retry;
 
 namespace GridDomain.Tests.Unit
 {
     public static class NodeTestFixtureExtensions
     {
+
+        public static void EnableScheduling(this NodeTestFixture fixture, IRetrySettings config )
+        {
+            EnableScheduling(fixture,new InMemoryQuartzConfig(config));
+        }
+
+        public static void EnableScheduling(this NodeTestFixture fixture, IQuartzConfig config = null)
+        {
+            IQuartzConfig quartzConfig = config ?? new InMemoryQuartzConfig(new InMemoryRetrySettings(5,TimeSpan.FromMinutes(10),new DefaultExceptionPolicy()));
+
+            fixture.OnNodeCreatedEvent += (o, node) =>
+                                                {
+
+                                                   var ext = node.System.InitSchedulingExtension(quartzConfig,
+                                                                                                 fixture.Logger,
+                                                                                                 node.Transport,
+                                                                                                 node);
+
+                                                   node.Settings.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor));
+                                                };
+
+        }   
+
+
         public static void ClearSheduledJobs(this NodeTestFixture fixture)
         {
             fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.System.GetExtension<SchedulingExtension>().Scheduler.Clear();

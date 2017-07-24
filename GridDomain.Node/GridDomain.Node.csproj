@@ -253,7 +253,6 @@
     <Compile Include="Actors\EventSourced\Messages\Persisted.cs" />
     <Compile Include="Actors\EventSourced\Messages\CheckHealth.cs" />
     <Compile Include="Actors\PersistentHub\ChildInfo.cs" />
-    <Compile Include="Actors\Aggregates\Exceptions\CommandExecutionFailedException.cs" />
     <Compile Include="Actors\PersistentHub\DefaultPersistentChildsRecycleConfiguration.cs" />
     <Compile Include="Actors\EventSourced\EachMessageSnapshotsPersistencePolicy.cs" />
     <Compile Include="Actors\EventSourced\EventSourcedActor.cs" />
@@ -305,7 +304,6 @@
     <Compile Include="Configuration\Composition\ProcessStateDependencyFactory.cs" />
     <Compile Include="Serializers\DebugWireSerializer.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
-    <Compile Include="DefaultExceptionPolicy.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
     <Compile Include="Serializers\DomainEventsJsonSerializationExtension.cs" />
     <Compile Include="Serializers\DomainEventsJsonSerializationExtensionProvider.cs" />
@@ -413,10 +411,6 @@
     <ProjectReference Include="..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj">
       <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
       <Name>GridDomain.ProcessManagers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
-      <Project>{96037181-43d1-4ae5-a9e8-0660d4cc4c82}</Project>
-      <Name>GridDomain.Scheduling</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,9 @@
 using System;
 using GridDomain.Common;
-using GridDomain.Node.Actors.Aggregates.Exceptions;
+using GridDomain.EventSourcing;
 using GridDomain.Scheduling.FutureEvents;
-using GridDomain.Scheduling.Quartz.Retry;
 
-namespace GridDomain.Node
+namespace GridDomain.Scheduling.Quartz.Retry
 {
     public class DefaultExceptionPolicy : IExceptionPolicy
     {

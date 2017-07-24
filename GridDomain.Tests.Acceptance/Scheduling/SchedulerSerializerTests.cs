@@ -1,6 +1,7 @@
 using System;
 using GridDomain.EventSourcing;
 using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Quartz;
 using Xunit;
 
 namespace GridDomain.Tests.Acceptance.Scheduling

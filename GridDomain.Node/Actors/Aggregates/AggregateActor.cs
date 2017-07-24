@@ -168,7 +168,7 @@ namespace GridDomain.Node.Actors.Aggregates
         {
             var command = ExecutionContext.Command;
             var commandMetadata = ExecutionContext.CommandMetadata;
-            var commandExecutionException = new CommandExecutionFailedException(command, exception);
+            var commandExecutionException = exception;
 
             Log.Error(commandExecutionException, "{Aggregate} raised an error while executing {@Command}", PersistenceId, command);
 

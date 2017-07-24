@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Logging;
 using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.FutureEvents;
+using GridDomain.Scheduling.Quartz;
 
-namespace GridDomain.Scheduling.FutureEvents
+namespace GridDomain.Scheduling.Akka
 {
     /// <summary>
     ///     Listening to scheduling events from aggregates and modify quartz jobs accordinally

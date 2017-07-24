@@ -18,11 +18,8 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
 using GridDomain.Node.Transports;
-using GridDomain.Scheduling;
-using GridDomain.Scheduling.FutureEvents;
 using Microsoft.Practices.Unity;
 using ActorTransportProxy = GridDomain.Node.Transports.Remote.ActorTransportProxy;
-using IScheduler = Quartz.IScheduler;
 
 namespace GridDomain.Node
 {
@@ -82,27 +79,18 @@ namespace GridDomain.Node
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
             Container = new UnityContainer();
 
+            System = Settings.ActorSystemFactory.Invoke();
+            System.RegisterOnTermination(OnSystemTermination);
+            Transport = new LocalAkkaEventBusTransport(System);
+            Container.Register(new GridNodeContainerConfiguration(Transport, Settings.Log));
+            System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
+            _waiterFactory = new MessageWaiterFactory(System, Transport, Settings.DefaultTimeout);
+            ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)), nameof(ActorTransportProxy));
+
             Initializing.Invoke(this, this);
 
-            System = Settings.ActorSystemFactory.Invoke();
-            Transport = new LocalAkkaEventBusTransport(System);
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
-
-            System.RegisterOnTermination(OnSystemTermination);
-
-            NodeSettings settings = Settings;
-            Container.Register(new GridNodeContainerConfiguration(Transport, settings.Log));
             Container.Register(Settings.ContainerConfiguration);
-            System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
-
-
-
-            _waiterFactory = new MessageWaiterFactory(System, Transport, Settings.DefaultTimeout);
-
-
-            ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)),
-                                                 nameof(Transports.Remote.ActorTransportProxy));
-
 
             var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
             var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
@@ -117,9 +105,7 @@ namespace GridDomain.Node
 
             _commandExecutor = await CreateCommandExecutor();
 
-            var ext = System.InitSchedulingExtension(Settings.QuartzConfig, Settings.Log, Transport, _commandExecutor);
-            Settings.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor));
-
+          
             await ConfigureDomain();
 
             Container.RegisterInstance(_commandExecutor);

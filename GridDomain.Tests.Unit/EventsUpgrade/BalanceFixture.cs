@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Node;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Common;
 using Microsoft.Practices.Unity;
@@ -11,9 +12,10 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     {
         protected readonly BalanceDomainDonfiguration BalanceDomainDonfiguration;
 
-        public BalanceFixture() : base()
+        public BalanceFixture() 
         {
             BalanceDomainDonfiguration = new BalanceDomainDonfiguration();
+            this.EnableScheduling(new InMemoryQuartzConfig(new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy())));
             this.ClearSheduledJobs();
         }
 
@@ -21,7 +23,6 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         {
             Add(BalanceDomainDonfiguration);
             var nodeSettings = base.CreateNodeSettings();
-            nodeSettings.QuartzConfig.RetryOptions = new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy());
             return nodeSettings;
         }
         public BalanceFixture InitFastRecycle(

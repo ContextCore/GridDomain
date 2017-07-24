@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Node;
 using GridDomain.Node.Actors.Aggregates.Exceptions;
 using GridDomain.Scheduling.FutureEvents;
@@ -25,13 +26,11 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 
         private class Reraise_fixture : FutureEventsFixture
         {
-            protected override NodeSettings CreateNodeSettings()
+            public Reraise_fixture()
             {
-                var settings = base.CreateNodeSettings();
-                settings.QuartzConfig.RetryOptions = new InMemoryRetrySettings(2,
-                                                                               TimeSpan.FromMilliseconds(10),
-                                                                               new StopOnTestExceptionPolicy(Logger));
-                return settings;
+                this.EnableScheduling(new InMemoryRetrySettings(2,
+                                                                TimeSpan.FromMilliseconds(10),
+                                                                new StopOnTestExceptionPolicy(Logger)));
             }
 
             private class StopOnTestExceptionPolicy : IExceptionPolicy

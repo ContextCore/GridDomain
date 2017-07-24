@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>GridDomain.Tools</id>
+    <id>GridDomain.Scheduling</id>
     <version>1.0.0-alfa</version>
-    <authors>aleskov, vshogalskiy</authors>
+    <authors>aleskov</authors>
     <owners>aleskov</owners>
     <licenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/andreyleskov/GridDomain/</projectUrl>
     <iconUrl>https://github.com/andreyleskov/GridDomain/blob/master/grid-domain-icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>tools for mainating GridDomain based solutions</description>
+    <description>Framework for distributed business applications development using DDD\ES architecture scaled by CQRS and actor model.</description>
     <copyright>Copyright © aleskov</copyright>
     <tags>CQRS ES DDD Akka</tags>
-	<dependencies>
-      <dependency id="GridDomain.Node" version= "1.0.0-alfa"/>
-	  <dependency id="Akka.TestKit.XUnit2" version ="1.1.3"/>
+    <dependencies>
+	  <dependency id="GridDomain.Core" version="1.0.0-alfa"/>
+      <dependency id="Akka" version="1.1.3"/>
+      <dependency id="Akka.DI.Unity" version="1.1.0"/>
+      <dependency id="Quartz" version="2.4.1"/>
     </dependencies>
   </metadata>
 
 <files>
-  <file src="..\GridDomain.Tests.Common\bin\Release\GridDomain.Tests.Common.dll" target="lib\net461" /> 
-  <file src="..\GridDomain.Tools\bin\Release\GridDomain.Tools.dll" target="lib\net461" /> 
-   
+  <file src="..\GridDomain.Scheduling\bin\Release\GridDomain.Scheduling.dll" target="lib\net461" />  
 </files>
 </package>
 

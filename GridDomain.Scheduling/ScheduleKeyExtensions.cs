@@ -1,7 +1,7 @@
-using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Quartz;
 using Quartz;
 
-namespace GridDomain.Scheduling.Quartz
+namespace GridDomain.Scheduling
 {
     public static class ScheduleKeyExtensions
     {
@@ -11,3 +11,6 @@ namespace GridDomain.Scheduling.Quartz
         }
     }
 }
+
+
+

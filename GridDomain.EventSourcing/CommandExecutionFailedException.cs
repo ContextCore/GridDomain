@@ -1,7 +1,7 @@
 using System;
 using GridDomain.CQRS;
 
-namespace GridDomain.Node.Actors.Aggregates.Exceptions
+namespace GridDomain.EventSourcing
 {
     public class CommandExecutionFailedException : Exception
     {
