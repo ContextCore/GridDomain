@@ -39,20 +39,20 @@
     <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="GridDomain.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.CQRS.1.0.0-alfa\lib\net461\GridDomain.Common.dll</HintPath>
+    <Reference Include="GridDomain.Common, Version=2.0.588.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GridDomain.Common.2.0.588-alfa\lib\net461\GridDomain.Common.dll</HintPath>
     </Reference>
-    <Reference Include="GridDomain.CQRS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.CQRS.1.0.0-alfa\lib\net461\GridDomain.CQRS.dll</HintPath>
+    <Reference Include="GridDomain.CQRS, Version=2.0.588.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GridDomain.CQRS.2.0.588-alfa\lib\net461\GridDomain.CQRS.dll</HintPath>
     </Reference>
-    <Reference Include="GridDomain.EventSourcing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.EventSourcing.1.0.0-alfa\lib\net461\GridDomain.EventSourcing.dll</HintPath>
+    <Reference Include="GridDomain.EventSourcing, Version=2.0.588.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GridDomain.EventSourcing.2.0.588-alfa\lib\net461\GridDomain.EventSourcing.dll</HintPath>
     </Reference>
-    <Reference Include="GridDomain.ProcessManagers, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.ProcessManagers.1.0.0-alfa\lib\net461\GridDomain.ProcessManagers.dll</HintPath>
+    <Reference Include="GridDomain.ProcessManagers, Version=2.0.588.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GridDomain.ProcessManagers.2.0.588-alfa\lib\net461\GridDomain.ProcessManagers.dll</HintPath>
     </Reference>
-    <Reference Include="GridDomain.Scheduling, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GridDomain.Scheduling.1.0.0-alfa\lib\net461\GridDomain.Scheduling.dll</HintPath>
+    <Reference Include="GridDomain.Scheduling, Version=2.0.588.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GridDomain.Scheduling.2.0.588-alfa\lib\net461\GridDomain.Scheduling.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
