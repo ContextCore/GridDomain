@@ -69,10 +69,11 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
             var actorToWatch = Child.Ref;
             Watch(actorToWatch);
             await And_it_is_not_active_until_lifetime_period_is_expired();
-            //It_should_be_removed_from_hub()
-            Assert.False(Hub.Children.ContainsKey(Infrastructure.ChildId));
             //It_should_be_terminated()
             FishForMessage<Terminated>(m => m.ActorRef.Path == actorToWatch.Path);
+            //It_should_be_removed_from_hub()
+            Assert.False(Hub.Children.ContainsKey(Infrastructure.ChildId));
+
         }
 
         [Fact]
