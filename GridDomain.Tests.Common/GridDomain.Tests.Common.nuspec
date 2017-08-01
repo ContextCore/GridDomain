@@ -24,7 +24,3 @@
   <file src="bin\Release\GridDomain.Tests.Common.dll" target="lib\net461" />   
 </files>
 </package>
-
-
-2017-08-01 11:25:02 [Warning] Process f50ca840-2e1c-42e4-999e-b1c4be0f5508 stashing message "GridDomain.Node.Actors.ProcessManagers.Messages.ProcessRedirect"
-
