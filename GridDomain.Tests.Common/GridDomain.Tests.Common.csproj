@@ -105,6 +105,7 @@
     <Compile Include="AnyMessagePublisher.cs" />
     <Compile Include="Compare.cs" />
     <Compile Include="LoggerActorDummy.cs" />
+    <Compile Include="ObjectLogExtensions.cs" />
     <Compile Include="ProcessScenario.cs" />
     <Compile Include="ProcessScenarioExtensions.cs" />
     <Compile Include="TestExtensions.cs" />
@@ -151,10 +152,6 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
-      <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
-      <Name>GridDomain.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>

@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26711.1
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventSourcing", "GridDomain.EventSourcing\GridDomain.EventSourcing.csproj", "{AF9DBE6F-985E-43B5-85C6-A7C52E1BD601}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.CQRS", "GridDomain.CQRS\GridDomain.CQRS.csproj", "{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Logging", "GridDomain.Logging\GridDomain.Logging.csproj", "{E356647A-561E-4290-AD71-EF5DC92BF5C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Node", "GridDomain.Node\GridDomain.Node.csproj", "{760BE08A-D943-4A71-944E-938590527153}"
 EndProject
@@ -47,10 +45,6 @@ Global
 		{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80D3B1CD-E656-4243-BCC8-AB6EB694F7C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E356647A-561E-4290-AD71-EF5DC92BF5C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E356647A-561E-4290-AD71-EF5DC92BF5C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E356647A-561E-4290-AD71-EF5DC92BF5C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E356647A-561E-4290-AD71-EF5DC92BF5C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{760BE08A-D943-4A71-944E-938590527153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{760BE08A-D943-4A71-944E-938590527153}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{760BE08A-D943-4A71-944E-938590527153}.Release|Any CPU.ActiveCfg = Release|Any CPU

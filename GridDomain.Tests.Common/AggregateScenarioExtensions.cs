@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.Logging;
 
 namespace GridDomain.Tests.Common {
     public static class AggregateScenarioExtensions

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace GridDomain.Logging
+namespace GridDomain.Tests.Common
 {
     public static class ObjectLogExtensions
     {

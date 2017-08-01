@@ -2,7 +2,7 @@ using NMoneys;
 using Serilog;
 using Serilog.Events;
 
-namespace GridDomain.Logging
+namespace GridDomain.Node
 {
     public class DefaultLoggerConfiguration : LoggerConfiguration
     {

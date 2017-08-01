@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
-using GridDomain.Logging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using Serilog;
