@@ -33,12 +33,6 @@
 
 <files>
   <file src="bin\Release\GridDomain.Node.dll" target="lib\net461" /> 
-  
- 
-  <file src="nuget/app.config.install.xdt" target="content" /> 
-  <file src="nuget/web.config.install.xdt" target="content" /> 
-  <file src="nuget/app.config.uninstall.xdt" target="content" /> 
-  <file src="nuget/web.config.uninstall.xdt" target="content" /> 
 </files>
 </package>
 
