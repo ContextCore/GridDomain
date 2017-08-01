@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
 
         private async Task And_it_is_not_active_until_lifetime_period_is_expired()
         {
-            await Task.Delay(3000);
+            await Task.Delay(5000);
         }
 
         private async Task And_command_for_child_is_sent()
