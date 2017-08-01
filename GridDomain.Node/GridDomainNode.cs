@@ -4,9 +4,6 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.DI.Unity;
-using Akka.Monitoring;
-using Akka.Monitoring.ApplicationInsights;
-using Akka.Monitoring.PerformanceCounters;
 using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.Configuration;
@@ -92,16 +89,16 @@ namespace GridDomain.Node
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
             Container.Register(Settings.ContainerConfiguration);
 
-            var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
-            var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
-
-            if(appInsightsConfig.IsEnabled)
-            {
-                var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
-                ActorMonitoringExtension.RegisterMonitor(System, monitor);
-            }
-            if(perfCountersConfig.IsEnabled)
-                ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
+            //var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
+            //var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
+            //
+            //if(appInsightsConfig.IsEnabled)
+            //{
+            //    var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
+            //    ActorMonitoringExtension.RegisterMonitor(System, monitor);
+            //}
+            //if(perfCountersConfig.IsEnabled)
+            //    ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
             _commandExecutor = await CreateCommandExecutor();
 

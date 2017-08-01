@@ -8,14 +8,6 @@ using GridDomain.CQRS;
 namespace GridDomain.Node.Actors
 {
 
-
-   //public static class CommandExecuturExtensions
-   //{
-   //    public static Task Execute(this ICommandExecutor executor, ICommand command)
-   //    {
-   //        
-   //    }
-   //}
     public class ActorMonitor
     {
         private readonly string _actorGroupName;
