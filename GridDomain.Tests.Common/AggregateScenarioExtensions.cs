@@ -7,6 +7,7 @@ using GridDomain.EventSourcing;
 namespace GridDomain.Tests.Common {
     public static class AggregateScenarioExtensions
     {
+
         public static async Task<AggregateScenario<TAggregate>> Check<TAggregate>(this Task<AggregateScenario<TAggregate>> scenario) where TAggregate : Aggregate
         {
             var sc = await scenario;

@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Common
 {
     public static class XUnitAssertExtensions
     {
-        public static async Task<TEx> ShouldThrowCommand<TEx>(this Task t, Predicate<TEx> predicate = null) where TEx : Exception
+        public static async Task<TEx> CommandShouldThrow<TEx>(this Task t, Predicate<TEx> predicate = null) where TEx : Exception
         {
             var commandException = await t.ShouldThrow<CommandExecutionFailedException>();
             var exception = commandException.InnerException.UnwrapSingle();

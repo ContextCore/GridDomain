@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             await Node.Prepare(new PlanBallonBlowCommand(Guid.NewGuid()))
                       .Execute()
-                      .ShouldThrowCommand<BalloonException>();
+                      .CommandShouldThrow<BalloonException>();
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 
             await Node.Prepare(syncCommand)
                       .Execute()
-                      .ShouldThrowCommand<BalloonException>(ex => ex.StackTrace.Contains(typeof(Balloon).Name));
+                      .CommandShouldThrow<BalloonException>(ex => ex.StackTrace.Contains(typeof(Balloon).Name));
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         {
             await Node.Prepare(new BlowBalloonCommand(Guid.NewGuid()))
                       .Execute()
-                      .ShouldThrowCommand<BalloonException>(ex => ex.StackTrace.Contains(typeof(Balloon).Name));
+                      .CommandShouldThrow<BalloonException>(ex => ex.StackTrace.Contains(typeof(Balloon).Name));
         }
     }
 }

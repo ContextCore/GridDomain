@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             await Node.Prepare(new PlanTitleWriteAndBlowCommand(50, Guid.NewGuid()))
                       .Expect<BalloonTitleChangedNotification>()
                       .Execute()
-                      .ShouldThrowCommand<BalloonException>();
+                      .CommandShouldThrow<BalloonException>();
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             await Node.Prepare(syncCommand)
                       .Expect<BalloonTitleChangedNotification>(e => e.BallonId == syncCommand.AggregateId)
                       .Execute()
-                      .ShouldThrowCommand<BalloonException>();
+                      .CommandShouldThrow<BalloonException>();
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             await Node.Prepare(syncCommand)
                       .Expect<BalloonTitleChangedNotification>()
                       .Execute()
-                      .ShouldThrowCommand<BalloonException>();
+                      .CommandShouldThrow<BalloonException>();
         }
     }
 }
