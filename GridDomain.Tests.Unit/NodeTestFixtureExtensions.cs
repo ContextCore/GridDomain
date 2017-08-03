@@ -16,12 +16,12 @@ namespace GridDomain.Tests.Unit
     public static class NodeTestFixtureExtensions
     {
 
-        public static void EnableScheduling(this NodeTestFixture fixture, IRetrySettings config )
+        public static NodeTestFixture EnableScheduling(this NodeTestFixture fixture, IRetrySettings config )
         {
-            EnableScheduling(fixture,new InMemoryQuartzConfig(config));
+            return EnableScheduling(fixture,new InMemoryQuartzConfig(config));
         }
 
-        public static void EnableScheduling(this NodeTestFixture fixture, IQuartzConfig config = null)
+        public static NodeTestFixture EnableScheduling(this NodeTestFixture fixture, IQuartzConfig config = null)
         {
             IQuartzConfig quartzConfig = config ?? new InMemoryQuartzConfig(new InMemoryRetrySettings(5,TimeSpan.FromMinutes(10),new DefaultExceptionPolicy()));
 
@@ -35,6 +35,7 @@ namespace GridDomain.Tests.Unit
 
                                                    node.Settings.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor));
                                                 };
+            return fixture;
 
         }   
 

@@ -20,20 +20,15 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
         public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
-            : base(output, new Reraise_fixture(output)) {}
+            : base(output, new FutureEventsFixture(output).EnableScheduling(new InMemoryRetrySettings(2,
+                TimeSpan.FromMilliseconds(10),
+                new StopOnTestExceptionPolicy(
+                    new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Information)
+                        .CreateLogger())))) {}
 
         private static readonly TaskCompletionSource<int> _policyCallNumberChanged = new TaskCompletionSource<int>();
         private static int _policyCallNumber;
 
-        private class Reraise_fixture : FutureEventsFixture
-        {
-            public Reraise_fixture(ITestOutputHelper output):base(output,new InMemoryRetrySettings(2,
-                                                                                                  TimeSpan.FromMilliseconds(10),
-                                                                                                  new StopOnTestExceptionPolicy(
-                                                                                                      new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Information).CreateLogger())))
-            {
-                
-            }
 
             private class StopOnTestExceptionPolicy : IExceptionPolicy
             {
@@ -61,7 +56,6 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
                     return true;
                 }
             }
-        }
 
         [Fact]
         public async Task Should_not_retry_on_exception()

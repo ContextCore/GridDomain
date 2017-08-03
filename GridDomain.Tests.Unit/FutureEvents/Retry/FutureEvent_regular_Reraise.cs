@@ -15,16 +15,11 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
     public class FutureEvent_regular_Reraise : NodeTestKit
     {
-        public FutureEvent_regular_Reraise(ITestOutputHelper output) : base(output, new FastReraiseTestFixture()) { }
+        public FutureEvent_regular_Reraise(ITestOutputHelper output) : base(output, 
+            new FutureEventsFixture(output).EnableScheduling(new InMemoryRetrySettings(2,
+                                                             TimeSpan.FromMilliseconds(10),
+                                                             new AlwaysRetryExceptionPolicy()))) { }
 
-        private class FastReraiseTestFixture : FutureEventsFixture
-        {
-            public FastReraiseTestFixture():base(null, new InMemoryRetrySettings(2,
-                                                                                 TimeSpan.FromMilliseconds(10),
-                                                                                 new AlwaysRetryExceptionPolicy()))
-            {
-            }
-        }
 
         [Fact]
         public void Should_retry_on_exception()

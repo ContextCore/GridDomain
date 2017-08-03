@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     {
         public Future_events_class_upgraded_by_object_adapter(ITestOutputHelper output)
             : base(output,
-                   new BalanceFixture {LogLevel = LogEventLevel.Debug}.UseSqlPersistence().
+                   BalanceFixture.New().UseSqlPersistence().
                                                                        InitFastRecycle().
                                                                        UseAdaper(new BalanceChanged_eventdapter1())) { }
 

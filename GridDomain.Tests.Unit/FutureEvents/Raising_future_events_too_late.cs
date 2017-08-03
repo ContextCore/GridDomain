@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
 {
     public class Raising_future_events_too_late : NodeTestKit
     {
-        public Raising_future_events_too_late(ITestOutputHelper output) : base(output, new FutureEventsFixture()) {}
+        public Raising_future_events_too_late(ITestOutputHelper output) : base(output, new FutureEventsFixture(output).EnableScheduling()) {}
         protected Raising_future_events_too_late(ITestOutputHelper output, NodeTestFixture fixture) : base(output, fixture) {}
 
         [Fact]

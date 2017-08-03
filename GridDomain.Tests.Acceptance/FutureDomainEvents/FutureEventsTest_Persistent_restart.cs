@@ -25,6 +25,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         [Fact]
         public async Task It_fires_after_node_restart()
         {
+
             var node = await new FutureEventsFixture(_testOutputHelper).UseSqlPersistence().CreateNode();
             var cmd = new ScheduleEventInFutureCommand(DateTime.UtcNow.AddSeconds(3), Guid.NewGuid(), "test value");
 

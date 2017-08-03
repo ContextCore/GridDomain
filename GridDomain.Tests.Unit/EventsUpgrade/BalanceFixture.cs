@@ -12,11 +12,17 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     {
         protected readonly BalanceDomainDonfiguration BalanceDomainDonfiguration;
 
-        public BalanceFixture() 
+        private BalanceFixture() 
         {
             BalanceDomainDonfiguration = new BalanceDomainDonfiguration();
-            this.EnableScheduling(new InMemoryQuartzConfig(new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy())));
-            this.ClearSheduledJobs();
+        }
+
+        public static BalanceFixture NewInMemory()
+        {
+            var f = new BalanceFixture();
+            f.EnableScheduling(new InMemoryQuartzConfig(new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy())));
+            f.ClearSheduledJobs();
+            return f;
         }
 
         protected override NodeSettings CreateNodeSettings()

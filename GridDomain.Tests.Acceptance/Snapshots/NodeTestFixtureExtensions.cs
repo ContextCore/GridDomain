@@ -21,11 +21,11 @@ namespace GridDomain.Tests.Acceptance.Snapshots {
                                                     TestDbTools.ClearData(e.AkkaConfig.Persistence).Wait();
                                                     fixture.ClearSheduledJobs();
                                                 };
-            fixture.OnNodePreparingEvent += (s, e) =>
-                                            {
-                                                e.EnableScheduling(new PersistedQuartzConfig());
-                                            };
-
+            //sfixture.OnNodePreparingEvent += (s, e) =>
+            //s                                {
+            //s                                    e.EnableScheduling(new PersistedQuartzConfig());
+            //s                                };
+            fixture.EnableScheduling(new PersistedQuartzConfig());
             fixture.SystemConfigFactory = () => fixture.AkkaConfig.ToStandAloneSystemConfig();
 
             return fixture;

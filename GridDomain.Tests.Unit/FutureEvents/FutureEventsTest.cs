@@ -4,6 +4,6 @@ namespace GridDomain.Tests.Unit.FutureEvents
 {
     public class FutureEventsTest : NodeTestKit
     {
-        public FutureEventsTest(ITestOutputHelper output) : base(output, new FutureEventsFixture()) {}
+        public FutureEventsTest(ITestOutputHelper output) : base(output, new FutureEventsFixture(output).EnableScheduling()) {}
     }
 }
