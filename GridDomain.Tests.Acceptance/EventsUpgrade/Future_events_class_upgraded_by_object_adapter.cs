@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
@@ -19,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     {
         public Future_events_class_upgraded_by_object_adapter(ITestOutputHelper output)
             : base(output,
-                   BalanceFixture.New().UseSqlPersistence().
+                   new BalanceFixture(new PersistedQuartzConfig()).UseSqlPersistence().
                                                                        InitFastRecycle().
                                                                        UseAdaper(new BalanceChanged_eventdapter1())) { }
 

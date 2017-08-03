@@ -4,6 +4,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.EventsUpgrade;
@@ -18,7 +19,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     {
         public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
             : base(output,
-                   new BalanceFixture().UseSqlPersistence().
+                   new BalanceFixture(new PersistedQuartzConfig()).UseSqlPersistence().
                                         InitFastRecycle().
                                         UseAdaper(new IncreaseBy100Adapter())) { }
 

@@ -8,7 +8,6 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
         public BalloonWithProjectionFixture(string dbConnectionString = null) 
         {
             Add(new BalloonWithProjectionDomainConfiguration(dbConnectionString ?? ConnectionStrings.AutoTestDb));
-            this.ClearSheduledJobs();
         }
     }
 }

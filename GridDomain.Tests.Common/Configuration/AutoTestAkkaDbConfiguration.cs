@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using GridDomain.Node.Configuration.Akka;
 
 namespace GridDomain.Tests.Common.Configuration
@@ -7,16 +8,16 @@ namespace GridDomain.Tests.Common.Configuration
     public class AutoTestAkkaDbConfiguration : IAkkaDbConfiguration
     {
         private const string JournalConnectionStringName = "WriteModel";
-
+        //enviroment variables - for appveour tests launch
         public string SnapshotConnectionString
             =>
                 ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString
-                ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
+                ?? Environment.GetEnvironmentVariable(JournalConnectionStringName) ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string JournalConnectionString
             =>
                 ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString
-                ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
+                ?? Environment.GetEnvironmentVariable(JournalConnectionStringName) ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string MetadataTableName => "Metadata";
         public string JournalTableName => "Journal";

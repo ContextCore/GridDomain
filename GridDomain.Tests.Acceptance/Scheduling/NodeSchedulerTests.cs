@@ -27,7 +27,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             {
                 Add(new TestSchedulingAggregateDomainConfiguration());
                 this.EnableScheduling(new InMemoryRetrySettings(4, TimeSpan.Zero));
-                this.ClearSheduledJobs();
             }
         }
 

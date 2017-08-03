@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
     public class Given_future_event_in_aggregate_When_cancelling_it : NodeTestKit
     {
         public Given_future_event_in_aggregate_When_cancelling_it(ITestOutputHelper output)
-            : base(output, new FutureEventsFixture(output).EnableScheduling()) {}
+            : base(output, new FutureEventsFixture(output)) {}
 
         protected Given_future_event_in_aggregate_When_cancelling_it(ITestOutputHelper output, NodeTestFixture fixture)
             : base(output, fixture) {}

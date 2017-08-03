@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
         public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
-            : base(output, new FutureEventsFixture(output).EnableScheduling(new InMemoryRetrySettings(2,
+            : base(output, new FutureEventsFixture(output,new InMemoryRetrySettings(2,
                 TimeSpan.FromMilliseconds(10),
                 new StopOnTestExceptionPolicy(
                     new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Information)

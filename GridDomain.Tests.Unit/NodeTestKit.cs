@@ -14,8 +14,8 @@ namespace GridDomain.Tests.Unit
 
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture) : base(fixture.SystemConfigFactory(), fixture.Name)
         {
-            output.WriteLine($"before test {GetType().Name}");
-            DumpMemoryUsage(output);
+           // output.WriteLine($"before test {GetType().Name}");
+          //  DumpMemoryUsage(output);
 
             Fixture = fixture;
             Fixture.ActorSystemCreator = () => Sys;
@@ -29,8 +29,8 @@ namespace GridDomain.Tests.Unit
 
         protected override void AfterAll()
         {
-            Fixture.Output.WriteLine($"after test {GetType().Name}");
-            DumpMemoryUsage(Fixture.Output);
+          //  Fixture.Output.WriteLine($"after test {GetType().Name}");
+           // DumpMemoryUsage(Fixture.Output);
             Fixture.Dispose();
         }
 

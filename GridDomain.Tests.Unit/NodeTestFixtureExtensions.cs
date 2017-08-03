@@ -35,14 +35,11 @@ namespace GridDomain.Tests.Unit
 
                                                    node.Settings.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor));
                                                 };
+
+            fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.System.GetExtension<SchedulingExtension>().Scheduler.Clear();
+
             return fixture;
 
-        }   
-
-
-        public static void ClearSheduledJobs(this NodeTestFixture fixture)
-        {
-            fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.System.GetExtension<SchedulingExtension>().Scheduler.Clear();
         }
 
         public static NodeTestFixture UseAdaper<TFrom,TTo>(this NodeTestFixture fixture, ObjectAdapter<TFrom,TTo> adapter)
