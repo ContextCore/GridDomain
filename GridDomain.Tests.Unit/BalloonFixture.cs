@@ -2,6 +2,7 @@ using System;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.EventSourced;
+using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 
 namespace GridDomain.Tests.Unit
@@ -10,9 +11,9 @@ namespace GridDomain.Tests.Unit
     {
         private readonly BalloonDomainConfiguration _balloonDomainConfiguration;
 
-        public BalloonFixture()
+        public BalloonFixture(IQuartzConfig config = null)
         {
-            this.EnableScheduling();
+            this.EnableScheduling(config);
             _balloonDomainConfiguration = new BalloonDomainConfiguration();
         }
 
