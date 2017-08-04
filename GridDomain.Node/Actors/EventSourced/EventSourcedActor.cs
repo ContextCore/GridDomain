@@ -132,8 +132,11 @@ namespace GridDomain.Node.Actors.EventSourced
             Command<SaveSnapshotSuccess>(s =>
                                          {
                                              SnapshotsSaveInProgressCount--;
-                                             if (SnapshotsSaveInProgressCount != 0)
-                                                 return;
+                                             NotifyPersistenceWatchers(s);
+                                             _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
+                                                                                BusinessDateTime.UtcNow);
+
+                                             if(SnapshotsSaveInProgressCount != 0)
 
                                              Log.Debug("All snapshots blocking terminations were saved, continue work");
                                              Stash.UnstashAll();
