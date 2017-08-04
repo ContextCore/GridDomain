@@ -8,24 +8,16 @@ namespace GridDomain.Tests.Common.Configuration
     public class AutoTestAkkaDbConfiguration : IAkkaDbConfiguration
     {
         private const string JournalConnectionStringName = "WriteModel";
-        private const string AppVeyorEnabled = "APPVEYOR";
-
         //enviroment variables - for appveour tests launch
         public string SnapshotConnectionString
             =>
                 ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString
-                ?? GetFromAppveyourEnvironment() ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
+                ?? Environment.GetEnvironmentVariable(JournalConnectionStringName) ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string JournalConnectionString
             =>
                 ConfigurationManager.ConnectionStrings[JournalConnectionStringName]?.ConnectionString
-                ?? GetFromAppveyourEnvironment() ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
-
-        private static string GetFromAppveyourEnvironment()
-        {
-            return string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AppVeyorEnabled)) ? null :
-                "(local)\\SQL2016; Database = master; User ID = sa; Password = Password12!";
-        }
+                ?? Environment.GetEnvironmentVariable(JournalConnectionStringName) ?? "Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string MetadataTableName => "Metadata";
         public string JournalTableName => "Journal";
