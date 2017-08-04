@@ -1,13 +1,17 @@
-﻿using GridDomain.Node.Configuration.Persistence;
+﻿using System;
+using System.Configuration;
+using GridDomain.Node.Configuration.Persistence;
 
 namespace GridDomain.Tests.Common
 {
     public class AutoTestLocalDbConfiguration : IDbConfiguration
     {
+        private const string JournalConnectionStringName = "ReadModel";
+        
         public string ReadModelConnectionString
-            => @"Data Source=(local);Initial Catalog=AutoTestRead;Integrated Security = true";
+            => Environment.GetEnvironmentVariable(JournalConnectionStringName) ??  @"Data Source=(local);Initial Catalog=AutoTestRead;Integrated Security = true";
 
         public string LogsConnectionString
-            => @"Data Source=(local);Initial Catalog=AutoTestLogs;Integrated Security = true";
+            => Environment.GetEnvironmentVariable(JournalConnectionStringName) ?? @"Data Source=(local);Initial Catalog=AutoTestLogs;Integrated Security = true";
     }
 }
