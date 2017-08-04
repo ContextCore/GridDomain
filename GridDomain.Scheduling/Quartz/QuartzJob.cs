@@ -67,18 +67,6 @@ namespace GridDomain.Scheduling.Quartz
         private void ProcessEvent(IMessageMetadata metadata, JobKey jobKey, DomainEvent messageToFire)
         {
             throw new NotImplementedException("need refactor - pass events to command pipe instead of just publish");
-            //var eventMetadata = metadata.CreateChild(messageToFire.SourceId,
-            //                                         new ProcessEntry(nameof(QuartzJob), PublishingEvent, EventRaiseTimeCame));
-            //
-            //var successMetadata = eventMetadata.CreateChild(Guid.NewGuid(),
-            //                                                new ProcessEntry(nameof(QuartzJob),
-            //                                                                 "Publishing success notification",
-            //                                                                 "Job execution completed succesfully. Message published."));
-            //
-            //var jobSucceeded = new JobSucceeded(jobKey.Name, jobKey.Group, messageToFire);
-            //
-            //_publisher.Publish(messageToFire, eventMetadata);
-            //_publisher.Publish(jobSucceeded, successMetadata);
         }
 
         private void WithErrorHandling(IHaveId processingMessage, IMessageMetadata messageMetadata, JobKey key, Action act)

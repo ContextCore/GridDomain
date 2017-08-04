@@ -33,7 +33,7 @@ namespace GridDomain.Scheduling.Akka {
                                              try
                                              {
                                                  if(ext.Scheduler != null && ext.Scheduler.IsShutdown == false)
-                                                     ext.Scheduler.Shutdown();
+                                                     ext.Scheduler.Shutdown(false);
                                              }
                                              catch(Exception ex)
                                              {

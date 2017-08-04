@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit
             return EnableScheduling(fixture,new InMemoryQuartzConfig(config));
         }
 
-        public static NodeTestFixture EnableScheduling(this NodeTestFixture fixture, IQuartzConfig config = null)
+        public static NodeTestFixture EnableScheduling(this NodeTestFixture fixture, IQuartzConfig config = null, bool clearScheduledData = true)
         {
             IQuartzConfig quartzConfig = config ?? new InMemoryQuartzConfig(new InMemoryRetrySettings(5,TimeSpan.FromMinutes(10),new DefaultExceptionPolicy()));
 
@@ -35,8 +35,8 @@ namespace GridDomain.Tests.Unit
 
                                                    node.Settings.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor));
                                                 };
-
-            fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.System.GetExtension<SchedulingExtension>().Scheduler.Clear();
+            if(clearScheduledData)
+                 fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.System.GetExtension<SchedulingExtension>().Scheduler.Clear();
 
             return fixture;
 

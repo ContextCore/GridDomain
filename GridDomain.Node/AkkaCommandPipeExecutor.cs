@@ -35,9 +35,8 @@ namespace GridDomain.Node
         public Task Execute(ICommand command, IMessageMetadata metadata = null)
         {
             return Prepare(command, metadata)
-                    .Expect<CommandCompleted>(c => c.CommandId == command.Id) //TODO: investigate if predicate can be removed due to correlation id in envelops
+                    .Expect<CommandCompleted>() //correlation id is used to determine command complete binding to command
                     .Execute();
-            //_commandExecutorActor.Tell(new MessageMetadataEnvelop<ICommand>(command, metadata ?? CreateEmptyCommandMetadata(command)));
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand

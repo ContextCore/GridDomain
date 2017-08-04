@@ -15,8 +15,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task Given_async_aggregate_method_Then_execute_throws_exception_from_aggregate()
         {
-            await Node.Prepare(new PlanBallonBlowCommand(Guid.NewGuid()))
-                      .Execute()
+            await Node.Execute(new PlanBallonBlowCommand(Guid.NewGuid()))
                       .CommandShouldThrow<BalloonException>();
         }
 
@@ -27,16 +26,14 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                                                                 Guid.NewGuid(),
                                                                 TimeSpan.FromMilliseconds(500));
 
-            await Node.Prepare(syncCommand)
-                      .Execute()
+            await Node.Execute(syncCommand)
                       .CommandShouldThrow<BalloonException>(ex => ex.StackTrace.Contains(typeof(Balloon).Name));
         }
 
         [Fact]
         public async Task Given_sync_aggregate_method_Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
-            await Node.Prepare(new BlowBalloonCommand(Guid.NewGuid()))
-                      .Execute()
+            await Node.Execute(new BlowBalloonCommand(Guid.NewGuid()))
                       .CommandShouldThrow<BalloonException>(ex => ex.StackTrace.Contains(typeof(Balloon).Name));
         }
     }

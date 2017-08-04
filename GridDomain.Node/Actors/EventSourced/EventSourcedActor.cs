@@ -111,8 +111,16 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected virtual void TerminatingBehavior()
         {
-            Command<DeleteSnapshotsSuccess>(s => StopNow());
-            Command<DeleteSnapshotsFailure>(s => StopNow());
+            Command<DeleteSnapshotsSuccess>(s =>
+                                            {
+                                                Log.Debug("snapshots deleted");
+                                                StopNow();
+                                            });
+            Command<DeleteSnapshotsFailure>(s =>
+                                            {
+                                                Log.Debug("snapshots failed to delete");
+                                                StopNow();
+                                            });
             Command<CancelShutdownRequest>(s =>
                                            {
                                                Behavior.Unbecome();
@@ -145,7 +153,10 @@ namespace GridDomain.Node.Actors.EventSourced
 
 
                                                   if (_snapshotsPolicy.TryDelete(c =>
-                                                  DeleteSnapshots(new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr,c.MaxTimeStamp,c.MinSequenceNr,c.MinTimestamp))))
+                                                                                 {
+                                                                                     var snapshotSelectionCriteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr,c.MaxTimeStamp,c.MinSequenceNr,c.MinTimestamp);
+                                                                                     DeleteSnapshots(snapshotSelectionCriteria);
+                                                                                 }))
                                                   {
                                                       Log.Debug("started snapshots delete");
                                                   }

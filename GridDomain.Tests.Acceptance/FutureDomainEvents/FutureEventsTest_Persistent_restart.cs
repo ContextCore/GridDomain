@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling;
+using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Acceptance.Snapshots;
@@ -30,13 +31,10 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
             var node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig()).UseSqlPersistence().CreateNode();
             var cmd = new ScheduleEventInFutureCommand(DateTime.UtcNow.AddSeconds(3), Guid.NewGuid(), "test value");
 
-            await node.Prepare(cmd)
-                      .Expect<CommandExecutionScheduled>()
-                      .Execute(TimeSpan.FromSeconds(10));
-
+            await node.Execute(cmd);
             await node.Stop();
 
-            node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig()).UseSqlPersistence(false).CreateNode();
+            node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig(),false).UseSqlPersistence(false).CreateNode();
             var res = await node.NewWaiter(TimeSpan.FromSeconds(10))
                                 .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
                                 .Create();

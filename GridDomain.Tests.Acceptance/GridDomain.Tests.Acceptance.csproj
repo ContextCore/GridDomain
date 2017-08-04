@@ -322,7 +322,6 @@
     <Compile Include="Snapshots\Aggregate_Should_Not_save_snapshots_on_message_process_by_default.cs" />
     <Compile Include="Snapshots\Aggregate_should_recover_from_snapshot.cs" />
     <Compile Include="Snapshots\Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy.cs" />
-    <Compile Include="Snapshots\Aggregate_Should_save_snapshots_on_message_process_if_activity_is_low.cs" />
     <Compile Include="Snapshots\Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown.cs" />
     <Compile Include="Snapshots\InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault.cs" />
     <Compile Include="Snapshots\Instance_process_Should_recover_from_snapshot.cs" />

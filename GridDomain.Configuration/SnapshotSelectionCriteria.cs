@@ -4,7 +4,7 @@ namespace GridDomain.Configuration {
     public class SnapshotSelectionCriteria
     {
         public long MaxSequenceNr;
-        public DateTime MaxTimeStamp;
+        public DateTime MaxTimeStamp = DateTime.MaxValue;
         public long MinSequenceNr;
         public DateTime? MinTimestamp;
     }

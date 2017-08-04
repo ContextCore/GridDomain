@@ -100,10 +100,24 @@ namespace GridDomain.Node.Actors.PersistentHub
             knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
             SendMessageToChild(knownChild, message);
 
+
+            LogMessageSentToChild(message, childId, childWasCreated);
+        }
+
+        private void LogMessageSentToChild(object message, Guid childId, bool childWasCreated)
+        {
+            if (message is IMessageMetadataEnvelop env)
+            {
+                Log.Debug("Message {msg} with metadata sent to {isknown} child {id}",
+                    env.Message,
+                    childWasCreated ? "new" : "known",
+                    childId);
+            }
+            else
             Log.Debug("Message {msg} sent to {isknown} child {id}",
-                         message,
-                         childWasCreated ? "new" : "known",
-                         childId);
+                message,
+                childWasCreated ? "new" : "known",
+                childId);
         }
 
         //TODO: replace with more efficient implementation

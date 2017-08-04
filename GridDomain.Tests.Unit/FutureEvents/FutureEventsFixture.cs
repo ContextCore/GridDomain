@@ -15,10 +15,10 @@ namespace GridDomain.Tests.Unit.FutureEvents
             Add(new FutureAggregateDomainConfiguration());
             this.EnableScheduling(settings);
         }
-        public FutureEventsFixture(ITestOutputHelper output, IQuartzConfig config) : base(null, null, output)
+        public FutureEventsFixture(ITestOutputHelper output, IQuartzConfig config, bool clearScheduledData = true) : base(null, null, output)
         {
             Add(new FutureAggregateDomainConfiguration());
-            this.EnableScheduling(config);
+            this.EnableScheduling(config,clearScheduledData);
         }
     }
 }

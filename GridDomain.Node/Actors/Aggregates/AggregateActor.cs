@@ -28,6 +28,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly IActorRef _customHandlersActor;
         private readonly ProcessEntry _domainEventProcessEntry;
         private readonly ProcessEntry _domainEventProcessFailEntry;
+        private readonly ProcessEntry _commandCompletedProcessEntry;
         private readonly IPublisher _publisher;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
@@ -43,7 +44,8 @@ namespace GridDomain.Node.Actors.Aggregates
             _publisher = publisher;
             _customHandlersActor = customHandlersActor;
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.PublishingEvent, AggregateActorConstants.CommandExecutionCreatedAnEvent);
-            _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CreatedFault, AggregateActorConstants.CommandRaisedAnError);
+            _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.CommandRaisedAnError);
+            _commandCompletedProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.ExecutedCommand);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
         }
 
@@ -149,7 +151,9 @@ namespace GridDomain.Node.Actors.Aggregates
                                          //finish command execution. produced state can be null on execution error
                                          State = ExecutionContext.ProducedState ?? State;
                                          var commandCompleted = new CommandCompleted(ExecutionContext.Command.Id);
-                                         _publisher.Publish(commandCompleted);
+                                         var completedMetadata = ExecutionContext.CommandMetadata
+                                                                                 .CreateChild(ExecutionContext.Command.Id, _commandCompletedProcessEntry);
+                                         _publisher.Publish(commandCompleted, completedMetadata);
 
                                          ExecutionContext.CommandSender.Tell(commandCompleted);
                                          ExecutionContext.Clear();

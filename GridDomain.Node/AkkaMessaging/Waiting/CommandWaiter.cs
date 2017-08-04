@@ -32,11 +32,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
 
 
-        public Task<IWaitResult> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true)
-        {
-            return _conditionBuilder.Execute(timeout, failOnAnyFault);
-        }
-
        ICommandConditionBuilder<TMsg> ICommandWaiter.Expect<TMsg>(Predicate<TMsg> filter) 
        {
            Expect(filter);
