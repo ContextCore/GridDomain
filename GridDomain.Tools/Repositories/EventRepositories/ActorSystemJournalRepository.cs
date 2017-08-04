@@ -16,14 +16,14 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         private static readonly TimeSpan Timeout = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(10);
         private readonly ActorSystem _system;
 
-        public ActorSystemJournalRepository(ActorSystem config, bool requireJsonSerializer = true)
+        public ActorSystemJournalRepository(ActorSystem system, bool requireJsonSerializer = true)
         {
-            var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(config);
+            var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(system);
             if (ext == null && requireJsonSerializer)
                 throw new ArgumentNullException(nameof(ext),
                                                 $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
-            _system = config;
+            _system = system;
         }
 
         public async Task Save(string id, params object[] messages)
