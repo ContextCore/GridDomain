@@ -4,8 +4,9 @@ namespace GridDomain.Configuration
 {
     public class NoSnapshotsPersistencePolicy : ISnapshotsPersistencePolicy
     {
-        public bool TryDelete(Action<SnapshotSelectionCriteria> deleteDelegate)
+        public bool ShouldDelete(out SnapshotSelectionCriteria deleteDelegate)
         {
+            deleteDelegate = new SnapshotSelectionCriteria();
             return false;
         }
 
@@ -13,9 +14,9 @@ namespace GridDomain.Configuration
 
         public void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime = null) {}
 
-        public bool TrySave(Action saveDelegate, long snapshotSequenceNr, DateTime? now = null)
+        public bool ShouldSave(long snapshotSequenceNr, DateTime? now = null)
         {
-            return true;
+            return false;
         }
     }
 }

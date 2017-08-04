@@ -29,7 +29,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         public ILogger Log { get; set; }
 
-        public bool TrySave(Action saveDelegate, long snapshotSequenceNr, DateTime? now = null)
+        public bool ShouldSave(long snapshotSequenceNr, DateTime? now = null)
         {
             var saveIsInTime = (now ?? BusinessDateTime.UtcNow) - _savedAt >= _maxSaveFrequency;
             _lastSequenceNumber = Math.Max(snapshotSequenceNr, _lastSequenceNumber);
@@ -46,16 +46,14 @@ namespace GridDomain.Node.Actors.EventSourced
             }
 
             Log?.Debug("Saving snapshot {num}", snapshotSequenceNr);
-            saveDelegate();
 
             return true;
         }
 
-        public bool TryDelete(Action<SnapshotSelectionCriteria> deleteDelegate)
+        public bool ShouldDelete(out SnapshotSelectionCriteria snapshotsToDeleteCriteria)
         {
             var maxSnapshotNumToDelete = Math.Max(_lastSavedSnapshot - _eventsToKeep, 0);
-            var criteria = new SnapshotSelectionCriteria(){MaxSequenceNr = maxSnapshotNumToDelete };
-            deleteDelegate(criteria);
+            snapshotsToDeleteCriteria = new SnapshotSelectionCriteria(){MaxSequenceNr = maxSnapshotNumToDelete };
             return true;
         }
 

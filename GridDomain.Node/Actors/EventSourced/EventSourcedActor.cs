@@ -26,8 +26,8 @@ namespace GridDomain.Node.Actors.EventSourced
             _snapshotsPolicy = policy;
 
             PersistenceId = Self.Path.Name;
-            Id = AggregateActorName.Parse<T>(Self.Path.Name)
-                                   .Id;
+            Id = AggregateActorName.Parse<T>(Self.Path.Name).
+                                    Id;
             State = (T) aggregateConstructor.Build(typeof(T), Id, null);
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
@@ -69,6 +69,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
             Command<SaveSnapshotSuccess>(s =>
                                          {
+                                             SnapshotsSaveInProgressCount--;
                                              NotifyPersistenceWatchers(s);
                                              _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
                                                                                 BusinessDateTime.UtcNow);
@@ -95,12 +96,17 @@ namespace GridDomain.Node.Actors.EventSourced
         protected Guid Id { get; }
         public override string PersistenceId { get; }
         public T State { get; protected set; }
+        protected int SnapshotsSaveInProgressCount;
 
-        protected bool TrySaveSnapshot(IAggregate aggregate)
+        protected void SaveSnapshot(IAggregate aggregate)
         {
-            return _snapshotsPolicy.TrySave(() => SaveSnapshot(aggregate.GetSnapshot()),
-                                            SnapshotSequenceNr,
-                                            BusinessDateTime.UtcNow);
+            if (_snapshotsPolicy.ShouldSave(
+                                         SnapshotSequenceNr,
+                                         BusinessDateTime.UtcNow))
+            {
+                SnapshotsSaveInProgressCount++;
+                SaveSnapshot(aggregate.GetSnapshot());
+            }
         }
 
         protected void NotifyPersistenceWatchers(object msg)
@@ -108,6 +114,7 @@ namespace GridDomain.Node.Actors.EventSourced
             foreach (var watcher in _persistenceWatchers)
                 watcher.Tell(new Persisted(msg));
         }
+
 
         protected virtual void TerminatingBehavior()
         {
@@ -121,6 +128,17 @@ namespace GridDomain.Node.Actors.EventSourced
                                                 Log.Debug("snapshots failed to delete, {criteria}", s.Criteria);
                                                 StopNow();
                                             });
+            //for cases when actor is ask to termite and snapshot save is in progress
+            Command<SaveSnapshotSuccess>(s =>
+                                         {
+                                             SnapshotsSaveInProgressCount--;
+                                             if (SnapshotsSaveInProgressCount != 0)
+                                                 return;
+
+                                             Log.Debug("All snapshots blocking terminations were saved, continue work");
+                                             Stash.UnstashAll();
+                                         });
+
             Command<CancelShutdownRequest>(s =>
                                            {
                                                Behavior.Unbecome();
@@ -131,11 +149,12 @@ namespace GridDomain.Node.Actors.EventSourced
 
             Command<GracefullShutdownRequest>(s =>
                                               {
-                                                  var messageToProcess = Stash.ClearStash()
-                                                                             .Where(m => !(m.Message is GracefullShutdownRequest) ||
-                                                                                         !(m.Message is DeleteSnapshotsSuccess) ||
-                                                                                         !(m.Message is DeleteSnapshotsFailure))
-                                                                             .ToArray();
+                                                  var messageToProcess = Stash.ClearStash().
+                                                                               Where(m => !(m.Message is GracefullShutdownRequest) ||
+                                                                                          !(m.Message is DeleteSnapshotsSuccess) ||
+                                                                                          !(m.Message is SaveSnapshotSuccess) ||
+                                                                                          !(m.Message is DeleteSnapshotsFailure)).
+                                                                               ToArray();
 
                                                   if (messageToProcess.Any())
                                                   {
@@ -151,16 +170,20 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       return;
                                                   }
 
+                                                  if (SnapshotsSaveInProgressCount > 0)
+                                                  {
+                                                      Log.Debug("Snapshots save is in progress, will wait for it");
+                                                      Stash.Stash();
+                                                      return;
+                                                  }
 
-                                                  if (!_snapshotsPolicy.TryDelete(c =>
-                                                                                 {
-                                                                                     var snapshotSelectionCriteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr,c.MaxTimeStamp,c.MinSequenceNr,c.MinTimestamp);
-                                                                                     DeleteSnapshots(snapshotSelectionCriteria);
-                                                                                     Log.Debug("started snapshots delete, {criteria}", snapshotSelectionCriteria);
-                                                                                 }))
-                                                      StopNow();
+                                                  if (!_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
+                                                      return;
 
-
+                                                  var snapshotSelectionCriteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
+                                                  DeleteSnapshots(snapshotSelectionCriteria);
+                                                  Log.Debug("started snapshots delete, {criteria}", snapshotSelectionCriteria);
+                                                  StopNow();
                                               });
         }
 

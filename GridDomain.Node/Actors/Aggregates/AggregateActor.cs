@@ -81,7 +81,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private void ProcessingCommandBehavior()
         {
             var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
-
+            
             //just for catching Failures on events persist
             Command<PersistEventPack>(e =>
                                    {
@@ -119,8 +119,8 @@ namespace GridDomain.Node.Actors.Aggregates
 
                                                       _publisher.Publish(persistedEvent);
                                                       NotifyPersistenceWatchers(persistedEvent);
-                                                      TrySaveSnapshot(ExecutionContext.ProducedState);
-
+                                                      SaveSnapshot(ExecutionContext.ProducedState);
+                                                      
                                                       if (ExecutionContext.ProducedState.HasUncommitedEvents)
                                                           return;
 
