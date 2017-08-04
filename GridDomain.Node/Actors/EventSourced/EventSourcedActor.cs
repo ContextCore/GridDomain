@@ -13,7 +13,7 @@ using SubscribeAck = GridDomain.Node.Transports.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
-    public class EventSourcedActor<T> : ReceivePersistentActor where T : Aggregate
+    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : Aggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
@@ -21,7 +21,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected readonly BehaviorStack Behavior;
 
-        public EventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
+        public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
 
@@ -113,12 +113,12 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             Command<DeleteSnapshotsSuccess>(s =>
                                             {
-                                                Log.Debug("snapshots deleted");
+                                                Log.Debug("snapshots deleted, {criteria}", s.Criteria);
                                                 StopNow();
                                             });
             Command<DeleteSnapshotsFailure>(s =>
                                             {
-                                                Log.Debug("snapshots failed to delete");
+                                                Log.Debug("snapshots failed to delete, {criteria}", s.Criteria);
                                                 StopNow();
                                             });
             Command<CancelShutdownRequest>(s =>
@@ -152,15 +152,12 @@ namespace GridDomain.Node.Actors.EventSourced
                                                   }
 
 
-                                                  if (_snapshotsPolicy.TryDelete(c =>
+                                                  if (!_snapshotsPolicy.TryDelete(c =>
                                                                                  {
                                                                                      var snapshotSelectionCriteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr,c.MaxTimeStamp,c.MinSequenceNr,c.MinTimestamp);
                                                                                      DeleteSnapshots(snapshotSelectionCriteria);
+                                                                                     Log.Debug("started snapshots delete, {criteria}", snapshotSelectionCriteria);
                                                                                  }))
-                                                  {
-                                                      Log.Debug("started snapshots delete");
-                                                  }
-                                                  else
                                                       StopNow();
 
 

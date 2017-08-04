@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.Aggregates
     ///     Name should be parse by AggregateActorName
     /// </summary>
     /// <typeparam name="TAggregate"></typeparam>
-    public class AggregateActor<TAggregate> : EventSourcedActor<TAggregate> where TAggregate : EventSourcing.Aggregate
+    public class AggregateActor<TAggregate> : DomainEventSourcedActor<TAggregate> where TAggregate : EventSourcing.Aggregate
     {
         private readonly IActorRef _customHandlersActor;
         private readonly ProcessEntry _domainEventProcessEntry;

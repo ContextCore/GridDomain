@@ -306,7 +306,6 @@
     <Compile Include="Configuration\Akka\Hocon\RootConfig.cs" />
     <Compile Include="Configuration\Composition\ProcessManagerConfiguration.cs" />
     <Compile Include="Configuration\Persistence\IDbConfiguration.cs" />
-    <Compile Include="Configuration\Persistence\LocalDbConfiguration.cs" />
     <Compile Include="Configuration\Akka\AkkaConfiguration.cs" />
     <Compile Include="Configuration\Composition\EmptyContainerConfiguration.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />

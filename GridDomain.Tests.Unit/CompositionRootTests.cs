@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Persistence;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
 using Microsoft.Practices.Unity;
 using Xunit;
@@ -33,7 +34,7 @@ namespace GridDomain.Tests.Unit
         [InlineData(TransportMode.Standalone)]
         public void All_base_registrations_can_be_resolved(TransportMode transportMode)
         {
-            var container = CreateContainer(transportMode, new LocalDbConfiguration());
+            var container = CreateContainer(transportMode, new AutoTestLocalDbConfiguration());
             ResolveAll(container);
         }
 
@@ -41,7 +42,7 @@ namespace GridDomain.Tests.Unit
         [InlineData(TransportMode.Standalone)]
         public void Container_can_be_disposed(TransportMode transportMode)
         {
-            var createContainer = Task.Run(() => CreateContainer(transportMode, new LocalDbConfiguration()));
+            var createContainer = Task.Run(() => CreateContainer(transportMode, new AutoTestLocalDbConfiguration()));
             if (!createContainer.Wait(TimeSpan.FromSeconds(5)))
                 throw new TimeoutException("Container creation took to much time");
 
