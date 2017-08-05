@@ -49,7 +49,7 @@ namespace GridDomain.Node.Actors.PersistentHub
                                      ChildInfo info;
                                      var created = InitChild(m.Id, GetChildActorName(m.Id), out info);
                                      var sender = Sender;
-                                     ForwardPersistence(info).ContinueWith(t => sender.Tell(new WarmUpResult(info, created)));
+                                     sender.Tell(new WarmUpResult(info, created));
                                  });
             
             Receive<ShutdownCanceled>(m =>
@@ -88,12 +88,6 @@ namespace GridDomain.Node.Actors.PersistentHub
 
 
             return true;
-        }
-
-        private async Task ForwardPersistence(ChildInfo childInfo)
-        {
-            if (_childPersistenceWatcher != null)
-                await childInfo.Ref.Ask<SubscribeAck>(new NotifyOnPersistenceEvents(_childPersistenceWatcher));
         }
 
         protected void SendToChild(object message, Guid childId, string name)
