@@ -183,7 +183,9 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       var snapshotSelectionCriteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
                                                       Log.Debug("started snapshots delete, {criteria}", snapshotSelectionCriteria);
                                                       DeleteSnapshots(snapshotSelectionCriteria);
+                                                      return;
                                                   }
+
                                                   StopNow();
                                               });
         }
