@@ -13,7 +13,7 @@ namespace GridDomain.Configuration
         public void MarkSnapshotApplied(long sequenceNr) {}
 
         public void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime = null) {}
-        public void MarkSnapshotSaving()
+        public void MarkSnapshotSaving(DateTime? now)
         {
             
         }

@@ -7,9 +7,12 @@ namespace GridDomain.Configuration
         bool ShouldSave(long snapshotSequenceNr, DateTime? now = null);
         bool ShouldDelete(out SnapshotSelectionCriteria deleteDelegate);
 
+        //called on aggregte restore to set up initinal sequence numbers
         void MarkSnapshotApplied(long sequenceNr);
         void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime = null);
-        void MarkSnapshotSaving();
+
+        //called on aggregte snapshot save start
+        void MarkSnapshotSaving(DateTime? now = null);
         bool SnapshotsSaveInProgress { get; }
     }
 }

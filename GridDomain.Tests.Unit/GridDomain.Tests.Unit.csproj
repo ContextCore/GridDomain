@@ -462,6 +462,7 @@
     <Compile Include="Serialization\Process_state_aggregate_should_be_serializable.cs" />
     <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
+    <Compile Include="SnapshotsSavePolicyTests.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="TestKitExtensions.cs" />
     <Compile Include="TestWireSerialization.cs" />
