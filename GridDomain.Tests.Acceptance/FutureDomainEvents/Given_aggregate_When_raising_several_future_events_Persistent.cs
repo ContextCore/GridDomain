@@ -12,22 +12,25 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 {
     public class Given_aggregate_When_raising_several_future_events_Persistent : FutureEventsTest
     {
-        public Given_aggregate_When_raising_several_future_events_Persistent(ITestOutputHelper output) : base(output) {}
+        public Given_aggregate_When_raising_several_future_events_Persistent(ITestOutputHelper output) : base(output) { }
 
         [Fact]
         public async Task FutureDomainEvent_envelops_has_unique_id()
         {
             var aggregateId = Guid.NewGuid();
-            var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(2), aggregateId, "test value A");
-            var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(5), aggregateId, "test value B");
+            var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId, "test value A");
 
-            var eventA =
-                (await Node.Prepare(testCommandA).Expect<FutureEventOccuredEvent>().Execute())
-                .Message<FutureEventOccuredEvent>();
+            var waitResult = await Node.Prepare(testCommandA)
+                                       .Expect<FutureEventOccuredEvent>()
+                                       .Execute();
+            var eventA = waitResult.Message<FutureEventOccuredEvent>();
 
-            var eventB =
-                (await Node.Prepare(testCommandB).Expect<FutureEventOccuredEvent>().Execute())
-                .Message<FutureEventOccuredEvent>();
+            var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId, "test value B");
+            var result = await Node.Prepare(testCommandB)
+                                   .Expect<FutureEventOccuredEvent>()
+                                   .Execute();
+
+            var eventB = result.Message<FutureEventOccuredEvent>();
 
             //Envelop_ids_are_different()
             Assert.NotEqual(eventA.FutureEventId, eventB.FutureEventId);

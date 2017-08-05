@@ -119,7 +119,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
                                                       _publisher.Publish(persistedEvent);
                                                       NotifyPersistenceWatchers(persistedEvent);
-                                                      SaveSnapshot(ExecutionContext.ProducedState);
+                                                      SaveSnapshot(ExecutionContext.ProducedState, persistedEvent);
                                                       
                                                       if (ExecutionContext.ProducedState.HasUncommitedEvents)
                                                           return;

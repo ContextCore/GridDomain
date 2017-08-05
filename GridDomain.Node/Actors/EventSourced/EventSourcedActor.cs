@@ -100,12 +100,12 @@ namespace GridDomain.Node.Actors.EventSourced
         public override string PersistenceId { get; }
         public T State { get; protected set; }
 
-        protected void SaveSnapshot(IAggregate aggregate)
+        protected void SaveSnapshot(IAggregate aggregate, object lastEventPersisted)
         {
             if (!_snapshotsPolicy.ShouldSave(
                 SnapshotSequenceNr,
                 BusinessDateTime.UtcNow)) return;
-            Log.Debug("Started snapshot save");
+            Log.Debug("Started snapshot save, cased by persisted event {event}",lastEventPersisted);
             _snapshotsPolicy.MarkSnapshotSaving();
             SaveSnapshot(aggregate.GetSnapshot());
         }
@@ -190,7 +190,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         private void CountSnapshotSaved(SaveSnapshotSuccess s)
         {
-            Log.Debug("snapshot saved, sequence number is {number}", s.Metadata.SequenceNr);
+            Log.Debug("snapshot saved at {time}, sequence number is {number}", s.Metadata.Timestamp,s.Metadata.SequenceNr);
             NotifyPersistenceWatchers(s);
             _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
                                                BusinessDateTime.UtcNow);
