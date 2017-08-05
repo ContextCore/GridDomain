@@ -99,7 +99,6 @@ namespace GridDomain.Node.Actors.EventSourced
         protected Guid Id { get; }
         public override string PersistenceId { get; }
         public T State { get; protected set; }
-        protected int SnapshotsSaveInProgressCount;
 
         protected void SaveSnapshot(IAggregate aggregate)
         {
@@ -107,7 +106,7 @@ namespace GridDomain.Node.Actors.EventSourced
                 SnapshotSequenceNr,
                 BusinessDateTime.UtcNow)) return;
             Log.Debug("Started snapshot save");
-            SnapshotsSaveInProgressCount++;
+            _snapshotsPolicy.MarkSnapshotSaving();
             SaveSnapshot(aggregate.GetSnapshot());
         }
 
@@ -137,9 +136,9 @@ namespace GridDomain.Node.Actors.EventSourced
                                              Log.Debug("snapshot saved during termination");
                                              CountSnapshotSaved(s);
 
-                                             if (SnapshotsSaveInProgressCount != 0)
-
-                                                 Log.Debug("All snapshots blocking terminations were saved, continue work");
+                                             if (_snapshotsPolicy.SnapshotsSaveInProgress) return;
+                                             
+                                             Log.Debug("All snapshots blocking terminations were saved, continue work");
                                              Stash.UnstashAll();
                                          });
 
@@ -155,10 +154,7 @@ namespace GridDomain.Node.Actors.EventSourced
                                               {
                                                   Log.Debug("Started gracefull shutdown process");
                                                   var messageToProcess = Stash.ClearStash()
-                                                                              .Where(m => !(m.Message is GracefullShutdownRequest)) //||
-                                                                              // !(m.Message is DeleteSnapshotsSuccess) ||
-                                                                              // !(m.Message is SaveSnapshotSuccess) ||
-                                                                              // !(m.Message is DeleteSnapshotsFailure))
+                                                                              .Where(m => !(m.Message is GracefullShutdownRequest)) 
                                                                               .ToArray();
 
                                                   if (messageToProcess.Any())
@@ -175,7 +171,7 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       return;
                                                   }
 
-                                                  if (SnapshotsSaveInProgressCount > 0)
+                                                  if (_snapshotsPolicy.SnapshotsSaveInProgress)
                                                   {
                                                       Log.Debug("Snapshots save is in progress, will wait for it");
                                                       Stash.Stash();
@@ -195,7 +191,6 @@ namespace GridDomain.Node.Actors.EventSourced
         private void CountSnapshotSaved(SaveSnapshotSuccess s)
         {
             Log.Debug("snapshot saved, sequence number is {number}", s.Metadata.SequenceNr);
-            SnapshotsSaveInProgressCount--;
             NotifyPersistenceWatchers(s);
             _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
                                                BusinessDateTime.UtcNow);

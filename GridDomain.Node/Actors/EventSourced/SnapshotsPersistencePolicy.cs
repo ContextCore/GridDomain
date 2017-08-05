@@ -13,7 +13,7 @@ namespace GridDomain.Node.Actors.EventSourced
         private readonly TimeSpan? _maxSaveFrequency;
         private readonly int _saveOnEach;
         private long _lastSavedSnapshot;
-        private long _lastSequenceNumber;
+        private long _lastSnapshotAppliedNumber;
         private DateTime _savedAt;
 
         public SnapshotsPersistencePolicy(int saveOnEach = 1,
@@ -27,22 +27,31 @@ namespace GridDomain.Node.Actors.EventSourced
             _savedAt = savedAt ?? DateTime.MinValue;
         }
 
+        public void MarkSnapshotSaving()
+        {
+            _snapshotsSaveInProgressCount++;
+        }
+
         public bool ShouldSave(long snapshotSequenceNr, DateTime? now = null)
         {
             var saveIsInTime = (now ?? BusinessDateTime.UtcNow) - _savedAt >= _maxSaveFrequency;
-            _lastSequenceNumber = Math.Max(snapshotSequenceNr, _lastSequenceNumber);
+            snapshotSequenceNr = Math.Max(snapshotSequenceNr, _lastSnapshotAppliedNumber);
 
             if (!saveIsInTime)
             {
                 return false;
             }
-            if (_lastSequenceNumber % _saveOnEach != 0)
+            if (snapshotSequenceNr % _saveOnEach != 0)
             {
                 return false;
             }
 
             return true;
         }
+
+        public bool SnapshotsSaveInProgress => _snapshotsSaveInProgressCount > 0;
+
+        private int _snapshotsSaveInProgressCount;
 
         public bool ShouldDelete(out SnapshotSelectionCriteria snapshotsToDeleteCriteria)
         {
@@ -53,7 +62,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         public void MarkSnapshotApplied(long sequenceNr)
         {
-            _lastSequenceNumber = sequenceNr;
+            _lastSnapshotAppliedNumber = sequenceNr;
             _lastSavedSnapshot = sequenceNr;
         }
 
@@ -61,6 +70,7 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             _savedAt = saveTime ?? BusinessDateTime.UtcNow;
             _lastSavedSnapshot = snapshotsSequenceNumber;
+            _snapshotsSaveInProgressCount--;
         }
     }
 }
