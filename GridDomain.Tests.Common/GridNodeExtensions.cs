@@ -20,6 +20,13 @@ namespace GridDomain.Tests.Common
 {
     public static class GridNodeExtensions
     {
+
+        public static async Task<WarmUpResult> WarmUpProcessManager<TProcess>(this GridDomainNode node, Guid id,TimeSpan? timeout = null)
+        {
+            var processHub = await node.LookupProcessHubActor<TProcess>(timeout);
+            return await processHub.Ask<WarmUpResult>(new WarmUpChild(id));
+        }
+
         public static async Task<TExpect> SendToProcessManager<TExpect>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
         {
             var res = await node.NewDebugWaiter(timeout)

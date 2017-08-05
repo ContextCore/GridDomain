@@ -57,7 +57,7 @@ namespace GridDomain.Tests.Unit.Metadata
                                            .Name,
                          step.Who);
             Assert.Equal(AggregateActorConstants.CommandRaisedAnError, step.Why);
-            Assert.Equal(AggregateActorConstants.CreatedFault, step.What);
+            Assert.Equal(AggregateActorConstants.CommandExecutionFinished, step.What);
         }
     }
 }

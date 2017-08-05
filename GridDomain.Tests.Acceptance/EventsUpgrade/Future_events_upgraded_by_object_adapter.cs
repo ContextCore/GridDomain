@@ -19,9 +19,9 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     {
         public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
             : base(output,
-                   new BalanceFixture(new PersistedQuartzConfig()).UseSqlPersistence().
-                                        InitFastRecycle().
-                                        UseAdaper(new IncreaseBy100Adapter())) { }
+                new BalanceFixture(new PersistedQuartzConfig()).UseSqlPersistence()
+                                                               .InitFastRecycle()
+                                                               .UseAdaper(new IncreaseBy100Adapter())) { }
 
         private class IncreaseBy100Adapter : ObjectAdapter<BalanceChangedEvent_V1, BalanceChangedEvent_V1>
         {
@@ -36,14 +36,13 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             var cmd = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), false);
 
-            var res = await Node.Prepare(cmd).
-                                 Expect<BalanceChangedEvent_V1>().
-                                 Execute();
+            var res = await Node.Prepare(cmd)
+                                .Expect<BalanceChangedEvent_V1>()
+                                .Execute();
 
             //event should be modified by json object adapter, changing its Amount
-            Assert.Equal(101,
-                         res.Message<BalanceChangedEvent_V1>().
-                             AmountChange);
+            Assert.Equal(101, res.Message<BalanceChangedEvent_V1>()
+                  .AmountChange);
         }
     }
 }

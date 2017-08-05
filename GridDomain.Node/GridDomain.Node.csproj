@@ -189,6 +189,8 @@
     <Compile Include="Actors\EventSourced\Messages\CancelShutdownRequest.cs" />
     <Compile Include="Actors\IActorBehavior.cs" />
     <Compile Include="Actors\IActorState.cs" />
+    <Compile Include="Actors\PersistentHub\WarmUpChild.cs" />
+    <Compile Include="Actors\PersistentHub\WarmUpResult.cs" />
     <Compile Include="Actors\ProcessManagers\Exceptions\ProcessNotStartedException.cs" />
     <Compile Include="Actors\ProcessManagers\Messages\CommandCompleted.cs" />
     <Compile Include="Actors\CommandPipe\Messages\Initialize.cs" />
@@ -206,7 +208,6 @@
     <Compile Include="Actors\CommandPipe\AggregatesPipeActor.cs" />
     <Compile Include="Actors\CommandPipe\MessageProcessors\IProcessorListCatalog.cs" />
     <Compile Include="Actors\Hadlers\MessageHandlingConstants.cs" />
-    <Compile Include="Actors\EventSourced\Messages\Persisted.cs" />
     <Compile Include="Actors\EventSourced\Messages\CheckHealth.cs" />
     <Compile Include="Actors\PersistentHub\ChildInfo.cs" />
     <Compile Include="Actors\EventSourced\EachMessageSnapshotsPersistencePolicy.cs" />

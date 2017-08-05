@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Event;
+using Akka.Pattern;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Transports.Remote;
 
 namespace GridDomain.Node.Actors.PersistentHub
 {
@@ -41,6 +44,14 @@ namespace GridDomain.Node.Actors.PersistentHub
                                 });
             Receive<ClearChildren>(m => Clear());
             Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
+            Receive<WarmUpChild>(m =>
+                                 {
+                                     ChildInfo info;
+                                     var created = InitChild(m.Id, GetChildActorName(m.Id), out info);
+                                     var sender = Sender;
+                                     ForwardPersistence(info).ContinueWith(t => sender.Tell(new WarmUpResult(info, created)));
+                                 });
+            
             Receive<ShutdownCanceled>(m =>
                                       {
                                           Guid id;
@@ -67,22 +78,33 @@ namespace GridDomain.Node.Actors.PersistentHub
             Stash.Stash();
         }
 
+        protected bool InitChild(Guid childId, string name, out ChildInfo childInfo)
+        {
+            if (Children.TryGetValue(childId, out childInfo)) return false;
+
+            childInfo = CreateChild(name);
+            Children[childId] = childInfo;
+            Context.Watch(childInfo.Ref);
+
+
+            return true;
+        }
+
+        private async Task ForwardPersistence(ChildInfo childInfo)
+        {
+            if (_childPersistenceWatcher != null)
+                await childInfo.Ref.Ask<SubscribeAck>(new NotifyOnPersistenceEvents(_childPersistenceWatcher));
+        }
+
         protected void SendToChild(object message, Guid childId, string name)
         {
             ChildInfo knownChild;
-
-            var childWasCreated = false;
-            if (!Children.TryGetValue(childId, out knownChild))
-            {
-                childWasCreated = true;
-                knownChild = CreateChild(name);
-                Children[childId] = knownChild;
-                Context.Watch(knownChild.Ref);
-            }
-            else
+            //TODO: refactor this suspicious logic of child terminaition cancel
+            bool childWasCreated;
+            if(!(childWasCreated = InitChild(childId, name, out knownChild)))
             {
                 //terminating a child is quite long operation due to snapshots saving
-                //it is cheaper to resume child than wait for it termination and create rom scratch
+                //it is cheaper to resume child than wait for it termination and create from scratch
                 if (knownChild.Terminating)
                 {
                     StashMessage(message);
@@ -98,9 +120,8 @@ namespace GridDomain.Node.Actors.PersistentHub
 
             knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
             knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
+
             SendMessageToChild(knownChild, message);
-
-
             LogMessageSentToChild(message, childId, childWasCreated);
         }
 
@@ -131,7 +152,8 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         protected virtual void SendMessageToChild(ChildInfo knownChild, object message)
         {
-            knownChild.Ref.Tell(message);
+          
+                knownChild.Ref.Tell(message);
         }
 
         private void Clear()
@@ -188,4 +210,5 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         public class ClearChildren {}
     }
+
 }

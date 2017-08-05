@@ -26,8 +26,8 @@ namespace GridDomain.Node.Actors.EventSourced
             _snapshotsPolicy = policy;
 
             PersistenceId = Self.Path.Name;
-            Id = AggregateActorName.Parse<T>(Self.Path.Name).
-                                    Id;
+            Id = AggregateActorName.Parse<T>(Self.Path.Name)
+                                   .Id;
             State = (T) aggregateConstructor.Build(typeof(T), Id, null);
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
@@ -69,11 +69,14 @@ namespace GridDomain.Node.Actors.EventSourced
 
             Command<SaveSnapshotSuccess>(s =>
                                          {
-                                             SnapshotsSaveInProgressCount--;
-                                             NotifyPersistenceWatchers(s);
-                                             _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
-                                                                                BusinessDateTime.UtcNow);
+                                             CountSnapshotSaved(s);
                                          });
+
+            Command<DeleteSnapshotSuccess>(s =>
+                                           {
+                                               Log.Debug("snapshot deleted");
+                                               NotifyPersistenceWatchers(s);
+                                           });
         }
 
         protected void StashMessage(object message)
@@ -100,45 +103,43 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected void SaveSnapshot(IAggregate aggregate)
         {
-            if (_snapshotsPolicy.ShouldSave(
-                                         SnapshotSequenceNr,
-                                         BusinessDateTime.UtcNow))
-            {
-                SnapshotsSaveInProgressCount++;
-                SaveSnapshot(aggregate.GetSnapshot());
-            }
+            if (!_snapshotsPolicy.ShouldSave(
+                SnapshotSequenceNr,
+                BusinessDateTime.UtcNow)) return;
+            Log.Debug("Started snapshot save");
+            SnapshotsSaveInProgressCount++;
+            SaveSnapshot(aggregate.GetSnapshot());
         }
 
         protected void NotifyPersistenceWatchers(object msg)
         {
             foreach (var watcher in _persistenceWatchers)
-                watcher.Tell(new Persisted(msg));
+                watcher.Tell(msg);
         }
-
 
         protected virtual void TerminatingBehavior()
         {
             Command<DeleteSnapshotsSuccess>(s =>
                                             {
                                                 Log.Debug("snapshots deleted, {criteria}", s.Criteria);
+                                                NotifyPersistenceWatchers(s);
                                                 StopNow();
                                             });
             Command<DeleteSnapshotsFailure>(s =>
                                             {
                                                 Log.Debug("snapshots failed to delete, {criteria}", s.Criteria);
+                                                NotifyPersistenceWatchers(s);
                                                 StopNow();
                                             });
             //for cases when actor is ask to termite and snapshot save is in progress
             Command<SaveSnapshotSuccess>(s =>
                                          {
-                                             SnapshotsSaveInProgressCount--;
-                                             NotifyPersistenceWatchers(s);
-                                             _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
-                                                                                BusinessDateTime.UtcNow);
+                                             Log.Debug("snapshot saved during termination");
+                                             CountSnapshotSaved(s);
 
-                                             if(SnapshotsSaveInProgressCount != 0)
+                                             if (SnapshotsSaveInProgressCount != 0)
 
-                                             Log.Debug("All snapshots blocking terminations were saved, continue work");
+                                                 Log.Debug("All snapshots blocking terminations were saved, continue work");
                                              Stash.UnstashAll();
                                          });
 
@@ -152,18 +153,19 @@ namespace GridDomain.Node.Actors.EventSourced
 
             Command<GracefullShutdownRequest>(s =>
                                               {
-                                                  var messageToProcess = Stash.ClearStash().
-                                                                               Where(m => !(m.Message is GracefullShutdownRequest) ||
-                                                                                          !(m.Message is DeleteSnapshotsSuccess) ||
-                                                                                          !(m.Message is SaveSnapshotSuccess) ||
-                                                                                          !(m.Message is DeleteSnapshotsFailure)).
-                                                                               ToArray();
+                                                  Log.Debug("Started gracefull shutdown process");
+                                                  var messageToProcess = Stash.ClearStash()
+                                                                              .Where(m => !(m.Message is GracefullShutdownRequest)) //||
+                                                                              // !(m.Message is DeleteSnapshotsSuccess) ||
+                                                                              // !(m.Message is SaveSnapshotSuccess) ||
+                                                                              // !(m.Message is DeleteSnapshotsFailure))
+                                                                              .ToArray();
 
                                                   if (messageToProcess.Any())
                                                   {
                                                       Log.Warning("{Actor} received shutdown request but have unprocessed messages."
                                                                   + "Shutdown will be postponed until all messages processing",
-                                                                  PersistenceId);
+                                                          PersistenceId);
 
                                                       Behavior.Unbecome();
                                                       foreach (var m in messageToProcess)
@@ -180,22 +182,31 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       return;
                                                   }
 
-                                                  if (!_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
-                                                      return;
-
-                                                  var snapshotSelectionCriteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
-                                                  DeleteSnapshots(snapshotSelectionCriteria);
-                                                  Log.Debug("started snapshots delete, {criteria}", snapshotSelectionCriteria);
+                                                  if (_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
+                                                  {
+                                                      var snapshotSelectionCriteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
+                                                      Log.Debug("started snapshots delete, {criteria}", snapshotSelectionCriteria);
+                                                      DeleteSnapshots(snapshotSelectionCriteria);
+                                                  }
                                                   StopNow();
                                               });
+        }
+
+        private void CountSnapshotSaved(SaveSnapshotSuccess s)
+        {
+            Log.Debug("snapshot saved, sequence number is {number}", s.Metadata.SequenceNr);
+            SnapshotsSaveInProgressCount--;
+            NotifyPersistenceWatchers(s);
+            _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
+                                               BusinessDateTime.UtcNow);
         }
 
         protected override void Unhandled(object message)
         {
             Log.Warning("Actor {id} skipping message {message} because it was unhandled. \r\n {@behavior}.",
-                        PersistenceId,
-                        message,
-                        Behavior);
+                PersistenceId,
+                message,
+                Behavior);
             base.Unhandled(message);
         }
 

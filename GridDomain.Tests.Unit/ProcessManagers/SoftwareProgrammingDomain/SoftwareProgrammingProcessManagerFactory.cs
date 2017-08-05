@@ -23,13 +23,13 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         /// <param name="message"></param>
         /// <param name="processId">id of creating process</param>
         /// <returns></returns>
-        public IProcessManager<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? processId = null)
+        public virtual IProcessManager<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? processId = null)
         {
             return Create(new SoftwareProgrammingState(processId ?? Guid.NewGuid(),
                                                            nameof(SoftwareProgrammingProcess.Coding)));
         }
 
-        public IProcessManager<SoftwareProgrammingState> Create(SoftwareProgrammingState message)
+        public virtual IProcessManager<SoftwareProgrammingState> Create(SoftwareProgrammingState message)
         {
             return new ProcessManager<SoftwareProgrammingState>(new SoftwareProgrammingProcess(), message, _log);
         }
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public IProcessManager<SoftwareProgrammingState> CreateNew(SleptWellEvent message, Guid? processId = null)
+        public virtual IProcessManager<SoftwareProgrammingState> CreateNew(SleptWellEvent message, Guid? processId = null)
         {
             return Create(new SoftwareProgrammingState(processId ?? Guid.NewGuid(),
                                                            nameof(SoftwareProgrammingProcess.Coding)));

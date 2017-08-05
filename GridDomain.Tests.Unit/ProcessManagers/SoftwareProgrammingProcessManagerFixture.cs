@@ -9,18 +9,18 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 {
     public class SoftwareProgrammingProcessManagerFixture : NodeTestFixture
     {
-        private readonly SoftwareProgrammingProcessDomainConfiguration _softwareProgrammingProcessDomainConfiguration;
+        protected readonly SoftwareProgrammingProcessDomainConfiguration ProcessConfiguration;
 
         public SoftwareProgrammingProcessManagerFixture(IDomainConfiguration config = null,
                                               TimeSpan? timeout = default(TimeSpan?)) : base(config, timeout)
         {
-            _softwareProgrammingProcessDomainConfiguration = new SoftwareProgrammingProcessDomainConfiguration(Logger);
+            ProcessConfiguration = new SoftwareProgrammingProcessDomainConfiguration(Logger);
             Add(new BalloonDomainConfiguration());
         }
 
         protected override NodeSettings CreateNodeSettings()
         {
-            Add(_softwareProgrammingProcessDomainConfiguration);
+            Add(ProcessConfiguration);
             return base.CreateNodeSettings();
         }
 
@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                                             TimeSpan? maxSaveFrequency = null,
                                                             int saveOnEach = 1)
         {
-            _softwareProgrammingProcessDomainConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory
+            ProcessConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory
                                                        .StateDependencyFactory
                                                        .SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
             return this;
