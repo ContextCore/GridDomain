@@ -36,6 +36,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
             await node.Stop();
 
             node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig(),false).UseSqlPersistence(false).CreateNode();
+            _testOutputHelper.WriteLine("starting waiter creation");
             var res = await node.NewWaiter(TimeSpan.FromSeconds(10))
                                 .Expect<FutureEventOccuredEvent>(e => e.SourceId == cmd.AggregateId)
                                 .Create();
