@@ -14,7 +14,7 @@ namespace GridDomain.Node.Actors.EventSourced
         private readonly int _saveOnEach;
         private long _lastSavedSnapshot;
         private long _lastSnapshotAppliedNumber;
-        private DateTime _lastSaveStartedAt;
+        private DateTime? _lastSaveStartedAt;
 
         public SnapshotsPersistencePolicy(int saveOnEach = 1,
                                           int eventsToKeep = 10,
@@ -24,7 +24,7 @@ namespace GridDomain.Node.Actors.EventSourced
             MaxSaveFrequency = maxSaveFrequency ?? TimeSpan.MinValue;
             _saveOnEach = saveOnEach;
             _eventsToKeep = eventsToKeep;
-            _lastSaveStartedAt = savedAt ?? DateTime.MinValue;
+            _lastSaveStartedAt = savedAt;
         }
 
         public void MarkSnapshotSaving(DateTime? now=null)
@@ -35,12 +35,14 @@ namespace GridDomain.Node.Actors.EventSourced
 
         public bool ShouldSave(long snapshotSequenceNr, DateTime? now = null)
         {
-            var saveIsInTime = (now ?? BusinessDateTime.UtcNow) - _lastSaveStartedAt >= MaxSaveFrequency;
+            var canSaveByFrequencyLimitation = 
+                MaxSaveFrequency == TimeSpan.MinValue || 
+                _lastSaveStartedAt == null ||
+                (now ?? BusinessDateTime.UtcNow) - (_lastSaveStartedAt ?? BusinessDateTime.UtcNow) >= MaxSaveFrequency;
+
             snapshotSequenceNr = Math.Max(snapshotSequenceNr, _lastSnapshotAppliedNumber);
 
-            if (!saveIsInTime) return false;
-
-            return snapshotSequenceNr % _saveOnEach == 0;
+            return canSaveByFrequencyLimitation && snapshotSequenceNr % _saveOnEach == 0;
         }
 
         public bool SnapshotsSaveInProgress => _snapshotsSaveInProgressCount > 0;
