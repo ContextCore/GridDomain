@@ -144,7 +144,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         public void Sync_and_async_handlers_performs_independent()
         {
             var fastHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(1), TestActor)));
-            var slowHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(100), TestActor)));
+            var slowHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(500), TestActor)));
             var catalog = new ProcessorListCatalog();
 
             //Slow handler will receive messages first. 
