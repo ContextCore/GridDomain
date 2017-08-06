@@ -19,6 +19,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Fact]
         public async Task Test()
         {
+            var i = Node.Id; //just start node
             var process  = new SoftwareProgrammingProcess();
             var state = new SoftwareProgrammingState(Guid.NewGuid(), process.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
 
