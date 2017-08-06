@@ -37,10 +37,14 @@ namespace GridDomain.Node.Actors.PersistentHub
                                     Guid id;
                                     if (!AggregateActorName.TryParseId(t.ActorRef.Path.Name, out id))
                                         return;
+                                    if (Children.TryGetValue(id, out ChildInfo info))
+                                    {
+                                        //resend messages arrived for a child when it was in terminating state
+                                        foreach(var msg in info.PendingMessages)
+                                            Self.Tell(msg);
+                                        info.PendingMessages.Clear();
+                                    }
                                     Children.Remove(id);
-                                    //continue to process any remaining messages
-                                    //for example when we are trying to resume terminating child with no success
-                                    Stash.UnstashAll();
                                 });
             Receive<ClearChildren>(m => Clear());
             Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
@@ -52,16 +56,6 @@ namespace GridDomain.Node.Actors.PersistentHub
                                      sender.Tell(new WarmUpResult(info, created));
                                  });
             
-            Receive<ShutdownCanceled>(m =>
-                                      {
-                                          Guid id;
-                                          if (!AggregateActorName.TryParseId(Sender.Path.Name, out id))
-                                              return;
-                                          //child was resumed from planned shutdown
-                                          Children[id].Terminating = false;
-                                          Stash.UnstashAll();
-                                          Log.Debug("Child {id} resumed. Stashed messages will be sent to it", id);
-                                      });
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
             Receive<IMessageMetadataEnvelop>(messageWithMetadata =>
                                              {
@@ -97,14 +91,11 @@ namespace GridDomain.Node.Actors.PersistentHub
             bool childWasCreated;
             if(!(childWasCreated = InitChild(childId, name, out knownChild)))
             {
-                //terminating a child is quite long operation due to snapshots saving
-                //it is cheaper to resume child than wait for it termination and create from scratch
                 if (knownChild.Terminating)
                 {
-                    StashMessage(message);
-                    knownChild.Ref.Tell(CancelShutdownRequest.Instance);
+                    knownChild.PendingMessages.Add(message);
                     Log.Debug(
-                                 "Stashing message {msg} for child {id}. Waiting for child resume from termination",
+                                 "Keeping message {msg} for child {id}. Waiting for child to terminate. Message will be resent after.",
                                  message,
                                  childId);
 

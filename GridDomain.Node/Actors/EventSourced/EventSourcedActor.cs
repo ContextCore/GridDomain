@@ -142,14 +142,6 @@ namespace GridDomain.Node.Actors.EventSourced
                                              Stash.UnstashAll();
                                          });
 
-            Command<CancelShutdownRequest>(s =>
-                                           {
-                                               Behavior.Unbecome();
-                                               Stash.UnstashAll();
-                                               Log.Info("Shutdown canceled, will resume activity");
-                                               Sender.Tell(ShutdownCanceled.Instance);
-                                           });
-
             Command<GracefullShutdownRequest>(s =>
                                               {
                                                   Log.Debug("Started gracefull shutdown process");

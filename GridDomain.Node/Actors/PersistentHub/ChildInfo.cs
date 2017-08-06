@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Akka.Actor;
 
 namespace GridDomain.Node.Actors.PersistentHub
@@ -8,7 +9,7 @@ namespace GridDomain.Node.Actors.PersistentHub
         public DateTime ExpiresAt;
         public DateTime LastTimeOfAccess;
         public bool Terminating;
-
+        public List<object> PendingMessages { get; } = new List<object>();
         public ChildInfo(IActorRef actor)
         {
             Ref = actor;
