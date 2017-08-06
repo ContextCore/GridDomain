@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit.Metadata
 {
     public class Metadata_from_async_aggregate_command_passed_to_produced_events : BalloonDomainCommandExecutionTests
     {
-        public Metadata_from_async_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : base(output) {}
+        public Metadata_from_async_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : base(output) { }
 
         private IMessageMetadataEnvelop<BalloonTitleChanged> _answer;
         private PlanTitleChangeCommand _command;
@@ -30,7 +30,9 @@ namespace GridDomain.Tests.Unit.Metadata
             _command = new PlanTitleChangeCommand(1, Guid.NewGuid());
             _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
 
-            var res = await Node.Prepare(_command, _commandMetadata).Expect<BalloonTitleChanged>().Execute();
+            var res = await Node.Prepare(_command, _commandMetadata)
+                                .Expect<BalloonTitleChanged>()
+                                .Execute();
 
             _answer = res.MessageWithMetadata<BalloonTitleChanged>();
             //Result_contains_metadata()
@@ -51,7 +53,9 @@ namespace GridDomain.Tests.Unit.Metadata
             Assert.Equal(1, _answer.Metadata.History?.Steps.Count);
             //Result_metadata_has_processed_correct_filled_history_step()
             var step = _answer.Metadata.History.Steps.First();
-            Assert.Equal(AggregateActorName.New<Balloon>(_command.AggregateId).Name, step.Who);
+            Assert.Equal(AggregateActorName.New<Balloon>(_command.AggregateId)
+                                           .Name,
+                step.Who);
             Assert.Equal(AggregateActorConstants.CommandExecutionCreatedAnEvent, step.Why);
             Assert.Equal(AggregateActorConstants.PublishingEvent, step.What);
         }

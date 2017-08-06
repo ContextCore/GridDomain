@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
 
             public async Task Handle(BalloonCreated message, IMessageMetadata metadata = null)
             {
-                await Task.Delay(500);
+                await Task.Delay(2000);
                 _publisher.Publish(500);
                 CreatedCount++;
             }

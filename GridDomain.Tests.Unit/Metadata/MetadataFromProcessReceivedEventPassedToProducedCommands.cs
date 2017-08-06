@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Unit.Metadata
             Node.Pipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<DomainEvent>(gotTiredEvent,
                                                                                  gotTiredEventMetadata));
 
-            var answer = FishForMessage<MessageMetadataEnvelop<ICommand>>(m => true);
+            var answer = FishForMessage<MessageMetadataEnvelop<ICommand>>(m => true,TimeSpan.FromSeconds(5));
             var command = answer.Message as MakeCoffeCommand;
 
             //Result_contains_metadata()

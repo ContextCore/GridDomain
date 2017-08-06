@@ -51,7 +51,7 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             var maxSnapshotNumToDelete = Math.Max(_lastSavedSnapshot - _eventsToKeep, 0);
             snapshotsToDeleteCriteria = new SnapshotSelectionCriteria() {MaxSequenceNr = maxSnapshotNumToDelete};
-            return true;
+            return maxSnapshotNumToDelete > 0;
         }
 
         public void MarkSnapshotApplied(long sequenceNr)
@@ -63,7 +63,8 @@ namespace GridDomain.Node.Actors.EventSourced
 
         public void MarkSnapshotSaved(long snapshotsSequenceNumber, DateTime? saveTime = null)
         {
-            _lastSavedSnapshot = snapshotsSequenceNumber;
+            //save confirmations can arrive out of order 
+            _lastSavedSnapshot = Math.Max(_lastSavedSnapshot,snapshotsSequenceNumber);
             _snapshotsSaveInProgressCount--;
         }
     }
