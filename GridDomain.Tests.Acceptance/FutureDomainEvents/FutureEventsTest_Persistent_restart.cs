@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling;
@@ -29,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         {
 
             var node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig()).UseSqlPersistence().CreateNode();
-            var cmd = new ScheduleEventInFutureCommand(DateTime.UtcNow.AddSeconds(3), Guid.NewGuid(), "test value");
+            var cmd = new ScheduleEventInFutureCommand(BusinessDateTime.UtcNow.AddSeconds(5), Guid.NewGuid(), "test value");
 
             await node.Execute(cmd);
             await node.Stop();
