@@ -6,7 +6,7 @@ namespace GridGomain.Tests.Stress
 {
     public class StressTestAkkaConfiguration : AkkaConfiguration
     {
-        public StressTestAkkaConfiguration(LogLevel verbosity = LogLevel.InfoLevel)
+        public StressTestAkkaConfiguration(LogLevel verbosity = LogLevel.WarningLevel)
             : base(new StressTestAkkaNetworkAddress(), new AutoTestAkkaDbConfiguration(), verbosity) {}
     }
 }
