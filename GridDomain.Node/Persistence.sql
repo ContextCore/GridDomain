@@ -1,4 +1,9 @@
 ﻿
+CREATE DATABASE AutoTestWrite
+GO
+USE [AutoTestWrite]
+GO
+
 CREATE TABLE Journal (
   Ordering BIGINT IDENTITY(1,1) NOT NULL,
   PersistenceID NVARCHAR(255) NOT NULL,

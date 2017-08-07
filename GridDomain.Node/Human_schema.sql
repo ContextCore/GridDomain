@@ -1,6 +1,9 @@
 ﻿-- helper function to convert between DATETIME2 and BIGINT as .NET ticks
 -- taken from: http://stackoverflow.com/questions/7386634/convert-sql-server-datetime-object-to-bigint-net-ticks
 
+GO
+USE [AutoTestWrite]
+GO
 
 --
 GO
