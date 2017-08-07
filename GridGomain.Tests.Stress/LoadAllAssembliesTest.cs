@@ -5,11 +5,11 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace GridGomain.Tests.Stress {
-    public class LoadAll
+    public class LoadAllAssembliesTest
     {
         private readonly ITestOutputHelper _helper;
 
-        public LoadAll(ITestOutputHelper helper)
+        public LoadAllAssembliesTest(ITestOutputHelper helper)
         {
             _helper = helper;
         }
