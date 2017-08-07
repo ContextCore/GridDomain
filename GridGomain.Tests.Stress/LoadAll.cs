@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using Xunit;
@@ -8,12 +9,20 @@ namespace GridGomain.Tests.Stress {
         [Fact]
         void Test()
         {
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var allTypes = executingAssembly.GetReferencedAssemblies().
-                                             Select(Assembly.Load).
-                                             Concat(new[] {executingAssembly}).
-                                             SelectMany(a => a.GetTypes())
-                                             .ToArray();
+            try
+            {
+                var executingAssembly = Assembly.GetExecutingAssembly();
+                var allTypes = executingAssembly.GetReferencedAssemblies()
+                                                .Select(Assembly.Load)
+                                                .Concat(new[] {executingAssembly})
+                                                .SelectMany(a => a.GetTypes())
+                                                .ToArray();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                foreach(var e in ex.LoaderExceptions)
+                 Console.WriteLine(e);
+            }
 
         }
     }
