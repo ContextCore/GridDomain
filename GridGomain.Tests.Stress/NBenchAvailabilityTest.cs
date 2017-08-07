@@ -7,13 +7,13 @@ using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
 namespace GridGomain.Tests.Stress {
-    public class NBenchTest
+    public class NBenchAvailabilityTest
     {
         private const string TotalCommandsExecutedCounter = nameof(TotalCommandsExecutedCounter);
         private Counter _counter;
         private ITestOutputHelper _testOutputHelper;
 
-        public NBenchTest(ITestOutputHelper output)
+        public NBenchAvailabilityTest(ITestOutputHelper output)
         {
             Trace.Listeners.Clear();
             _testOutputHelper = output;

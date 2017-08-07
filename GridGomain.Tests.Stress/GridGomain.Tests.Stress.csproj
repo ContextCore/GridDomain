@@ -258,8 +258,8 @@
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="INodeScenario.cs" />
     <Compile Include="InsertOptimazedBulkConfiguration.cs" />
-    <Compile Include="LoadAll.cs" />
-    <Compile Include="NBenchTest.cs" />
+    <Compile Include="LoadAllAssembliesTest.cs" />
+    <Compile Include="NBenchAvailabilityTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StressTestAkkaConfiguration.cs" />
