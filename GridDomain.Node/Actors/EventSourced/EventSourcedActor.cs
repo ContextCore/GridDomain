@@ -46,7 +46,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
             Recover<RecoveryCompleted>(message =>
                                        {
-                                           Log.Debug("Recovery for actor {Id} is completed", PersistenceId);
+                                           Log.Debug("Recovery completed");
                                            NotifyPersistenceWatchers(message);
                                        });
         }
@@ -57,7 +57,7 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             Command<GracefullShutdownRequest>(req =>
                                               {
-                                                  Log.Debug("{Actor} received shutdown request", PersistenceId);
+                                                  Log.Debug("Received shutdown request");
                                                   Monitor.IncrementMessagesReceived();
                                                   Behavior.Become(TerminatingBehavior, nameof(TerminatingBehavior));
                                                   Self.Tell(req);
@@ -81,7 +81,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected void StashMessage(object message)
         {
-            Log.Debug("Aggregate {id} stashing message {message} current behavior is {behavior}", PersistenceId, message, Behavior.Current);
+            Log.Debug("Stashing message {message} current behavior is {behavior}", message, Behavior.Current);
 
             Stash.Stash();
         }
@@ -151,9 +151,8 @@ namespace GridDomain.Node.Actors.EventSourced
 
                                                   if (messageToProcess.Any())
                                                   {
-                                                      Log.Warning("{Actor} received shutdown request but have unprocessed messages."
-                                                                  + "Shutdown will be postponed until all messages processing",
-                                                          PersistenceId);
+                                                      Log.Warning("Received shutdown request but have unprocessed messages."
+                                                                  + "Shutdown will be postponed until all messages processing");
 
                                                       Behavior.Unbecome();
                                                       foreach (var m in messageToProcess)
@@ -192,8 +191,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected override void Unhandled(object message)
         {
-            Log.Warning("Actor {id} skipping message {message} because it was unhandled. \r\n {@behavior}.",
-                PersistenceId,
+            Log.Warning("Skipping message {message} because it was unhandled. \r\n {@behavior}.",
                 message,
                 Behavior);
             base.Unhandled(message);
@@ -201,19 +199,19 @@ namespace GridDomain.Node.Actors.EventSourced
 
         private void StopNow()
         {
-            Log.Debug("Event sourced actor {id} stopped", PersistenceId);
+            Log.Debug("Stopped");
             Context.Stop(Self);
         }
 
         protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
         {
-            Log.Error("Additional persistence diagnostics on fauilure {error} {actor} {event}", cause, Self.Path.Name, @event);
+            Log.Error("Additional persistence diagnostics on fauilure {error} {event}", cause, @event);
             base.OnPersistFailure(cause, @event, sequenceNr);
         }
 
         protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
         {
-            Log.Error("Additional persistence diagnostics on rejected {error} {actor} {event}", cause, Self.Path.Name, @event);
+            Log.Error("Additional persistence diagnostics on rejected {error} {event}", cause, @event);
             base.OnPersistRejected(cause, @event, sequenceNr);
         }
 

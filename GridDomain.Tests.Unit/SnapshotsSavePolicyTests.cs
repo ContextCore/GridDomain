@@ -56,7 +56,7 @@ namespace GridDomain.Tests.Unit
         }
 
         [Fact]
-        public async Task Given_policy_with_keep_When_saved_many_with_wrong_confirmation_order_Then_only_keep_amount_is_left()
+        public void Given_policy_with_keep_When_saved_many_with_wrong_confirmation_order_Then_only_keep_amount_is_left()
         {
             var policy = new SnapshotsPersistencePolicy(1, 2);
             SnapshotSelectionCriteria deleteCriteria;

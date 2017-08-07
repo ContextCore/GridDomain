@@ -26,7 +26,6 @@ namespace GridDomain.Tests.Unit
         private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
-
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null, TimeSpan? defaultTimeout = null, ITestOutputHelper helper = null)
         {
             if (domainConfiguration != null)
@@ -36,6 +35,7 @@ namespace GridDomain.Tests.Unit
             Output = helper;
             SystemConfigFactory = () => AkkaConfig.ToStandAloneInMemorySystemConfig();
             ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
+          
         }
         public NodeTestFixture(params IDomainConfiguration[] domainConfiguration)
         {
@@ -72,6 +72,7 @@ namespace GridDomain.Tests.Unit
         public virtual async Task<GridDomainNode> CreateNode()
         {
             Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
+
             NodeSettings = CreateNodeSettings();
 
             OnNodePreparingEvent.Invoke(this, this);
@@ -105,7 +106,7 @@ namespace GridDomain.Tests.Unit
 
             ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
 
-            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(Logger)), "node-log-test");
+            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel))), "node-log-test");
 
             logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
             return System;

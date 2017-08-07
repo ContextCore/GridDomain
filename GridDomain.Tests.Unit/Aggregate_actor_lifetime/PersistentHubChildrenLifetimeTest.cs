@@ -64,7 +64,11 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
             var childRef = Child.Ref;
             Watch(childRef);
             //It_should_be_terminated()
-            FishForMessage<Terminated>(m => m.ActorRef.Path == childRef.Path,TimeSpan.FromSeconds(10));
+            FishForMessage<Terminated>(m => m.ActorRef.Path == childRef.Path,
+                                      TimeSpan.FromSeconds(10));
+            //TODO: replace sleep with dateTime manipulations via DateTimeFacade
+            await Task.Delay(200);
+            //hub need time to update its childs in response of Terminated message
             //It_should_be_removed_from_hub()
             Assert.False(Hub.Children.ContainsKey(Infrastructure.ChildId));
         }
@@ -77,7 +81,6 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
 
             //TODO: replace sleep with dateTime manipulations via DateTimeFacade
             await Task.Delay(200);
-
             await And_command_for_child_is_sent();
             //Hub_should_contains_child()
             Assert.True(Hub.Children.ContainsKey(Infrastructure.ChildId));

@@ -137,6 +137,8 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         private void Clear()
         {
+            Log.Warning("Starting children clear");
+
             var now = BusinessDateTime.UtcNow;
             var childsToTerminate =
                 Children.Where(c => now > c.Value.ExpiresAt && !c.Value.Terminating)
@@ -146,9 +148,9 @@ namespace GridDomain.Node.Actors.PersistentHub
             foreach (var childId in childsToTerminate)
                 ShutdownChild(childId);
 
-            Log.Debug("Clear childs process finished, removing {childsToTerminate} of {total} children, ",
-                childsToTerminate.Length,
-                Children.Count);
+            Log.Warning("Removed {childsToTerminate} of {total} children",
+                      childsToTerminate.Length,
+                      Children.Count);
         }
 
         private void ShutdownChild(Guid childId)
@@ -178,7 +180,7 @@ namespace GridDomain.Node.Actors.PersistentHub
         protected override void PreStart()
         {
             _monitor.IncrementActorStarted();
-            Log.Debug("{ActorHub} is going to start", Self.Path);
+            Log.Debug("Starting");
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod,
                 ChildClearPeriod,
                 Self,

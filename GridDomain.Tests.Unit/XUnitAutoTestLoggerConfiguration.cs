@@ -13,10 +13,15 @@ namespace GridDomain.Tests.Unit
     {
         public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose)
         {
-            WriteTo.XunitTestOutput(output);
+            WriteTo.XunitTestOutput(output,level,
+                  "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{LogSource}"
+                + "{NewLine} Message: {Message}"
+                + "{NewLine} {Exception}");
+
+            //cannot enrich from context as it is static and logger is interested in instance-specifica data
             Enrich.FromLogContext();
-            Enrich.WithThreadId();
             MinimumLevel.Is(level);
+
             Destructure.ByTransforming<Money>(r => new {r.Amount, r.CurrencyCode});
             Destructure.ByTransforming<Exception>(r => new {Type = r.GetType(), r.StackTrace});
             Destructure.ByTransforming<IMessageMetadata>(r => new {r.CasuationId, r.CorrelationId});

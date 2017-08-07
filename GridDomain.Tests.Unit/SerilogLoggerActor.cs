@@ -13,9 +13,9 @@ namespace GridDomain.Tests.Unit
         /// <summary>
         ///     Initializes a new instance of the <see cref="SerilogLogger" /> class.
         /// </summary>
-        public SerilogLoggerActor(ILogger logger)
+        public SerilogLoggerActor(LoggerConfiguration loggerConf)
         {
-            _logger = logger;
+            _logger = loggerConf.CreateLogger();
 
             Receive<Error>(m => Handle(m));
             Receive<Warning>(m => Handle(m));
@@ -32,22 +32,22 @@ namespace GridDomain.Tests.Unit
         private static string GetFormat(object message)
         {
             var logMessage = message as LogMessage;
-            return logMessage != null ? logMessage.Format : "Thread:{Thread} Source:{LogSource} {Message}";
+            var defaultFormat = "{Message}";
+            return logMessage == null ? defaultFormat : logMessage.Format;
         }
 
         private static object[] GetArgs(object message)
         {
             var logMessage = message as LogMessage;
-            return logMessage != null ? logMessage.Args : new[] {message};
+            if (logMessage != null) return logMessage.Args;
+            else return new[] {message};
         }
 
         private ILogger GetLogger(LogEvent logEvent)
         {
-            return
-                _logger.ForContext("Actor", Context.Sender.Path)
-                       .ForContext("Timestamp", logEvent.Timestamp)
-                       .ForContext("LogSource", logEvent.LogSource)
-                       .ForContext("Thread", logEvent.Thread.ManagedThreadId.ToString().PadLeft(4, '0'));
+            return _logger.ForContext("Timestamp", logEvent.Timestamp)
+                          .ForContext("LogSource", logEvent.LogSource)
+                          .ForContext("Thread", logEvent.Thread.ManagedThreadId);
         }
 
         private void Handle(Error logEvent)

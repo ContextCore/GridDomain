@@ -25,7 +25,8 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
                 var coffeMadeEvent = new CoffeMadeEvent(gotTired.FavoriteCoffeMachineId, gotTired.PersonId, null, processId);
 
                 ChildCreateMessage = new MessageMetadataEnvelop<DomainEvent>(gotTired, new MessageMetadata(gotTired.SourceId));
-
+                //TODO: second message will not hit same process as created by previos, 
+                //think how to change it. 
                 ChildActivateMessage = new MessageMetadataEnvelop<DomainEvent>(coffeMadeEvent,
                                                                                new MessageMetadata(coffeMadeEvent.SourceId));
             }

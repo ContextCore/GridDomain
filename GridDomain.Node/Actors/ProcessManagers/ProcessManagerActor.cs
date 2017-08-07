@@ -100,7 +100,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         private void StashMessage(object m)
         {
-            _log.Warning("Process {id} stashing message {messge}", Id, m);
+            _log.Warning("Stashing message {messge}", m);
             Stash.Stash();
         }
 

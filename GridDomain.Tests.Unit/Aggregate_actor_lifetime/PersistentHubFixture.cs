@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
 {
     public class PersistentHubFixture : NodeTestFixture
     {
-        public PersistentHubFixture(IPersistentActorTestsInfrastructure infrastructure) : base()
+        public PersistentHubFixture(IPersistentActorTestsInfrastructure infrastructure)
         {
             Infrastructure = infrastructure;
             Add(CreateDomainConfiguration());
