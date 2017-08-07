@@ -361,9 +361,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="1.6-1.7_migration.sql" />
     <Content Include="Human_schema.sql" />
-    <Content Include="Database schema full.sql" />
+    <Content Include="Persistence.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

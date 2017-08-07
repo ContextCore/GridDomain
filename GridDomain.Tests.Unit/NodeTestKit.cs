@@ -21,6 +21,7 @@ namespace GridDomain.Tests.Unit
             Fixture.ActorSystemCreator = () => Sys;
             Fixture.Output = output;
             AkkaConfig = fixture.AkkaConfig;
+
             Node = fixture.CreateNode().Result;
         }
 

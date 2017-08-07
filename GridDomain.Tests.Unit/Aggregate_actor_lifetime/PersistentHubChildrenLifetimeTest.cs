@@ -29,11 +29,6 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
             await Task.Delay(200);
         }
 
-        private async Task And_it_is_not_active_until_lifetime_period_is_expired()
-        {
-            await Task.Delay(5000);
-        }
-
         private async Task And_command_for_child_is_sent()
         {
             HubRef.Tell(Infrastructure.ChildActivateMessage);
@@ -66,10 +61,10 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
         public async Task When_child_became_inactive_too_long()
         {
             await When_hub_creates_a_child();
-            var actorToWatch = Child.Ref;
-            Watch(actorToWatch);
+            var childRef = Child.Ref;
+            Watch(childRef);
             //It_should_be_terminated()
-            FishForMessage<Terminated>(m => m.ActorRef.Path == actorToWatch.Path,TimeSpan.FromSeconds(10));
+            FishForMessage<Terminated>(m => m.ActorRef.Path == childRef.Path,TimeSpan.FromSeconds(10));
             //It_should_be_removed_from_hub()
             Assert.False(Hub.Children.ContainsKey(Infrastructure.ChildId));
         }
@@ -97,7 +92,8 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
         public async Task When_child_revives()
         {
             await When_hub_creates_a_child();
-            await And_it_is_not_active_until_lifetime_period_is_expired();
+            //And_it_is_not_active_until_lifetime_period_is_expired
+            await Task.Delay(5000);
             await And_command_for_child_is_sent();
             //It_should_be_restored_after_command_execution()
             var payload = "child ping";

@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace GridDomain.Node.Actors.PersistentHub
                                     if (Children.TryGetValue(id, out ChildInfo info))
                                     {
                                         //resend messages arrived for a child when it was in terminating state
-                                        foreach(var msg in info.PendingMessages)
+                                        foreach (var msg in info.PendingMessages)
                                             Self.Tell(msg);
                                         info.PendingMessages.Clear();
                                     }
@@ -55,7 +56,7 @@ namespace GridDomain.Node.Actors.PersistentHub
                                      var sender = Sender;
                                      sender.Tell(new WarmUpResult(info, created));
                                  });
-            
+
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
             Receive<IMessageMetadataEnvelop>(messageWithMetadata =>
                                              {
@@ -66,20 +67,13 @@ namespace GridDomain.Node.Actors.PersistentHub
                                              });
         }
 
-        private void StashMessage(object message)
-        {
-            Log.Info("Actor hub {id} stashing message {messge}", GetType().Name, message);
-            Stash.Stash();
-        }
-
-        protected bool InitChild(Guid childId, string name, out ChildInfo childInfo)
+        private bool InitChild(Guid childId, string name, out ChildInfo childInfo)
         {
             if (Children.TryGetValue(childId, out childInfo)) return false;
 
             childInfo = CreateChild(name);
             Children[childId] = childInfo;
             Context.Watch(childInfo.Ref);
-
 
             return true;
         }
@@ -89,15 +83,15 @@ namespace GridDomain.Node.Actors.PersistentHub
             ChildInfo knownChild;
             //TODO: refactor this suspicious logic of child terminaition cancel
             bool childWasCreated;
-            if(!(childWasCreated = InitChild(childId, name, out knownChild)))
+            if (!(childWasCreated = InitChild(childId, name, out knownChild)))
             {
                 if (knownChild.Terminating)
                 {
                     knownChild.PendingMessages.Add(message);
                     Log.Debug(
-                                 "Keeping message {msg} for child {id}. Waiting for child to terminate. Message will be resent after.",
-                                 message,
-                                 childId);
+                        "Keeping message {msg} for child {id}. Waiting for child to terminate. Message will be resent after.",
+                        message,
+                        childId);
 
                     return;
                 }
@@ -120,14 +114,15 @@ namespace GridDomain.Node.Actors.PersistentHub
                     childId);
             }
             else
-            Log.Debug("Message {msg} sent to {isknown} child {id}",
-                message,
-                childWasCreated ? "new" : "known",
-                childId);
+                Log.Debug("Message {msg} sent to {isknown} child {id}",
+                    message,
+                    childWasCreated ? "new" : "known",
+                    childId);
         }
 
         //TODO: replace with more efficient implementation
         internal virtual TimeSpan ChildClearPeriod => _recycleConfiguration.ChildClearPeriod;
+
         internal virtual TimeSpan ChildMaxInactiveTime => _recycleConfiguration.ChildMaxInactiveTime;
         public IStash Stash { get; set; }
 
@@ -137,20 +132,23 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         protected virtual void SendMessageToChild(ChildInfo knownChild, object message)
         {
-          
-                knownChild.Ref.Tell(message);
+            knownChild.Ref.Tell(message);
         }
 
         private void Clear()
         {
             var now = BusinessDateTime.UtcNow;
             var childsToTerminate =
-                Children.Where(c => now > c.Value.ExpiresAt && !c.Value.Terminating).Select(ch => ch.Key).ToArray();
+                Children.Where(c => now > c.Value.ExpiresAt && !c.Value.Terminating)
+                        .Select(ch => ch.Key)
+                        .ToArray();
 
             foreach (var childId in childsToTerminate)
                 ShutdownChild(childId);
 
-            Log.Debug("Clear childs process finished, removing {childsToTerminate} childs", childsToTerminate.Length);
+            Log.Debug("Clear childs process finished, removing {childsToTerminate} of {total} children, ",
+                childsToTerminate.Length,
+                Children.Count);
         }
 
         private void ShutdownChild(Guid childId)
@@ -171,7 +169,8 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         private ChildInfo CreateChild(string name)
         {
-            var props = Context.DI().Props(ChildActorType);
+            var props = Context.DI()
+                               .Props(ChildActorType);
             var childActorRef = Context.ActorOf(props, name);
             return new ChildInfo(childActorRef);
         }
@@ -181,10 +180,10 @@ namespace GridDomain.Node.Actors.PersistentHub
             _monitor.IncrementActorStarted();
             Log.Debug("{ActorHub} is going to start", Self.Path);
             Context.System.Scheduler.ScheduleTellRepeatedly(ChildClearPeriod,
-                                                            ChildClearPeriod,
-                                                            Self,
-                                                            new ClearChildren(),
-                                                            Self);
+                ChildClearPeriod,
+                Self,
+                ClearChildren.Instance,
+                Self);
         }
 
         protected override void PostStop()
@@ -193,7 +192,10 @@ namespace GridDomain.Node.Actors.PersistentHub
             Log.Debug("{ActorHub} was stopped", Self.Path);
         }
 
-        public class ClearChildren {}
+        private sealed class ClearChildren
+        {
+            private ClearChildren() { }
+            public static ClearChildren Instance { get; } = new ClearChildren();
+        }
     }
-
 }
