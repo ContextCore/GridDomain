@@ -60,7 +60,7 @@ namespace GridGomain.Tests.Stress
         [PerfBenchmark(Description = "Measuring command executions without projections in memory",
                        NumberOfIterations = 5, RunMode = RunMode.Iterations,
                        RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
-        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 200)]
+        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         //MAX: 500
         public void MeasureCommandExecutionWithoutProjectionsInMemory()
