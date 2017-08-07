@@ -74,25 +74,28 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             await fixedProcess.Info.Ref.Ask<SubscribeAck>(new NotifyOnPersistenceEvents(TestActor));
 
             var resTask = Node.NewDebugWaiter()
-                              .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
+                              .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                               .Create()
                               .SendToProcessManagers(startEvent);
 
             FishForMessage<SaveSnapshotSuccess>(t => true);
 
-            var processId = (await resTask).Message<ProcessManagerCreated<SoftwareProgrammingState>>()
+            var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>()
                                            .SourceId;
 
-            var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow);
+            var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
-            //send text event
+            //to avoid racy state receiving expected message from processing GotTiredEvent 
             await Node.NewDebugWaiter()
-                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
+                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e 
+                      => (e.Message as IMessageMetadataEnvelop)?.Message is CoffeMakeFailedEvent)
                       .Create()
                       .SendToProcessManagers(continueEvent, processId);
 
-            //enforce additional snapshot save
+          
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(ProcessFixedId);
+
+            this.Log.Info("Enforced additional snapshot save & delete");
 
             var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                 new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);

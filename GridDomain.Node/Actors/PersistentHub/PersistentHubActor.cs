@@ -38,13 +38,14 @@ namespace GridDomain.Node.Actors.PersistentHub
                                     Guid id;
                                     if (!AggregateActorName.TryParseId(t.ActorRef.Path.Name, out id))
                                         return;
-                                    if (Children.TryGetValue(id, out ChildInfo info))
+                                    if (Children.TryGetValue(id, out ChildInfo info) && info.PendingMessages.Any())
                                     {
                                         Log.Debug("Resending {messages_number} messages arrived for a child {child} when it was in terminating state",
                                             info.PendingMessages.Count, id);
 
                                         foreach (var msg in info.PendingMessages)
                                             Self.Tell(msg);
+
                                         info.PendingMessages.Clear();
                                     }
                                     Children.Remove(id);
@@ -202,4 +203,6 @@ namespace GridDomain.Node.Actors.PersistentHub
             public static ClearChildren Instance { get; } = new ClearChildren();
         }
     }
+
+    
 }
