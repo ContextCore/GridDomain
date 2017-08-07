@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
@@ -9,11 +11,13 @@ namespace GridGomain.Tests.Stress {
     {
         private const string TotalCommandsExecutedCounter = nameof(TotalCommandsExecutedCounter);
         private Counter _counter;
+        private ITestOutputHelper _testOutputHelper;
 
         public NBenchTest(ITestOutputHelper output)
         {
             Trace.Listeners.Clear();
-            Trace.Listeners.Add(new XunitTraceListener(output));
+            _testOutputHelper = output;
+            Trace.Listeners.Add(new XunitTraceListener(_testOutputHelper));
         }
 
         [PerfSetup]
@@ -22,6 +26,31 @@ namespace GridGomain.Tests.Stress {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }
 
+
+        [NBenchFact]
+        [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
+            NumberOfIterations = 5, RunMode = RunMode.Iterations,
+            RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
+        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 400)]
+
+        public void SimpleFact()
+        {
+            try
+            {
+                var executingAssembly = Assembly.GetExecutingAssembly();
+                var allTypes = executingAssembly.GetReferencedAssemblies()
+                                                .Select(Assembly.Load)
+                                                .Concat(new[] { executingAssembly })
+                                                .SelectMany(a => a.GetTypes())
+                                                .ToArray();
+            }
+            catch(Exception ex)
+            {
+               // foreach(var e in ex.LoaderExceptions)
+                    _testOutputHelper.WriteLine(ex.ToString());
+            }
+            _testOutputHelper.WriteLine("ok");
+        }
         [NBenchFact]
         [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
             NumberOfIterations = 5, RunMode = RunMode.Iterations,
