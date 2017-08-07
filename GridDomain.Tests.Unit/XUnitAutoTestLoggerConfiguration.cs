@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit
         public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose)
         {
             WriteTo.XunitTestOutput(output,level,
-                  "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{LogSource}"
+                  "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Corr:{Correlation} Src:{LogSource}"
                 + "{NewLine} Message: {Message}"
                 + "{NewLine} {Exception}");
 

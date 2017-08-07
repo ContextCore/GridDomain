@@ -186,16 +186,6 @@ namespace GridDomain.Node.Actors.Aggregates
                                      });
         }
 
-        //protected override void TerminatingBehavior()
-        //{
-        //    Command<IMessageMetadataEnvelop<ICommand>>(c =>
-        //                                               {
-        //                                                   Self.Tell(CancelShutdownRequest.Instance);
-        //                                                   StashMessage(c);
-        //                                               });
-        //    base.TerminatingBehavior();
-        //}
-
         private Task<AllHandlersCompleted> Project(object evt, IMessageMetadata commandMetadata)
         {
             var envelop = new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata);

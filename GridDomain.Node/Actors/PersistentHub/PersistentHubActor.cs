@@ -40,7 +40,9 @@ namespace GridDomain.Node.Actors.PersistentHub
                                         return;
                                     if (Children.TryGetValue(id, out ChildInfo info))
                                     {
-                                        //resend messages arrived for a child when it was in terminating state
+                                        Log.Debug("Resending {messages_number} messages arrived for a child {child} when it was in terminating state",
+                                            info.PendingMessages.Count, id);
+
                                         foreach (var msg in info.PendingMessages)
                                             Self.Tell(msg);
                                         info.PendingMessages.Clear();

@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System.Linq;
+using Akka.Actor;
 using Akka.Dispatch;
 using Akka.Event;
 using Serilog;
@@ -46,7 +47,7 @@ namespace GridDomain.Tests.Unit
         private ILogger GetLogger(LogEvent logEvent)
         {
             return _logger.ForContext("Timestamp", logEvent.Timestamp)
-                          .ForContext("LogSource", logEvent.LogSource)
+                          .ForContext("LogSource", "["+logEvent.LogSource.Split('/').Last())
                           .ForContext("Thread", logEvent.Thread.ManagedThreadId);
         }
 
