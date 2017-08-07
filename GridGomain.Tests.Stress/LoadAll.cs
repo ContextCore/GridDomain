@@ -2,10 +2,17 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridGomain.Tests.Stress {
     public class LoadAll
     {
+        private readonly ITestOutputHelper _helper;
+
+        public LoadAll(ITestOutputHelper helper)
+        {
+            _helper = helper;
+        }
         [Fact]
         void Test()
         {
@@ -21,8 +28,9 @@ namespace GridGomain.Tests.Stress {
             catch (ReflectionTypeLoadException ex)
             {
                 foreach(var e in ex.LoaderExceptions)
-                 Console.WriteLine(e);
+                    _helper.WriteLine(e.ToString());
             }
+            _helper.WriteLine("ok");
 
         }
     }
