@@ -2,7 +2,6 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class PersistenceConfig : IAkkaConfig
     {
-        private readonly AkkaConfiguration _akka;
         private readonly IAkkaConfig _journalConfig;
         private readonly IAkkaConfig _snapshotsConfig;
 
@@ -14,10 +13,9 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
         public string Build()
         {
-            var akkaPersistenceConfig =
-        @"persistence {
+            var akkaPersistenceConfig = @"persistence {
                     publish-plugin-commands = on
-" + _journalConfig.Build() +@"
+" + _journalConfig.Build() + @"
 " + _snapshotsConfig.Build() + @"
         }";
             return akkaPersistenceConfig;

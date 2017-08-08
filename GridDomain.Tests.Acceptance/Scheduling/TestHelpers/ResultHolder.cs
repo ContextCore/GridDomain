@@ -17,9 +17,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         {
             string result;
             if (Results.TryGetValue(key, out result))
-            {
                 return result;
-            }
             return null;
         }
 

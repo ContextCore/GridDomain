@@ -1,76 +1,46 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    [TestFixture]
-
-    public class Given_aggregate_When_raising_future_event_by_commands : FutureEventsTest_InMemory
+    public class Given_aggregate_When_raising_future_event_by_commands : FutureEventsTest
     {
-        private TestAggregate _aggregate;
-        private DateTime _scheduledTime;
-        private TestDomainEvent _producedEvent;
-        private ScheduleEventInFutureCommand _testCommand;
-        private FutureEventScheduledEvent _futureEventEnvelop;
+        public Given_aggregate_When_raising_future_event_by_commands(ITestOutputHelper output) : base(output) { }
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
-
-        [OneTimeSetUp]
-
+        [Fact]
         public async Task When_raising_future_event()
         {
-            _scheduledTime = DateTime.Now.AddSeconds(1);
-            _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
+            var scheduledTime = DateTime.Now.AddSeconds(1);
+            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
-            var waitResults = await GridNode.PrepareCommand(_testCommand)
-                                            .Expect<FutureEventScheduledEvent>()
-                                            .And<TestDomainEvent>()
-                                            .Execute();
+            var waitResults = await Node.Prepare(testCommand)
+                                        .Expect<FutureEventScheduledEvent>()
+                                        .And<ValueChangedSuccessfullyEvent>()
+                                        .Execute();
 
-            _futureEventEnvelop = waitResults.Message<FutureEventScheduledEvent>();
-            _producedEvent = waitResults.Message<TestDomainEvent>();
+            var futureEventEnvelop = waitResults.Message<FutureEventScheduledEvent>();
+            var producedEvent = waitResults.Message<ValueChangedSuccessfullyEvent>();
 
-            _aggregate = LoadAggregate<TestAggregate>(_testCommand.AggregateId);
-        }
+            var aggregate = await this.LoadAggregateByActor<TestFutureEventsAggregate>(testCommand.AggregateId);
 
-        [Then]
-        public void Future_event_fires_in_time()
-        {
-            Assert.LessOrEqual(_scheduledTime.Second - _aggregate.ProcessedTime.Second, 1);
-        }
-
-        [Then]
-        public void Future_event_applies_to_aggregate()
-        {
-            Assert.AreEqual(_producedEvent.Value, _aggregate.Value);
-        }
-
-        [Then]
-        public void Future_event_envelop_has_id_different_from_aggregate()
-        {
-            Assert.AreNotEqual(_futureEventEnvelop.Id, _aggregate.Value);
-        }
-
-        [Then]
-        public void Future_event_sourceId_is_aggregate_id()
-        {
-            Assert.AreEqual(_futureEventEnvelop.SourceId, _aggregate.Id);
-        }
-
-        [Then]
-        public void Future_event_payload_is_aggregate_original_event()
-        {
-            Assert.AreEqual(((TestDomainEvent)_futureEventEnvelop.Event).Id, _producedEvent.Id);
-        }
-
-        [Then]
-        public void Future_event_contains_data_from_command()
-        {
-            Assert.AreEqual(_testCommand.Value, _producedEvent.Value);
+            //Future_event_fires_in_time()
+            Assert.True(scheduledTime.Second - aggregate.ProcessedTime.Second <= 1);
+            //Future_event_applies_to_aggregate()
+            Assert.Equal(producedEvent.Value, aggregate.Value);
+            //Future_event_envelop_has_id_different_from_aggregate()
+            Assert.NotEqual(futureEventEnvelop.Id, aggregate.Id);
+            //Future_event_sourceId_is_aggregate_id()
+            Assert.Equal(futureEventEnvelop.SourceId, aggregate.Id);
+            //Future_event_payload_is_aggregate_original_event()
+            Assert.Equal(((ValueChangedSuccessfullyEvent) futureEventEnvelop.Event).Id, producedEvent.Id);
+            //Future_event_contains_data_from_command()
+            Assert.Equal(testCommand.Value, producedEvent.Value);
         }
     }
 }

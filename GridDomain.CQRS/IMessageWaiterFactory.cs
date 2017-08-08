@@ -5,9 +5,17 @@ namespace GridDomain.CQRS
 {
     public interface IMessageWaiterFactory
     {
-        IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null);
-        
-        [Obsolete("Use ICommandWaiterFactory.PrepareCommand")]
-        IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failAnyFault = true);
+        /// <summary>
+        /// Wait for messages without metadata
+        /// </summary>
+        /// <param name="defaultTimeout"></param>
+        /// <returns></returns>
+        IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null);
+        /// <summary>
+        /// Wait for messages with metadata envelop, e.g. IMessageWithMetadata<T>
+        /// </summary>
+        /// <param name="defaultTimeout"></param>
+        /// <returns></returns>
+        IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null);
     }
 }

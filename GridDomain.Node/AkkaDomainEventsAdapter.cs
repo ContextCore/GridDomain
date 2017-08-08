@@ -1,32 +1,29 @@
 using System;
 using Akka.Actor;
 using Akka.Persistence.Journal;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Node.Configuration.Akka.Hocon;
+using GridDomain.Node.Serializers;
 using IEventAdapter = Akka.Persistence.Journal.IEventAdapter;
 
 namespace GridDomain.Node
 {
     /// <summary>
-    /// How to update an event
-    /// 1) Create a copy of event and add existing number in type by convention _V(N) where N is version
-    /// for example BalanceAggregateCreatedEvent should be copied as BalanceAggregateCreatedEvent_V1.
-    /// All existing persisted events must be convertible to versioned one by duck typing. 
-    /// 2) Update existing event. 
-    ///    Scenarios: 
-    ///    a) Add field
-    ///    b) Remove field
-    ///    c) Change field name
-    ///    d) Change field type
-    ///    e) Rename event
-    ///    f) Event splitting
-    ///    
-    /// 3) Create an event adapter from versioned type to new one 
-    /// 4) Register event adapter 
+    ///     How to update an event
+    ///     1) Create a copy of event and add existing number in type by convention _V(N) where N is version
+    ///     for example BalanceAggregateCreatedEvent should be copied as BalanceAggregateCreatedEvent_V1.
+    ///     All existing persisted events must be convertible to versioned one by duck typing.
+    ///     2) Update existing event.
+    ///     Scenarios:
+    ///     a) Add field
+    ///     b) Remove field
+    ///     c) Change field name
+    ///     d) Change field type
+    ///     e) Rename event
+    ///     f) Event splitting
+    ///     3) Create an event adapter from versioned type to new one
+    ///     4) Register event adapter
     /// </summary>
-
     public class AkkaDomainEventsAdapter : IEventAdapter
     {
         private readonly Lazy<IObjectUpdateChain> UpgradeChain;
@@ -38,19 +35,20 @@ namespace GridDomain.Node
         public AkkaDomainEventsAdapter(ExtendedActorSystem system)
         {
             UpgradeChain = new Lazy<IObjectUpdateChain>(() =>
-            {
-                var ext = system.GetExtension<DomainEventsJsonSerializationExtension>();
+                                                        {
+                                                            var ext =
+                                                                system.GetExtension<DomainEventsJsonSerializationExtension>();
 
-                if (ext == null)
-                    throw new ArgumentNullException(nameof(ext),
-                        $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
+                                                            if (ext == null)
+                                                                throw new ArgumentNullException(nameof(ext),
+                                                                                                $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");
 
-                if (ext.EventsAdapterCatalog == null)
-                    throw new ArgumentNullException(nameof(ext),
-                        $"Cannot get {typeof(IObjectUpdateChain).Name} extension");
+                                                            if (ext.EventsAdapterCatalog == null)
+                                                                throw new ArgumentNullException(nameof(ext),
+                                                                                                $"Cannot get {typeof(IObjectUpdateChain).Name} extension");
 
-                return ext.EventsAdapterCatalog;
-            });
+                                                            return ext.EventsAdapterCatalog;
+                                                        });
         }
 
         public string Manifest(object evt)

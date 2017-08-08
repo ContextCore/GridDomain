@@ -1,6 +1,6 @@
 namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 {
-    class BookOrder_V2 : IOrder
+    internal class BookOrder_V2 : IOrder
     {
         public BookOrder_V2(string number, int quantity)
         {
@@ -8,7 +8,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
             Quantity = quantity;
         }
 
-        public string Number { get; }
         public int Quantity { get; }
+
+        public string Number { get; }
     }
 }

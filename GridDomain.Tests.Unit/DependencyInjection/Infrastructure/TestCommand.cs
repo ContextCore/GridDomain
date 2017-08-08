@@ -5,13 +5,11 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
     public class TestCommand : Command
     {
-        public TestCommand(int parameter, Guid aggregateId)
+        public TestCommand(int parameter, Guid aggregateId) : base(aggregateId)
         {
             Parameter = parameter;
-            AggregateId = aggregateId;
         }
 
-        public Guid AggregateId { get; }
         public int Parameter { get; }
     }
 }

@@ -1,55 +1,41 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit;
+using GridDomain.Scheduling;
 using GridDomain.Tests.Unit.FutureEvents;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 {
-    [TestFixture]
     public class Given_aggregate_When_raising_several_future_events_Persistent : FutureEventsTest
     {
-        private FutureEventOccuredEvent _eventA;
-        private FutureEventOccuredEvent _eventB;
-        private Guid _aggregateId;
-        [OneTimeSetUp]
+        public Given_aggregate_When_raising_several_future_events_Persistent(ITestOutputHelper output) : base(output) { }
+
+        [Fact]
         public async Task FutureDomainEvent_envelops_has_unique_id()
         {
-            _aggregateId = Guid.NewGuid();
-            var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(2), _aggregateId, "test value A");
-            var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(5), _aggregateId, "test value B");
+            var aggregateId = Guid.NewGuid();
+            var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId, "test value A");
 
-         //   var planA = CommandPlan.New(testCommandA, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandA.AggregateId));
-            var planB = CommandPlan.New(testCommandB, Timeout, Expect.Message<FutureEventOccuredEvent>(e => e.SourceId, testCommandB.AggregateId));
+            var waitResult = await Node.Prepare(testCommandA)
+                                       .Expect<FutureEventOccuredEvent>()
+                                       .Execute();
+            var eventA = waitResult.Message<FutureEventOccuredEvent>();
 
-            _eventA = (await GridNode.PrepareCommand(testCommandA)
-                                     .Expect<FutureEventOccuredEvent>()
-                                     .Execute()).Message<FutureEventOccuredEvent>();
+            var testCommandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId, "test value B");
+            var result = await Node.Prepare(testCommandB)
+                                   .Expect<FutureEventOccuredEvent>()
+                                   .Execute();
 
-            _eventB = GridNode.Execute(planB).Result;
-        }
+            var eventB = result.Message<FutureEventOccuredEvent>();
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(10);
-
-        [Then]
-        public void Envelop_ids_are_different()
-        {
-            Assert.AreNotEqual(_eventA.FutureEventId, _eventB.FutureEventId);
-        }
-
-        [Then]
-        public void Envelop_id_not_equal_to_aggregate_id()
-        {
-            Assert.True(_eventA.Id != _aggregateId && _aggregateId != _eventB.Id);
-        }
-
-        public Given_aggregate_When_raising_several_future_events_Persistent() : base(false)
-        {
+            //Envelop_ids_are_different()
+            Assert.NotEqual(eventA.FutureEventId, eventB.FutureEventId);
+            //Envelop_id_not_equal_to_aggregate_id()
+            Assert.True(eventA.Id != aggregateId && aggregateId != eventB.Id);
         }
     }
 }

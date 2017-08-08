@@ -1,57 +1,49 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Tests.Framework;
+using GridDomain.Scheduling;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using Xunit;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
 {
-    [TestFixture]
     public class Given_aggregate_When_cancel_existing_future_event
     {
-        private TestAggregate _aggregate;
-        private FutureEventScheduledEvent _futureEventA;
-        private FutureEventScheduledEvent _futureEvent_out_of_criteria;
-
-        [SetUp]
-        public void When_cancel_existing_scheduled_future_event()
+        [Fact]
+        public async Task Then_it_occures_and_applies_to_aggregate()
         {
-            _aggregate = new TestAggregate(Guid.NewGuid());
+            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
+            aggregate.PersistAll();
+
             var testValue = "value D";
 
-            _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
-            _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "test value E");
+            aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
 
-            _futureEventA = _aggregate.GetEvents<FutureEventScheduledEvent>().First();
-            _futureEvent_out_of_criteria = _aggregate.GetEvents<FutureEventScheduledEvent>().Skip(1).First();
+            var futureEventA = aggregate.GetEvent<FutureEventScheduledEvent>();
+            aggregate.MarkPersisted(futureEventA);
 
-            _aggregate.ClearEvents();
-            _aggregate.CancelFutureEvents(testValue);
-        }
+            aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "test value E");
 
-        [Then]
-        public void Cancelation_event_is_produced()
-        {
-            var cancelEvent = _aggregate.GetEvent<FutureEventCanceledEvent>();
-            Assert.AreEqual(_futureEventA.Id, cancelEvent.FutureEventId);
-        }
+            var futureEventOutOfCriteria = aggregate.GetEvent<FutureEventScheduledEvent>();
+            aggregate.MarkPersisted(futureEventOutOfCriteria);
 
-        [Then]
-        public void Only_predicate_satisfying_events_are_canceled()
-        {
-            var cancelEvent = _aggregate.GetEvents<FutureEventCanceledEvent>();
-            Assert.True(cancelEvent.All(e => e.FutureEventId != _futureEvent_out_of_criteria.Id));
-        }
+            aggregate.CancelFutureEvents(testValue);
 
-        [Then]
-        public void Canceled_event_cannot_be_raised()
-        {
-            _aggregate.ClearEvents();
-            Assert.Throws<ScheduledEventNotFoundException>(() => _aggregate.RaiseScheduledEvent(_futureEventA.Id));
-            var anyEvents = _aggregate.GetEvents<DomainEvent>();
-            CollectionAssert.IsEmpty(anyEvents);
+            // Cancelation_event_is_produced()
+            var cancelEvent = aggregate.GetEvent<FutureEventCanceledEvent>();
+            Assert.Equal(futureEventA.Id, cancelEvent.FutureEventId);
+            aggregate.MarkPersisted(cancelEvent);
+            //Only_predicate_satisfying_events_are_canceled()`
+            var cancelEvents = aggregate.GetEvents<FutureEventCanceledEvent>();
+            Assert.True(cancelEvents.All(e => e.FutureEventId != futureEventOutOfCriteria.Id));
+            // Canceled_event_cannot_be_raised()
+
+            await aggregate.RaiseScheduledEvent(futureEventA.Id, Guid.NewGuid()).ShouldThrow<ScheduledEventNotFoundException>();
+
+            var anyEvents = aggregate.GetEvents<DomainEvent>();
+            Assert.Empty(anyEvents);
         }
     }
 }

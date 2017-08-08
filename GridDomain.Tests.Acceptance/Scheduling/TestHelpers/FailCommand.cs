@@ -5,11 +5,11 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class FailCommand : Command
     {
-        public TimeSpan Timeout { get; }
-
-        public FailCommand(TimeSpan timeout = default(TimeSpan))
+        public FailCommand(TimeSpan timeout = default(TimeSpan)) : base(Guid.NewGuid())
         {
             Timeout = timeout;
         }
+
+        public TimeSpan Timeout { get; }
     }
 }

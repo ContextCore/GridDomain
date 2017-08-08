@@ -2,7 +2,11 @@ namespace GridDomain.Node.Configuration.Akka
 {
     public class AkkaNetworkAddress : IAkkaNetworkAddress
     {
-        public AkkaNetworkAddress(string systemName, string host, int port, string publicHost = null, bool enforceIpVersion = true)
+        public AkkaNetworkAddress(string systemName,
+                                  string host,
+                                  int port,
+                                  string publicHost = null,
+                                  bool enforceIpVersion = true)
         {
             SystemName = systemName;
             Host = host;
@@ -24,8 +28,8 @@ namespace GridDomain.Node.Configuration.Akka
 
         protected bool Equals(AkkaNetworkAddress other)
         {
-            return string.Equals(SystemName, other.SystemName) && string.Equals(Host, other.Host) &&
-                   PortNumber == other.PortNumber;
+            return string.Equals(SystemName, other.SystemName) && string.Equals(Host, other.Host)
+                   && PortNumber == other.PortNumber;
         }
 
         public override int GetHashCode()
@@ -33,8 +37,8 @@ namespace GridDomain.Node.Configuration.Akka
             unchecked
             {
                 var hashCode = SystemName != null ? SystemName.GetHashCode() : 0;
-                hashCode = (hashCode*397) ^ (Host != null ? Host.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ PortNumber;
+                hashCode = (hashCode * 397) ^ (Host != null ? Host.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ PortNumber;
                 return hashCode;
             }
         }

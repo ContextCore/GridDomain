@@ -1,26 +1,24 @@
 using System;
-using CommonDomain.Core;
+using GridDomain.EventSourcing;
+using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
-    public class TestAggregate : AggregateBase
+    public class TestAggregate : Aggregate
     {
-        private TestAggregate(Guid id)
-        {
-            Id = id;
-        }
+        public string Value;
+
+        private TestAggregate(Guid id) : base(id) {}
 
         public void Execute(int number, ITestDependency d)
         {
             var dependencyUseResult = d.Do(number);
-            RaiseEvent(new TestDomainEvent(dependencyUseResult, Id));
+            Produce(new TestDomainEvent(dependencyUseResult, Id));
         }
 
         private void Apply(TestDomainEvent e)
         {
             Value = e.Value;
         }
-
-        public string Value;
     }
 }

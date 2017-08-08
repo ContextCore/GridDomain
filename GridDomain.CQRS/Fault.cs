@@ -3,49 +3,51 @@ using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
-    public class Fault<T> : Fault, IFault<T>
+    public class Fault<T> : Fault,
+                            IFault<T>
     {
-        public new T Message { get; }
-
-        public Fault(T message, Exception exception, Type processorType, Guid sagaId, DateTime occuredTime)
-            : base(message, exception, processorType, sagaId, occuredTime)
+        public Fault(T message, Exception exception, Type processorType, Guid processId, DateTime occuredTime)
+            : base(message, exception, processorType, processId, occuredTime)
         {
             Message = message;
         }
+
+        public new T Message { get; }
     }
 
-    public class Fault: IFault
+    public class Fault : IFault
     {
-        public Fault(object message, Exception exception, Type processor, Guid sagaId, DateTime occuredTime)
+        public Fault(object message, Exception exception, Type processor, Guid processId, DateTime occuredTime)
         {
             Message = message;
             Exception = exception;
             OccuredTime = occuredTime;
-            SagaId = sagaId;
+            ProcessId = processId;
             Processor = processor;
         }
 
         public Exception Exception { get; }
-        public Guid SagaId { get; }
+        public Guid ProcessId { get; }
         public DateTime OccuredTime { get; }
         public object Message { get; }
         public Type Processor { get; }
 
-        public static IFault NewGeneric(object msg, Exception exception, Type processorType, Guid sagaId)
+        public static Fault NewGeneric(object msg, Exception exception, Guid processId, Type processorType)
         {
             var msgType = msg.GetType();
             var methodOpenType = typeof(Fault).GetMethod(nameof(New));
             var method = methodOpenType.MakeGenericMethod(msgType);
-            return (IFault)method.Invoke(null, new [] { msg, exception, sagaId, processorType});
+            return (Fault) method.Invoke(null, new[] {msg, exception, processId, processorType});
         }
 
         public static Type TypeFor(object msg)
         {
-            return typeof(IFault<>).MakeGenericType(msg.GetType());
+            return typeof(Fault<>).MakeGenericType(msg.GetType());
         }
-        public static Fault<T> New<T>(T msg, Exception ex, Guid sagaId, Type processorType = null)
+
+        public static Fault<T> New<T>(T msg, Exception ex, Guid processId, Type processorType = null)
         {
-            return new Fault<T>(msg, ex, processorType, sagaId, BusinessDateTime.UtcNow);
+            return new Fault<T>(msg, ex, processorType, processId, BusinessDateTime.UtcNow);
         }
     }
 }

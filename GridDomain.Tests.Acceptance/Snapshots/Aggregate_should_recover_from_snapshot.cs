@@ -1,66 +1,45 @@
 ﻿using System;
-using GridDomain.Common;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.Framework;
-using GridDomain.Tests.Unit.CommandsExecution;
-using GridDomain.Tests.Unit.SampleDomain;
-using GridDomain.Tools.Repositories;
+using System.Threading.Tasks;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing;
+using GridDomain.Tests.Acceptance.EventsUpgrade;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
-    [TestFixture]
-    class Aggregate_should_recover_from_snapshot : SampleDomainCommandExecutionTests
+    public class Aggregate_should_recover_from_snapshot : NodeTestKit
     {
-        private SampleAggregate _aggregate;
-        private SampleAggregate _restoredAggregate;
-        public Aggregate_should_recover_from_snapshot(): base(false) {}
+        public Aggregate_should_recover_from_snapshot(ITestOutputHelper output)
+            : base(output, new BalloonFixture().UseSqlPersistence().EnableSnapshots()) {}
 
-  //     protected override TimeSpan Timeout => TimeSpan.FromSeconds(1000);
-
-        protected override IContainerConfiguration CreateConfiguration()
+        [Fact]
+        public async Task Given_persisted_snapshot_Aggregate_should_execute_command()
         {
-            return new CustomContainerConfiguration(
-                base.CreateConfiguration(),
-                new AggregateConfiguration<SampleAggregate, SampleAggregatesCommandHandler>(
-                                                          () => new SnapshotsPersistenceAfterEachMessagePolicy(),
-                                                          SampleAggregate.FromSnapshot
-                                                          )
-                );
+            var aggregate = new Balloon(Guid.NewGuid(), "haha");
+            aggregate.WriteNewTitle(10);
+            aggregate.PersistAll();
+
+            var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+                                                       new BalloonAggregateFactory());
+            await repo.Add(aggregate);
+
+            var cmd = new IncreaseTitleCommand(1, aggregate.Id);
+
+            var res = await Node.Prepare(cmd)
+                                .Expect<BalloonTitleChanged>()
+                                .Execute();
+
+            var message = res.Received;
+
+            //Values_should_be_equal()
+            Assert.Equal("11", message.Value);
+            //Ids_should_be_equal()
+            Assert.Equal(aggregate.Id, message.SourceId);
         }
-
-
-        [OneTimeSetUp]
-        public void Test()
-        {
-            _aggregate = new SampleAggregate(Guid.NewGuid(), "test");
-            _aggregate.ChangeState(10);
-            _aggregate.ClearEvents();
-
-            var repo = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory);
-            repo.Add(_aggregate);
-
-            _restoredAggregate = LoadAggregate<SampleAggregate>(_aggregate.Id);
-        }
-
-        [Test]
-        public void Values_should_be_equal()
-        {
-            Assert.AreEqual(_aggregate.Value, _restoredAggregate.Value);
-        }
-
-        [Test]
-        public void State_restored_from_snapshot_should_not_have_uncommited_events()
-        {
-            CollectionAssert.IsEmpty(_restoredAggregate.GetEvents());
-        }
-
-        [Test]
-        public void Ids_should_be_equal()
-        {
-            Assert.AreEqual(_aggregate.Id, _restoredAggregate.Id);
-        }
-
     }
 }

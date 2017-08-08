@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GridDomain.Common
 {
     public static class MemberNameExtractor
     {
-
         public static string GetName<T>(Expression<Func<T>> property)
         {
             MemberExpression memberExpression;
@@ -23,9 +18,9 @@ namespace GridDomain.Common
                 return memberExpression.Member.Name;
             }
 
-            memberExpression =  property.Body as MemberExpression;
-            if(memberExpression != null)
-            { 
+            memberExpression = property.Body as MemberExpression;
+            if (memberExpression != null)
+            {
                 var memberInfo = memberExpression.Member as PropertyInfo;
                 if (memberInfo != null)
                     return memberInfo.Name;
@@ -37,16 +32,15 @@ namespace GridDomain.Common
 
             var methodCallExpression = property.Body as MethodCallExpression;
             if (methodCallExpression != null)
-            {
                 return methodCallExpression.Method.Name;
-            }
 
             throw new ArgumentException("Cannot extract name from expression");
         }
 
         public static string GetName<T, U>(Expression<Func<T, U>> property)
         {
-            if (property == null) return null;
+            if (property == null)
+                return null;
 
             MemberExpression memberExpression;
 
@@ -61,9 +55,9 @@ namespace GridDomain.Common
             }
 
             var memberInfo = memberExpression.Member as PropertyInfo;
-            if(memberInfo == null)
+            if (memberInfo == null)
                 throw new ArgumentException("Cannot find property while extracting name from expressiom");
-            return  memberInfo.Name;
+            return memberInfo.Name;
         }
     }
 }

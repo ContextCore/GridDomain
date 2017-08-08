@@ -1,31 +1,18 @@
-﻿using GridDomain.EventSourcing.Adapters;
+﻿using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.Adapters;
+using GridDomain.Node.Serializers;
 using Newtonsoft.Json;
-using NUnit.Framework;
+using Xunit;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade
 {
-    [TestFixture]
-    class Nested_property_upgrade
+    public class Nested_property_upgrade
     {
-        [Test]
-        public void All_old_objects_should_be_updated()
-        {
-            var initialEvent = new Event() { Payload = new Payload() {Property = new SubObject_V1() { Name = "10", Value = "123" } }};
-
-            var settings = DomainSerializer.GetDefaultSettings();
-            settings.Converters.Add(new SubObjectConverter());
-
-            var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
-            var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
-
-            Assert.IsInstanceOf<SubObject_V2>(restoredEvent.Payload.Property);
-        }
-
-        class SubObjectConverter : ObjectAdapter<SubObject_V1, SubObject_V2>
+        private class SubObjectConverter : ObjectAdapter<SubObject_V1, SubObject_V2>
         {
             public override SubObject_V2 Convert(SubObject_V1 value)
             {
-                return new SubObject_V2() { number = int.Parse(value.Name), Value = value.Value };
+                return new SubObject_V2 {number = int.Parse(value.Name), Value = value.Value};
             }
         }
 
@@ -34,25 +21,40 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             string Value { get; set; }
         }
 
-        class SubObject_V1 : ISubObject
+        private class SubObject_V1 : ISubObject
         {
             public string Name { get; set; }
             public string Value { get; set; }
         }
 
-        class SubObject_V2 : ISubObject
+        private class SubObject_V2 : ISubObject
         {
             public int number { get; set; }
             public string Value { get; set; }
         }
 
-        class Payload
+        private class Payload
         {
             public ISubObject Property { get; set; }
         }
-        class Event
+
+        private class Event
         {
             public Payload Payload { get; set; }
+        }
+
+        [Fact]
+        public void All_old_objects_should_be_updated()
+        {
+            var initialEvent = new Event {Payload = new Payload {Property = new SubObject_V1 {Name = "10", Value = "123"}}};
+
+            var settings = DomainSerializer.GetDefaultSettings();
+            settings.Converters.Add(new SubObjectConverter());
+
+            var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
+            var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
+
+            Assert.IsAssignableFrom<SubObject_V2>(restoredEvent.Payload.Property);
         }
     }
 }

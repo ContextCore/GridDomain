@@ -1,23 +1,28 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-  
-    public class SnapshotConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<SnapshotItem>
+    public class SnapshotConfiguration : IEntityTypeConfiguration<SnapshotItem>
     {
-        public SnapshotConfiguration()
-            : this("dbo")
+        public void Map(EntityTypeBuilder<SnapshotItem> builder)
         {
-        }
+            builder.ToTable("Snapshots");
+            builder.HasKey(x => new { x.PersistenceId, x.SequenceNr });
 
-        public SnapshotConfiguration(string schema)
-        {
-            ToTable("Snapshots", schema);
-            HasKey(x => new { x.PersistenceId, x.SequenceNr });
+            builder.Property(x => x.PersistenceId).
+                    HasColumnName(@"PersistenceId").
+                    IsRequired().
+                    HasColumnType("nvarchar(255)");
 
-            Property(x => x.PersistenceId).HasColumnName(@"PersistenceId").IsRequired().HasColumnType("nvarchar").HasMaxLength(255).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            Property(x => x.SequenceNr).HasColumnName(@"SequenceNr").IsRequired().HasColumnType("bigint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("datetime2");
-            Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar").HasMaxLength(500);
-            Property(x => x.Snapshot).HasColumnName(@"Snapshot").IsRequired().HasColumnType("varbinary");
+            builder.Property(x => x.SequenceNr).
+                    HasColumnName(@"SequenceNr").
+                    IsRequired().
+                    HasColumnType("bigint");
+
+            builder.Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("datetime2");
+            builder.Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar(500)");
+            builder.Property(x => x.Snapshot).HasColumnName(@"Snapshot").IsRequired().HasColumnType("varbinary(max)");
         }
     }
 }

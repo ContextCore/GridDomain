@@ -2,26 +2,22 @@ using System;
 using System.Linq;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.Node.AkkaMessaging.Routing;
 
 namespace GridDomain.Node.AkkaMessaging
 {
     public class CreateHandlerRouteMessage : IEquatable<CreateHandlerRouteMessage>
     {
-        public CreateHandlerRouteMessage(Type messageType, Type handlerType, string messageCorrelationProperty, PoolKind poolType)
+        public CreateHandlerRouteMessage(Type messageType, Type handlerType, string messageCorrelationProperty)
         {
             MessageType = messageType;
             HandlerType = handlerType;
             MessageCorrelationProperty = messageCorrelationProperty;
-            PoolType = poolType;
 
             Check();
         }
 
         public Type MessageType { get; }
         public Type HandlerType { get; }
-
-        public PoolKind PoolType { get; }
 
         /// <summary>
         ///     Name of property in message to use as correlation id.
@@ -39,10 +35,7 @@ namespace GridDomain.Node.AkkaMessaging
 
         public static CreateHandlerRouteMessage New<TMessage, THandler>(string property) where THandler : IHandler<TMessage>
         {
-            return new CreateHandlerRouteMessage(typeof (TMessage), 
-                typeof (THandler), 
-                property, 
-                property == null ? PoolKind.Random : PoolKind.ConsistentHash);
+            return new CreateHandlerRouteMessage(typeof(TMessage), typeof(THandler), property);
         }
 
         private void Check()
@@ -56,32 +49,30 @@ namespace GridDomain.Node.AkkaMessaging
             var msgType = GetTypeWithoutMetadata(MessageType);
             var handlerType = typeof(IHandler<>).MakeGenericType(msgType);
             if (!handlerType.IsAssignableFrom(HandlerType))
-                 throw new InvalidHandlerType(HandlerType, MessageType);
+                throw new InvalidHandlerType(HandlerType, MessageType);
         }
 
         public static Type GetTypeWithoutMetadata(Type messageType)
         {
-            if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) &&
-                messageType.IsGenericType &&
-                (messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>) ||
-                 messageType.GetGenericTypeDefinition() == typeof(MessageMetadataEnvelop<>)))
-            {
+            if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) && messageType.IsGenericType
+                && (messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>)
+                    || messageType.GetGenericTypeDefinition() == typeof(MessageMetadataEnvelop<>)))
                 return messageType.GetGenericArguments().First();
-            }
 
             return messageType;
         }
 
         private void CheckCorrelationProperty()
         {
-            if (MessageCorrelationProperty == null) return;
+            if (MessageCorrelationProperty == null)
+                return;
 
             var messageType = GetTypeWithoutMetadata(MessageType);
 
             var property = messageType.GetProperty(MessageCorrelationProperty);
             if (property == null)
                 throw new CannotFindCorrelationProperty(messageType, MessageCorrelationProperty);
-            if (property.PropertyType != typeof (Guid))
+            if (property.PropertyType != typeof(Guid))
                 throw new IncorrectTypeOfCorrelationProperty(messageType, MessageCorrelationProperty);
         }
     }

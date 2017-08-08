@@ -3,92 +3,61 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.FutureEvents;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Scheduling.Integration;
+using GridDomain.Scheduling;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Unit.FutureEvents;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
-    [TestFixture]
-    class Metadata_from_command_passed_to_produced_scheduled_fault : FutureEventsTest_InMemory
+    public class Metadata_from_command_passed_to_produced_scheduled_fault : FutureEventsTest
     {
-        private IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>> _schedulingCommandFault;
-        private ScheduleErrorInFutureCommand _command;
-        private IMessageMetadata _commandMetadata;
-        private IMessageMetadataEnvelop<JobFailed> _jobFailedEnvelop;
+        public Metadata_from_command_passed_to_produced_scheduled_fault(ITestOutputHelper output) : base(output) { }
 
-        [OneTimeSetUp]
+        [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            _command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "12",1);
-            _commandMetadata = new MessageMetadata(_command.Id, BusinessDateTime.Now, Guid.NewGuid());
+            var commandMetadata = new MessageMetadata(Guid.NewGuid(), BusinessDateTime.Now, Guid.NewGuid());
+            var command = new PlanBoomCommand(Guid.NewGuid(), DateTime.Now.AddMilliseconds(100));
 
-            var res = await GridNode.PrepareCommand(_command, _commandMetadata)
-                                    .Expect<JobFailed>()
-                                    .And<IFault<RaiseScheduledDomainEventCommand>>()
-                                    .Execute(TimeSpan.FromSeconds(30));
+            var res = await Node.Prepare(command, commandMetadata)
+                                .Expect<JobFailed>()
+                                .And<Fault<RaiseScheduledDomainEventCommand>>()
+                                .Execute(null, false);
 
-            _schedulingCommandFault = res.Message<IMessageMetadataEnvelop<IFault<RaiseScheduledDomainEventCommand>>>();
-            _jobFailedEnvelop = res.Message<IMessageMetadataEnvelop<JobFailed>>();
-        }
+            var schedulingCommandFault = res.MessageWithMetadata<Fault<RaiseScheduledDomainEventCommand>>();
+            var jobFailedEnvelop = res.MessageWithMetadata<JobFailed>();
 
-        [Test]
-        public void Result_contains_metadata()
-        {
-            Assert.NotNull(_schedulingCommandFault.Metadata);
-        }
+            //Result_contains_metadata()
+            Assert.NotNull(schedulingCommandFault.Metadata);
+            //Result_contains_message()
+            Assert.NotNull(schedulingCommandFault.Message);
+            //Result_message_has_expected_type()
+            Assert.IsAssignableFrom<IFault<RaiseScheduledDomainEventCommand>>(schedulingCommandFault.Message);
+            //Result_message_has_expected_id()
+            Assert.Equal((jobFailedEnvelop.Message.ProcessingMessage as ICommand)?.Id,
+                         schedulingCommandFault.Message.Message.Id);
+            //Result_metadata_has_command_id_as_casuation_id()
+            Assert.Equal((jobFailedEnvelop.Message.ProcessingMessage as ICommand)?.Id,
+                         schedulingCommandFault.Metadata.CasuationId);
+            //Result_metadata_has_correlation_id_same_as_command_metadata()
+            Assert.Equal(commandMetadata.CorrelationId, schedulingCommandFault.Metadata.CorrelationId);
+            //Result_metadata_has_processed_history_filled_from_aggregate()
+            Assert.Equal(1, schedulingCommandFault.Metadata.History?.Steps.Count);
+            //Result_metadata_has_processed_correct_filled_history_step()
+            var step = schedulingCommandFault.Metadata.History.Steps.First();
 
-        [Test]
-        public void Result_contains_message()
-        {
-            Assert.NotNull(_schedulingCommandFault.Message);
-        }
-
-        [Test]
-        public void Result_message_has_expected_type()
-        {
-            Assert.IsInstanceOf<IFault<RaiseScheduledDomainEventCommand>>(_schedulingCommandFault.Message);
-        }
-
-        [Test]
-        public void Result_message_has_expected_id()
-        {
-            Assert.AreEqual((_jobFailedEnvelop.Message.ProcessingMessage as ICommand)?.Id, _schedulingCommandFault.Message.Message.Id);
-        }
-
-        [Test]
-        public void Result_metadata_has_command_id_as_casuation_id()
-        {
-            Assert.AreEqual((_jobFailedEnvelop.Message.ProcessingMessage as ICommand)?.Id, _schedulingCommandFault.Metadata.CasuationId);
-        }
-
-        [Test]
-        public void Result_metadata_has_correlation_id_same_as_command_metadata()
-        {
-            Assert.AreEqual(_commandMetadata.CorrelationId, _schedulingCommandFault.Metadata.CorrelationId);
-        }
-
-        [Test]
-        public void Result_metadata_has_processed_history_filled_from_aggregate()
-        {
-            Assert.AreEqual(1, _schedulingCommandFault.Metadata.History?.Steps.Count);
-        }
-
-        [Test]
-        public void Result_metadata_has_processed_correct_filled_history_step()
-        {
-            var step = _schedulingCommandFault.Metadata.History.Steps.First();
-
-            Assert.AreEqual(AggregateActorName.New<TestAggregate>(_command.AggregateId).Name, step.Who);
-            Assert.AreEqual(AggregateActor<TestAggregate>.CommandRaisedAnError, step.Why);
-            Assert.AreEqual(AggregateActor<TestAggregate>.CreatedFault, step.What);
+            Assert.Equal(AggregateActorName.New<TestFutureEventsAggregate>(command.AggregateId)
+                                           .Name,
+                         step.Who);
+            Assert.Equal(AggregateActorConstants.CommandRaisedAnError, step.Why);
+            Assert.Equal(AggregateActorConstants.CommandExecutionFinished, step.What);
         }
     }
-
-  
 }

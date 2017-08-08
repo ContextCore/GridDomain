@@ -3,99 +3,96 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging.Akka;
-using GridDomain.CQRS.Messaging.Akka.Remote;
+
 using GridDomain.Node;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Serializers;
+using GridDomain.Node.Transports;
+using GridDomain.Node.Transports.Remote;
 
 namespace GridDomain.Tools.Connector
 {
     /// <summary>
-    /// GridNodeConnector is used to connect to remote node and delegate commands execution
+    ///     GridNodeConnector is used to connect to remote node and delegate commands execution
     /// </summary>
-    public class GridNodeConnector : IGridDomainNode, IDisposable
+    public class GridNodeConnector : IGridDomainNode
     {
-        private readonly ActorSystem _consoleSystem;
-        public IActorRef EventBusForwarder;
-        private static readonly TimeSpan NodeControllerResolveTimeout = TimeSpan.FromSeconds(30);
-        private AkkaCommandExecutor _commandExecutor;
-        private readonly IAkkaNetworkAddress _serverAddress;
-        private MessageWaiterFactory _waiterFactory;
-        
+        private readonly AkkaConfiguration _conf;
 
-        public GridNodeConnector(IAkkaNetworkAddress serverAddress, AkkaConfiguration clientConfiguration = null)
+        private readonly TimeSpan _defaultTimeout;
+        private readonly IAkkaNetworkAddress _serverAddress;
+
+        private ICommandExecutor _commandExecutor;
+        private ActorSystem _consoleSystem;
+        private MessageWaiterFactory _waiterFactory;
+
+        public GridNodeConnector(IAkkaNetworkAddress serverAddress,
+                                 AkkaConfiguration clientConfiguration = null,
+                                 TimeSpan? defaultTimeout = null)
         {
             _serverAddress = serverAddress;
-
-            var conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
-
-            _consoleSystem = conf.CreateInMemorySystem();
-            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
+            _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
+            _conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
         }
 
-        public IActorRef GetActor(ActorSelection selection)
+        public void Dispose()
         {
-            return selection.ResolveOne(NodeControllerResolveTimeout).Result;
+            _consoleSystem.Dispose();
         }
 
-        public ActorSelection GetSelection(string relativePath)
+        public Task Execute(ICommand command, IMessageMetadata metadata = null)
+        {
+            return _commandExecutor.Execute(command, metadata);
+        }
+
+        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        {
+            return _waiterFactory.NewExplicitWaiter(defaultTimeout);
+        }
+
+        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        {
+            return _commandExecutor.Prepare(cmd, metadata);
+        }
+
+        private async Task<IActorRef> GetActor(ActorSelection selection)
+        {
+            return await selection.ResolveOne(_defaultTimeout);
+        }
+
+        private ActorSelection GetSelection(string relativePath)
         {
             var actorPath = $"{_serverAddress.ToRootSelectionPath()}/{relativePath}";
 
             return _consoleSystem.ActorSelection(actorPath);
         }
 
-        public void Connect()
+        public async Task Connect()
         {
-            EventBusForwarder = GetActor(GetSelection(nameof(EventBusForwarder)));
+            if (_consoleSystem != null)
+                return;
 
-            var transportBridge = new RemoteAkkaEventBusTransport(
-                                                new LocalAkkaEventBusTransport(_consoleSystem),
-                                                EventBusForwarder,
-                                                TimeSpan.FromSeconds(30));
+            _consoleSystem = _conf.CreateInMemorySystem();
+            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
 
-            _commandExecutor = new AkkaCommandExecutor(_consoleSystem, transportBridge);
-            _waiterFactory = new MessageWaiterFactory(_commandExecutor, _consoleSystem,TimeSpan.FromSeconds(30), transportBridge);
-        }
-      
-        public void Dispose()
-        {
-            _consoleSystem.Dispose();
-        }
+            var eventBusForwarder = await GetActor(GetSelection(nameof(ActorTransportProxy)));
 
-        public void Execute(params ICommand[] commands)
-        {
-            _commandExecutor.Execute(commands);
-        }
+            var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
+                                                                  eventBusForwarder,
+                                                                  _defaultTimeout);
 
-        public Task<object> Execute(CommandPlan plan)
-        {
-           return _commandExecutor.Execute(plan);
+            var commandExecutionActor = await GetActor(GetSelection(nameof(AggregatesPipeActor)));
+            _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem,
+                                                           transportBridge,
+                                                           commandExecutionActor,
+                                                           _defaultTimeout);
+            _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }
 
-        public Task<T> Execute<T>(CommandPlan<T> plan)
-        {
-            return _commandExecutor.Execute(plan);
-        }
-
-        public void Execute<T>(T command, IMessageMetadata metadata) where T : ICommand
-        {
-            _commandExecutor.Execute(command, metadata);
-        }
-
-        public IMessageWaiter<Task<IWaitResults>> NewWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout);
-        }
-
-        public IMessageWaiter<IExpectedCommandExecutor> NewCommandWaiter(TimeSpan? defaultTimeout = null, bool failAnyFault = true)
-        {
-            return _waiterFactory.NewCommandWaiter(defaultTimeout, failAnyFault);
-        }
-
-        public ICommandWaiter PrepareCommand<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
-        {
-            return _waiterFactory.PrepareCommand(cmd, metadata);
         }
     }
 }

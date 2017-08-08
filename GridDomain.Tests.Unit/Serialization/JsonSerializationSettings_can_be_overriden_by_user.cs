@@ -1,33 +1,36 @@
-﻿using System.Threading.Tasks;
-using Akka.Actor;
+﻿using Akka.Actor;
 using GridDomain.Node;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Tests.Unit.EventsUpgrade.Domain;
+using GridDomain.Node.Serializers;
 using Newtonsoft.Json;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Serialization
 {
-    [TestFixture]
-    public class JsonSerializationSettings_can_be_overriden_by_user 
+    public class JsonSerializationSettings_can_be_overriden_by_user : NodeTestKit
     {
+        public JsonSerializationSettings_can_be_overriden_by_user(ITestOutputHelper output) : base(output, new JsonFixture()) {}
 
-        class MyJsonSettings : JsonSerializerSettings
+        private class MyJsonSettings : JsonSerializerSettings {}
+
+        private class JsonFixture : BalloonFixture
         {
-            
+            public JsonFixture()
+            {
+                OnNodeStartedEvent += (sender, args) =>
+                                      {
+                                          var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(Node.System);
+                                          ext.Settings = new MyJsonSettings();
+                                      };
+            }
         }
-        [Test]
-        public async Task When_settings_are_customized_it_is_used_by_grid_node()
+
+        [Fact]
+        public void When_settings_are_customized_it_is_used_by_grid_node()
         {
-            var node = new GridDomainNode(CustomContainerConfiguration.Empty(),new BalanceRouteMap(), () => ActorSystem.Create("test"));
-            await node.Start();
+            var serializer = new DomainEventsJsonAkkaSerializer(Node.System as ExtendedActorSystem);
 
-            var ext = DomainEventsJsonSerializationExtensionProvider.Provider.Get(node.System);
-            ext.Settings = new MyJsonSettings();
-
-            var serializer = new DomainEventsJsonAkkaSerializer(node.System as ExtendedActorSystem);
-
-            Assert.IsInstanceOf<MyJsonSettings>(serializer.Serializer.Value.JsonSerializerSettings);
+            Assert.IsAssignableFrom<MyJsonSettings>(serializer.Serializer.Value.JsonSerializerSettings);
         }
     }
 }

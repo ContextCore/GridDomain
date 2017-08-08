@@ -1,33 +1,36 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    [TestFixture]
-    public class Reraising_future_event : FutureEventsTest_InMemory
+    public class Reraising_future_event : FutureEventsTest
     {
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(20);
+        public Reraising_future_event(ITestOutputHelper output) : base(output) {}
 
-        [Test]
-        public async Task  Given_aggregate_When_reraising_future_event_Then_it_fires_in_time()
+        [Fact]
+        public async Task Given_aggregate_When_reraising_future_event_Then_it_fires_in_time()
         {
             var aggregateId = Guid.NewGuid();
 
-            var testCommand = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId,"test value");
+            await
+                Node.Prepare(new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), aggregateId, "test value"))
+                    .Expect<ValueChangedSuccessfullyEvent>()
+                    .Execute();
 
-            await GridNode.PrepareCommand(testCommand).Expect<TestDomainEvent>().Execute();
+            var reraiseTime = DateTime.Now.AddSeconds(0.5);
 
-            var reraiseTime = DateTime.Now.AddSeconds(1);
+            await
+                Node.Prepare(new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value"))
+                    .Expect<ValueChangedSuccessfullyEvent>()
+                    .Execute();
 
-            testCommand = new ScheduleEventInFutureCommand(reraiseTime, aggregateId, "test value");
+            var aggregate = await this.LoadAggregateByActor<TestFutureEventsAggregate>(aggregateId);
 
-            await GridNode.PrepareCommand(testCommand).Expect<TestDomainEvent>().Execute();
-
-            var aggregate = LoadAggregate<TestAggregate>(aggregateId);
-
-            Assert.LessOrEqual(reraiseTime.Second - aggregate.ProcessedTime.Second, 1);
+            Assert.True(reraiseTime.Second - aggregate.ProcessedTime.Second <= 1);
         }
     }
 }

@@ -3,17 +3,16 @@ using System.Linq;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain;
 using GridDomain.Tests.Unit.EventsUpgrade.Events;
-using NUnit.Framework;
+using Xunit;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Chain
 {
-    [TestFixture]
     public class Given_DomainEventUpgradeChain_When_updating_single_event_Tests
     {
         private TestEvent_V2 _resultEvent;
         private TestEvent _initialEvent;
 
-        [OneTimeSetUp]
+        [Fact]
         public void When_updating_single_event_Tests()
         {
             var chain = new EventsAdaptersCatalog();
@@ -23,24 +22,12 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Chain
             var balanceAggregate = new BalanceAggregate(Guid.NewGuid(), 10);
             _initialEvent = new TestEvent(balanceAggregate.Id);
             _resultEvent = chain.Update(_initialEvent).FirstOrDefault() as TestEvent_V2;
-        }
-
-        [Then]
-        public void Event_type_was_updated()
-        {
-            Assert.IsInstanceOf<TestEvent_V2>(_resultEvent);
-        }
-
-        [Then]
-        public void Event_id_was_remained()
-        {
-            Assert.AreEqual(_initialEvent.SourceId,_resultEvent.SourceId);
-        }
-
-        [Then]
-        public void Event_Field_was_remained()
-        {
-            Assert.AreEqual(_initialEvent.Field,_resultEvent.Field3);
+            // Event_type_was_updated()
+            Assert.IsAssignableFrom<TestEvent_V2>(_resultEvent);
+            //Event_id_was_remained()
+            Assert.Equal(_initialEvent.SourceId, _resultEvent.SourceId);
+            //Event_Field_was_remained()
+            Assert.Equal(_initialEvent.Field, _resultEvent.Field3);
         }
     }
 }

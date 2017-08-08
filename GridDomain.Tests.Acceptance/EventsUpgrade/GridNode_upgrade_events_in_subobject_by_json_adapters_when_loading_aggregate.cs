@@ -1,0 +1,45 @@
+using System;
+using System.Threading.Tasks;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing.Adapters;
+using GridDomain.Tests.Acceptance.Snapshots;
+using GridDomain.Tests.Common;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace GridDomain.Tests.Acceptance.EventsUpgrade
+{
+    public class GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate : NodeTestKit
+    {
+        public GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate(ITestOutputHelper output)
+            : base(output,
+                   new BalloonFixture().UseSqlPersistence().
+                                        UseAdaper(new String01Adapter())) { }
+
+        private class String01Adapter : ObjectAdapter<string, string>
+        {
+            public override string Convert(string value)
+            {
+                return value + "01";
+            }
+        }
+
+        [Fact]
+        public async Task Then_domain_events_should_be_upgraded_by_json_custom_adapter()
+        {
+            var cmd = new InflateNewBallonCommand(1, Guid.NewGuid());
+
+            await Node.Prepare(cmd).
+                       Expect<BalloonCreated>().
+                       Execute();
+
+            var aggregate = await Node.LoadAggregate<Balloon>(cmd.AggregateId);
+
+            Assert.Equal("101", aggregate.Title);
+        }
+    }
+}

@@ -9,5 +9,7 @@ namespace GridDomain.Node.Configuration.Akka
         int JornalConnectionTimeoutSeconds { get; }
         int SnapshotsConnectionTimeoutSeconds { get; }
         string SnapshotTableName { get; }
+
+        string SchemaName { get; }
     }
 }

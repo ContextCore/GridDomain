@@ -1,66 +1,75 @@
+using System;
 using System.Collections.Generic;
+using Akka.Event;
+using Akka.Logger.Serilog;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
     internal class LogConfig : IAkkaConfig
     {
+        private readonly Dictionary<LogLevel, string> _akkaLogLevels = new Dictionary<LogLevel, string>
+                                                                       {
+                                                                           {
+                                                                               LogLevel
+                                                                                   .InfoLevel,
+                                                                               "INFO"
+                                                                           },
+                                                                           {
+                                                                               LogLevel
+                                                                                   .ErrorLevel,
+                                                                               "ERROR"
+                                                                           },
+                                                                           {
+                                                                               LogLevel
+                                                                                   .DebugLevel,
+                                                                               "DEBUG"
+                                                                           },
+                                                                           {
+                                                                               LogLevel
+                                                                                   .WarningLevel,
+                                                                               "WARNING"
+                                                                           }
+                                                                       };
+
         private readonly bool _includeConfig;
-        private readonly string _logLevel;
+        private readonly Type _logActorType;
 
-        private readonly Dictionary<LogVerbosity, string> _akkaLogLevels = new Dictionary<LogVerbosity, string>
-        {
-            {LogVerbosity.Info, "INFO"},
-            {LogVerbosity.Error, "ERROR"},
-            {LogVerbosity.Trace, "DEBUG"},
-            {LogVerbosity.Warning, "WARNING"}
-        };
+        private readonly LogLevel _verbosity;
 
-        private readonly LogVerbosity _verbosity;
-
-
-        public LogConfig(LogVerbosity verbosity, bool includeConfig = true)
+        public LogConfig(LogLevel verbosity, bool includeConfig = true, Type logActorType = null)
         {
             _verbosity = verbosity;
             _includeConfig = includeConfig;
-            _logLevel = _akkaLogLevels[verbosity];
+            _logActorType = logActorType ?? typeof(SerilogLogger);
         }
 
         public string Build()
         {
-           
-            var logConfig =
-                @"
-                stdout-loglevel = " + _logLevel + @"
-                loglevel=" + _logLevel;
+            var logLevel = _akkaLogLevels[_verbosity];
+            var logConfig = @"
+                stdout-loglevel = " + logLevel + @"
+                loglevel=" + logLevel;
             logConfig += @"
-                loggers=["""+typeof(SerilogExtendedLogger).AssemblyQualifiedShortName() + @"""]
+                loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
 
-                actor.debug {"+
-#if DEBUG
-                    @"receive = on
-                      event-stream = on
-                      "
-                      +
-#endif
-                     @"
-                     "+AdditionalLogs(_verbosity)+ @" 
+                actor.debug {" + AdditionalLogs(_verbosity) + @" 
                       unhandled = on
                 }";
-            
+
             if (_includeConfig)
-                    logConfig += @"
+                logConfig += @"
                 log-config-on-start = on";
 
             return logConfig;
         }
 
-        private object AdditionalLogs(LogVerbosity verbosity)
+        private object AdditionalLogs(LogLevel verbosity)
         {
-            return verbosity == LogVerbosity.Trace
-                ? @"autoreceive = on
-                    lifecycle = on
-                    router-misconfiguration = on"
-                : "";
+            return verbosity == LogLevel.DebugLevel ? @"#autoreceive = on
+                    #lifecycle = on
+                    #receive = on
+                    #router-misconfiguration = on
+                    #event-stream = on" : "";
         }
     }
 }

@@ -1,144 +1,140 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using CommonDomain;
-using CommonDomain.Core;
-using GridDomain.EventSourcing.FutureEvents;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
-
-    public class Aggregate : AggregateBase, IMemento
+    public abstract class Aggregate : IAggregate,
+                                      IMemento,
+                                      IEquatable<IAggregate>
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
-        public static T Empty<T>(Guid id) where T : IAggregate
+        public static T Empty<T>(Guid? id = null) where T : IAggregate
         {
-            return Factory.Build<T>(id);
+            return Factory.Build<T>(id ?? Guid.NewGuid());
         }
 
-       // public void RegisterRoute<T>(Action<T> act)
-       // {
-       //     base.Register(act);
-       // }
+        private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
+        public bool HasUncommitedEvents => _uncommittedEvents.Any();
+        private IRouteEvents _registeredRoutes;
 
-        #region AsyncMethods
-        //keep track of all invocation to be sure only aggregate-initialized async events can be applied
-        private readonly IDictionary<Guid, AsyncEventsInProgress> _asyncEventsResults = new Dictionary<Guid, AsyncEventsInProgress>();
-        private readonly HashSet<AsyncEventsInProgress> _asyncUncomittedEvents = new HashSet<AsyncEventsInProgress>();
+        private PersistenceDelegate _persist;
 
-        public void ClearAsyncUncomittedEvents()
+        public void SetPersistProvider(PersistenceDelegate caller)
         {
-            _asyncUncomittedEvents.Clear();
+            _persist = caller;
         }
 
-        public IReadOnlyCollection<AsyncEventsInProgress> GetAsyncUncomittedEvents()
-        {
-            return _asyncUncomittedEvents;
-        }
-
-        public IDictionary<Guid, FutureEventScheduledEvent> FutureEvents { get; } = new Dictionary<Guid, FutureEventScheduledEvent>();
-
-        public void RaiseEventAsync<TTask>(Task<TTask> eventProducer) where TTask : DomainEvent
-        {
-            var entityToArrayTask = eventProducer.ContinueWith(t => new DomainEvent[] { t.Result });
-            RaiseEventAsync(entityToArrayTask);
-        }
-
-        protected void RaiseEventAsync(Task<DomainEvent[]> eventProducer)
-        {
-            var asyncMethodStarted = new AsyncEventsInProgress(eventProducer, Guid.NewGuid());
-            _asyncUncomittedEvents.Add(asyncMethodStarted);
-            _asyncEventsResults.Add(asyncMethodStarted.InvocationId, asyncMethodStarted);
-        }
-
-        public void FinishAsyncExecution(Guid invocationId)
-        {
-            AsyncEventsInProgress eventsInProgress;
-
-            if (!_asyncEventsResults.TryGetValue(invocationId, out eventsInProgress)) return;
-            if (!eventsInProgress.ResultProducer.IsCompleted)
-                throw new NotFinishedAsyncMethodResultsRequestedException();
-            _asyncEventsResults.Remove(invocationId);
-
-            foreach (var @event in eventsInProgress.ResultProducer.Result)
-                RaiseEvent(@event);
-        }
-
-        #endregion
-        #region FutureEvents
-        protected Aggregate(Guid id)
+        protected Aggregate(Guid id) : this(null)
         {
             Id = id;
-            Register<FutureEventScheduledEvent>(Apply);
-            Register<FutureEventOccuredEvent>(Apply);
-            Register<FutureEventCanceledEvent>(Apply);
         }
-        
-        public void RaiseScheduledEvent(Guid futureEventId)
+
+        protected Aggregate(IRouteEvents handler)
         {
-            FutureEventScheduledEvent e;
-            if (!FutureEvents.TryGetValue(futureEventId, out e))
-                throw new ScheduledEventNotFoundException(futureEventId);
+            if (handler == null)
+                return;
 
-            RaiseEvent(e.Event);
-            RaiseEvent(new FutureEventOccuredEvent(Guid.NewGuid(), futureEventId, Id));
+            RegisteredRoutes = handler;
+            RegisteredRoutes.Register(this);
         }
 
-        protected void RaiseEvent(DateTime raiseTime, DomainEvent @event)
-        {
-            RaiseEvent(new FutureEventScheduledEvent(Guid.NewGuid(), Id, raiseTime, @event));
-        }
-
-        protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia) where TEvent : DomainEvent
-        {
-            var eventsToCancel = this.FutureEvents.Values.Where(fe => (fe.Event is TEvent) && criteia((TEvent)fe.Event)).ToArray();
-
-            var cancelEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id));
-            foreach (var e in cancelEvents)
-                RaiseEvent(e);
-        }
-
-        private void Apply(FutureEventScheduledEvent e)
-        {
-            FutureEvents[e.Id] = e;
-        }
-
-        private void Apply(FutureEventOccuredEvent e)
-        {
-            DeleteFutureEvent(e.FutureEventId);
-        }
-
-        private void Apply(FutureEventCanceledEvent e)
-        {
-            DeleteFutureEvent(e.FutureEventId);
-        }
-
-        private void DeleteFutureEvent(Guid futureEventId)
-        {
-            FutureEventScheduledEvent evt;
-            if (!FutureEvents.TryGetValue(futureEventId, out evt)) return;
-            FutureEvents.Remove(futureEventId);
-        }
-
-        #endregion
-
-        // Only for simple implementation 
         Guid IMemento.Id
         {
-            get { return Id; }
-            set { Id = value; }
+            get => Id;
+            set => Id = value;
         }
 
         int IMemento.Version
         {
-            get { return Version; }
-            set { Version = value; }
+            get => Version;
+            set => Version = value;
         }
 
-        protected override IMemento GetSnapshot()
+        protected void Apply<T>(Action<T> action) where T : DomainEvent
+        {
+            Register(action);
+        }
+
+        public virtual IMemento GetSnapshot()
         {
             return this;
+        }
+
+        protected IRouteEvents RegisteredRoutes
+        {
+            get => _registeredRoutes ?? (_registeredRoutes = new ConventionEventRouter(true, this));
+            set => _registeredRoutes = value ?? throw new InvalidOperationException("AggregateBase must have an event router to function");
+        }
+
+        public Guid Id { get; protected set; }
+        public int Version { get; protected set; }
+
+        void IAggregate.ApplyEvent(object @event)
+        {
+            RegisteredRoutes.Dispatch(@event);
+            Version++;
+        }
+
+        ICollection IAggregate.GetUncommittedEvents()
+        {
+            return (ICollection) _uncommittedEvents;
+        }
+
+        void IAggregate.ClearUncommittedEvents()
+        {
+            _uncommittedEvents.Clear();
+        }
+
+        public virtual bool Equals(IAggregate other)
+        {
+            return null != other && other.Id == Id;
+        }
+
+        protected void Register<T>(Action<T> route)
+        {
+            RegisteredRoutes.Register(route);
+        }
+
+        protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent
+        {
+            await Emit(await evtTask);
+        }
+
+        public bool MarkPersisted(DomainEvent e)
+        {
+            if (!_uncommittedEvents.Contains(e))
+                throw new EventIsNotBelongingToAggregateException();
+
+            ((IAggregate) this).ApplyEvent(e);
+            return _uncommittedEvents.Remove(e);
+        }
+
+        protected async Task Emit(params DomainEvent[] events)
+        {
+            Produce(events);
+            await _persist(this);
+        }
+
+        protected void Produce(params DomainEvent[] events)
+        {
+            foreach(var e in events)
+            {
+                _uncommittedEvents.Add(e);
+            }
+        }
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as IAggregate);
         }
     }
 }

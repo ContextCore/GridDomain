@@ -1,9 +1,10 @@
-﻿using System;
+using System.Threading.Tasks;
+using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
-    public interface IHandler<in T>
+    public interface IHandler<in T> 
     {
-        void Handle(T msg);
+        Task Handle(T message, IMessageMetadata metadata=null);
     }
 }

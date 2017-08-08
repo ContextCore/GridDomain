@@ -1,31 +1,34 @@
 using System;
 using System.Threading.Tasks;
-using NUnit.Framework;
+using GridDomain.CQRS;
+using GridDomain.Scheduling.Quartz;
+using GridDomain.Tests.Common;
+using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    [TestFixture]
-    public class Raising_future_events_too_late : FutureEventsTest
+    public class Raising_future_events_too_late : NodeTestKit
     {
-        public Raising_future_events_too_late(bool inMemory) : base(inMemory)
-        {
-            
-        }
-        public Raising_future_events_too_late() : base(true)
-        {
+        public Raising_future_events_too_late(ITestOutputHelper output) : base(output, new FutureEventsFixture(output)) {}
+        protected Raising_future_events_too_late(ITestOutputHelper output, NodeTestFixture fixture) : base(output, fixture) {}
 
-        }
-
-
-        [Test]
+        [Fact]
         public async Task Given_aggregate_When_raising_future_event_in_past_Then_it_fires_immediatly()
         {
             var scheduledTime = DateTime.Now.AddSeconds(-5);
             var now = DateTime.Now;
-            var aggregate = await RaiseFutureEventInTime(scheduledTime);
-            Assert.LessOrEqual(now.Second - aggregate.ProcessedTime.Second, 1);
-        }
+            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(3);
+            await Node.Prepare(testCommand)
+                      .Expect<JobSucceeded>()
+                      .And<JobSucceeded>()
+                      .Execute();
+
+            var aggregate = await Node.LoadAggregate<TestFutureEventsAggregate>(testCommand.AggregateId);
+
+            Assert.True(now.Second - aggregate.ProcessedTime.Second <= 1);
+        }
     }
 }

@@ -1,16 +1,17 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using Xunit;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Marteau.AcceptanceTests")]
+[assembly: AssemblyTitle("GridDomain.Tests.Acceptance.XUnit")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Marteau.AcceptanceTests")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyProduct("GridDomain.Tests.Acceptance.XUnit")]
+[assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -22,7 +23,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("b008531e-4879-4547-a5e1-b30ad176a669")]
+[assembly: Guid("c2552609-5e29-4187-8d6a-e2f5d82bff35")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -37,3 +38,4 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: CollectionBehavior(DisableTestParallelization = true)]

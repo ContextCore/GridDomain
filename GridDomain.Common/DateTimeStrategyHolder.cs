@@ -1,11 +1,12 @@
 namespace GridDomain.Common
 {
-    public static class DateTimeStrategyHolder
+    internal static class DateTimeStrategyHolder
     {
-        public static DateTimeStrategy Current { get; set; }
         static DateTimeStrategyHolder()
         {
             Current = new DefaultDateTimeStrategy();
         }
+
+        internal static ICurrentDateTimeStrategy Current { get; set; }
     }
 }

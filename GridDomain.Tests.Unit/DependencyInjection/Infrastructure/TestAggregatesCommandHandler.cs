@@ -1,24 +1,16 @@
 using System;
-using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
 using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
-    public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>,
-                                                        IAggregateCommandsHandlerDesriptor
+    public class TestAggregatesCommandHandler : AggregateCommandsHandler<TestAggregate>
 
     {
-        private IUnityContainer _locator;
-
-        //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new TestAggregatesCommandHandler(null);
-        public TestAggregatesCommandHandler(IUnityContainer unityContainer) : base(unityContainer)
+        public TestAggregatesCommandHandler(ITestDependency testDependency)
         {
-            _locator = unityContainer;
-            Map<TestCommand>(c => c.AggregateId,
-                            (c, a) => a.Execute(c.Parameter, _locator.Resolve<ITestDependency>()));
+            Map<TestCommand>((c, a) => a.Execute(c.Parameter, testDependency));
         }
 
-        public Type AggregateType => typeof(TestAggregate);
     }
 }

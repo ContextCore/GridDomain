@@ -1,11 +1,16 @@
-using GridDomain.Logging;
 using Quartz;
+using Serilog;
 
 namespace GridDomain.Scheduling.Quartz.Logging
 {
-    public class LoggingJobListener : ILoggingJobListener
+    public class LoggingJobListener : IJobListener
     {
-        private readonly ISoloLogger _log = LogManager.GetLogger();
+        private readonly ILogger _log;
+
+        public LoggingJobListener(ILogger log)
+        {
+            _log = log.ForContext<LoggingJobListener>();
+        }
 
         public string Name => GetType().Name;
 

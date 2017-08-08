@@ -1,42 +1,26 @@
 using System;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Tests.Framework;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using Xunit;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
 {
-    [TestFixture]
     public class Given_aggregate_When_cancel_not_existing_future_event
     {
-        private TestAggregate _aggregate;
-        private FutureEventScheduledEvent _futureEvent;
-
-        [SetUp]
-        public void When_cancel_existing_scheduled_future_event()
+        [Fact]
+        public void Then_nothing_happened()
         {
-            _aggregate = new TestAggregate(Guid.NewGuid());
+            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
             var testValue = "value D";
 
-            _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
-            _futureEvent = _aggregate.GetEvent<FutureEventScheduledEvent>();
-            _aggregate.ClearEvents();
-            _aggregate.CancelFutureEvents("will not be found in any future event");
-        }
+            aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
 
-        [Then]
-        public void No_events_are_produced()
-        {
-            CollectionAssert.IsEmpty(_aggregate.GetEvents<DomainEvent>());
-        }
+            aggregate.ClearEvents();
 
-        [Then]
-        public void All_existed_future_events_remain_the_same()
-        {
-            _aggregate.RaiseScheduledEvent(_futureEvent.Id);
-            var occuredEvent = _aggregate.GetEvent<FutureEventOccuredEvent>();
-            Assert.AreEqual(_futureEvent.Id, occuredEvent.FutureEventId);
+            aggregate.CancelFutureEvents("will not be found in any future event");
+           //No_events_were_produced()
+            Assert.Empty(aggregate.GetEvents<DomainEvent>());
         }
     }
 }

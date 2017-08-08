@@ -1,10 +1,11 @@
 using System;
+using System.Reflection;
 
 namespace GridDomain.Common
 {
     public class MessageMetadataEnvelop : IMessageMetadataEnvelop
     {
-        public MessageMetadataEnvelop(object message,  IMessageMetadata metadata)
+        protected MessageMetadataEnvelop(object message, IMessageMetadata metadata)
         {
             Message = message;
             Metadata = metadata;
@@ -13,35 +14,31 @@ namespace GridDomain.Common
         public object Message { get; }
         public IMessageMetadata Metadata { get; }
 
-        public static MessageMetadataEnvelop New<T>(T msg, IMessageMetadata metadata)
+        public static MessageMetadataEnvelop New<T>(T msg, IMessageMetadata metadata = null)
         {
-            return new MessageMetadataEnvelop<T>(msg, metadata);
+            return new MessageMetadataEnvelop<T>(msg, metadata ?? MessageMetadata.Empty);
         }
 
-        public static IMessageMetadataEnvelop NewGeneric(object msg, IMessageMetadata metadata )
+        public static IMessageMetadataEnvelop New(object msg, IMessageMetadata metadata)
         {
             var msgType = msg.GetType();
-            var methodOpenType = typeof(MessageMetadataEnvelop).GetMethod(nameof(New));
-            var method = methodOpenType.MakeGenericMethod(msgType);
-            return (IMessageMetadataEnvelop) method.Invoke(null, new[] { msg, metadata});
+            var constructor = GetEnvelopType(msgType).GetConstructor(new []{msgType, typeof(IMessageMetadata)});
+            return (IMessageMetadataEnvelop)constructor.Invoke(new []{msg, metadata});
         }
 
-        public static Type GenericForMessage(object msg)
+        public static Type GetEnvelopType(Type type)
         {
-            return GenericForType(msg.GetType());
-        }
-        public static Type GenericForType(Type type)
-        {
-            return typeof(IMessageMetadataEnvelop<>).MakeGenericType(type);
+            return typeof(MessageMetadataEnvelop<>).MakeGenericType(type);
         }
     }
 
-    public class MessageMetadataEnvelop<T> : MessageMetadataEnvelop, IMessageMetadataEnvelop<T>
+    public class MessageMetadataEnvelop<T> : MessageMetadataEnvelop,
+                                             IMessageMetadataEnvelop<T>
     {
-        public MessageMetadataEnvelop(T message, IMessageMetadata metadata) : base(message, metadata)
-        {
-        }
+        public MessageMetadataEnvelop(T message, IMessageMetadata metadata) : base(message, metadata) {}
 
-        public new T Message => (T)base.Message;
+        public new T Message => (T) base.Message;
+
+     
     }
 }

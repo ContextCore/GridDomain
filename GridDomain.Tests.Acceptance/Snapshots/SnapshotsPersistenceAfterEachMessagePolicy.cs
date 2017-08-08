@@ -1,13 +1,10 @@
-using System;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.EventSourced;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
-    class SnapshotsPersistenceAfterEachMessagePolicy : SnapshotsPersistencePolicy
+    internal class SnapshotsPersistenceAfterEachMessagePolicy : SnapshotsPersistencePolicy
     {
-        public SnapshotsPersistenceAfterEachMessagePolicy(int eventsToStore = 5) : base(TimeSpan.FromSeconds(1000), 1, eventsToStore)
-        {
-
-        }
+        public SnapshotsPersistenceAfterEachMessagePolicy(int eventsToStore = 5) : base(1, eventsToStore) {}
     }
 }

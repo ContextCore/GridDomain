@@ -1,76 +1,55 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Node.Actors;
+using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling;
+using GridDomain.Scheduling.Akka;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using Microsoft.Practices.Unity;
-using NUnit.Framework;
 using Quartz;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
 {
-    [TestFixture]
-
-    public class Given_future_event_in_aggregate_When_cancelling_it : FutureEventsTest
+    public class Given_future_event_in_aggregate_When_cancelling_it : NodeTestKit
     {
-        private DateTime _scheduledTime;
-        private FutureEventCanceledEvent _futureEventCancelation;
-        private ScheduleEventInFutureCommand _testCommand;
-        private FutureEventScheduledEvent _futureEventEnvelop;
-        private CancelFutureEventCommand _cancelFutureEventCommand;
+        public Given_future_event_in_aggregate_When_cancelling_it(ITestOutputHelper output)
+            : base(output, new FutureEventsFixture(output)) {}
 
+        protected Given_future_event_in_aggregate_When_cancelling_it(ITestOutputHelper output, NodeTestFixture fixture)
+            : base(output, fixture) {}
 
+        [Fact]
         public async Task When_raising_future_event()
         {
-            _scheduledTime = DateTime.Now.AddSeconds(200);
-            _testCommand = new ScheduleEventInFutureCommand(_scheduledTime, Guid.NewGuid(), "test value");
+            var scheduledTime = DateTime.Now.AddSeconds(200);
+            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
 
-            _futureEventEnvelop = (await GridNode.PrepareCommand(_testCommand)
-                                                .Expect<FutureEventScheduledEvent>()
-                                                .Execute())
-                                  .Message<FutureEventScheduledEvent>();
-                
-            _cancelFutureEventCommand = new CancelFutureEventCommand(_testCommand.AggregateId, _testCommand.Value);
+            var futureEventEnvelop =
+                (await Node.Prepare(testCommand).Expect<FutureEventScheduledEvent>().Execute())
+                .Message<FutureEventScheduledEvent>();
 
-            _futureEventCancelation = (await GridNode.PrepareCommand(_cancelFutureEventCommand)
-                                                                   .Expect<FutureEventCanceledEvent>()
-                                                                   .Execute())
-                                                     .Message<FutureEventCanceledEvent>();
-        }
+            var cancelFutureEventCommand = new CancelFutureEventCommand(testCommand.AggregateId, testCommand.Value);
 
-        protected override TimeSpan Timeout => TimeSpan.FromSeconds(5);
+            var futureEventCancelation =
+                (await Node.Prepare(cancelFutureEventCommand).Expect<FutureEventCanceledEvent>().Execute())
+                .Message<FutureEventCanceledEvent>();
 
-        [Then]
-        public async Task Cancelation_event_has_same_id_as_future_event()
-        {
-            await When_raising_future_event();
-            Assert.AreEqual(_futureEventEnvelop.Id, _futureEventCancelation.FutureEventId);
-        }
-        
-        [Then]
-        public async Task Scheduler_does_not_contain_job_for_future_event()
-        {
-            await When_raising_future_event();
-            var scheduler = GridNode.Container.Resolve<IScheduler>();
+            //Cancelation_event_has_same_id_as_future_event()
+            Assert.Equal(futureEventEnvelop.Id, futureEventCancelation.FutureEventId);
+            //Scheduler_does_not_contain_job_for_future_event()
+            var scheduler = Node.System.GetExtension<SchedulingExtension>().Scheduler;
+
             //scheduler needs time to cancel the event
             //TODO: remove sleep to explicit wait
-            Thread.Sleep(1000);
-            var scheduleKey = AggregateActor<TestAggregate>.CreateScheduleKey(_futureEventEnvelop.Id,
-                _testCommand.AggregateId, "");
+            await Task.Delay(2000);
+            var scheduleKey = FutureEventsSchedulingMessageHandler.CreateScheduleKey(futureEventEnvelop.Id,
+                                                                                     testCommand.AggregateId,
+                                                                                     nameof(TestFutureEventsAggregate));
 
             var jobKey = new JobKey(scheduleKey.Name, scheduleKey.Group);
 
             Assert.False(scheduler.CheckExists(jobKey));
-        }
-
-        public Given_future_event_in_aggregate_When_cancelling_it(bool inMemory) : base(inMemory)
-        {
-        }
-
-        public Given_future_event_in_aggregate_When_cancelling_it() : base(true)
-        {
         }
     }
 }

@@ -4,10 +4,10 @@ namespace GridDomain.Node.AkkaMessaging
 {
     internal class IncorrectTypeOfCorrelationProperty : Exception
     {
-        public IncorrectTypeOfCorrelationProperty(Type type, string property) :
-            base(
-            $"Correlation property {property} of type {type} should be {typeof (Guid)} type to act as correlation property"
-            )
+        public IncorrectTypeOfCorrelationProperty(Type type, string property)
+            : base(
+                   $"Correlation property {property} of type {type} should be {typeof(Guid)} type to act as correlation property"
+                  )
         {
             Type = type;
             Property = property;

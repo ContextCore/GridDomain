@@ -1,30 +1,39 @@
 using System;
 using System.Collections.Generic;
-using CommonDomain;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
     public class AggregatesSnapshotsFactory : AggregateFactory
     {
-        private readonly IDictionary<Type,Func<IMemento, IAggregate>> _creators = new Dictionary<Type, Func<IMemento, IAggregate>>();
-        public void Register<T>(Func<IMemento, T> producer) where T : IAggregate
+        private readonly IDictionary<Type, Func<IMemento, Aggregate>> _creators =
+            new Dictionary<Type, Func<IMemento, Aggregate>>();
+
+        public static AggregatesSnapshotsFactory New<T>(Func<IMemento, T> producer) where T : Aggregate
         {
-            Register(typeof(T), m=> producer(m));
+            var factory = new AggregatesSnapshotsFactory();
+            factory.Register(producer);
+            return factory;
         }
 
-        public void Register(Type type,Func<IMemento, IAggregate> producer) 
+        protected void Register<T>(Func<IMemento, T> producer) where T : Aggregate
+        {
+            Register(typeof(T), producer);
+        }
+
+        private void Register(Type type, Func<IMemento, Aggregate> producer)
         {
             _creators.Add(type, producer);
         }
 
-        protected override IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
+        protected override Aggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
         {
-            Func<IMemento, IAggregate> factory;
+            Func<IMemento, Aggregate> factory;
 
-            if (!_creators.TryGetValue(type, out factory))
-                throw new CannotFindAggregateCreatorBySnapshotException(type);
+            if (_creators.TryGetValue(type, out factory))
+                return factory.Invoke(snapshot);
 
-            return factory.Invoke(snapshot);
+            return base.BuildFromSnapshot(type, id, snapshot);
         }
     }
 }

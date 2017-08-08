@@ -5,15 +5,19 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Events
 {
     public class BalanceChangedEvent_V0 : DomainEvent
     {
-        public decimal AmountChange { get; }
-        public decimal Koefficient { get; }
-        public decimal AmplifiedAmountChange { get; }
-
-        public BalanceChangedEvent_V0(decimal amountChange,Guid sourceId, decimal koefficient = 1, DateTime? createdTime = null, Guid sagaId = new Guid()) : base(sourceId, createdTime, sagaId)
+        public BalanceChangedEvent_V0(decimal amountChange,
+                                      Guid sourceId,
+                                      decimal koefficient = 1,
+                                      DateTime? createdTime = null,
+                                      Guid processId = new Guid()) : base(sourceId, processId: processId, createdTime: createdTime)
         {
             Koefficient = koefficient;
             AmountChange = amountChange;
-            AmplifiedAmountChange = Koefficient*AmountChange;
+            AmplifiedAmountChange = Koefficient * AmountChange;
         }
+
+        public decimal AmountChange { get; }
+        public decimal Koefficient { get; }
+        public decimal AmplifiedAmountChange { get; }
     }
 }

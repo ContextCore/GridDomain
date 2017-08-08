@@ -1,10 +1,11 @@
 using System;
+using GridDomain.Common;
 
 namespace GridDomain.Node.AkkaMessaging
 {
     public class AggregateActorName
     {
-        private static readonly string Separator = "_";
+        private static readonly string Separator = ":";
 
         internal AggregateActorName(Type aggregateType, Guid id)
         {
@@ -26,26 +27,18 @@ namespace GridDomain.Node.AkkaMessaging
         public static AggregateActorName Parse<T>(string value)
         {
             var aggregateType = typeof(T);
-            var id = Guid.Parse(value.Replace(aggregateType.BeautyName() + Separator, ""));
+            var beautyName = aggregateType.BeautyName();
+            var id = Guid.Parse(value.Replace(beautyName + Separator, ""));
             return new AggregateActorName(aggregateType, id);
         }
 
-        public static AggregateActorName ParseDynamic(string value)
+        public static bool TryParseId(string value, out Guid id)
         {
-            var parts = value.Split(new[] { Separator }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 2)
-                throw new BadNameFormatException();
+            var parts = value.Split(new[] {Separator}, StringSplitOptions.RemoveEmptyEntries);
 
-            var type = Type.GetType(parts[0]);
-            if (type == null)
-                throw new CannotFindIdTypeException();
-
-            Guid id;
-            if (!Guid.TryParse(parts[1], out id))
-                throw new IdParseException();
-
-            return new AggregateActorName(type, id);
+            return Guid.TryParse(parts[1], out id);
         }
+
         public override string ToString()
         {
             return Name;

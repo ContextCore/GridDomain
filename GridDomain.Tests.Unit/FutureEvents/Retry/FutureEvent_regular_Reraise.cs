@@ -1,52 +1,43 @@
 using System;
-using System.Threading.Tasks;
+using Akka.Actor;
 using GridDomain.Common;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Integration;
+using GridDomain.Node;
+using GridDomain.Scheduling;
+using GridDomain.Scheduling.Akka;
+using GridDomain.Scheduling.Akka.Messages;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using Microsoft.Practices.Unity;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
-    [TestFixture]
-    public class FutureEvent_regular_Reraise : FutureEventsTest_InMemory
+    public class FutureEvent_regular_Reraise : NodeTestKit
     {
+        public FutureEvent_regular_Reraise(ITestOutputHelper output) : base(output, 
+            new FutureEventsFixture(output,new InMemoryRetrySettings(2,
+                                                             TimeSpan.FromMilliseconds(10),
+                                                             new AlwaysRetryExceptionPolicy()))) { }
 
-        class TwoFastRetriesSettings : InMemoryRetrySettings
+
+        [Fact]
+        public void Should_retry_on_exception()
         {
-            public TwoFastRetriesSettings():base(2,TimeSpan.FromMilliseconds(10))
-            {
-                
-            }
-        }
+            var scheduler = Node.System.GetExtension<SchedulingExtension>()
+                                .SchedulingActor;
+            var command = new BoomNowCommand(Guid.NewGuid());
+            var executionOptions = new ExecutionOptions(DateTime.UtcNow.AddMilliseconds(100),
+                                                        typeof(ValueChangedSuccessfullyEvent),
+                                                        command.AggregateId);
 
-        protected override IContainerConfiguration CreateConfiguration()
-        {
-            return new CustomContainerConfiguration(c => c.Register(base.CreateConfiguration()),
-                c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings()));
-      
-        }
+            var scheduleCommandExecution = new ScheduleCommandExecution(command, new ScheduleKey("test", "test"), executionOptions);
+            scheduler.Tell(scheduleCommandExecution);
+            Node.Transport.Subscribe<MessageMetadataEnvelop<JobFailed>>(TestActor);
 
-        [Test]
-        public async Task Should_retry_on_exception()
-        {
-            //will retry 1 time
-            var _command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.1), Guid.NewGuid(), "test value A",1);
-
-            var waiter =  GridNode.NewWaiter(TimeSpan.FromMinutes(1))
-                .Expect<JobFailed>()
-                .And<JobSucceeded>()
-                .And<TestErrorDomainEvent>()
-                .Create();
-
-            GridNode.Execute(_command);
-
-            var res = await waiter;
-
-            Assert.AreEqual(_command.Value, res.Message<TestErrorDomainEvent>().Value);
+            //job will be retried one time, but aggregate will fail permanently due to error on apply method
+            FishForMessage<MessageMetadataEnvelop<JobFailed>>(m => true);
+            FishForMessage<MessageMetadataEnvelop<JobFailed>>(m => true);
         }
     }
 }

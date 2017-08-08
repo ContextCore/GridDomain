@@ -5,13 +5,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
     public class WaitEndInfo : EventArgs
     {
-        public WaitEndInfo(IWaitResults results, object lastMessage)
+        public WaitEndInfo(IWaitResult result, object lastMessage)
         {
-            Results = results;
+            Result = result;
             LastMessage = lastMessage;
         }
 
-        public IWaitResults Results { get; }
+        public IWaitResult Result { get; }
         public object LastMessage { get; }
     }
 }

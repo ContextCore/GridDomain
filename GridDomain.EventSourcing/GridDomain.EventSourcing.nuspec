@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>GridDomain.EventSourcing</id>
+    <version>1.0.0-alfa</version>
+    <authors>aleskov</authors>
+    <owners>aleskov</owners>
+    <licenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/andreyleskov/GridDomain/</projectUrl>
+    <iconUrl>https://github.com/andreyleskov/GridDomain/blob/master/grid-domain-icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Classes for event sourced domain development - aggregates</description>
+    <copyright>Copyright © aleskov</copyright>
+    <tags>CQRS ES DDD Akka</tags>
+    <dependencies>
+	  <dependency id="GridDomain.Common" version="1.0.0-alfa"/>
+	  <dependency id="GridDomain.CQRS" version="1.0.0-alfa"/>
+  	  <dependency id="Serilog" version="2.5.0"/>
+  	  <dependency id="Newtonsoft.Json" version="9.0.0"/>
+    </dependencies>
+  </metadata>
+
+<files>
+  <file src="bin\Release\GridDomain.EventSourcing.dll" target="lib\net461" /> 
+</files>
+</package>
+

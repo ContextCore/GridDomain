@@ -1,42 +1,35 @@
 using System;
-using CommonDomain;
-using GridDomain.EventSourcing.FutureEvents;
+using System.Threading.Tasks;
+using GridDomain.Scheduling;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using NUnit.Framework;
+using Xunit;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    [TestFixture]
     public class Given_aggregate_When_raising_several_future_events_by_method_call
     {
-        private TestAggregate _aggregate;
-
-        [OneTimeSetUp]
-        public void When_scheduling_future_event()
+        [Fact]
+        public async Task When_scheduling_future_event()
         {
-            _aggregate = new TestAggregate(Guid.NewGuid());
-            _aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400),"value D");
-            ((IAggregate)_aggregate).ClearUncommittedEvents();
-        }
+            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
+            aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "value D");
+            aggregate.ClearEvents();
 
-        [Then]
-        public void Then_raising_event_with_wrong_id_throws_an_error()
-        {
-            Assert.Throws<ScheduledEventNotFoundException>(() => _aggregate.RaiseScheduledEvent(Guid.NewGuid()));
-        }
+            //Then_raising_event_with_wrong_id_throws_an_error()
+            await aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid())
+                           .ShouldThrow<ScheduledEventNotFoundException>();
 
-        [Then]
-        public void Then_raising_event_with_wrong_id_does_not_produce_new_events()
-        {
+            //Then_raising_event_with_wrong_id_does_not_produce_new_events()
             try
             {
-                _aggregate.RaiseScheduledEvent(Guid.NewGuid());
+                await aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid());
             }
             catch
             {
                 //intentionally left empty
             }
-            CollectionAssert.IsEmpty(((IAggregate)_aggregate).GetUncommittedEvents());
+            Assert.Empty(aggregate.GetEvents());
         }
     }
 }

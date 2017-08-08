@@ -1,14 +1,17 @@
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Monitoring;
 using Akka.Monitoring.Impl;
-using GridDomain.Node.AkkaMessaging;
+using GridDomain.Common;
+using GridDomain.CQRS;
 
 namespace GridDomain.Node.Actors
 {
+
     public class ActorMonitor
     {
-        private readonly IActorContext _context;
         private readonly string _actorGroupName;
+        private readonly IActorContext _context;
 
         public ActorMonitor(IActorContext context, string actorName = null)
         {
@@ -20,33 +23,34 @@ namespace GridDomain.Node.Actors
         {
             return $"{_context.System.Name}.{_actorGroupName}.{metricName}";
         }
-        private void IncrementCounter(string akkaActorRestarts)
+
+        public void Increment(string counterName)
         {
-            _context.IncrementCounter(GetCounterName(akkaActorRestarts));
+            _context.IncrementCounter(GetCounterName(counterName));
+        }
+        public void Increment<T>()
+        {
+            Increment(typeof(T).Name);
         }
 
         public void IncrementMessagesReceived()
         {
-            //_context.IncrementMessagesReceived();
-            IncrementCounter(CounterNames.ActorRestarts);
+            Increment(CounterNames.ReceivedMessages);
         }
 
         public void IncrementActorRestarted()
         {
-           // _context.IncrementActorRestart();
-            IncrementCounter(CounterNames.ActorRestarts);
+            Increment(CounterNames.ActorRestarts);
         }
 
         public void IncrementActorStopped()
         {
-          //  _context.IncrementActorStopped();
-            IncrementCounter(CounterNames.ActorsStopped);
+            Increment(CounterNames.ActorsStopped);
         }
 
         public void IncrementActorStarted()
         {
-            //_context.IncrementActorCreated();
-            IncrementCounter(CounterNames.ActorsCreated);
+            Increment(CounterNames.ActorsCreated);
         }
     }
 }

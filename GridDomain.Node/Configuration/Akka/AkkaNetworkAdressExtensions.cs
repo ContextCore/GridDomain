@@ -6,6 +6,5 @@ namespace GridDomain.Node.Configuration.Akka
         {
             return $"akka.tcp://{adr.SystemName}@{adr.Host}:{adr.PortNumber}/user";
         }
-
     }
 }

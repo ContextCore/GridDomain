@@ -1,11 +1,11 @@
 ﻿using System;
+using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
-    public interface ICommand
+    public interface ICommand : IHaveId
     {
-        Guid Id { get; }
-
-        Guid SagaId { get; }
+        Guid ProcessId { get; }
+        Guid AggregateId { get; }
     }
 }

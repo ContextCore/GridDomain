@@ -1,0 +1,23 @@
+using GridDomain.Tests.Common;
+using GridDomain.Tests.Common.Configuration;
+using Microsoft.EntityFrameworkCore;
+
+namespace GridDomain.Tests.Acceptance.BalloonDomain
+{
+    public class BalloonContext : DbContext
+    {
+        public BalloonContext() : base(
+            new DbContextOptionsBuilder().UseSqlServer(new AutoTestLocalDbConfiguration().ReadModelConnectionString).
+                                          Options)
+        {
+            Database.Migrate();
+        }
+
+        public BalloonContext(DbContextOptions connString) : base(connString)
+        {
+            Database.Migrate();
+        }
+
+        public DbSet<BalloonCatalogItem> BalloonCatalog { get; set; }
+    }
+}

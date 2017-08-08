@@ -1,62 +1,48 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
-using GridDomain.CQRS.Messaging;
-using GridDomain.EventSourcing.FutureEvents;
-using GridDomain.Node.Actors;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Quartz;
-using GridDomain.Tests.Framework;
-using GridDomain.Tests.Unit.EventsUpgrade.Domain;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing.Adapters;
+using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Scheduling.Quartz.Configuration;
+using GridDomain.Tests.Acceptance.Snapshots;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.EventsUpgrade;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
-using GridDomain.Tests.Unit.FutureEvents;
-using Microsoft.Practices.Unity;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
-    [TestFixture]
-    public class Future_events_upgraded_by_object_adapter : FutureEventsTest
-    { 
-        protected override IContainerConfiguration CreateConfiguration()
+    public class Future_events_upgraded_by_object_adapter : NodeTestKit
+    {
+        public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
+            : base(output,
+                new BalanceFixture(new PersistedQuartzConfig()).UseSqlPersistence()
+                                                               .InitFastRecycle()
+                                                               .UseAdaper(new IncreaseBy100Adapter())) { }
+
+        private class IncreaseBy100Adapter : ObjectAdapter<BalanceChangedEvent_V1, BalanceChangedEvent_V1>
         {
-            return new CustomContainerConfiguration(c => c.RegisterAggregate<BalanceAggregate, BalanceAggregatesCommandHandler>(),
-                                                    c => c.RegisterInstance<IPersistentChildsRecycleConfiguration>(
-                                                        new PersistentChildsRecycleConfiguration(
-                                                            TimeSpan.FromMilliseconds(100), 
-                                                            TimeSpan.FromMilliseconds(50))));
+            public override BalanceChangedEvent_V1 Convert(BalanceChangedEvent_V1 evt)
+            {
+                return new BalanceChangedEvent_V1(evt.AmountChange + 100, evt.SourceId, evt.CreatedTime, evt.ProcessId);
+            }
         }
 
-
-        protected override IMessageRouteMap CreateMap()
-        {
-            return new BalanceRouteMap();
-        }
-
-        public Future_events_upgraded_by_object_adapter():base(false)
-        {
-            
-        }
-
-        protected override void OnNodeCreated()
-        {
-            base.OnNodeCreated();
-            GridNode.EventsAdaptersCatalog.Register(new BalanceChanged_objectAdapter1());
-        }
-
-        [Test]
+        [Fact]
         public async Task Future_event_is_upgraded_by_json_adapter()
         {
-            var saveOldEventCommand = new ChangeBalanceInFuture(1,Guid.NewGuid(),BusinessDateTime.Now.AddSeconds(2),true);
+            var cmd = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), false);
 
-            await GridNode.PrepareCommand(saveOldEventCommand)
-                          .Expect<FutureEventScheduledEvent>()
-                          .Execute(Timeout);
+            var res = await Node.Prepare(cmd)
+                                .Expect<BalanceChangedEvent_V1>()
+                                .Execute(TimeSpan.FromSeconds(10));
 
-            await GridNode.NewWaiter(Timeout).Expect<BalanceChangedEvent_V1>().Create();
+            //event should be modified by json object adapter, changing its Amount
+            Assert.Equal(101, res.Message<BalanceChangedEvent_V1>()
+                  .AmountChange);
         }
-
-        protected override TimeSpan Timeout { get; } = TimeSpan.FromSeconds(10);
     }
 }

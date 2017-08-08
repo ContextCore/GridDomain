@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>GridDomain.Common</id>
+    <version>1.0.0-alfa</version>
+    <authors>aleskov</authors>
+    <owners>aleskov</owners>
+    <licenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/solomoto-dev/GridDomain/</projectUrl>
+    <iconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Common classes and abstraction for griddomain</description>
+    <copyright>Copyright © aleskov</copyright>
+    <tags>CQRS ES DDD Akka</tags>
+  </metadata>
+
+<files>
+  <file src="bin\Release\GridDomain.Common.dll" target="lib\net461" /> 
+</files>
+</package>
+

@@ -2,7 +2,6 @@ using System;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class BadNameFormatException : Exception
-    {
-    }
+
+    public class BadNameFormatException : Exception {}
 }

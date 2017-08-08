@@ -1,29 +1,19 @@
 using System;
-using GridDomain.CQRS.Messaging;
-using GridDomain.CQRS.Messaging.MessageRouting;
+using GridDomain.EventSourcing;
+using GridDomain.Scheduling;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 {
-    public class BalanceAggregatesCommandHandler: AggregateCommandsHandler<BalanceAggregate>,
-                                                        IAggregateCommandsHandlerDesriptor
-
+    public class BalanceAggregatesCommandHandler : FutureEventsAggregateCommandHandler<BalanceAggregate>
     {
-        //TODO: refactor to separate class
-        public static readonly IAggregateCommandsHandlerDesriptor Descriptor = new BalanceAggregatesCommandHandler();
-        public BalanceAggregatesCommandHandler() : base(null)
+        public BalanceAggregatesCommandHandler()
         {
-            Map<ChangeBalanceCommand>(c => c.AggregateId,
-                                       (c, a) => a.ChangeState(c.Parameter));
+            Map<ChangeBalanceCommand>((c, a) => a.ChangeState(c.Parameter));
 
-            Map<CreateBalanceCommand>(c => c.AggregateId,
-                                        c => new BalanceAggregate(c.AggregateId, c.Parameter));
+            Map<CreateBalanceCommand>(c => new BalanceAggregate(c.AggregateId, c.Parameter));
 
-            Map<ChangeBalanceInFuture>(c => c.AggregateId,
-                                         (c, a) => a.ChangeStateInFuture(c.RaiseTime, c.Parameter, c.UseLegacyEvent));
-            this.MapFutureEvents();
+            Map<ChangeBalanceInFuture>((c, a) => a.ChangeStateInFuture(c.RaiseTime, c.Parameter, c.UseLegacyEvent));
         }
-
-        public Type AggregateType => typeof(BalanceAggregate);
     }
 }

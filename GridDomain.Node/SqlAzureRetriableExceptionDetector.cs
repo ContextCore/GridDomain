@@ -12,7 +12,6 @@ namespace GridDomain.Node
             {
                 // Enumerate through all errors found in the exception.
                 foreach (SqlError err in sqlException.Errors)
-                {
                     switch (err.Number)
                     {
                         // SQL Error Code: 41325
@@ -83,15 +82,12 @@ namespace GridDomain.Node
                         case -2:
                             return true;
                     }
-                }
 
                 return false;
             }
 
             if (ex is TimeoutException)
-            {
                 return true;
-            }
 
             return false;
         }

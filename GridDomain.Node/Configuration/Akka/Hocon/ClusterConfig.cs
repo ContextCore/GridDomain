@@ -16,8 +16,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         {
             var seeds = string.Join(Environment.NewLine, seedNodes.Select(n => @"""" + n + @""""));
 
-            var clusterConfigString =
-          @"actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
+            var clusterConfigString = @"actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
             cluster {
                             seed-nodes = [" + seeds + @"]
             }";
@@ -33,13 +32,11 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             return new ClusterConfig(address, seedNodes);
         }
 
-
         public static ClusterConfig NonSeedNode(IAkkaNetworkAddress address, IAkkaNetworkAddress[] seedNodesAddresses)
         {
             var seedNodes = seedNodesAddresses.Select(GetSeedNetworkAddress).ToArray();
             return new ClusterConfig(new AkkaNetworkAddress(address.SystemName, address.Host, 0), seedNodes);
         }
-
 
         private static string GetSeedNetworkAddress(IAkkaNetworkAddress conf)
         {

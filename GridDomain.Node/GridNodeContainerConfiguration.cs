@@ -1,30 +1,40 @@
 using System;
-using Akka.Actor;
+using System.Threading.Tasks;
+using Akka.DI.Core;
+using Akka.DI.Unity;
 using GridDomain.Common;
+using GridDomain.Configuration;
+using GridDomain.Configuration.MessageRouting;
+using GridDomain.CQRS;
+
+using GridDomain.Node.Actors;
+using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Quartz;
+using GridDomain.Node.Transports;
 using Microsoft.Practices.Unity;
+using Serilog;
 
 namespace GridDomain.Node
 {
-    internal class GridNodeContainerConfiguration : IContainerConfiguration
+    public class GridNodeContainerConfiguration : IContainerConfiguration
     {
-        private readonly ActorSystem _actorSystem;
-        private readonly TransportMode _transportMode;
-        private readonly IQuartzConfig _config;
+        private readonly ILogger _log;
+        private readonly IActorTransport _actorTransport;
 
-        public GridNodeContainerConfiguration(ActorSystem actorSystem,
-                                             TransportMode transportMode,
-                                             IQuartzConfig config)
+        public GridNodeContainerConfiguration(IActorTransport transportMode, ILogger settingsLog)
         {
-            _config = config;
-            _transportMode = transportMode;
-            _actorSystem = actorSystem;
+            _log = settingsLog;
+            _actorTransport = transportMode;
         }
 
         public void Register(IUnityContainer container)
         {
-            CompositionRoot.Init(container, _actorSystem, _transportMode, _config);
+            container.RegisterInstance(_log);
+            container.RegisterInstance<IPublisher>(_actorTransport);
+            container.RegisterInstance<IActorSubscriber>(_actorTransport);
+            container.RegisterInstance(_actorTransport);
+            container.RegisterInstance<IMessageProcessContext>(new MessageProcessContext(_actorTransport, _log));
         }
     }
 }

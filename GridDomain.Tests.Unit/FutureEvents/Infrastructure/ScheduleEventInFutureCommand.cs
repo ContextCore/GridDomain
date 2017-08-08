@@ -5,14 +5,12 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
     public class ScheduleEventInFutureCommand : Command
     {
-        public ScheduleEventInFutureCommand(DateTime raiseTime, Guid aggregateId, string value)
+        public ScheduleEventInFutureCommand(DateTime raiseTime, Guid aggregateId, string value) : base(aggregateId)
         {
             RaiseTime = raiseTime;
-            AggregateId = aggregateId;
             Value = value;
         }
 
-        public Guid AggregateId { get; }
         public DateTime RaiseTime { get; }
         public string Value { get; }
     }

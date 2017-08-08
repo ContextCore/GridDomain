@@ -1,25 +1,22 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-  
-    public class JournalConfiguration : System.Data.Entity.ModelConfiguration.EntityTypeConfiguration<JournalItem>
+    public class JournalConfiguration : IEntityTypeConfiguration<JournalItem>
     {
-        public JournalConfiguration()
-            : this("dbo")
+        public void Map(EntityTypeBuilder<JournalItem> builder)
         {
-        }
+            builder.ToTable("Journal");
+            builder.HasKey(x => new {x.PersistenceId, x.SequenceNr});
 
-        public JournalConfiguration(string schema)
-        {
-            ToTable("Journal", schema);
-            HasKey(x => new { x.PersistenceId, x.SequenceNr });
-
-            Property(x => x.PersistenceId).HasColumnName(@"PersistenceId").IsRequired().HasColumnType("nvarchar").HasMaxLength(255).HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            Property(x => x.SequenceNr).HasColumnName(@"SequenceNr").IsRequired().HasColumnType("bigint").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None);
-            Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("bigint");
-            Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
-            Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar").HasMaxLength(500);
-            Property(x => x.Payload).HasColumnName(@"Payload").IsRequired().HasColumnType("varbinary");
-            Property(x => x.Tags).HasColumnName(@"Tags").IsOptional().HasColumnType("nvarchar").HasMaxLength(100);
+            builder.Property(x => x.PersistenceId).HasColumnName(@"PersistenceId").IsRequired().HasColumnType("nvarchar(255)");
+            builder.Property(x => x.SequenceNr).HasColumnName(@"SequenceNr").IsRequired().HasColumnType("bigint");
+            builder.Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("bigint");
+            builder.Property(x => x.IsDeleted).HasColumnName(@"IsDeleted").IsRequired().HasColumnType("bit");
+            builder.Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar(500)");
+            builder.Property(x => x.Payload).HasColumnName(@"Payload").IsRequired().HasColumnType("varbinary(max)");
+            builder.Property(x => x.Tags).HasColumnName(@"Tags").IsRequired(false).HasColumnType("nvarchar(100)");
         }
     }
 }

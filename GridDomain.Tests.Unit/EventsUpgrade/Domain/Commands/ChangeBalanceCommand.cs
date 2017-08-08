@@ -5,13 +5,11 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands
 {
     public class ChangeBalanceCommand : Command
     {
-        public ChangeBalanceCommand(int parameter, Guid aggregateId)
+        public ChangeBalanceCommand(int parameter, Guid aggregateId) : base(aggregateId)
         {
             Parameter = parameter;
-            AggregateId = aggregateId;
         }
 
-        public Guid AggregateId { get; }
         public int Parameter { get; }
     }
 }

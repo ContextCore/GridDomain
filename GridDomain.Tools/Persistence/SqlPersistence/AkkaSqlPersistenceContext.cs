@@ -1,74 +1,38 @@
-﻿
+﻿using System;
+using System.Data.SqlClient;
+using System.Data.SqlTypes;
+using Microsoft.EntityFrameworkCore;
+
 namespace GridDomain.Tools.Persistence.SqlPersistence
 {
-
-  
-    public class AkkaSqlPersistenceContext : System.Data.Entity.DbContext, IAkkaSqlPersistenceContext
+    public class AkkaSqlPersistenceContext : DbContext
     {
-        public System.Data.Entity.DbSet<JournalItem> Journal { get; set; } // JournalEntry
-        public System.Data.Entity.DbSet<Metadata> Metadatas { get; set; } // Metadata
-        public System.Data.Entity.DbSet<SnapshotItem> Snapshots { get; set; } // Snapshots
+        public AkkaSqlPersistenceContext(DbContextOptions options) : base(options) {}
 
-        static AkkaSqlPersistenceContext()
-        {
-            System.Data.Entity.Database.SetInitializer<AkkaSqlPersistenceContext>(null);
-        }
+        public DbSet<JournalItem> Journal { get; set; } // JournalEntry
+        public DbSet<Metadata> Metadatas { get; set; } // Metadata
+        public DbSet<SnapshotItem> Snapshots { get; set; } // Snapshots
 
-        public AkkaSqlPersistenceContext()
-            : base("Name=SqlJournal")
+        public bool IsSqlParameterNull(SqlParameter param)
         {
-        }
+            SaveChanges();
+            SaveChangesAsync();
 
-        public AkkaSqlPersistenceContext(string connectionString)
-            : base(connectionString)
-        {
-        }
-
-        public AkkaSqlPersistenceContext(string connectionString, System.Data.Entity.Infrastructure.DbCompiledModel model)
-            : base(connectionString, model)
-        {
-        }
-
-        public AkkaSqlPersistenceContext(System.Data.Common.DbConnection existingConnection, bool contextOwnsConnection)
-            : base(existingConnection, contextOwnsConnection)
-        {
-        }
-
-        public AkkaSqlPersistenceContext(System.Data.Common.DbConnection existingConnection, System.Data.Entity.Infrastructure.DbCompiledModel model, bool contextOwnsConnection)
-            : base(existingConnection, model, contextOwnsConnection)
-        {
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-        }
-
-        public bool IsSqlParameterNull(System.Data.SqlClient.SqlParameter param)
-        {
             var sqlValue = param.SqlValue;
-            var nullableValue = sqlValue as System.Data.SqlTypes.INullable;
+            var nullableValue = sqlValue as INullable;
             if (nullableValue != null)
                 return nullableValue.IsNull;
-            return (sqlValue == null || sqlValue == System.DBNull.Value);
+            return sqlValue == null || sqlValue == DBNull.Value;
         }
 
-        protected override void OnModelCreating(System.Data.Entity.DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Configurations.Add(new JournalConfiguration());
-            modelBuilder.Configurations.Add(new MetadataConfiguration());
-            modelBuilder.Configurations.Add(new SnapshotConfiguration());
+            modelBuilder.AddConfiguration(new JournalConfiguration());
+            modelBuilder.AddConfiguration(new MetadataConfiguration());
+            modelBuilder.AddConfiguration(new SnapshotConfiguration());
         }
 
-        public static System.Data.Entity.DbModelBuilder CreateModel(System.Data.Entity.DbModelBuilder modelBuilder, string schema)
-        {
-            modelBuilder.Configurations.Add(new JournalConfiguration(schema));
-            modelBuilder.Configurations.Add(new MetadataConfiguration(schema));
-            modelBuilder.Configurations.Add(new SnapshotConfiguration(schema));
-            return modelBuilder;
-        }
     }
 }
-

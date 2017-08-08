@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,66 +33,61 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.3.0\lib\net46\Serilog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wire.0.8.1\lib\net45\Wire.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adapters\IEventAdaptersCatalog.cs" />
     <Compile Include="Adapters\IObjectAdapter.cs" />
     <Compile Include="Adapters\IObjectUpdateChain.cs" />
+    <Compile Include="AggregateCommandsHandler.cs" />
+    <Compile Include="AggregateExtensions.cs" />
     <Compile Include="AggregateFactory.cs" />
-    <Compile Include="AggregateSnapshottingFactory.cs" />
     <Compile Include="AggregatesSnapshotsFactory.cs" />
+    <Compile Include="CannotFindAggregateCommandHandlerExeption.cs" />
     <Compile Include="CannotFindAggregateCreatorBySnapshotException.cs" />
+    <Compile Include="Aggregate.cs" />
+    <Compile Include="CommandExecutionDelegate.cs" />
+    <Compile Include="CommandExecutionFailedException.cs" />
+    <Compile Include="CommonDomain\ConventionEventRouter.cs" />
+    <Compile Include="CommonDomain\EventIsNotBelongingToAggregateException.cs" />
+    <Compile Include="CommonDomain\ExtensionMethods.cs" />
+    <Compile Include="CommonDomain\HandlerForDomainEventNotFoundException.cs" />
+    <Compile Include="CommonDomain\IAggregate.cs" />
+    <Compile Include="CommonDomain\IConstructAggregates.cs" />
+    <Compile Include="CommonDomain\IMemento.cs" />
+    <Compile Include="CommonDomain\IRouteEvents.cs" />
+    <Compile Include="CommonDomain\RegistrationEventRouter.cs" />
     <Compile Include="ConventionBasedConstructorNotFound.cs" />
     <Compile Include="DomainEvent.cs" />
-    <Compile Include="Adapters\DomainSerializer.cs" />
     <Compile Include="Adapters\DomainEventAdapter.cs" />
     <Compile Include="Adapters\EventsAdaptersCatalog.cs" />
     <Compile Include="Adapters\IDomainEventAdapter.cs" />
     <Compile Include="Adapters\IEventAdapter.cs" />
     <Compile Include="Adapters\VersionedTypeSerializationBinder.cs" />
-    <Compile Include="Aggregate.cs" />
-    <Compile Include="FutureEvents\AsyncEventsInProgress.cs" />
-    <Compile Include="FutureEvents\AsyncEventsReceived.cs" />
-    <Compile Include="FutureEvents\FutureEventCanceledEvent.cs" />
-    <Compile Include="FutureEvents\FutureEventOccuredEvent.cs" />
-    <Compile Include="FutureEvents\FutureEventScheduledEvent.cs" />
-    <Compile Include="FutureEvents\NotFinishedAsyncMethodResultsRequestedException.cs" />
-    <Compile Include="FutureEvents\RaiseScheduledDomainEventCommand.cs" />
-    <Compile Include="FutureEvents\ScheduledEventNotFoundException.cs" />
+    <Compile Include="DomainException.cs" />
+    <Compile Include="DomainSerializer.cs" />
+    <Compile Include="IAggregateCommandsHandler.cs" />
+    <Compile Include="IAggregateCommandsHandlerDescriptor.cs" />
+    <Compile Include="IHaveProcessId.cs" />
     <Compile Include="InvalidDefaultMementoException.cs" />
     <Compile Include="ISourcedEvent.cs" />
+    <Compile Include="PersistenceDelegate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Adapters\ObjectAdapter.cs" />
     <Compile Include="Adapters\TypeNameNotFoundException.cs" />
-    <Compile Include="WireJsonSerializer.cs" />
     <Compile Include="VersionedTypeSerialization\CantFindTypeException.cs" />
     <Compile Include="VersionedTypeSerialization\CantFindTypeLatestVersionException.cs" />
     <Compile Include="VersionedTypeSerialization\CantParseVersionNumberExpection.cs" />
     <Compile Include="VersionedTypeSerialization\EmptyTypeNameException.cs" />
     <Compile Include="VersionedTypeSerialization\VersionedTypeName.cs" />
     <Compile Include="VersionedTypeSerialization\VersionedTypeParseExeption.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
@@ -101,10 +98,11 @@
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
-      <Project>{E356647A-561E-4290-AD71-EF5DC92BF5C7}</Project>
-      <Name>GridDomain.Logging</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

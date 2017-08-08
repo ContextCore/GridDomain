@@ -1,43 +1,22 @@
 ﻿using System;
 using Akka.Actor;
-using Akka.DI.Core;
-using GridDomain.CQRS;
-using GridDomain.CQRS.Messaging;
-using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node.Actors
 {
     public class GridNodeController : TypedActor
     {
-        private readonly IMessageRouteMap _messageRouting;
+        private readonly ActorMonitor _monitor;
 
-        public GridNodeController(IMessageRouteMap messageRouting)
+        public GridNodeController()
         {
-            _messageRouting = messageRouting;
             _monitor = new ActorMonitor(Context);
         }
 
         public void Handle(Start msg)
         {
             _monitor.IncrementMessagesReceived();
-            var system = Context.System;
-            var routingActor = system.ActorOf(system.DI().Props(msg.RoutingActorType),msg.RoutingActorType.Name);
-
-            var actorMessagesRouter = new ActorMessagesRouter(routingActor);
-            _messageRouting.Register(actorMessagesRouter)
-                           .ContinueWith(T => new Started()).PipeTo(Sender);
+            Sender.Tell(Started.Instance);
         }
-      
-        public class Start
-        {
-            public Type RoutingActorType;
-        }
-
-        public class Started
-        {
-        }
-
-        private readonly ActorMonitor _monitor;
 
         protected override void PreStart()
         {
@@ -48,9 +27,18 @@ namespace GridDomain.Node.Actors
         {
             _monitor.IncrementActorStopped();
         }
+
         protected override void PreRestart(Exception reason, object message)
         {
             _monitor.IncrementActorRestarted();
+        }
+
+        public class Start {}
+
+        public class Started
+        {
+            private Started() {}
+            public static Started Instance { get; } = new Started();
         }
     }
 }

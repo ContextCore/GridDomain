@@ -1,65 +1,46 @@
 using System;
-using System.Threading;
-using GridDomain.Node;
-using GridDomain.Tests.Unit.CommandsExecution;
-using GridDomain.Tests.Unit.SampleDomain;
-using GridDomain.Tests.Unit.SampleDomain.Commands;
-using GridDomain.Tests.Unit.SampleDomain.Events;
-using GridDomain.Tools.Repositories;
+using System.Threading.Tasks;
+using GridDomain.CQRS;
+using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
-using NUnit.Framework;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
-    [TestFixture]
-    class Aggregate_Should_Not_save_snapshots_on_message_process_by_default : SampleDomainCommandExecutionTests
+    public class Aggregate_Should_Not_save_snapshots_on_message_process_by_default : NodeTestKit
     {
-        private Guid _aggregateId;
-        private AggregateVersion<SampleAggregate>[] _snapshots;
-        private int _initialParameter;
-        private int _changedParameter;
+        public Aggregate_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper output)
+            : base(output, new BalloonFixture().UseSqlPersistence()) {}
 
-
-
-        public Aggregate_Should_Not_save_snapshots_on_message_process_by_default() : base(false)
+        [Fact]
+        public async Task Given_timeout_only_default_policy()
         {
+            var aggregateId = Guid.NewGuid();
 
-        }
-
-        [OneTimeSetUp]
-        public void Given_timeout_only_default_policy()
-        {
-            _aggregateId = Guid.NewGuid();
-            _initialParameter = 1;
-            var cmd = new CreateSampleAggregateCommand(_initialParameter, _aggregateId);
-            GridNode.NewCommandWaiter(Timeout)
-                .Expect<SampleAggregateCreatedEvent>()
-                .Create()
-                .Execute(cmd)
-                .Wait();
+            var cmd = new InflateNewBallonCommand(1, aggregateId);
+            await Node.Prepare(cmd).Expect<BalloonCreated>().Execute();
 
             //checking "time-out" rule for policy, snapshots should be saved once on second command
-            Thread.Sleep(1000);
-            _changedParameter = 2;
-            var changeCmds = new[]
-            {
-                new ChangeSampleAggregateCommand(_changedParameter, _aggregateId)
-            };
+            await Task.Delay(1000);
 
-            GridNode.NewCommandWaiter(Timeout)
-                    .Expect<SampleAggregateChangedEvent>()
-                    .Create()
-                    .Execute(changeCmds)
-                    .Wait();
-            Thread.Sleep(TimeSpan.FromSeconds(1));
+            var changedParameter = 2;
+            var changeSampleAggregateCommand = new WriteTitleCommand(changedParameter, aggregateId);
 
-            _snapshots = new AggregateSnapshotRepository(AkkaConf.Persistence.JournalConnectionString, GridNode.AggregateFromSnapshotsFactory).Load<SampleAggregate>(_aggregateId);
-        }
+            await Node.Prepare(changeSampleAggregateCommand).Expect<BalloonTitleChanged>().Execute();
 
-        [Test]
-        public void Snapshots_should_be_saved_one_time()
-        {
-            Assert.AreEqual(0, _snapshots.Length);
+            await Task.Delay(1000);
+
+            var snapshots =
+                await
+                    new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+                                                    new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
+
+            //Snapshots_should_be_saved_one_time()
+            Assert.Equal(0, snapshots.Length);
         }
     }
 }

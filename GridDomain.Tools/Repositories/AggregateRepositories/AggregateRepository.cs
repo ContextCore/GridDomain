@@ -1,12 +1,15 @@
 using System;
 using System.Linq;
-using CommonDomain;
-using CommonDomain.Core;
+using System.Threading.Tasks;
+
+
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tools.Repositories.EventRepositories;
 using GridDomain.Tools.Repositories.RawDataRepositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Tools.Repositories.AggregateRepositories
 {
@@ -14,37 +17,37 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
     {
         private readonly IRepository<DomainEvent> _eventRepository;
         private readonly EventsAdaptersCatalog _eventsAdaptersCatalog;
-         
-        public AggregateRepository(IRepository<DomainEvent> eventRepository, EventsAdaptersCatalog eventsAdaptersCatalog = null)
+
+        public AggregateRepository(IRepository<DomainEvent> eventRepository,
+                                   EventsAdaptersCatalog eventsAdaptersCatalog = null)
         {
             _eventsAdaptersCatalog = eventsAdaptersCatalog ?? new EventsAdaptersCatalog();
             _eventRepository = eventRepository;
         }
 
-        public void Save<T>(T aggr) where T : IAggregate
+        public void Dispose() {}
+
+        public async Task Save<T>(T aggr) where T : Aggregate
         {
             var persistId = AggregateActorName.New<T>(aggr.Id).ToString();
-            _eventRepository.Save(persistId, aggr.GetUncommittedEvents().Cast<DomainEvent>().ToArray());
-            aggr.ClearUncommittedEvents();
+            await _eventRepository.Save(persistId, aggr.GetDomainEvents());
+            aggr.PersistAll();
         }
 
-        public T LoadAggregate<T>(Guid id) where T : AggregateBase
+        public async Task<T> LoadAggregate<T>(Guid id) where T : Aggregate
         {
             var agr = Aggregate.Empty<T>(id);
             var persistId = AggregateActorName.New<T>(id).ToString();
-            var events = _eventRepository.Load(persistId);
-            foreach(var e in events.SelectMany(e => _eventsAdaptersCatalog.Update(e)))
-                ((IAggregate)agr).ApplyEvent(e);
+            var events = await _eventRepository.Load(persistId);
+            foreach (var e in events.SelectMany(e => _eventsAdaptersCatalog.Update(e)))
+                ((IAggregate) agr).ApplyEvent(e);
             return agr;
-        }
-
-        public void Dispose()
-        {
         }
 
         public static AggregateRepository New(string akkaWriteDbConnectionString, EventsAdaptersCatalog upgradeCatalog = null)
         {
-            var rawSqlAkkaPersistenceRepository = new RawJournalRepository(akkaWriteDbConnectionString);
+            var options = new DbContextOptionsBuilder().UseSqlServer(akkaWriteDbConnectionString).Options;
+            var rawSqlAkkaPersistenceRepository = new RawJournalRepository(options);
             var domainEventsRepository = new DomainEventsRepository(rawSqlAkkaPersistenceRepository);
             return new AggregateRepository(domainEventsRepository, upgradeCatalog);
         }

@@ -1,52 +1,42 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.Tests.Framework.Configuration;
-using GridDomain.Tools;
-using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.SampleDomain;
+using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
-using NUnit.Framework;
+using Xunit;
 
 namespace GridDomain.Tests.Acceptance.Tools
 {
-    [TestFixture]
-    class Given_persisted_aggreate_It_can_be_loaded_and_saved
+    public class Given_persisted_aggreate_It_can_be_loaded_and_saved
     {
-        private SampleAggregate _aggregate;
-        private Guid _aggregateId;
-        private string _agregateValue;
-
-        [OneTimeSetUp]
-        public void Given_persisted_aggreate()
+        [Fact]
+        public async Task Given_persisted_aggreate()
         {
-            _aggregateId = Guid.NewGuid();
-            _agregateValue = "initial";
-            var aggregate = new SampleAggregate(_aggregateId, _agregateValue);
+            var aggregateId = Guid.NewGuid();
+            var agregateValue = "initial";
+            var aggregate = new Balloon(aggregateId, agregateValue);
 
-            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog())))
+            using (
+                var repo =
+                    new AggregateRepository(ActorSystemJournalRepository.New(new AcceptanceAutoTestAkkaConfiguration(),
+                                                                             new EventsAdaptersCatalog())))
             {
-                repo.Save(aggregate);
+                await repo.Save(aggregate);
             }
 
-            using (var repo = new AggregateRepository(ActorSystemEventRepository.New(new AutoTestAkkaConfiguration(), new EventsAdaptersCatalog())))
+            using (
+                var repo =
+                    new AggregateRepository(ActorSystemJournalRepository.New(new AcceptanceAutoTestAkkaConfiguration(),
+                                                                             new EventsAdaptersCatalog())))
             {
-                _aggregate = repo.LoadAggregate<SampleAggregate>(aggregate.Id);
+                aggregate = await repo.LoadAggregate<Balloon>(aggregate.Id);
             }
+
+            //Aggregate_has_correct_id()
+            Assert.Equal(aggregateId, aggregate.Id);
+            //Aggregate_has_state_from_changed_event()
+            Assert.Equal(agregateValue, aggregate.Title);
         }
-
-        [Then]
-        public void Aggregate_has_correct_id()
-        {
-            Assert.AreEqual(_aggregateId, _aggregate.Id);
-        }
-
-
-        [Then]
-        public void Aggregate_has_state_from_changed_event()
-        {
-            Assert.AreEqual(_agregateValue, _aggregate.Value);
-        }
-
     }
 }

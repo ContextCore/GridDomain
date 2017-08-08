@@ -6,34 +6,48 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Persistence;
-using GridDomain.Tests.Framework.Configuration;
+using GridDomain.Tests.Common;
+using GridDomain.Tests.Common.Configuration;
 using Microsoft.Practices.Unity;
-using NUnit.Framework;
+using Xunit;
 
 namespace GridDomain.Tests.Unit
 {
-    [TestFixture]
     public abstract class CompositionRootTests
     {
-       // [TestCase(TransportMode.Cluster)]
-        [TestCase(TransportMode.Standalone)]
+        protected readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders =
+            new Dictionary<TransportMode, Func<ActorSystem>>
+            {
+                {
+                    TransportMode.Standalone,
+                    () => new AutoTestAkkaConfiguration().CreateSystem()
+                },
+                {
+                    TransportMode.Cluster,
+                    () =>
+                        ActorSystemFactory.CreateCluster(
+                                                         new AutoTestAkkaConfiguration()).RandomNode()
+                }
+            };
+
+        [Theory]
+        [InlineData(TransportMode.Standalone)]
         public void All_base_registrations_can_be_resolved(TransportMode transportMode)
         {
-            var container = CreateContainer(transportMode, new LocalDbConfiguration());
+            var container = CreateContainer(transportMode, new AutoTestLocalDbConfiguration());
             ResolveAll(container);
         }
 
-        
-      //  [TestCase(TransportMode.Cluster)]
-        [TestCase(TransportMode.Standalone)]
+        [Theory]
+        [InlineData(TransportMode.Standalone)]
         public void Container_can_be_disposed(TransportMode transportMode)
         {
-            var createContainer = Task.Run(()=>CreateContainer(transportMode, new LocalDbConfiguration()));
-            if(!createContainer.Wait(TimeSpan.FromSeconds(5)))
+            var createContainer = Task.Run(() => CreateContainer(transportMode, new AutoTestLocalDbConfiguration()));
+            if (!createContainer.Wait(TimeSpan.FromSeconds(5)))
                 throw new TimeoutException("Container creation took to much time");
 
             var container = createContainer.Result;
-            
+
             var registrations = container.Registrations.ToArray();
 
             foreach (var reg in registrations)
@@ -47,12 +61,11 @@ namespace GridDomain.Tests.Unit
             }
 
 
-            if(!Task.Run( () => container.Dispose()).Wait(TimeSpan.FromSeconds(5)))
+            if (!Task.Run(() => container.Dispose()).Wait(TimeSpan.FromSeconds(5)))
                 throw new TimeoutException("Container dispose took too much time");
 
             Console.WriteLine("Container disposed");
         }
-
 
         protected abstract IUnityContainer CreateContainer(TransportMode mode, IDbConfiguration conf);
 
@@ -61,7 +74,6 @@ namespace GridDomain.Tests.Unit
             Console.WriteLine();
             var errors = new Dictionary<ContainerRegistration, Exception>();
             foreach (var reg in container.Registrations.Where(r => !r.RegisteredType.Name.Contains("Actor")))
-            {
                 try
                 {
                     container.Resolve(reg.RegisteredType, reg.Name);
@@ -71,27 +83,16 @@ namespace GridDomain.Tests.Unit
                 {
                     errors[reg] = ex;
                 }
-            }
 
             Console.WriteLine();
-            if (!errors.Any()) return;
+            if (!errors.Any())
+                return;
 
             var builder = new StringBuilder();
             foreach (var error in errors.Take(5))
-            {
-                builder.AppendLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name}");
-            }
-            Assert.Fail("Can not resolve registrations: \r\n " + builder);
-        }
+                builder.AppendLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name} : {error.Value}");
 
-        protected readonly IDictionary<TransportMode, Func<ActorSystem>> ActorSystemBuilders = new Dictionary
-            <TransportMode, Func<ActorSystem>>
-        {
-            {TransportMode.Standalone, () => new AutoTestAkkaConfiguration().CreateSystem()},
-            {
-                TransportMode.Cluster,
-                () => ActorSystemFactory.CreateCluster(new AutoTestAkkaConfiguration()).RandomNode()
-            }
-        };
+            Assert.True(false, "Can not resolve registrations: \r\n " + builder);
+        }
     }
 }

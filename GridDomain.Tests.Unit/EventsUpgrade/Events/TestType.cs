@@ -1,7 +1,4 @@
 namespace GridDomain.Tests.Unit.EventsUpgrade.Events
 {
-    public class TestType
-    {
-
-    }
+    public class TestType {}
 }

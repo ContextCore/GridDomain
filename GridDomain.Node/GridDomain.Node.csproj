@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,8 +38,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka, Version=1.1.2.281, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.1.1.2.281-beta\lib\net45\Akka.dll</HintPath>
+    <Reference Include="Akka, Version=1.1.3.31, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.1.1.3\lib\net45\Akka.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.Cluster, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
@@ -48,8 +50,8 @@
       <HintPath>..\packages\Akka.Cluster.Tools.1.1.2.30-beta\lib\net45\Akka.Cluster.Tools.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.DI.Core, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.DI.Core.1.1.2\lib\net45\Akka.DI.Core.dll</HintPath>
+    <Reference Include="Akka.DI.Core, Version=1.1.3.31, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.DI.Core.1.1.3\lib\net45\Akka.DI.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.DI.Unity, Version=1.1.0.2, Culture=neutral, processorArchitecture=MSIL">
@@ -64,25 +66,14 @@
       <HintPath>..\packages\Akka.Monitoring.0.5.3\lib\net45\Akka.Monitoring.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Akka.Monitoring.ApplicationInsights, Version=0.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Monitoring.ApplicationInsights.0.5.3\lib\net45\Akka.Monitoring.ApplicationInsights.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Akka.Monitoring.PerformanceCounters, Version=0.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Monitoring.PerformanceCounters.0.5.3\lib\net45\Akka.Monitoring.PerformanceCounters.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Akka.Persistence, Version=1.1.2.281, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.1.1.2.281-beta\lib\net45\Akka.Persistence.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Akka.Persistence, Version=1.1.3.32, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.1.1.3.32-beta\lib\net45\Akka.Persistence.dll</HintPath>
     </Reference>
     <Reference Include="Akka.Persistence.Sql.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.Sql.Common.1.1.2.257-beta\lib\net45\Akka.Persistence.Sql.Common.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Akka.Persistence.Sql.Common.1.1.3.32-beta\lib\net45\Akka.Persistence.Sql.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Akka.Persistence.SqlServer, Version=1.1.1.158, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.SqlServer.1.1.1.158-beta\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Akka.Persistence.SqlServer, Version=1.1.1.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.Persistence.SqlServer.1.1.1.7-beta\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Akka.Remote, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Remote.1.1.2\lib\net45\Akka.Remote.dll</HintPath>
@@ -96,24 +87,16 @@
       <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Common.Logging">
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Common.Logging.Core">
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Elasticsearch.Net, Version=2.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
       <HintPath>..\packages\Elasticsearch.Net.2.4.3\lib\net46\Elasticsearch.Net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Google.ProtocolBuffers, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
@@ -122,14 +105,6 @@
     </Reference>
     <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Helios, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Helios.2.1.2\lib\net45\Helios.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MemBus, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MemBus.3.2.0\lib\net46\MemBus.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -152,16 +127,8 @@
       <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NEventStore, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NEventStore.5.2.0\lib\net40\NEventStore.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.4.0-betaV15\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NMoneys, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -173,162 +140,156 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.2.3.0\lib\net46\Serilog.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>
     </Reference>
-    <Reference Include="Serilog.Sinks.PeriodicBatching, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.Sinks.PeriodicBatching.2.0.1\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Serilog.Sinks.Console, Version=3.0.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Console.3.0.1\lib\net45\Serilog.Sinks.Console.dll</HintPath>
     </Reference>
-    <Reference Include="Stateless, Version=2.5.84.0, Culture=neutral, PublicKeyToken=93038f0927583c9a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Stateless.2.5.84\lib\portable-net45+wp8+win8+wpa81+monotouch+monoandroid\Stateless.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.3.2.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.RollingFile, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.RollingFile.3.3.0\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-PlatformServices.2.3\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Topshelf.4.0.1\lib\net452\Topshelf.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Wire, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Wire.0.8.1\lib\net45\Wire.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActorSystemFactory.cs" />
-    <Compile Include="ActorSystemNullException.cs" />
+    <Compile Include="Actors\ActorBehavior.cs" />
     <Compile Include="Actors\ActorMonitor.cs" />
-    <Compile Include="Actors\AggregateHubActor.cs" />
-    <Compile Include="Actors\CannotGetSagaFromMessage.cs" />
-    <Compile Include="Actors\MessageHandlingStatuses.cs" />
-    <Compile Include="Actors\Persisted.cs" />
-    <Compile Include="Actors\CannotCreateChildException.cs" />
-    <Compile Include="Actors\CannotFindRouteException.cs" />
-    <Compile Include="Actors\CheckHealth.cs" />
-    <Compile Include="Actors\ChildInfo.cs" />
-    <Compile Include="Actors\CommandExecutionFailedException.cs" />
-    <Compile Include="Actors\DefaultPersistentChildsRecycleConfiguration.cs" />
-    <Compile Include="Actors\EachMessageSnapshotsPersistencePolicy.cs" />
-    <Compile Include="Actors\EventSourcedActor.cs" />
-    <Compile Include="Actors\HealthStatus.cs" />
-    <Compile Include="Actors\InvalidChildIdException.cs" />
-    <Compile Include="Actors\ISnapshotsPersistencePolicy.cs" />
-    <Compile Include="Actors\NoSnapshotsPersistencePolicy.cs" />
-    <Compile Include="Actors\NotifyOnPersistenceEvents.cs" />
-    <Compile Include="Actors\RouteCreated.cs" />
-    <Compile Include="Actors\SagaActorLiterals.cs" />
-    <Compile Include="Actors\SnapshotsPersistencePolicy.cs" />
-    <Compile Include="AkkaCommandExecutor.cs" />
+    <Compile Include="Actors\Aggregates\Messages\EventsPersisted.cs" />
+    <Compile Include="Actors\Aggregates\AggregateActorConstants.cs" />
+    <Compile Include="Actors\Aggregates\AggregateActor.cs" />
+    <Compile Include="Actors\Aggregates\AggregateCommandExecutionContext.cs" />
+    <Compile Include="Actors\Aggregates\Exceptions\AggregateExecutionException.cs" />
+    <Compile Include="Actors\Aggregates\AggregateHubActor.cs" />
+    <Compile Include="Actors\Aggregates\Messages\CommandExecuted.cs" />
+    <Compile Include="Actors\Aggregates\Messages\CommandProducedEventsPersisted.cs" />
+    <Compile Include="Actors\BehaviorQueue.cs" />
+    <Compile Include="Actors\BehaviorStack.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\FireAndForgetMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\IMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\MessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\ParallelMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\ProcessorListCatalogBase.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\SynchronousMessageProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\ProcessorListCatalogExtensions.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\SyncProjectionProcessor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\SyncProcessManagerProcessor.cs" />
+    <Compile Include="Actors\IActorBehavior.cs" />
+    <Compile Include="Actors\IActorState.cs" />
+    <Compile Include="Actors\PersistentHub\WarmUpChild.cs" />
+    <Compile Include="Actors\PersistentHub\WarmUpResult.cs" />
+    <Compile Include="Actors\ProcessManagers\Exceptions\ProcessNotStartedException.cs" />
+    <Compile Include="Actors\ProcessManagers\Messages\CommandCompleted.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\Initialize.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\Initialized.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\IProcessCompleted.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\Project.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\ProcessTransited.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\ProcessFault.cs" />
+    <Compile Include="Actors\EventSourced\Exceptions\EventApplyException.cs" />
+    <Compile Include="Actors\EventSourced\Messages\HealthStatus.cs" />
+    <Compile Include="Actors\Hadlers\MessageProcessFailedException.cs" />
+    <Compile Include="Actors\ProcessManagers\Messages\GetProcessState.cs" />
+    <Compile Include="Actors\Hadlers\HandlerExecuted.cs" />
+    <Compile Include="Actors\CommandPipe\CannotFindAggregateForCommandExсeption.cs" />
+    <Compile Include="Actors\CommandPipe\AggregatesPipeActor.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\IProcessorListCatalog.cs" />
+    <Compile Include="Actors\Hadlers\MessageHandlingConstants.cs" />
+    <Compile Include="Actors\EventSourced\Messages\CheckHealth.cs" />
+    <Compile Include="Actors\PersistentHub\ChildInfo.cs" />
+    <Compile Include="Actors\EventSourced\EachMessageSnapshotsPersistencePolicy.cs" />
+    <Compile Include="Actors\EventSourced\EventSourcedActor.cs" />
+    <Compile Include="Actors\EventSourced\Messages\NotifyOnPersistenceEvents.cs" />
+    <Compile Include="Actors\ProcessManagers\Messages\ProcessRedirect.cs" />
+    <Compile Include="Actors\CommandPipe\MessageProcessors\ProcessorListCatalog.cs" />
+    <Compile Include="Actors\CommandPipe\ProcessManagersPipeActor.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\ProcessTransitComplete.cs" />
+    <Compile Include="Actors\CommandPipe\HandlersPipeActor.cs" />
+    <Compile Include="Actors\CommandPipe\Messages\AllHandlersCompleted.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcessManagerActorConstants.cs" />
+    <Compile Include="Actors\ProcessManagers\Exceptions\ProcessAlreadyStartedException.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcesStateMessage.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcessStateActor.cs" />
+    <Compile Include="Actors\Aggregates\Messages\PersistEventPack.cs" />
+    <Compile Include="Actors\PersistentHub\ShutdownChild.cs" />
+    <Compile Include="Actors\EventSourced\SnapshotsPersistencePolicy.cs" />
+    <Compile Include="Actors\ProcessManagers\Exceptions\ProcessIdMismatchException.cs" />
+    <Compile Include="AkkaCommandPipeExecutor.cs" />
     <Compile Include="AkkaMessaging\BadNameFormatException.cs" />
     <Compile Include="AkkaMessaging\CannotFindIdTypeException.cs" />
     <Compile Include="AkkaMessaging\IdParseException.cs" />
-    <Compile Include="AkkaMessaging\Routing\PoolKind.cs" />
-    <Compile Include="AkkaMessaging\Waiting\AkkaCommandLocalWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\AkkaMessageLocalWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\CommandExpectBuilder.cs" />
+    <Compile Include="AkkaMessaging\Waiting\CommandConditionBuilder.cs" />
+    <Compile Include="AkkaMessaging\Waiting\CommandConditionBuilderTypedDecorator.cs" />
     <Compile Include="AkkaMessaging\Waiting\CommandWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\ExpectBuilder.cs" />
-    <Compile Include="AkkaMessaging\Waiting\ExpectedCommandExecutor.cs" />
+    <Compile Include="AkkaMessaging\Waiting\ConditionBuilder.cs" />
+    <Compile Include="AkkaMessaging\Waiting\LocalExplicitMessagesWaiter.cs" />
     <Compile Include="AkkaMessaging\Waiting\LocalMessagesWaiter.cs" />
-    <Compile Include="AkkaMessaging\Waiting\MessageExpectBuilder.cs" />
+    <Compile Include="AkkaMessaging\Waiting\LocalMetadataAwareMessagesWaiter.cs" />
+    <Compile Include="AkkaMessaging\Waiting\MetadataConditionBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnMessage.cs" />
     <Compile Include="AkkaMessaging\Waiting\NotifyOnWaitEnd.cs" />
     <Compile Include="AkkaMessaging\Waiting\PredicateBuilder.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitEndInfo.cs" />
-    <Compile Include="AkkaMessaging\Waiting\WaitResults.cs" />
+    <Compile Include="AkkaMessaging\Waiting\WaiterIsFinishedException.cs" />
+    <Compile Include="AkkaMessaging\Waiting\WaitResult.cs" />
     <Compile Include="AkkaMessaging\Waiting\WaitResultsExtensions.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAdressExtensions.cs" />
     <Compile Include="Configuration\Akka\Hocon\LocalFilesystemSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\TypeExtensions.cs" />
-    <Compile Include="Configuration\Akka\LogVerbosity.cs" />
+    <Compile Include="Configuration\Akka\WriteDbConfigSection.cs" />
+    <Compile Include="Configuration\Composition\AggregateConfiguration.cs" />
+    <Compile Include="Configuration\Composition\ContainerConfiguration.cs" />
+    <Compile Include="Configuration\Composition\DomainBuilder.cs" />
+    <Compile Include="Configuration\Composition\ProcessStateDependencyFactory.cs" />
+    <Compile Include="Configuration\IContainerConfiguration.cs" />
+    <Compile Include="ContainerExtensions.cs" />
+    <Compile Include="DefaultLoggerConfiguration.cs" />
+    <Compile Include="Serializers\DebugWireSerializer.cs" />
     <Compile Include="DefaultAppInsightsConfiguration.cs" />
-    <Compile Include="DefaultExceptionPolicy.cs" />
     <Compile Include="DefaultPerfCountersConfiguration.cs" />
-    <Compile Include="DomainEventsJsonSerializationExtension.cs" />
-    <Compile Include="DomainEventsJsonSerializationExtensionProvider.cs" />
-    <Compile Include="DomainEventsJsonSerializationExtensions.cs" />
-    <Compile Include="EventChronicles\AkkaEventsChronicle.cs" />
+    <Compile Include="Serializers\DomainEventsJsonSerializationExtension.cs" />
+    <Compile Include="Serializers\DomainEventsJsonSerializationExtensionProvider.cs" />
+    <Compile Include="Serializers\DomainEventsJsonSerializationExtensions.cs" />
     <Compile Include="Actors\GridNodeController.cs" />
-    <Compile Include="Actors\IPersistentChildsRecycleConfiguration.cs" />
-    <Compile Include="Actors\SagaActor.cs" />
-    <Compile Include="Actors\SagaHubActor.cs" />
-    <Compile Include="Actors\SynchronizationProcessingActor.cs" />
-    <Compile Include="Actors\GracefullShutdownRequest.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcessManagerActor.cs" />
+    <Compile Include="Actors\ProcessManagers\ProcessManagerHubActor.cs" />
+    <Compile Include="Actors\EventSourced\Messages\GracefullShutdownRequest.cs" />
     <Compile Include="AkkaCluster.cs" />
-    <Compile Include="Actors\AggregateActor.cs" />
     <Compile Include="AkkaConfigurationExtensions.cs" />
     <Compile Include="AkkaMessaging\AggregateActorName.cs" />
-    <Compile Include="Actors\PersistentHubActor.cs" />
-    <Compile Include="AkkaMessaging\Routing\CreateActorRouteMessage.cs" />
-    <Compile Include="AkkaMessaging\DefaultAggregateActorLocator.cs" />
-    <Compile Include="AkkaMessaging\IAggregateActorLocator.cs" />
-    <Compile Include="AkkaMessaging\Routing\ClusterSystemRouterActor.cs" />
-    <Compile Include="AkkaMessaging\Routing\DublicateRoutesException.cs" />
-    <Compile Include="AkkaMessaging\Routing\LocalSystemRoutingActor.cs" />
-    <Compile Include="AkkaMessaging\AkkaHandlerBuilder.cs" />
-    <Compile Include="AkkaMessaging\Routing\AkkaRouteBuilder.cs" />
+    <Compile Include="Actors\PersistentHub\PersistentHubActor.cs" />
     <Compile Include="AkkaMessaging\CannotFindCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\CreateHandlerRouteMessage.cs" />
     <Compile Include="AkkaMessaging\DefaultHandlerActorTypeFactory.cs" />
     <Compile Include="AkkaMessaging\IHandlerActorTypeFactory.cs" />
     <Compile Include="AkkaMessaging\IncorrectTypeOfCorrelationProperty.cs" />
     <Compile Include="AkkaMessaging\InvalidHandlerType.cs" />
-    <Compile Include="Actors\MessageHandlingActor.cs" />
-    <Compile Include="Actors\RoutingActor.cs" />
+    <Compile Include="Actors\Hadlers\MessageProcessActor.cs" />
     <Compile Include="AkkaMessaging\MessageUnexpectedTypeRecievedExpection.cs" />
-    <Compile Include="AkkaMessaging\TypeNameExtensions.cs" />
-    <Compile Include="AkkaMessaging\Waiting\AllMessageWaiterActor.cs" />
     <Compile Include="AkkaDomainEventsAdapter.cs" />
     <Compile Include="AppInsightsConfigSection.cs" />
     <Compile Include="Configuration\Akka\Hocon\DomainEventAdaptersConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\InMemoryJournalConfig.cs" />
-    <Compile Include="Configuration\Composition\CustomContainerConfiguration.cs" />
-    <Compile Include="DefaultMessageLoggerHandler.cs" />
-    <Compile Include="EventChronicles\EventsReplayActor.cs" />
-    <Compile Include="EventChronicles\IEventsChronicle.cs" />
-    <Compile Include="EventChronicles\Play.cs" />
-    <Compile Include="EventChronicles\PlayFinished.cs" />
-    <Compile Include="EventChronicles\RecoveryInProgress.cs" />
     <Compile Include="IAppInsightsConfiguration.cs" />
     <Compile Include="IPerformanceCountersConfiguration.cs" />
-    <Compile Include="DomainEventsJsonAkkaSerializer.cs" />
+    <Compile Include="Serializers\DomainEventsJsonAkkaSerializer.cs" />
+    <Compile Include="MessageProcessContext.cs" />
     <Compile Include="MessageWaiterFactory.cs" />
+    <Compile Include="NodeSettings.cs" />
     <Compile Include="PerformanceCountersConfigSection.cs" />
-    <Compile Include="SerilogExtendedLogger.cs" />
+    <Compile Include="CommandPipe.cs" />
     <Compile Include="Configuration\Akka\Hocon\RemoteActorConfig.cs" />
     <Compile Include="Configuration\Akka\AkkaNetworkAddress.cs" />
     <Compile Include="Configuration\Akka\Hocon\EmptyConfig.cs" />
@@ -342,32 +303,37 @@
     <Compile Include="Configuration\Akka\Hocon\PersistenceJournalConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\PersistenceSnapshotConfig.cs" />
     <Compile Include="Configuration\Akka\Hocon\RootConfig.cs" />
-    <Compile Include="Configuration\Composition\AggregateConfiguration.cs" />
-    <Compile Include="Configuration\Composition\ContainerExtensions.cs" />
-    <Compile Include="Configuration\Composition\SagaConfiguration.cs" />
+    <Compile Include="Configuration\Composition\ProcessManagerConfiguration.cs" />
     <Compile Include="Configuration\Persistence\IDbConfiguration.cs" />
-    <Compile Include="Configuration\Persistence\LocalDbConfiguration.cs" />
     <Compile Include="Configuration\Akka\AkkaConfiguration.cs" />
-    <Compile Include="Configuration\Composition\Container.cs" />
-    <Compile Include="Configuration\Composition\EmptyContainerConfig.cs" />
+    <Compile Include="Configuration\Composition\EmptyContainerConfiguration.cs" />
     <Compile Include="GridNodeContainerConfiguration.cs" />
     <Compile Include="IGridDomainNode.cs" />
-    <Compile Include="CompositionRoot.cs" />
-    <Compile Include="ActorMessagesRouter.cs" />
     <Compile Include="GridDomainNode.cs" />
-    <Compile Include="AkkaMessaging\Waiting\MessageWaiterActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlAzureRetriableExceptionDetector.cs" />
     <Compile Include="SqlDomainJournal.cs" />
     <Compile Include="SqlDomainQueryExecutor.cs" />
-    <Compile Include="TransportMessageDumpMap.cs" />
     <Compile Include="TransportMode.cs" />
+    <Compile Include="Transports\CannotGetDistributedPubSubException.cs" />
+    <Compile Include="Transports\DistributedPubSubTransport.cs" />
+    <Compile Include="Transports\IActorSubscriber.cs" />
+    <Compile Include="Transports\IActorTransport.cs" />
+    <Compile Include="Transports\LocalAkkaEventBusTransport.cs" />
+    <Compile Include="Transports\Remote\ActorTransportProxy.cs" />
+    <Compile Include="Transports\Remote\Publish.cs" />
+    <Compile Include="Transports\Remote\PublishAck.cs" />
+    <Compile Include="Transports\Remote\PublishMany.cs" />
+    <Compile Include="Transports\Remote\PublishManyAck.cs" />
+    <Compile Include="Transports\Remote\RemoteAkkaEventBusTransport.cs" />
+    <Compile Include="Transports\Remote\Subscribe.cs" />
+    <Compile Include="Transports\Remote\SubscribeAck.cs" />
+    <Compile Include="Transports\Remote\UnSubscribe.cs" />
+    <Compile Include="Transports\Remote\UnsubscribeAck.cs" />
+    <Compile Include="Transports\UnsuccessfullSubscribeException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="job_scheduling_data_2_0.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -375,46 +341,28 @@
       <Project>{AB9BB393-1874-4421-A78A-55D9977A6173}</Project>
       <Name>GridDomain.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.CQRS.Messaging.Akka\GridDomain.CQRS.Messaging.Akka.csproj">
-      <Project>{2825362B-D2B2-48FB-80CD-2D20F4F29F0F}</Project>
-      <Name>GridDomain.CQRS.Messaging.Akka</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.CQRS.Messaging\GridDomain.CQRS.Messaging.csproj">
-      <Project>{731D63E0-D750-40CA-B33E-1BBD6DA93CF4}</Project>
-      <Name>GridDomain.CQRS.Messaging</Name>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.CQRS.ReadModel\GridDomain.CQRS.ReadModel.csproj">
-      <Project>{C5ACC8B4-289D-4654-8976-AC7CDB8D4C5E}</Project>
-      <Name>GridDomain.CQRS.ReadModel</Name>
+    <ProjectReference Include="..\GridDomain.Configuration\GridDomain.Configuration.csproj">
+      <Project>{254e5abe-9dbb-4951-ba91-50a2aa8909b5}</Project>
+      <Name>GridDomain.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
       <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
       <Name>GridDomain.CQRS</Name>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.EventSourcing.Sagas\GridDomain.EventSourcing.Sagas.csproj">
-      <Project>{EBA75163-804C-4C58-8E5E-6764C1155BE5}</Project>
-      <Name>GridDomain.EventSourcing.Sagas</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Logging\GridDomain.Logging.csproj">
-      <Project>{e356647a-561e-4290-ad71-ef5dc92bf5c7}</Project>
-      <Name>GridDomain.Logging</Name>
-      <Private>True</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
-      <Project>{96037181-43d1-4ae5-a9e8-0660d4cc4c82}</Project>
-      <Name>GridDomain.Scheduling</Name>
+    <ProjectReference Include="..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj">
+      <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
+      <Name>GridDomain.ProcessManagers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="1.6-1.7_migration.sql" />
-    <Content Include="Database schema full.sql" />
+    <Content Include="Human_schema.sql" />
+    <Content Include="Persistence.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

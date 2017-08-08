@@ -1,31 +1,30 @@
 using GridDomain.EventSourcing.VersionedTypeSerialization;
 using GridDomain.Tests.Unit.EventsUpgrade.Events;
-using NUnit.Framework;
+using Xunit;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade
 {
-    [TestFixture]
     public class VersionedTypeNameTests
     {
-        [Test]
+        [Fact]
         public void Given_bad_exeption_is_raised()
         {
             Assert.Throws<VersionedTypeParseExeption>(() => VersionedTypeName.Parse(typeof(BadNamedType_V1_V1)));
         }
 
-        [Test]
+        [Fact]
         public void Given_history_type_version_is_taken_from_type_name()
         {
             var versionedType = VersionedTypeName.Parse(typeof(TestType_V1));
-            Assert.AreEqual(1,versionedType.Version);
+            Assert.Equal(1, versionedType.Version);
         }
 
-        [Test]
+        [Fact]
         public void Original_version_is_resolved_with_default_version()
         {
-            var versionedType = VersionedTypeName.Parse(typeof(TestType),10);
-            Assert.AreEqual(typeof(TestType).Name, versionedType.OriginalName);
-            Assert.AreEqual(10, versionedType.Version);
+            var versionedType = VersionedTypeName.Parse(typeof(TestType), 10);
+            Assert.Equal(typeof(TestType).Name, versionedType.OriginalName);
+            Assert.Equal(10, versionedType.Version);
         }
     }
 }

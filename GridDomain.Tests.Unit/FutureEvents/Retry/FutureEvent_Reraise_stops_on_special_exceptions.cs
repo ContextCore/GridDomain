@@ -1,72 +1,79 @@
 using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using GridDomain.Common;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Integration;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing;
+using GridDomain.Node;
+using GridDomain.Node.Actors.Aggregates.Exceptions;
+using GridDomain.Scheduling;
+using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using Microsoft.Practices.Unity;
-using NUnit.Framework;
+using Serilog;
+using Serilog.Events;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
-    [TestFixture]
-    public class FutureEvent_Reraise_stops_on_special_exceptions : FutureEventsTest_InMemory
+    public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
+        public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
+            : base(output, new FutureEventsFixture(output,new InMemoryRetrySettings(2,
+                TimeSpan.FromMilliseconds(10),
+                new StopOnTestExceptionPolicy(
+                    new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Information)
+                        .CreateLogger())))) {}
 
-        class TwoFastRetriesSettings : InMemoryRetrySettings
-        {
-            public TwoFastRetriesSettings():base(2,TimeSpan.FromMilliseconds(10),new StopOnTestExceptionPolicy())
+        private static readonly TaskCompletionSource<int> _policyCallNumberChanged = new TaskCompletionSource<int>();
+        private static int _policyCallNumber;
+
+
+            private class StopOnTestExceptionPolicy : IExceptionPolicy
             {
-                
-            }
+                private readonly ILogger _log;
 
+                public StopOnTestExceptionPolicy(ILogger log)
+                {
+                    _log = log;
+                }
 
-            class StopOnTestExceptionPolicy : IExceptionPolicy
-            {
                 public bool ShouldContinue(Exception ex)
                 {
-                    _policyCallNumber ++;
-                    var domainException = ex.UnwrapSingle();
-                    if (domainException is TestScheduledException)
-                        return false;
-                    if ((domainException as TargetInvocationException)?.InnerException is TestScheduledException)
+                    _log.Information("Should continue {code} called from Thread {thread} with stack trace {trace}",
+                                     GetHashCode(),
+                                     Thread.CurrentThread.ManagedThreadId,
+                                     Environment.CurrentManagedThreadId);
+
+                    _policyCallNumber++;
+                    _policyCallNumberChanged.SetResult(1);
+
+                    var businessException = ex.UnwrapSingle();
+                    if(businessException is CommandExecutionFailedException && businessException.InnerException is ScheduledEventNotFoundException)
                         return false;
 
                     return true;
                 }
             }
-        }
 
-        private static int _policyCallNumber;
-
-        protected override IContainerConfiguration CreateConfiguration()
-        {
-            return new CustomContainerConfiguration(c => c.Register(base.CreateConfiguration()),
-                                                    c => c.RegisterInstance<IRetrySettings>(new TwoFastRetriesSettings()));
-      
-        }
-
-        [Test]
+        [Fact]
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
-            var _command = new ScheduleErrorInFutureCommand(DateTime.Now.AddSeconds(0.1), Guid.NewGuid(), "test value A",2);
+            var command = new PlanBoomCommand(Guid.NewGuid(),DateTime.Now.AddSeconds(0.2));
 
-            var waiter =  GridNode.NewWaiter()
-                                  .Expect<JobFailed>()
-                                  .Create();
+            await Node.Prepare(command)
+                      .Expect<JobFailed>()
+                      .Execute();
 
-            GridNode.Execute(_command);
+            //give some time to scheduler listeners to proceed
+            await Task.Delay(1000);
 
-            var res = await waiter;
-
-            Thread.Sleep(5000);
-
+            //waiting for policy call to determine should we retry failed job or not
+            await _policyCallNumberChanged.Task.TimeoutAfter(TimeSpan.FromSeconds(5));
             // job was not retried and policy was not called
-            Assert.AreEqual(1, _policyCallNumber);
+            Assert.Equal(1, _policyCallNumber);
         }
     }
 }
