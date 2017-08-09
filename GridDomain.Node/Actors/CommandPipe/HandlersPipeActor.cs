@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Event;
+using Akka.Logger.Serilog;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -20,11 +22,12 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class HandlersPipeActor : ReceiveActor
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
-
+        private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
         public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef processManagerPipeActor)
         {
             ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
                                                            {
+                                                               Log.Debug("Received messages to project. {project}",envelop);
                                                                var project = envelop.Message;
                                                                var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m, envelop.Metadata))
                                                                                      .ToArray();
@@ -36,8 +39,10 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                          {
                                                                                              foreach (var env in envelops)
                                                                                                  processManagerPipeActor.Tell(env);
+                                                                                             var completed = new AllHandlersCompleted(project.ProjectId);
+                                                                                             Log.Debug("Pack projected. {project}", completed);
+                                                                                             return completed;
 
-                                                                                             return new AllHandlersCompleted(project.ProjectId);
                                                                                          })
                                                                            .PipeTo(Sender);
                                                            });

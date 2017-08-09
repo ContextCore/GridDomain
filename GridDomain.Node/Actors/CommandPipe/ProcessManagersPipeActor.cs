@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Event;
+using Akka.Logger.Serilog;
 using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -21,7 +23,7 @@ namespace GridDomain.Node.Actors.CommandPipe
         public const string ProcessManagersPipeActorRegistrationName = nameof(ProcessManagersPipeActorRegistrationName);
         private readonly IProcessorListCatalog<IProcessCompleted> _catalog;
         private IActorRef _commandExecutionActor;
-
+        private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
         public ProcessManagersPipeActor(IProcessorListCatalog<IProcessCompleted> catalog)
         {
             _catalog = catalog;
@@ -32,11 +34,17 @@ namespace GridDomain.Node.Actors.CommandPipe
                                     Sender.Tell(Initialized.Instance);
                                 });
             //part of events or fault from command execution
-            ReceiveAsync<IMessageMetadataEnvelop>(env => Process(env).PipeTo(Self));
+            ReceiveAsync<IMessageMetadataEnvelop>(env =>
+                                                  {
+                                                      Log.Debug("Start process managers for message {@env}", env);
+                                                      return Process(env).PipeTo(Self);
+                                                  });
 
             Receive<ProcessTransitComplete>(m =>
                                           {
-                                              foreach (var envelop in m.ProducedCommands)
+                                              Log.Debug("Process managers transited. {@res}", m );
+
+                                              foreach(var envelop in m.ProducedCommands)
                                                   _commandExecutionActor.Tell(envelop);
                                           });
         }
@@ -48,7 +56,7 @@ namespace GridDomain.Node.Actors.CommandPipe
            if(!processTransited.Any())
                return ProcessTransitComplete.NoResults;
 
-           return new ProcessTransitComplete(CreateCommandEnvelops(processTransited).ToArray());
+           return new ProcessTransitComplete(messageMetadataEnvelop,CreateCommandEnvelops(processTransited).ToArray());
         }
 
         private static IEnumerable<IMessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<ProcessTransited> messages)

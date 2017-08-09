@@ -6,6 +6,7 @@ using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Event;
+using Akka.Logger.Serilog;
 using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
@@ -21,6 +22,19 @@ using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {
+
+    public class CreateNewProcess
+    {
+        public IMessageMetadataEnvelop Message { get; }
+        public Guid? EnforcedId { get; }
+
+        public CreateNewProcess(IMessageMetadataEnvelop message, Guid? enforcedId = null)
+        {
+            Message = message;
+            EnforcedId = enforcedId;
+        }
+    }
+
     //TODO: add status info, e.g. was any errors during execution or recover
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -58,7 +72,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             _publisher = publisher;
             _сreatorCatalog = сreatorCatalog;
-            _log = Context.GetLogger();
+            _log = Context.GetLogger(new SerilogLogMessageFormatter());
 
             _exceptionOnTransit = ProcessManagerActorConstants.ExceptionOnTransit(Self.Path.Name);
             _producedCommand = ProcessManagerActorConstants.ProcessProduceCommands(Self.Path.Name);
@@ -84,8 +98,10 @@ namespace GridDomain.Node.Actors.ProcessManagers
         {
             Receive<ProcesStateMessage<TState>>(ss =>
                                        {
-                                           if(ss.State != null ) //having some state already persisted
-                                             ProcessManager = _сreatorCatalog.Create(ss.State);
+                                           if (ss.State != null) //having some state already persisted
+                                           {
+                                               ProcessManager = _сreatorCatalog.Create(ss.State);
+                                           }
                                            FinishInitialization();
                                        });
 
@@ -100,7 +116,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         private void StashMessage(object m)
         {
-            _log.Warning("Stashing message {messge}", m);
+            _log.Warning("Stashing message {message}", m);
             Stash.Stash();
         }
 
@@ -117,8 +133,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                  {
                                                      if(ProcessManager.State.Id != GetProcessId(env.Message))
                                                      {
-                                                         _log.Error("Existing process {process} {processId} received message {@message} "
-                                                                    + "targeting different process. Process will not proceed.", typeof(TState), Id, env);
+                                                         _log.Error("Received message {@message} "
+                                                                    + "targeting different process. Process will not proceed.", env);
 
                                                          FinishWithError(env, Sender, new ProcessIdMismatchException());
                                                          return;
@@ -138,22 +154,13 @@ namespace GridDomain.Node.Actors.ProcessManagers
             ProxifyingCommandsBehavior();
         }
 
-        private class CreateNewProcess
-        {
-            public IMessageMetadataEnvelop Message { get; }
-            public Guid? EnforcedId { get; }
-
-            public CreateNewProcess(IMessageMetadataEnvelop message, Guid? enforcedId = null)
-            {
-                Message = message;
-                EnforcedId = enforcedId;
-            }
-        }
+      
 
         private void ProxifyingCommandsBehavior()
         {
             Receive<GracefullShutdownRequest>(r =>
                                               {
+                                                  _log.Debug("Received shutdown request");
                                                   Context.Watch(_stateAggregateActor);
                                                   Become(() => Receive<Terminated>(t => Context.Stop(Self),
                                                                                    t => t.ActorRef.Path == _stateAggregateActor.Path));
@@ -174,6 +181,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             IActorRef processingMessageSender = null;
             Receive<CreateNewProcess>(c =>
                                    {
+                                       _log.Debug("Creating new process from {@message}",c);
                                        processingMessage = c.Message;
                                        processingMessageSender = Sender;
 
@@ -199,6 +207,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             //from state aggregate actro after persist
             Receive<CommandCompleted>(c =>
                                       {
+                                          _log.Debug("Process state mutated with command {@processResult}", c);
                                           ProcessManager = _сreatorCatalog.Create(pendingState);
                                           Self.Tell(processingMessage, processingMessageSender);
                                           Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
@@ -220,11 +229,13 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             Receive<IMessageMetadataEnvelop>(messageEnvelop =>
                                              {
+                                                      _log.Debug("Transiting process by {@message}", messageEnvelop);
+                                                      
                                                       processingEnvelop = messageEnvelop;
                                                       processingMessageSender = Sender;
                                                       if (ProcessManager == null)
                                                       {
-                                                          _log.Error("Process {process} {processId} is not started but received transition message {@message}. "
+                                                          _log.Error("Process is not started but received transition message {@message}. "
                                                                        + "Process will not proceed. ", typeof(TState), Id, messageEnvelop);
                                                           Task.FromException(new ProcessNotStartedException()).PipeTo(Self);
                                                           return;
@@ -236,6 +247,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             ReceiveAsync<ProcessResult<TState>>(transitionResult =>
                                               {
+                                                  _log.Debug("Process state is mutating with command {@processResult}", transitionResult);
+
                                                   pendingState = transitionResult.State;
                                                   producedCommands = transitionResult.ProducedCommands;
                                                   var cmd = new SaveStateCommand<TState>(Id,
@@ -259,6 +272,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                           processingMessageSender = null;
                                           processingEnvelop = null;
                                           producedCommands = null;
+                                          _log.Debug("Process state mutated with command {@commandCompleted}", c);
                                       });
 
             Receive<Status.Failure>(f => FinishWithError(processingEnvelop, processingMessageSender, f.Cause));
@@ -266,10 +280,12 @@ namespace GridDomain.Node.Actors.ProcessManagers
             StashingMessagesToProcessBehavior();
         }
 
-        private void FinishWithError(IMessageMetadataEnvelop processingMessage, IActorRef messageSender, Exception erorr)
+        private void FinishWithError(IMessageMetadataEnvelop processingMessage, IActorRef messageSender, Exception error)
         {
-            var fault = CreateFault(processingMessage.Message,
-                                    erorr.UnwrapSingle());
+            _log.Error(error, "Error during execution of message {@message}", processingMessage);
+
+            var processorType = ProcessManager?.GetType() ?? typeof(TState);
+            var fault = (IFault) Fault.NewGeneric(processingMessage.Message, error.UnwrapSingle(), Id, processorType);
 
             var faultMetadata = processingMessage.Metadata.CreateChild(fault.ProcessId, _exceptionOnTransit);
 
@@ -284,13 +300,6 @@ namespace GridDomain.Node.Actors.ProcessManagers
         {
             messageSender.Tell(message);
             Stash.UnstashAll();
-        }
-
-        private IFault CreateFault(object message, Exception exception)
-        {
-            var processorType = ProcessManager?.GetType() ?? typeof(TState);
-            _log.Error(exception, "Process {process} {id} raised an error on {@message}", processorType, Id, message);
-            return Fault.NewGeneric(message, exception, Id, processorType);
         }
 
         private Guid GetProcessId(object msg)
