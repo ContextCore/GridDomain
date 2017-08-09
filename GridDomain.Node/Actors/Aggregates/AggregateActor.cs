@@ -129,7 +129,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                       if (ExecutionContext.ProducedState.HasUncommitedEvents)
                                                           return;
 
-                                                      Log.Debug("Persisted event pack {pack}. {@context}",e, ExecutionContext);
+                                                      Log.Debug("Persisted event pack {@pack}. {@context}",e, ExecutionContext);
 
                                                       Sender.Tell(EventsPersisted.Instance);
                                                   });
