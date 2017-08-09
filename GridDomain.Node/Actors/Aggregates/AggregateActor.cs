@@ -32,7 +32,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly IPublisher _publisher;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
-        private AggregateCommandExecutionContext<TAggregate> ExecutionContext { get; } = new AggregateCommandExecutionContext<TAggregate>();
+        private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               IPublisher publisher,
@@ -57,11 +57,15 @@ namespace GridDomain.Node.Actors.Aggregates
                                                        {
                                                            var cmd = m.Message;
                                                            Monitor.Increment(nameof(CQRS.Command));
+
                                                            ExecutionContext.Command = cmd;
                                                            ExecutionContext.CommandMetadata = m.Metadata;
                                                            ExecutionContext.CommandSender = Sender;
                                                            var self = Self;
                                                            Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
+
+                                                           Log.Debug("Executing command. {@m}", ExecutionContext);
+
                                                            _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                                   cmd,
                                                                                                   agr =>
@@ -85,11 +89,12 @@ namespace GridDomain.Node.Actors.Aggregates
             //just for catching Failures on events persist
             Command<PersistEventPack>(e =>
                                    {
+
                                        Monitor.Increment(nameof(Messages.PersistEventPack));
                                        var domainEvents = e.Events;
                                        if (!domainEvents.Any())
                                        {
-                                           Log.Warning("Aggregate {id} trying to persist events but no events is presented", PersistenceId);
+                                           Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);
                                            return;
                                        }
 
@@ -124,6 +129,8 @@ namespace GridDomain.Node.Actors.Aggregates
                                                       if (ExecutionContext.ProducedState.HasUncommitedEvents)
                                                           return;
 
+                                                      Log.Debug("Persisted event pack {pack}. {@context}",e, ExecutionContext);
+
                                                       Sender.Tell(EventsPersisted.Instance);
                                                   });
                                    });
@@ -134,6 +141,8 @@ namespace GridDomain.Node.Actors.Aggregates
 
             Command<CommandProducedEventsPersisted>(newState =>
                                              {
+                                                 Log.Debug("Persisted command produced state. {@context}",ExecutionContext);
+
                                                  ExecutionContext.MessagesToProject.Select(e => Project(e, producedEventsMetadata)).
                                                                   ToChain().
                                                                   ContinueWith(t =>
@@ -148,8 +157,9 @@ namespace GridDomain.Node.Actors.Aggregates
 
             Command<CommandExecuted>(c =>
                                      {
+                                         Log.Debug("Command executed. {@context}", ExecutionContext.CommandMetadata);
                                          //finish command execution. produced state can be null on execution error
-                                         State = ExecutionContext.ProducedState ?? State;
+                                         State = (TAggregate)ExecutionContext.ProducedState ?? State;
                                          var commandCompleted = new CommandCompleted(ExecutionContext.Command.Id);
                                          var completedMetadata = ExecutionContext.CommandMetadata
                                                                                  .CreateChild(ExecutionContext.Command.Id, _commandCompletedProcessEntry);
@@ -174,7 +184,7 @@ namespace GridDomain.Node.Actors.Aggregates
             var commandMetadata = ExecutionContext.CommandMetadata;
             var commandExecutionException = exception;
 
-            Log.Error(commandExecutionException, "{Aggregate} raised an error while executing {@Command}", PersistenceId, command);
+            Log.Error(commandExecutionException, "An error occured while command execution. {@context}", ExecutionContext);
 
             var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
             var fault = Fault.NewGeneric(command, commandExecutionException, command.ProcessId, typeof(TAggregate));

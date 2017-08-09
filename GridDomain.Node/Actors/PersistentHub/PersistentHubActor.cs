@@ -92,7 +92,7 @@ namespace GridDomain.Node.Actors.PersistentHub
                 {
                     knownChild.PendingMessages.Add(message);
                     Log.Debug(
-                        "Keeping message {msg} for child {id}. Waiting for child to terminate. Message will be resent after.",
+                        "Keeping message {@msg} for child {id}. Waiting for child to terminate. Message will be resent after.",
                         message,
                         childId);
 
@@ -194,7 +194,7 @@ namespace GridDomain.Node.Actors.PersistentHub
         protected override void PostStop()
         {
             _monitor.IncrementActorStopped();
-            Log.Debug("{ActorHub} was stopped", Self.Path);
+            Log.Debug("Stopped");
         }
 
         private sealed class ClearChildren

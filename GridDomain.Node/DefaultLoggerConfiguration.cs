@@ -1,3 +1,5 @@
+using System;
+using Akka.Event;
 using NMoneys;
 using Serilog;
 using Serilog.Events;
@@ -14,4 +16,5 @@ namespace GridDomain.Node
             Destructure.ByTransforming<Money>(r => new {r.Amount, Currency = r.CurrencyCode});
         }
     }
+    
 }

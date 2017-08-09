@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using Akka.Event;
+using Akka.Logger.Serilog;
 using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.Configuration;
@@ -20,10 +22,11 @@ namespace GridDomain.Node.Actors.EventSourced
         protected readonly ActorMonitor Monitor;
 
         protected readonly BehaviorStack Behavior;
-
+        protected new ILoggingAdapter Log { get; }
         public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
+            Log = Context.GetLogger(new SerilogLogMessageFormatter());
 
             PersistenceId = Self.Path.Name;
             Id = AggregateActorName.Parse<T>(Self.Path.Name)
