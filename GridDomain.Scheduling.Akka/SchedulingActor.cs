@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
@@ -23,7 +24,7 @@ namespace GridDomain.Scheduling.Akka
             _publisher = publisher;
             _logger.Debug("Scheduling actor started at path {Path}", Self.Path);
             _scheduler = scheduler;
-            Receive<ScheduleCommandExecution>(message => Schedule(message));
+            ReceiveAsync<ScheduleCommandExecution>(message => Schedule(message));
             Receive<Unschedule>(message => Unschedule(message));
         }
 
@@ -43,7 +44,7 @@ namespace GridDomain.Scheduling.Akka
             }
         }
 
-        private void Schedule(ScheduleCommandExecution message)
+        private async Task Schedule(ScheduleCommandExecution message)
         {
             ScheduleKey key = message.Key;
             try
@@ -56,7 +57,7 @@ namespace GridDomain.Scheduling.Akka
                                   .StartAt(message.Options.RunAt)
                                   .Build();
 
-                var fireTime = _scheduler.ScheduleJob(job, trigger);
+                var fireTime = await _scheduler.ScheduleJob(job, trigger);
                 var commandExecutionScheduled = new CommandExecutionScheduled(message.Command.Id, fireTime.UtcDateTime);
                 Sender.Tell(commandExecutionScheduled);
                 _publisher.Publish(commandExecutionScheduled,message.CommandMetadata);

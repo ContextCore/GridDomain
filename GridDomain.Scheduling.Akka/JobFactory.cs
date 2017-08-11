@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Practices.Unity;
+using Autofac;
 using Quartz;
 using Quartz.Spi;
 
@@ -7,9 +7,9 @@ namespace GridDomain.Scheduling.Akka
 {
     public class JobFactory : IJobFactory
     {
-        private readonly IUnityContainer _container;
+        private readonly IContainer _container;
 
-        public JobFactory(IUnityContainer container)
+        public JobFactory(IContainer container)
         {
             _container = container;
         }
