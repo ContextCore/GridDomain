@@ -2,6 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
+    <Authors>aleskov</Authors>
+    <Company>aleskov</Company>
+    <Description>Common classes and abstraction for griddomain</Description>
+    <Copyright>Copyright © aleskov</Copyright>
+    <PackageLicenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/solomoto-dev/GridDomain/</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/solomoto-dev/GridDomain/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>CQRS ES DDD Akka</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 
 </Project>

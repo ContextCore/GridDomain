@@ -2,6 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
+    <Description>Libraries for domain development</Description>
+    <PackageTags>CQRS ES DDD Akka</PackageTags>
+    <Copyright>Copyright © aleskov</Copyright>
+    <PackageIconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/solomoto-dev/GridDomain/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/solomoto-dev/GridDomain/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
+  </ItemGroup>
 </Project>
