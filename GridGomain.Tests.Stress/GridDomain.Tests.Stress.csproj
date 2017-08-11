@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>GridDomain.CQRS</AssemblyName>
-    <RootNamespace>GridDomain.CQRS</RootNamespace>
   </PropertyGroup>
 
 </Project>
