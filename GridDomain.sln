@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.ProcessManagers"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Scheduling", "GridDomain.Scheduling\GridDomain.Scheduling.csproj", "{6E98268B-F1DA-44E7-9926-7BBF19A0FB5F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Configuration", "GridDomain.Configuration\GridDomain.Configuration.csproj", "{386BF7B1-83A2-490F-AA06-D5756376B868}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{6E98268B-F1DA-44E7-9926-7BBF19A0FB5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E98268B-F1DA-44E7-9926-7BBF19A0FB5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E98268B-F1DA-44E7-9926-7BBF19A0FB5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{386BF7B1-83A2-490F-AA06-D5756376B868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{386BF7B1-83A2-490F-AA06-D5756376B868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{386BF7B1-83A2-490F-AA06-D5756376B868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{386BF7B1-83A2-490F-AA06-D5756376B868}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
