@@ -1,4 +1,3 @@
-using GridDomain.EventSourcing.Aggregates;
 
 namespace GridDomain.EventSourcing.Sagas
 {

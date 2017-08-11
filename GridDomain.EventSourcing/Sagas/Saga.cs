@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Automatonymous;
 using GridDomain.CQRS;
 using Serilog;
 
@@ -16,14 +17,9 @@ namespace GridDomain.EventSourcing.Sagas
                     ILogger log,
                     bool doUninitializedWarnings = true)
         {
-            if (machine == null)
-                throw new ArgumentNullException(nameof(machine));
-            if (state == null)
-                throw new ArgumentNullException(nameof(state));
-
             _log = log;
-            Machine = machine;
-            State = state;
+            Machine = machine ?? throw new ArgumentNullException(nameof(machine));
+            State = state ?? throw new ArgumentNullException(nameof(state));
             CheckInitialState(doUninitializedWarnings);
         }
 
@@ -45,7 +41,7 @@ namespace GridDomain.EventSourcing.Sagas
             //TODO: find more performant variant
             var newState = (TState)State.Clone();
             var commandsToDispatch = new List<Command>();
-            Machine.DispatchCallback = c => commandsToDispatch.Add(c.CloneWithSaga(State.Id));
+            Machine.DispatchCallback = c => commandsToDispatch.Add(c.CloneForProcess(State.Id));
 
             return Machine.RaiseEvent(newState, machineEvent, message)
                           .ContinueWith(t =>

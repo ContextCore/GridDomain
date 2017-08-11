@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Automatonymous;
 using GridDomain.Common;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing.Aggregates;
 
 namespace GridDomain.EventSourcing.Sagas
 {
@@ -42,15 +42,15 @@ namespace GridDomain.EventSourcing.Sagas
         public Type StateType { get; }
         public Type StateMachineType { get; }
 
-        public void AddAcceptedMessage(Type messageType, string correlationFieldName = nameof(DomainEvent.SagaId))
+        public void AddAcceptedMessage(Type messageType, string correlationFieldName = nameof(DomainEvent.ProcessId))
         {
             _acceptedMessages.RemoveAll(b => b.MessageType == messageType);
             _acceptedMessages.Add(new MessageBind(messageType, correlationFieldName));
         }
 
-        public void AddAcceptedMessage<TMessage>() where TMessage : IHaveSagaId
+        public void AddAcceptedMessage<TMessage>() where TMessage : IHaveProcessId
         {
-            AddAcceptedMessage(typeof(TMessage), nameof(IHaveSagaId.SagaId));
+            AddAcceptedMessage(typeof(TMessage), nameof(IHaveProcessId.ProcessId));
         }
 
         public void AddProduceCommandMessage(Type messageType)
@@ -84,7 +84,7 @@ namespace GridDomain.EventSourcing.Sagas
                 typeof(TSaga).GetProperties()
                              .Where(
                                     p =>
-                                        p.PropertyType.IsGenericType
+                                        p.PropertyType.IsConstructedGenericType
                                         && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
             foreach (var prop in domainBindedEvents)
             {

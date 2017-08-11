@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Newtonsoft.Json;
 
 namespace GridDomain.EventSourcing.Adapters
@@ -50,7 +51,7 @@ namespace GridDomain.EventSourcing.Adapters
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsAssignableFrom(typeof(TFrom));
+            return objectType.GetTypeInfo().IsAssignableFrom(typeof(TFrom));
         }
     }
 }

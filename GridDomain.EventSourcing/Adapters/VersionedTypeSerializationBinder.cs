@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
+using Newtonsoft.Json;
 
 namespace GridDomain.EventSourcing.Adapters
 {
