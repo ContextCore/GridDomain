@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using GridDomain.Scheduling.Quartz.Logging;
 using GridDomain.Scheduling.Quartz.Retry;
 using Quartz;
@@ -22,9 +24,9 @@ namespace GridDomain.Scheduling.Quartz
             _jobFactory = jobFactory;
         }
 
-        public override IScheduler GetScheduler()
+        public override async Task<IScheduler> GetScheduler(CancellationToken cancellationToken = new CancellationToken())
         {
-            var scheduler = base.GetScheduler();
+            var scheduler = await base.GetScheduler(cancellationToken);
             scheduler.JobFactory = _jobFactory;
             scheduler.ListenerManager.AddSchedulerListener(new LoggingSchedulerListener(_log));
             scheduler.ListenerManager.AddJobListener(new LoggingJobListener(_log), GroupMatcher<JobKey>.AnyGroup());

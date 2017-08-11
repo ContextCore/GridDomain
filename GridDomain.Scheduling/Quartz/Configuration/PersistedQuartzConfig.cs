@@ -1,5 +1,4 @@
 using System.Collections.Specialized;
-using System.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
 
 namespace GridDomain.Scheduling.Quartz.Configuration
@@ -8,10 +7,7 @@ namespace GridDomain.Scheduling.Quartz.Configuration
     {
         private const string QuartzConnectionStringName = "Quartz";
 
-        public string ConnectionString
-            =>
-                ConfigurationManager.ConnectionStrings[QuartzConnectionStringName]?.ConnectionString
-                ?? "Server=(local); Database = Quartz; Integrated Security = true; MultipleActiveResultSets = True";
+        public string ConnectionString  => "Server=(local); Database = Quartz; Integrated Security = true; MultipleActiveResultSets = True";
 
         public string StorageType => "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
 
