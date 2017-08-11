@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Automatonymous;
 using Automatonymous.Events;
 using GridDomain.CQRS;
@@ -19,7 +20,7 @@ namespace GridDomain.ProcessManagers
             foreach (var machineEvent in Events.Where(e =>
                                                       {
                                                           var type = e.GetType();
-                                                          return type.IsGenericType
+                                                          return type.IsConstructedGenericType
                                                                  && typeof(DataEvent<>).IsAssignableFrom(type.GetGenericTypeDefinition());
                                                       }))
             {

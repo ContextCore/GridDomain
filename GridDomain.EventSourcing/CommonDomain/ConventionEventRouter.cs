@@ -39,8 +39,7 @@ namespace GridDomain.EventSourcing.CommonDomain
             registered = aggregate;
 
             // Get instance methods named Apply with one parameter returning void
-            var applyMethods = aggregate.GetType()
-                                        .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            var applyMethods = aggregate.GetType().GetRuntimeMethods()
                                         .Where(m => m.Name == "Apply" && m.GetParameters().Length == 1 && m.ReturnParameter.ParameterType == typeof(void))
                                         .Select(m => new
                                                      {
