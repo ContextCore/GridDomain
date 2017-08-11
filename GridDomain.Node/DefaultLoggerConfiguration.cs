@@ -18,14 +18,13 @@ namespace GridDomain.Node
     public class DefaultLoggerConfiguration : LoggerConfiguration
     {
         public const string DefaultTemplate = "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{LogSource}"
-                                                 + "{NewLine} Message: {Message}"
+                                                 + "{NewLine} {Message}"
                                                  + "{NewLine} {Exception}";
 
         public DefaultLoggerConfiguration(LogEventLevel level = LogEventLevel.Verbose)
         {
-            //cannot enrich from context as it is static and logger is interested in instance-specifica data
             Enrich.FromLogContext();
-            WriteTo.RollingFile(".\\GridDomainLogs\\logs-{yyyy-MM-dd_HH_mm_ss}}.txt",level,DefaultTemplate);
+            WriteTo.RollingFile(".\\Logs\\logs-{yyyy-MM-dd_HH_mm_ss}}.txt",level,DefaultTemplate);
             MinimumLevel.Is(level);
             Destructure.ByTransforming<Money>(r => new { r.Amount, r.CurrencyCode });
             Destructure.ByTransforming<Exception>(r => new { Type = r.GetType(), r.StackTrace });
