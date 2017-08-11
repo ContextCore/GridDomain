@@ -37,7 +37,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
        actor {
              " + messageSerialization + @"
              serializers {
-                        wire = """ + typeof(WireSerializer).AssemblyQualifiedShortName() + @"""
+                        wire = """ + typeof(HyperionSerializer).AssemblyQualifiedShortName() + @"""
                         wireDebug = """ + typeof(DebugWireSerializer).AssemblyQualifiedShortName() + @"""
                         json = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }

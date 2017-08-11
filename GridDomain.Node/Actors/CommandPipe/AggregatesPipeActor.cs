@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
-using Akka.Logger.Serilog;
+
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;

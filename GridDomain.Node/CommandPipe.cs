@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Event;
 using Akka.Routing;
+using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
@@ -16,21 +17,20 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers.DomainBind;
-using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node
 {
     public class CommandPipe : IMessagesRouter
     {
         private readonly TypeCatalog<IMessageProcessor, ICommand> _aggregatesCatalog = new TypeCatalog<IMessageProcessor, ICommand>();
-        private readonly IUnityContainer _container;
+        private readonly ContainerBuilder _container;
         private readonly ProcessorListCatalog _handlersCatalog = new ProcessorListCatalog();
 
         private readonly ILoggingAdapter _log;
         private readonly ProcessorListCatalog<IProcessCompleted> _processCatalog = new ProcessorListCatalog<IProcessCompleted>();
         private readonly ActorSystem _system;
 
-        public CommandPipe(ActorSystem system, IUnityContainer container)
+        public CommandPipe(ActorSystem system, ContainerBuilder container)
         {
             _container = container;
             _system = system;
@@ -99,8 +99,8 @@ namespace GridDomain.Node
             CommandExecutor = _system.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
                                               nameof(AggregatesPipeActor));
 
-            _container.RegisterInstance(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName, HandlersPipeActor);
-            _container.RegisterInstance(ProcessManagersPipeActor.ProcessManagersPipeActorRegistrationName, ProcessesPipeActor);
+            _container.RegisterInstance(HandlersPipeActor).Named<IActorRef>(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName);
+            _container.RegisterInstance(ProcessesPipeActor).Named<IActorRef>(ProcessManagersPipeActor.ProcessManagersPipeActorRegistrationName);
 
             await ProcessesPipeActor.Ask<Initialized>(new Initialize(CommandExecutor));
             return CommandExecutor;

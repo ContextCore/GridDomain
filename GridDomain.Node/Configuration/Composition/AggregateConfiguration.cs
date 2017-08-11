@@ -1,5 +1,6 @@
 using System;
 using Akka.Actor;
+using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
@@ -10,7 +11,6 @@ using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.PersistentHub;
-using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
@@ -20,10 +20,10 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly IConstructAggregates _factory;
         private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
         private static readonly string RegistrationName = typeof(TAggregate).BeautyName();
-        private readonly Func<IUnityContainer, IAggregateCommandsHandler<TAggregate>> _commandsHandlerCreator;
+        private readonly Func<ContainerBuilder, IAggregateCommandsHandler<TAggregate>> _commandsHandlerCreator;
         private readonly IPersistentChildsRecycleConfiguration _persistencChildsRecycleConfiguration;
 
-        internal AggregateConfiguration(Func<IUnityContainer, IAggregateCommandsHandler<TAggregate>> commandsHandlerCreator,
+        internal AggregateConfiguration(Func<IContainer, IAggregateCommandsHandler<TAggregate>> commandsHandlerCreator,
                                         Func<ISnapshotsPersistencePolicy> snapshotsPolicy,
                                         IConstructAggregates snapshotsFactory,
                                         IPersistentChildsRecycleConfiguration persistencChildsRecycleConfiguration)
@@ -34,16 +34,21 @@ namespace GridDomain.Node.Configuration.Composition
             _commandsHandlerCreator = commandsHandlerCreator;
         }
 
-        public void Register(IUnityContainer container)
+        public void Register(ContainerBuilder container)
         {
-            container.RegisterInstance(RegistrationName, _persistencChildsRecycleConfiguration);
-            container.RegisterType<AggregateHubActor<TAggregate>>(new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(RegistrationName)));
+            container.RegisterInstance(_persistencChildsRecycleConfiguration).Named<IPersistentChildsRecycleConfiguration>(RegistrationName);
+            container.Register<AggregateHubActor<TAggregate>>(c => 
+            new AggregateHubActor<TAggregate>(c.ResolveNamed<IPersistentChildsRecycleConfiguration>(RegistrationName)));
 
             container.RegisterInstance<IAggregateCommandsHandler<TAggregate>>(_commandsHandlerCreator(container));
-            container.RegisterType<ISnapshotsPersistencePolicy>(RegistrationName,
-                                                                new InjectionFactory(c => _snapshotsPolicyFactory()));
+            container.Register<Func<ISnapshotsPersistencePolicy>>(c => () => _snapshotsPolicyFactory())
+                     .Named<Func<ISnapshotsPersistencePolicy>>(RegistrationName);
 
-            container.RegisterType<TAggregateActor>(new InjectionConstructor(new ResolvedParameter<IAggregateCommandsHandler<TAggregate>>(),
+            container.Register<TAggregateActor>(c => 
+                
+                c.Resolve<TAggregateActor>(c.Resolve<<IAggregateCommandsHandler<TAggregate>>>()))
+
+                (new InjectionConstructor(new ResolvedParameter(),
                                                                              new ResolvedParameter<IPublisher>(),
                                                                              new ResolvedParameter<ISnapshotsPersistencePolicy>(RegistrationName),
                                                                              new ResolvedParameter<IConstructAggregates>(RegistrationName),

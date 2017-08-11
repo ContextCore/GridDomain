@@ -16,6 +16,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Akka.DI.Core" Version="1.3.0-24-beta" />
+    <PackageReference Include="Akka.Persistence" Version="1.3.0-24-beta" />
+    <PackageReference Include="Akka.Serialization.Hyperion" Version="1.3.0-24-beta" />
+    <PackageReference Include="Autofac" Version="4.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
     <ProjectReference Include="..\GridDomain.Configuration\GridDomain.Configuration.csproj" />
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj" />

@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
@@ -6,7 +7,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
     {
         public static string AssemblyQualifiedShortName(this Type type)
         {
-            return type.FullName + ", " + type.Assembly.GetName().Name;
+            return type.FullName + ", " + type.GetTypeInfo().Assembly.GetName().Name;
         }
     }
 }
