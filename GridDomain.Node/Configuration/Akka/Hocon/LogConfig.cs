@@ -39,7 +39,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         {
             _verbosity = verbosity;
             _includeConfig = includeConfig;
-            _logActorType = logActorType ?? typeof(SerilogLogger);
+            _logActorType = logActorType;// ?? typeof(SerilogLogger);
         }
 
         public string Build()

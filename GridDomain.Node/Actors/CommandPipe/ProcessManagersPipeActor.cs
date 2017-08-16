@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
-using Akka.Logger.Serilog;
 using Akka.Util.Internal;
 using GridDomain.Common;
 using GridDomain.CQRS;

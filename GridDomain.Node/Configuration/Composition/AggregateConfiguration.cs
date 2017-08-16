@@ -1,6 +1,8 @@
 using System;
+using System.Reflection;
 using Akka.Actor;
 using Autofac;
+using Autofac.Core;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
@@ -19,11 +21,10 @@ namespace GridDomain.Node.Configuration.Composition
     {
         private readonly IConstructAggregates _factory;
         private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
-        private static readonly string RegistrationName = typeof(TAggregate).BeautyName();
-        private readonly Func<ContainerBuilder, IAggregateCommandsHandler<TAggregate>> _commandsHandlerCreator;
+        private readonly  IAggregateCommandsHandler<TAggregate> _commandsHandler;
         private readonly IPersistentChildsRecycleConfiguration _persistencChildsRecycleConfiguration;
 
-        internal AggregateConfiguration(Func<IContainer, IAggregateCommandsHandler<TAggregate>> commandsHandlerCreator,
+        internal AggregateConfiguration(IAggregateCommandsHandler<TAggregate> commandsHandler,
                                         Func<ISnapshotsPersistencePolicy> snapshotsPolicy,
                                         IConstructAggregates snapshotsFactory,
                                         IPersistentChildsRecycleConfiguration persistencChildsRecycleConfiguration)
@@ -31,30 +32,23 @@ namespace GridDomain.Node.Configuration.Composition
             _persistencChildsRecycleConfiguration = persistencChildsRecycleConfiguration;
             _factory = snapshotsFactory;
             _snapshotsPolicyFactory = snapshotsPolicy;
-            _commandsHandlerCreator = commandsHandlerCreator;
+            _commandsHandler = commandsHandler;
         }
 
         public void Register(ContainerBuilder container)
         {
-            container.RegisterInstance(_persistencChildsRecycleConfiguration).Named<IPersistentChildsRecycleConfiguration>(RegistrationName);
-            container.Register<AggregateHubActor<TAggregate>>(c => 
-            new AggregateHubActor<TAggregate>(c.ResolveNamed<IPersistentChildsRecycleConfiguration>(RegistrationName)));
-
-            container.RegisterInstance<IAggregateCommandsHandler<TAggregate>>(_commandsHandlerCreator(container));
-            container.Register<Func<ISnapshotsPersistencePolicy>>(c => () => _snapshotsPolicyFactory())
-                     .Named<Func<ISnapshotsPersistencePolicy>>(RegistrationName);
+            container.Register<AggregateHubActor<TAggregate>>(c => new AggregateHubActor<TAggregate>(_persistencChildsRecycleConfiguration));
 
             container.Register<TAggregateActor>(c => 
                 
-                c.Resolve<TAggregateActor>(c.Resolve<<IAggregateCommandsHandler<TAggregate>>>()))
-
-                (new InjectionConstructor(new ResolvedParameter(),
-                                                                             new ResolvedParameter<IPublisher>(),
-                                                                             new ResolvedParameter<ISnapshotsPersistencePolicy>(RegistrationName),
-                                                                             new ResolvedParameter<IConstructAggregates>(RegistrationName),
-                                                                             new ResolvedParameter<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName)));
-
-            container.RegisterInstance(RegistrationName, _factory);
+                c.Resolve<TAggregateActor>(new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>),_commandsHandler), 
+                                           new ResolvedParameter((pi,ctx) => pi.ParameterType == typeof(IPublisher),
+                                                                 (pi,ctx) => ctx.Resolve<IPublisher>()),
+                                           new ResolvedParameter((pi,ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
+                                                                 (pi,ctx) => _snapshotsPolicyFactory()),
+                                           new TypedParameter(typeof(IConstructAggregates), _factory),
+                                           new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
+                                                                 (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))));
         }
     }
 }

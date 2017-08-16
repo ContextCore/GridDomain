@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
@@ -9,7 +10,6 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.ProcessManagers;
-using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
@@ -33,7 +33,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
         {
-            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(c => factory.CreateCommandsHandler(),
+            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(factory.CreateCommandsHandler(),
                                                                                                             factory.CreatePersistencePolicy,
                                                                                                             factory.CreateFactory(),
                                                                                                             factory.CreateRecycleConfiguration()));
@@ -43,7 +43,8 @@ namespace GridDomain.Node.Configuration.Composition
 
         public void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage>
         {
-            var cfg = new ContainerConfiguration(c => c.RegisterType<THandler>(new InjectionFactory(cont => factory.Create(c.Resolve<IMessageProcessContext>()))));
+            var cfg = new ContainerConfiguration(c =>
+                                                c.Register<THandler>(ctx => factory.Create(ctx.Resolve<IMessageProcessContext>())));
             _containerConfigurations.Add(cfg);
             _maps.Add(factory.CreateRouteMap());
         }

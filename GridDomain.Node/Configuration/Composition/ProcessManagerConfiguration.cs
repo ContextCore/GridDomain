@@ -1,4 +1,5 @@
 using System;
+using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.EventSourcing;
@@ -11,7 +12,6 @@ using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
-using Microsoft.Practices.Unity;
 
 namespace GridDomain.Node.Configuration.Composition
 {
@@ -19,11 +19,11 @@ namespace GridDomain.Node.Configuration.Composition
     {
         private readonly IConstructAggregates _aggregateFactory;
         private readonly Func<ISnapshotsPersistencePolicy> _snapShotsPolicy;
-        private readonly Func<IUnityContainer, IProcessManagerCreatorCatalog<TState>> _processManagersCatalogCreator;
+        private readonly Func<IProcessManagerCreatorCatalog<TState>> _processManagersCatalogCreator;
         private readonly string _registrationName;
         private readonly IPersistentChildsRecycleConfiguration _persistentChildsRecycleConfiguration;
 
-        internal ProcessManagerConfiguration(Func<IUnityContainer, IProcessManagerCreatorCatalog<TState>> factoryCreator,
+        internal ProcessManagerConfiguration(Func<IProcessManagerCreatorCatalog<TState>> factoryCreator,
                                    string registrationName,
                                    Func<ISnapshotsPersistencePolicy> snapShotsPolicy,
                                    IConstructAggregates factory,
@@ -36,7 +36,7 @@ namespace GridDomain.Node.Configuration.Composition
             _snapShotsPolicy = snapShotsPolicy;
         }
 
-        private void Register(IUnityContainer container, IProcessManagerCreatorCatalog<TState> catalog)
+        private void Register(ContainerBuilder container, IProcessManagerCreatorCatalog<TState> catalog)
         {
             container.RegisterInstance<IPersistentChildsRecycleConfiguration>(_registrationName, _persistentChildsRecycleConfiguration);
             container.RegisterInstance<IConstructAggregates>(_registrationName, _aggregateFactory);
@@ -51,7 +51,7 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<AggregateHubActor<ProcessStateAggregate<TState>>>(new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(_registrationName)));
         }
 
-        private void RegisterStateAggregate<TStateActorType>(IUnityContainer container)
+        private void RegisterStateAggregate<TStateActorType>(ContainerBuilder container)
         {
             container.Register(new AggregateConfiguration<TStateActorType, ProcessStateAggregate<TState>>(c => c.Resolve<ProcessStateCommandHandler<TState>>(),
                                                                                                               _snapShotsPolicy,
@@ -59,7 +59,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                                                                               _persistentChildsRecycleConfiguration));
         }
 
-        public void Register(IUnityContainer container)
+        public void Register(ContainerBuilder container)
         {
             Register(container, _processManagersCatalogCreator(container));
         }
