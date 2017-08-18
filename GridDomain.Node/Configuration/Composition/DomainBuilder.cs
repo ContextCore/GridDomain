@@ -23,7 +23,7 @@ namespace GridDomain.Node.Configuration.Composition
         
         public void RegisterProcessManager<TState>(IProcessManagerDependencyFactory<TState> factory) where TState : class, IProcessState
         {
-            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(c => factory.CreateCatalog(),
+            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(factory.CreateCatalog,
                                                                          factory.ProcessName,
                                                                          () => factory.StateDependencyFactory.CreatePersistencePolicy(),
                                                                          factory.StateDependencyFactory.CreateFactory(),

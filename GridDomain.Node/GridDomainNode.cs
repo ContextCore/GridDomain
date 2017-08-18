@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.DI.AutoFac;
 using Akka.DI.Core;
-using Akka.DI.Unity;
 using Akka.Util.Internal;
+using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
@@ -15,7 +16,6 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
 using GridDomain.Node.Transports;
-using Microsoft.Practices.Unity;
 using ActorTransportProxy = GridDomain.Node.Transports.Remote.ActorTransportProxy;
 
 namespace GridDomain.Node
@@ -38,7 +38,8 @@ namespace GridDomain.Node
         public ActorSystem System { get; private set; }
         private IActorRef ActorTransportProxy { get; set; }
 
-        private IUnityContainer Container { get; set; }
+        private IContainer Container { get; set; }
+        private ContainerBuilder _containerBuilder;
 
         public Guid Id { get; } = Guid.NewGuid();
         public event EventHandler<GridDomainNode> Initializing = delegate { };
@@ -74,21 +75,20 @@ namespace GridDomain.Node
 
             _stopping = false;
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
-            Container = new UnityContainer();
+            _containerBuilder = new ContainerBuilder();
 
             System = Settings.ActorSystemFactory.Invoke();
             System.RegisterOnTermination(OnSystemTermination);
             Transport = new LocalAkkaEventBusTransport(System);
-            Container.Register(new GridNodeContainerConfiguration(Transport, Settings.Log));
-            System.AddDependencyResolver(new UnityDependencyResolver(Container, System));
+            _containerBuilder.Register(new GridNodeContainerConfiguration(Transport, Settings.Log));
             _waiterFactory = new MessageWaiterFactory(System, Transport, Settings.DefaultTimeout);
             ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)), nameof(ActorTransportProxy));
 
             Initializing.Invoke(this, this);
 
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
-            Container.Register(Settings.ContainerConfiguration);
-
+            _containerBuilder.Register(Settings.ContainerConfiguration);
+            
             //var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
             //var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
             //
@@ -100,13 +100,14 @@ namespace GridDomain.Node
             //if(perfCountersConfig.IsEnabled)
             //    ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
+
+            _containerBuilder.RegisterInstance(_commandExecutor);
             _commandExecutor = await CreateCommandExecutor();
 
-          
             await ConfigureDomain();
 
-            Container.RegisterInstance(_commandExecutor);
-
+            Container = _containerBuilder.Build();
+            System.AddDependencyResolver(new AutoFacDependencyResolver(Container, System));
 
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props, nameof(GridNodeController));
@@ -118,8 +119,8 @@ namespace GridDomain.Node
 
         private async Task<ICommandExecutor> CreateCommandExecutor()
         {
-            Pipe = new CommandPipe(System, Container);
-            var commandExecutorActor = await Pipe.Init();
+            Pipe = new CommandPipe(System);
+            var commandExecutorActor = await Pipe.Init(_containerBuilder);
             return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, Settings.DefaultTimeout);
         }
 
@@ -127,7 +128,7 @@ namespace GridDomain.Node
         {
             var domainBuilder = new DomainBuilder();
             Settings.DomainConfigurations.ForEach(c => domainBuilder.Register(c));
-            domainBuilder.ContainerConfigurations.ForEach(c => Container.Register(c));
+            domainBuilder.ContainerConfigurations.ForEach(c => _containerBuilder.Register(c));
             foreach(var m in domainBuilder.MessageRouteMaps)
                 await m.Register(Pipe);
         }

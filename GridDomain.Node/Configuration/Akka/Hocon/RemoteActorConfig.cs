@@ -37,8 +37,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
        actor {
              " + messageSerialization + @"
              serializers {
-                        wire = """ + typeof(HyperionSerializer).AssemblyQualifiedShortName() + @"""
-                        wireDebug = """ + typeof(DebugWireSerializer).AssemblyQualifiedShortName() + @"""
+                        hyp = """ + typeof(HyperionSerializer).AssemblyQualifiedShortName() + @"""
                         json = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              
@@ -47,7 +46,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
                                    """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = json
                                   # for local snapshots storage
                                    ""Akka.Persistence.Serialization.Snapshot, Akka.Persistence"" = json
-                                   ""System.Object"" = wire
+                                   ""System.Object"" = hyp
 
              }
        }";

@@ -38,22 +38,21 @@ namespace GridDomain.Node.Configuration.Composition
 
         private void Register(ContainerBuilder container, IProcessManagerCreatorCatalog<TState> catalog)
         {
-            container.RegisterInstance<IPersistentChildsRecycleConfiguration>(_registrationName, _persistentChildsRecycleConfiguration);
-            container.RegisterInstance<IConstructAggregates>(_registrationName, _aggregateFactory);
             container.RegisterInstance<IProcessManagerCreatorCatalog<TState>>(catalog);
             container.RegisterType<ProcessManagerActor<TState>>();
 
             RegisterStateAggregate<ProcessStateActor<TState>>(container);
-            container.RegisterType<ProcessManagerHubActor<TState>>(new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(_registrationName)));
+            container.Register<ProcessManagerHubActor<TState>>(c => new ProcessManagerHubActor<TState>(_persistentChildsRecycleConfiguration));//new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(_registrationName))));
 
             //for direct access to process state from repositories and for generalization
             RegisterStateAggregate<AggregateActor<ProcessStateAggregate<TState>>>(container);
-            container.RegisterType<AggregateHubActor<ProcessStateAggregate<TState>>>(new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(_registrationName)));
+            container.Register<AggregateHubActor<ProcessStateAggregate<TState>>>(c => new AggregateHubActor<ProcessStateAggregate<TState>>(_persistentChildsRecycleConfiguration));
+          
         }
 
         private void RegisterStateAggregate<TStateActorType>(ContainerBuilder container)
         {
-            container.Register(new AggregateConfiguration<TStateActorType, ProcessStateAggregate<TState>>(c => c.Resolve<ProcessStateCommandHandler<TState>>(),
+            container.Register(new AggregateConfiguration<TStateActorType, ProcessStateAggregate<TState>>(new ProcessStateCommandHandler<TState>(),
                                                                                                               _snapShotsPolicy,
                                                                                                               _aggregateFactory,
                                                                                                               _persistentChildsRecycleConfiguration));
@@ -61,7 +60,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         public void Register(ContainerBuilder container)
         {
-            Register(container, _processManagersCatalogCreator(container));
+            Register(container, _processManagersCatalogCreator());
         }
     }
 }

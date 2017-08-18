@@ -1,4 +1,5 @@
 using System;
+using Akka.Persistence.Sql.Common.Journal;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
@@ -14,7 +15,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         {
             _eventAdatpersConfig = eventAdatpersConfig;
             _dbConfiguration = dbConfiguration;
-            _sqlJournalType = sqlJournalType ?? typeof(SqlDomainJournal);
+            _sqlJournalType = sqlJournalType ?? typeof(SqlJournal);
         }
 
         public string Build()

@@ -23,16 +23,14 @@ namespace GridDomain.Node
     public class CommandPipe : IMessagesRouter
     {
         private readonly TypeCatalog<IMessageProcessor, ICommand> _aggregatesCatalog = new TypeCatalog<IMessageProcessor, ICommand>();
-        private readonly ContainerBuilder _container;
         private readonly ProcessorListCatalog _handlersCatalog = new ProcessorListCatalog();
 
         private readonly ILoggingAdapter _log;
         private readonly ProcessorListCatalog<IProcessCompleted> _processCatalog = new ProcessorListCatalog<IProcessCompleted>();
         private readonly ActorSystem _system;
 
-        public CommandPipe(ActorSystem system, ContainerBuilder container)
+        public CommandPipe(ActorSystem system)
         {
-            _container = container;
             _system = system;
             _log = system.Log;
         }
@@ -87,7 +85,7 @@ namespace GridDomain.Node
         /// <summary>
         /// </summary>
         /// <returns>Reference to pipe actor for command execution</returns>
-        public async Task<IActorRef> Init()
+        public async Task<IActorRef> Init(ContainerBuilder container)
         {
             _log.Debug("Command pipe is starting");
 
@@ -99,8 +97,8 @@ namespace GridDomain.Node
             CommandExecutor = _system.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
                                               nameof(AggregatesPipeActor));
 
-            _container.RegisterInstance(HandlersPipeActor).Named<IActorRef>(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName);
-            _container.RegisterInstance(ProcessesPipeActor).Named<IActorRef>(ProcessManagersPipeActor.ProcessManagersPipeActorRegistrationName);
+            container.RegisterInstance(HandlersPipeActor).Named<IActorRef>(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName);
+            container.RegisterInstance(ProcessesPipeActor).Named<IActorRef>(ProcessManagersPipeActor.ProcessManagersPipeActorRegistrationName);
 
             await ProcessesPipeActor.Ask<Initialized>(new Initialize(CommandExecutor));
             return CommandExecutor;
