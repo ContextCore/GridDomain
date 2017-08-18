@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.Kernel;
 using Xunit;
 
 namespace GridDomain.Tests.Common
@@ -23,8 +25,11 @@ namespace GridDomain.Tests.Common
                              .ToArray();
 
             _excludes = new HashSet<Type>(ExcludeTypes);
+            Fixture = new Fixture();
 
         }
+
+        public Fixture Fixture { get; }
 
         protected abstract Assembly[] AllAssemblies { get; }
         protected virtual IEnumerable<Type> ExcludeTypes { get; } = new Type[] {};
