@@ -17,7 +17,6 @@ using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Practices.Unity;
 using Pro.NBench.xUnit.XunitExtensions;
 using NBench;
 using Serilog.Events;

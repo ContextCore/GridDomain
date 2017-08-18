@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AED1BC61-D13E-454B-A07B-B443A9097298}</ProjectGuid>
+    <ProjectGuid>{8F10408A-B6C5-4F76-9378-D08A528DF885}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.Tests.Common</RootNamespace>
-    <AssemblyName>GridDomain.Tests.Common</AssemblyName>
+    <RootNamespace>GridDomain.Tests.Stress</RootNamespace>
+    <AssemblyName>GridDomain.Tests.Stress</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -36,42 +36,23 @@
     <Reference Include="Akka, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.1.3.0\lib\net45\Akka.dll</HintPath>
     </Reference>
-    <Reference Include="Akka.DI.Unity, Version=1.1.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.DI.Unity.1.1.0\lib\net45\Akka.DI.Unity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Akka.Persistence, Version=1.1.3.32, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Persistence.1.1.3.32-beta\lib\net45\Akka.Persistence.dll</HintPath>
-    </Reference>
-    <Reference Include="Akka.Remote, Version=1.1.2.29, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Remote.1.1.2\lib\net45\Akka.Remote.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Google.ProtocolBuffers, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="Helios, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Helios.2.1.2\lib\net45\Helios.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="KellermanSoftware.Compare-NET-Objects, Version=3.9.0.0, Culture=neutral, PublicKeyToken=d970ace04cc85217, processorArchitecture=MSIL">
-      <HintPath>..\packages\CompareNETObjects.3.09.0.0\lib\net46\KellermanSoftware.Compare-NET-Objects.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.EntityFrameworkCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.EntityFrameworkCore.2.0.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.Relational, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.EntityFrameworkCore.Relational.2.0.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.Relational.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.EntityFrameworkCore.SqlServer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.EntityFrameworkCore.SqlServer.2.0.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Caching.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.Caching.Memory, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Caching.Memory.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Caching.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.dll</HintPath>
@@ -91,26 +72,20 @@
     <Reference Include="Microsoft.Extensions.Primitives, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Primitives.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="NBench, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NBench.1.0.4\lib\net452\NBench.dll</HintPath>
     </Reference>
-    <Reference Include="NMoneys, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NMoneys.4.5.0\lib\Net40-client\NMoneys.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Ploeh.AutoFixture, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoFixture.3.50.2\lib\net40\Ploeh.AutoFixture.dll</HintPath>
+    <Reference Include="Pro.NBench.xUnit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pro.NBench.xUnit.1.0.3\lib\net452\Pro.NBench.xUnit.dll</HintPath>
     </Reference>
     <Reference Include="Remotion.Linq, Version=2.1.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
       <HintPath>..\packages\Remotion.Linq.2.1.1\lib\net45\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.2.3.0\lib\net46\Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.Sinks.File.3.1.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.RollingFile, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.Sinks.RollingFile.3.1.0\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
+      <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -121,10 +96,10 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SqlClient, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.4.0\lib\net461\System.Data.SqlClient.dll</HintPath>
+    </Reference>
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.2.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.4.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
@@ -134,6 +109,12 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\packages\xunit.abstractions.2.0.1\lib\net35\xunit.abstractions.dll</HintPath>
     </Reference>
@@ -143,47 +124,29 @@
     <Reference Include="xunit.core, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\packages\xunit.extensibility.core.2.2.0\lib\netstandard1.1\xunit.core.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.execution.desktop, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.extensibility.execution.2.2.0\lib\net452\xunit.execution.desktop.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateDebugExtensions.cs" />
-    <Compile Include="AggregateScenarioExtensions.cs" />
-    <Compile Include="Any.cs" />
-    <Compile Include="AnyMessagePublisher.cs" />
-    <Compile Include="Compare.cs" />
-    <Compile Include="LoggerActorDummy.cs" />
-    <Compile Include="ObjectLogExtensions.cs" />
-    <Compile Include="ProcessScenario.cs" />
-    <Compile Include="ProcessScenarioExtensions.cs" />
-    <Compile Include="TestExtensions.cs" />
-    <Compile Include="AutoTestLocalDbConfiguration.cs" />
-    <Compile Include="CannotCreateCommandHandlerExeption.cs" />
-    <Compile Include="CannotFindRequestedEventException.cs" />
-    <Compile Include="Configuration\AutoTestAkkaConfiguration.cs" />
-    <Compile Include="Configuration\AutoTestAkkaDbConfiguration.cs" />
-    <Compile Include="Configuration\AutoTestAkkaNetworkAddress.cs" />
-    <Compile Include="DateTimeComparer.cs" />
-    <Compile Include="EventsExtensions.cs" />
+    <Compile Include="BalloonsCreationAndChangeScenario.cs" />
+    <Compile Include="BalloonsCreationAndChangeScenarioProjection.cs" />
+    <Compile Include="CommandExecutionPerfFixtureInMem.cs" />
+    <Compile Include="CommandExecutionPerfFixtureSql.cs" />
+    <Compile Include="CommandExecutionWithProjectionPerfTestSql.cs" />
+    <Compile Include="CommandPlan.cs" />
     <Compile Include="GridNodeExtensions.cs" />
-    <Compile Include="GuidComparer.cs" />
-    <Compile Include="LoggerConfigurationXunitTestOutputExtensions.cs" />
-    <Compile Include="ObjectDeserializationChecker.cs" />
-    <Compile Include="PersistentChildsRecycleConfiguration.cs" />
+    <Compile Include="INodeScenario.cs" />
+    <Compile Include="InsertOptimazedBulkConfiguration.cs" />
+    <Compile Include="LoadAllAssembliesTest.cs" />
+    <Compile Include="NBenchAvailabilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AggregateScenario.cs" />
-    <Compile Include="SagaScenario.cs" />
-    <Compile Include="TestDateTimeStrategy.cs" />
-    <Compile Include="TestDbTools.cs" />
-    <Compile Include="TypesDeserializationTest.cs" />
-    <Compile Include="XUnitAssertExtensions.cs" />
-    <Compile Include="XUnitTestOutputSink.cs" />
+    <Compile Include="StressTestAkkaConfiguration.cs" />
+    <Compile Include="StressTestAkkaNetworkAddress.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AppReadme\Compare-NET-Objects-Help.txt" />
+    <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
@@ -210,41 +173,32 @@
       <Project>{eee0f83b-d1c2-49b7-8460-4f9de743c698}</Project>
       <Name>GridDomain.ProcessManagers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj">
+      <Project>{6e98268b-f1da-44e7-9926-7bbf19a0fb5f}</Project>
+      <Name>GridDomain.Scheduling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj">
+      <Project>{c2552609-5e29-4187-8d6a-e2f5d82bff35}</Project>
+      <Name>GridDomain.Tests.Acceptance</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj">
+      <Project>{aed1bc61-d13e-454b-a07b-b443a9097298}</Project>
+      <Name>GridDomain.Tests.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj">
+      <Project>{46cc4be2-93be-4807-9b1a-7a10dfea29af}</Project>
+      <Name>GridDomain.Tests.Unit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
       <Project>{99763b95-220b-46aa-9155-84e3c1ad6bb2}</Project>
       <Name>GridDomain.Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Target Name="_NuProjGetProjectClosure" DependsOnTargets="ResolveProjectReferences" Inputs="%(_MSBuildProjectReferenceExistent.Identity)" Outputs="fake" Returns="@(_ProjectReferenceClosure)">
-    <!-- Get closure of indirect references -->
-    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)" Targets="_NuProjGetProjectClosure" Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)" ContinueOnError="WarnAndContinue">
-      <Output TaskParameter="TargetOutputs" ItemName="_ProjectReferenceClosureWithDuplicates" />
-    </MSBuild>
-    <!-- Remove duplicates from closure -->
-    <RemoveDuplicates Inputs="@(_ProjectReferenceClosureWithDuplicates)">
-      <Output TaskParameter="Filtered" ItemName="_ProjectReferenceClosureWithoutMetadata" />
-    </RemoveDuplicates>
-    <ItemGroup>
-      <!-- Remove references that are also direct references -->
-      <_ProjectReferenceClosureWithoutMetadata Remove="%(_MSBuildProjectReferenceExistent.FullPath)" />
-      <!-- We can now mark all the closure references as indirect -->
-      <_ProjectReferenceClosure Include="@(_ProjectReferenceClosureWithoutMetadata)">
-        <DependencyKind>Indirect</DependencyKind>
-        <PackageDirectory>%(_MSBuildProjectReferenceExistent.PackageDirectory)</PackageDirectory>
-        <TargetSubdirectory>%(_MSBuildProjectReferenceExistent.TargetSubdirectory)</TargetSubdirectory>
-      </_ProjectReferenceClosure>
-      <!-- Now add the direct references, preserving metadata -->
-      <_ProjectReferenceClosure Include="@(_MSBuildProjectReferenceExistent->'%(FullPath)')">
-        <DependencyKind>Direct</DependencyKind>
-      </_ProjectReferenceClosure>
-    </ItemGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
 </Project>
