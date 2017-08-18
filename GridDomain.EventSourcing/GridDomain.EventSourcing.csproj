@@ -12,7 +12,7 @@
     <RepositoryUrl>https://github.com/andreyleskov/GridDomain/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>CQRS ES DDD Akka</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

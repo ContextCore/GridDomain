@@ -10,13 +10,6 @@ namespace GridDomain.Tests.Acceptance.Tools {
     public class AcceptanceAutoTestAkkaConfiguration : AkkaConfiguration
     {
         public AcceptanceAutoTestAkkaConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
-            : base(new AutoTestAkkaNetworkAddress(), GetConfig(), verbosity, typeof(LoggerActorDummy)) { }
-
-        private static IAkkaDbConfiguration GetConfig()
-        {
-            var config = ConfigurationManager.OpenExeConfiguration(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-            var section = (WriteDbConfigSection)config.GetSection("WriteDb");
-            return section?.ElementInformation.IsPresent == true ? (IAkkaDbConfiguration)section : new AutoTestAkkaDbConfiguration();
-        }
+            : base(new AutoTestAkkaNetworkAddress(), new AutoTestAkkaDbConfiguration(), verbosity, typeof(LoggerActorDummy)) { }
     }
 }

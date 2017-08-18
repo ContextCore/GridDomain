@@ -5,7 +5,7 @@
     <Description>Integration package to configure you domain classes for running in GridDomain node environment</Description>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Copyright>aleskov</Copyright>
     <PackageLicenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/andreyleskov/GridDomain/</PackageProjectUrl>

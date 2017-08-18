@@ -5,7 +5,7 @@
     <Description>Classes for domain coordinator development - process managers, based on event sourced aggregates</Description>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Copyright>aleskov</Copyright>
     <PackageLicenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/andreyleskov/GridDomain/</PackageProjectUrl>

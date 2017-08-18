@@ -2,9 +2,10 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Akka.Actor;
+using Akka.DI.AutoFac;
 using Akka.DI.Core;
-using Akka.DI.Unity;
 using Akka.TestKit.Xunit2;
+using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
@@ -15,7 +16,6 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Unit;
-using Microsoft.Practices.Unity;
 using Moq;
 using Serilog;
 using Xunit;
@@ -28,13 +28,13 @@ namespace GridDomain.Tests.Acceptance.Scheduling
     {
         public SchedulerActorTests(ITestOutputHelper helper)
         {
-            _container = new UnityContainer();
+           var  containerBuilder = new ContainerBuilder();
             var log = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
-            _container.RegisterInstance<ILogger>(log);
+            containerBuilder.RegisterInstance<ILogger>(log);
             var publisherMoq = new Mock<IPublisher>();
-            _container.RegisterInstance(publisherMoq.Object);
+            containerBuilder.RegisterInstance(publisherMoq.Object);
 
-            Sys.AddDependencyResolver(new UnityDependencyResolver(_container, Sys));
+            Sys.AddDependencyResolver(new AutoFacDependencyResolver(containerBuilder.Build(), Sys));
             var ext = Sys.InitSchedulingExtension(new InMemoryQuartzConfig(), log, new Mock<IPublisher>().Object, new Mock<ICommandExecutor>().Object);
             _scheduler = ext.SchedulingActor;
             _quartzScheduler = ext.Scheduler;
@@ -45,7 +45,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         private readonly IActorRef _scheduler;
         private IScheduler _quartzScheduler;
-        private readonly UnityContainer _container;
 
         private ExecutionOptions CreateOptions(double seconds,
                                                        TimeSpan? timeout = null,

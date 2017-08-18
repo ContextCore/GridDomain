@@ -10,7 +10,7 @@
     <RepositoryUrl>https://github.com/solomoto-dev/GridDomain/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

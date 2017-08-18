@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots {
     {
         public static T UseSqlPersistence<T>(this T fixture,bool clearData = true) where T: NodeTestFixture
         {
-            fixture.AkkaConfig.Persistence = GetConfig();
+            fixture.AkkaConfig.Persistence = new AutoTestAkkaDbConfiguration();
             if(clearData)
                 fixture.OnNodePreparingEvent += (s, e) =>
                                                 {
@@ -25,13 +25,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots {
 
             return fixture;
 
-        } 
-
-        private static IAkkaDbConfiguration GetConfig()
-        {
-            var config = ConfigurationManager.OpenExeConfiguration(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-            var section = (WriteDbConfigSection)config.GetSection("WriteDb");
-            return section?.ElementInformation.IsPresent == true ? (IAkkaDbConfiguration)section : new AutoTestAkkaDbConfiguration();
         }
     }
 }

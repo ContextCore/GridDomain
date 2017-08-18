@@ -1,7 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NBench" Version="1.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
+    <ProjectReference Include="..\GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj" />
+    <ProjectReference Include="..\GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj" />
+  </ItemGroup>
 
 </Project>
