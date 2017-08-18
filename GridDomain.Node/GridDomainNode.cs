@@ -111,8 +111,7 @@ namespace GridDomain.Node
             foreach(var m in domainBuilder.MessageRouteMaps)
                 await m.Register(Pipe);
 
-            var props = System.DI().Props<GridNodeController>();
-            var nodeController = System.ActorOf(props, nameof(GridNodeController));
+            var nodeController = System.ActorOf(Props.Create(() => new GridNodeController()), nameof(GridNodeController));
 
             await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start());
 
