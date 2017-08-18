@@ -1,7 +1,36 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Base classes for domain logic autotests.</Description>
+    <Authors>aleskov</Authors>
+    <Company>aleskov</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>aleskov</Copyright>
+    <PackageLicenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/andreyleskov/GridDomain/</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/andreyleskov/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/andreyleskov/GridDomain/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>CQRS ES DDD Akka</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Akka.Serialization.Hyperion" Version="1.3.0-beta48" />
+    <PackageReference Include="AutoFixture" Version="3.50.6" />
+    <PackageReference Include="compareNetObjects" Version="3.9.0" />
+    <PackageReference Include="XUnit" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
+    <ProjectReference Include="..\GridDomain.Configuration\GridDomain.Configuration.csproj" />
+    <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj" />
+    <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
+    <ProjectReference Include="..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj" />
+    <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj" />
+    <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj" />
+  </ItemGroup>
 
 </Project>

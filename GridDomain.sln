@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.0
+VisualStudioVersion = 15.0.26711.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.CQRS", "GridDomain.CQRS\GridDomain.CQRS.csproj", "{666BBC35-B3D8-403B-B907-BA0ED62F3F09}"
 EndProject
@@ -18,6 +18,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Node", "GridDomain.Node\GridDomain.Node.csproj", "{C2709993-D05E-49A8-950F-04A1F2A8BD87}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Scheduling.Akka", "GridDomain.Scheduling.Akka\GridDomain.Scheduling.Akka.csproj", "{809AA605-D830-4A00-A1E8-719BE1E69B47}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tests.Common", "GridDomain.Tests.Common\GridDomain.Tests.Common.csproj", "{AED1BC61-D13E-454B-A07B-B443A9097298}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tools", "GridDomain.Tools\GridDomain.Tools.csproj", "{99763B95-220B-46AA-9155-84E3C1AD6BB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,14 @@ Global
 		{809AA605-D830-4A00-A1E8-719BE1E69B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{809AA605-D830-4A00-A1E8-719BE1E69B47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{809AA605-D830-4A00-A1E8-719BE1E69B47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AED1BC61-D13E-454B-A07B-B443A9097298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AED1BC61-D13E-454B-A07B-B443A9097298}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AED1BC61-D13E-454B-A07B-B443A9097298}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AED1BC61-D13E-454B-A07B-B443A9097298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

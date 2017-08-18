@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using GridDomain.Node.Configuration.Persistence;
 
 namespace GridDomain.Tests.Common

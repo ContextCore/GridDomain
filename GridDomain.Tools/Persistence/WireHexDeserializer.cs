@@ -1,13 +1,11 @@
 using System;
 using System.IO;
 using System.Linq;
-using Wire;
+using Hyperion;
 
 namespace GridDomain.Tools.Persistence
 {
-    namespace Microsoft.EntityFrameworkCore
-    {}
-    internal class WireHexDeserializer
+    internal class HyperionHexDeserializer
     {
         public T Deserialize<T>(string wireSerializedHexString)
         {
