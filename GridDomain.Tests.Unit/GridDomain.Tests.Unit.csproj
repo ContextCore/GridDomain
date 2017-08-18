@@ -65,8 +65,8 @@
     <Reference Include="Akka.TestKit.Xunit2, Version=1.1.3.32, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.TestKit.Xunit2.1.1.3\lib\net45\Akka.TestKit.Xunit2.dll</HintPath>
     </Reference>
-    <Reference Include="Automatonymous, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Automatonymous.3.3.0\lib\net452\Automatonymous.dll</HintPath>
+    <Reference Include="Automatonymous, Version=3.5.12.75, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Automatonymous.3.5.12\lib\net452\Automatonymous.dll</HintPath>
     </Reference>
     <Reference Include="Automatonymous.Visualizer, Version=3.3.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <HintPath>..\packages\Automatonymous.Visualizer.3.3.0\lib\net452\Automatonymous.Visualizer.dll</HintPath>
@@ -82,6 +82,9 @@
     </Reference>
     <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.555, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="GreenPipes, Version=1.1.0.83, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\GreenPipes.1.0.10\lib\net452\GreenPipes.dll</HintPath>
     </Reference>
     <Reference Include="Helios, Version=2.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Helios.2.1.2\lib\net45\Helios.dll</HintPath>
@@ -389,7 +392,6 @@
     <Compile Include="NodeTestKit.cs" />
     <Compile Include="NodeTestFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProcessManagers\CreateProcessGraph.cs" />
     <Compile Include="ProcessManagers\GivenInstanceProcessWhenExceptionOnTransit.cs" />
     <Compile Include="ProcessManagers\GivenIstanceProcessProcessActorCanBeCreated.cs" />
     <Compile Include="ProcessManagers\Given_process_When_extracting_descriptor.cs" />
