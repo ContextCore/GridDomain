@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tests.Unit", "Gr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tests.Acceptance", "GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj", "{1B146A39-52FA-4FE3-A88C-FF4110FAEC5D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NBenchTest", "NBenchTest\NBenchTest.csproj", "{77606F6D-FAB0-40B6-A221-43C1119418EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{1B146A39-52FA-4FE3-A88C-FF4110FAEC5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B146A39-52FA-4FE3-A88C-FF4110FAEC5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B146A39-52FA-4FE3-A88C-FF4110FAEC5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77606F6D-FAB0-40B6-A221-43C1119418EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77606F6D-FAB0-40B6-A221-43C1119418EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77606F6D-FAB0-40B6-A221-43C1119418EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77606F6D-FAB0-40B6-A221-43C1119418EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
