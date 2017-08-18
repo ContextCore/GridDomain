@@ -49,7 +49,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
 
             var jobKey = new JobKey(scheduleKey.Name, scheduleKey.Group);
 
-            Assert.False(scheduler.CheckExists(jobKey));
+            Assert.False(await scheduler.CheckExists(jobKey));
         }
     }
 }

@@ -33,4 +33,8 @@
     <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
 </Project>

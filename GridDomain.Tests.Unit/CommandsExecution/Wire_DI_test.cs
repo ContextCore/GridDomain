@@ -1,7 +1,7 @@
 using Akka.Actor;
+using Akka.DI.AutoFac;
 using Akka.DI.Core;
-using Akka.DI.Unity;
-using Microsoft.Practices.Unity;
+using Autofac;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.CommandsExecution {
@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
                    }
             }");
 
-            system.AddDependencyResolver(new UnityDependencyResolver(new UnityContainer(), system));
+            system.AddDependencyResolver(new AutoFacDependencyResolver(new ContainerBuilder().Build(), system));
             system.ActorOf(system.DI().Props<MyActor>());
         }
         class MyActor : ReceiveActor { }

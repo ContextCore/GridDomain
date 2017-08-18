@@ -25,9 +25,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         public Guid Id { get; }
         public string CurrentStateName { get; set; }
 
-        public object Clone()
+        public IProcessState Clone()
         {
-            return MemberwiseClone();
+            return (IProcessState)MemberwiseClone();
         }
     }
 }

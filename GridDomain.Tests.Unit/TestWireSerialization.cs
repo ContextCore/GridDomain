@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit {
             //CoffeMakeFailedEvent
             var msg = new Akka.Actor.Status.Failure(new UndefinedCoffeMachineException());
             //var msg = 
-            var serializer = new WireSerializer((ExtendedActorSystem) Sys);
+            var serializer = new HyperionSerializer((ExtendedActorSystem) Sys);
             var bytes = serializer.ToBinary(msg);
             var restored = serializer.FromBinary(bytes, msg.GetType());
             Assert.NotNull(restored);
@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Unit {
         private void CheckDeserialize(object msg, string message)
         {
             Log.Info("testing " + message);
-            var serializer = new WireSerializer((ExtendedActorSystem) Sys);
+            var serializer = new HyperionSerializer((ExtendedActorSystem) Sys);
             var bytes = serializer.ToBinary(msg);
             var restored = serializer.FromBinary(bytes, msg.GetType());
             Assert.NotNull(restored);

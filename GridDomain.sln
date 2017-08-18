@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tests.Common", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tools", "GridDomain.Tools\GridDomain.Tools.csproj", "{99763B95-220B-46AA-9155-84E3C1AD6BB2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tests.Unit", "GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj", "{EA000DB4-5719-4543-B8B9-DFCAAA5B49E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA000DB4-5719-4543-B8B9-DFCAAA5B49E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA000DB4-5719-4543-B8B9-DFCAAA5B49E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA000DB4-5719-4543-B8B9-DFCAAA5B49E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA000DB4-5719-4543-B8B9-DFCAAA5B49E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

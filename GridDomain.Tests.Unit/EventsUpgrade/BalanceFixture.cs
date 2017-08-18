@@ -3,7 +3,6 @@ using GridDomain.Node;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Common;
-using Microsoft.Practices.Unity;
 using Quartz;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade

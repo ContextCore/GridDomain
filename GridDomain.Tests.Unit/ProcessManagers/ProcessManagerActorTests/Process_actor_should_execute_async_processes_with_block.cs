@@ -1,10 +1,11 @@
 using System;
 using Akka.Actor;
+using Akka.DI.AutoFac;
 using Akka.DI.Core;
-using Akka.DI.Unity;
 using Akka.TestKit;
 using Akka.TestKit.TestActors;
 using Akka.TestKit.Xunit2;
+using Autofac;
 using GridDomain.Common;
 
 using GridDomain.EventSourcing;
@@ -18,7 +19,6 @@ using GridDomain.Node.Transports;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
-using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,14 +39,14 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), blackHole)));
             _processId = Guid.NewGuid();
 
-            var container = new UnityContainer();
+            var container = new ContainerBuilder();
 
-            container.RegisterType<ProcessStateActor<TestState>>(new InjectionFactory(cnt =>
+            container.Register<ProcessStateActor<TestState>>(c =>
                                                                                        new ProcessStateActor<TestState>(new ProcessStateCommandHandler<TestState>(),
                                                                                                                      _localAkkaEventBusTransport,
                                                                                                                      new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
-                                                                                                                     messageProcessActor)));
-            Sys.AddDependencyResolver(new UnityDependencyResolver(container, Sys));
+                                                                                                                     messageProcessActor));
+            Sys.AddDependencyResolver(new AutoFacDependencyResolver(container.Build(), Sys));
 
             var name = AggregateActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
             _processActor = ActorOfAsTestActorRef(() => new ProcessManagerActor<TestState>(producer,

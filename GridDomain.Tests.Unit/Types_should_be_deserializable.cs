@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Unit
             _system = (ExtendedActorSystem)ActorSystem.Create("test");
             _system.InitDomainEventsSerialization(new EventsAdaptersCatalog());
 
-            Checker = GetChecker(new DomainEventsJsonAkkaSerializer(_system), new WireSerializer(_system));
+            Checker = GetChecker(new DomainEventsJsonAkkaSerializer(_system), new HyperionSerializer(_system));
         }
 
         private ObjectDeserializationChecker GetChecker(params Serializer[] ser)

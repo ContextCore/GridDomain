@@ -3,7 +3,6 @@ using Akka.TestKit.TestActors;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using Microsoft.Practices.Unity;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Scheduling;

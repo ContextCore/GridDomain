@@ -1,10 +1,10 @@
+using Autofac;
 using GridDomain.Configuration;
 
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Node.Transports;
-using Microsoft.Practices.Unity;
 using Serilog;
 using Xunit.Abstractions;
 
@@ -19,13 +19,13 @@ namespace GridDomain.Tests.Unit
             _logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
         }
 
-        protected override IUnityContainer CreateContainer(TransportMode mode, IDbConfiguration conf)
+        protected override IContainer CreateContainer(TransportMode mode, IDbConfiguration conf)
         {
-            var container = new UnityContainer();
+            var container = new ContainerBuilder();
             var actorSystem = ActorSystemBuilders[mode]();
             container.Register(new GridNodeContainerConfiguration(new LocalAkkaEventBusTransport(actorSystem), _logger));
             actorSystem.Terminate();
-            return container;
+            return container.Build();
         }
     }
 }
