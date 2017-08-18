@@ -31,13 +31,13 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
 #if DEBUG
             messageSerialization = @" # serialize-messages = on
-                                       serialize-creators = on";
+                                      # serialize-creators = on";
 #endif
             var actorConfig = @"   
        actor {
              " + messageSerialization + @"
              serializers {
-                        hyp = """ + typeof(HyperionSerializer).AssemblyQualifiedShortName() + @"""
+                        hyp = """ + typeof(DebugHyperionSerializer).AssemblyQualifiedShortName() + @"""
                         json = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              

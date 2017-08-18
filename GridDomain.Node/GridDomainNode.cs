@@ -82,13 +82,14 @@ namespace GridDomain.Node
             Transport = new LocalAkkaEventBusTransport(System);
             _containerBuilder.Register(new GridNodeContainerConfiguration(Transport, Settings.Log));
             _waiterFactory = new MessageWaiterFactory(System, Transport, Settings.DefaultTimeout);
-            ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)), nameof(ActorTransportProxy));
 
             Initializing.Invoke(this, this);
 
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
             _containerBuilder.Register(Settings.ContainerConfiguration);
-            
+
+            ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)), nameof(ActorTransportProxy));
+
             //var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
             //var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
             //
@@ -100,14 +101,15 @@ namespace GridDomain.Node
             //if(perfCountersConfig.IsEnabled)
             //    ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
 
-
-            _containerBuilder.RegisterInstance(_commandExecutor);
             _commandExecutor = await CreateCommandExecutor();
+            _containerBuilder.RegisterInstance(_commandExecutor);
 
-            await ConfigureDomain();
-
+            var domainBuilder = ConfigureDomain();
             Container = _containerBuilder.Build();
             System.AddDependencyResolver(new AutoFacDependencyResolver(Container, System));
+
+            foreach(var m in domainBuilder.MessageRouteMaps)
+                await m.Register(Pipe);
 
             var props = System.DI().Props<GridNodeController>();
             var nodeController = System.ActorOf(props, nameof(GridNodeController));
@@ -124,13 +126,12 @@ namespace GridDomain.Node
             return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, Settings.DefaultTimeout);
         }
 
-        private async Task ConfigureDomain()
+        private DomainBuilder ConfigureDomain()
         {
             var domainBuilder = new DomainBuilder();
             Settings.DomainConfigurations.ForEach(c => domainBuilder.Register(c));
             domainBuilder.ContainerConfigurations.ForEach(c => _containerBuilder.Register(c));
-            foreach(var m in domainBuilder.MessageRouteMaps)
-                await m.Register(Pipe);
+            return domainBuilder;
         }
 
         public async Task Stop()
