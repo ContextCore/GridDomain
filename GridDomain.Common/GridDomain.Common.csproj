@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>
     <Description>Common classes and abstraction for griddomain</Description>

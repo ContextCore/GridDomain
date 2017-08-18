@@ -24,4 +24,10 @@
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AkkaSqlPersistence.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+  </ItemGroup>
+
 </Project>

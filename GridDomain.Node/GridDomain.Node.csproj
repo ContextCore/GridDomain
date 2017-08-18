@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <Description>Framework for distributed business applications development using DDD\ES architecture scaled by CQRS and actor model.</Description>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>

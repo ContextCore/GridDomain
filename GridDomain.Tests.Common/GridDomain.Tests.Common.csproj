@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>aed1bc61-d13e-454b-a07b-b443a9097298</ProjectGuid>
+    <ProjectGuid>{AED1BC61-D13E-454B-A07B-B443A9097298}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GridDomain.Tests.Common</RootNamespace>
@@ -97,6 +97,9 @@
     <Reference Include="xunit.assert, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\packages\xunit.assert.2.2.0\lib\netstandard1.1\xunit.assert.dll</HintPath>
     </Reference>
+    <Reference Include="xunit.core, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <HintPath>..\packages\xunit.extensibility.core.2.2.0\lib\netstandard1.1\xunit.core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateDebugExtensions.cs" />
@@ -137,37 +140,37 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AppReadme\Compare-NET-Objects-Help.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
-      <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
+      <Project>{06daa3e0-3fd8-4d6d-9173-ca4ea1a60f53}</Project>
       <Name>GridDomain.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Configuration\GridDomain.Configuration.csproj">
-      <Project>{254e5abe-9dbb-4951-ba91-50a2aa8909b5}</Project>
+      <Project>{386bf7b1-83a2-490f-aa06-d5756376b868}</Project>
       <Name>GridDomain.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj">
-      <Project>{80d3b1cd-e656-4243-bcc8-ab6eb694f7c1}</Project>
+      <Project>{666bbc35-b3d8-403b-b907-ba0ed62f3f09}</Project>
       <Name>GridDomain.CQRS</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
-      <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
+      <Project>{3ff79114-bac6-4b56-838f-cd63f0894a38}</Project>
       <Name>GridDomain.EventSourcing</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
-      <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
+      <Project>{c2709993-d05e-49a8-950f-04a1f2a8bd87}</Project>
       <Name>GridDomain.Node</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj">
-      <Project>{eba75163-804c-4c58-8e5e-6764c1155be5}</Project>
+      <Project>{eee0f83b-d1c2-49b7-8460-4f9de743c698}</Project>
       <Name>GridDomain.ProcessManagers</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj">
-      <Project>{52d64e51-e1d5-45f6-8c2a-e436c0a03ed3}</Project>
+      <Project>{99763b95-220b-46aa-9155-84e3c1ad6bb2}</Project>
       <Name>GridDomain.Tools</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AppReadme\Compare-NET-Objects-Help.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <Description>Classes for domain coordinator development - process managers, based on event sourced aggregates</Description>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>
