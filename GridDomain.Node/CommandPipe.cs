@@ -43,7 +43,7 @@ namespace GridDomain.Node
         {
             var aggregateHubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);
 
-            var aggregateActor = CreateActor(aggregateHubType, descriptor.AggregateType.BeautyName() + "_Hub");
+            var aggregateActor = CreateDIActor(aggregateHubType, descriptor.AggregateType.BeautyName() + "_Hub");
 
             var processor = new FireAndForgetMessageProcessor(aggregateActor);
 
@@ -57,7 +57,7 @@ namespace GridDomain.Node
         {
             var processActorType = typeof(ProcessManagerHubActor<>).MakeGenericType(processManagerDescriptor.StateType);
 
-            var processManagerActor = CreateActor(processActorType, name ?? processManagerDescriptor.ProcessType.BeautyName() + "_Hub");
+            var processManagerActor = CreateDIActor(processActorType, name ?? processManagerDescriptor.ProcessType.BeautyName() + "_Hub");
             var processor = new SynchronousMessageProcessor<IProcessCompleted>(processManagerActor);
 
             foreach (var acceptMsg in processManagerDescriptor.AcceptMessages)
@@ -108,13 +108,13 @@ namespace GridDomain.Node
                                                                            where TMessage : class, IHaveProcessId, IHaveId
         {
             var handlerActorType = typeof(MessageProcessActor<TMessage, THandler>);
-            var handlerActor = CreateActor(handlerActorType, handlerActorType.BeautyName());
+            var handlerActor = CreateDIActor(handlerActorType, handlerActorType.BeautyName());
 
             _handlersCatalog.Add<TMessage>(processorCreator(handlerActor));
             return Task.CompletedTask;
         }
 
-        private IActorRef CreateActor(Type actorType, string actorName, RouterConfig routeConfig = null)
+        private IActorRef CreateDIActor(Type actorType, string actorName, RouterConfig routeConfig = null)
         {
             var actorProps = _system.DI().Props(actorType);
             if (routeConfig != null)

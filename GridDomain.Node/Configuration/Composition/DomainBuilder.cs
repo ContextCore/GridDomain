@@ -9,6 +9,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
+using GridDomain.Node.Actors.Hadlers;
 using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Configuration.Composition
@@ -40,11 +41,11 @@ namespace GridDomain.Node.Configuration.Composition
             _maps.Add(factory.CreateRouteMap());
 
         }
-
-        public void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage>
+        
+        public void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage> where TMessage : class, IHaveProcessId, IHaveId
         {
-            var cfg = new ContainerConfiguration(c =>
-                                                c.Register<THandler>(ctx => factory.Create(ctx.Resolve<IMessageProcessContext>())));
+            var cfg = new ContainerConfiguration(c => c.Register<THandler>(ctx => factory.Create(ctx.Resolve<IMessageProcessContext>())),
+                                                c => c.RegisterType<MessageProcessActor<TMessage, THandler>>());
             _containerConfigurations.Add(cfg);
             _maps.Add(factory.CreateRouteMap());
         }

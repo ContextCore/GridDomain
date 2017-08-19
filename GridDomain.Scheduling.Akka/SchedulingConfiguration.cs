@@ -15,8 +15,8 @@ namespace GridDomain.Scheduling.Akka
     {
         public static void RegisterType<TAbstract, TConcrete>(this ContainerBuilder builder)
         {
-            builder.RegisterType<TAbstract>()
-                   .As<TConcrete>();
+            builder.RegisterType<TConcrete>()
+                   .As<TAbstract>();
         }
     }
 
@@ -47,13 +47,13 @@ namespace GridDomain.Scheduling.Akka
                                {
                                    var factory = x.Resolve<QuartzSchedulerFactory>();
                                    factory.Initialize(_quartzConfig.Settings);
-                                   var scheduler = factory.GetScheduler();
+                                   var scheduler = factory.GetScheduler().Result;
                                    scheduler.Start();
                                    return scheduler;
                                })
                      .As<IScheduler>().ExternallyOwned();
 
-            container.RegisterType<IJobFactory, JobFactory>();
+            container.RegisterType<IJobFactory,JobFactory>();
             container.RegisterType<QuartzJob>();
             container.RegisterInstance(_quartzConfig);
             container.RegisterInstance(_commandExecutor);
