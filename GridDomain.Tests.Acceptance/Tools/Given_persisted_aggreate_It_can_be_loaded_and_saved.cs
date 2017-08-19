@@ -5,6 +5,7 @@ using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.Tools
 {
@@ -17,17 +18,13 @@ namespace GridDomain.Tests.Acceptance.Tools
             var agregateValue = "initial";
             var aggregate = new Balloon(aggregateId, agregateValue);
 
-            using (
-                var repo =
-                    new AggregateRepository(ActorSystemJournalRepository.New(new AcceptanceAutoTestAkkaConfiguration(),
+            using (var repo = new AggregateRepository(ActorSystemJournalRepository.New(new AcceptanceAutoTestAkkaConfiguration(),
                                                                              new EventsAdaptersCatalog())))
             {
                 await repo.Save(aggregate);
             }
 
-            using (
-                var repo =
-                    new AggregateRepository(ActorSystemJournalRepository.New(new AcceptanceAutoTestAkkaConfiguration(),
+            using (var repo = new AggregateRepository(ActorSystemJournalRepository.New(new AcceptanceAutoTestAkkaConfiguration(),
                                                                              new EventsAdaptersCatalog())))
             {
                 aggregate = await repo.LoadAggregate<Balloon>(aggregate.Id);

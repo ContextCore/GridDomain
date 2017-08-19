@@ -15,6 +15,9 @@ using Serilog.Events;
 
 namespace GridDomain.Node
 {
+
+ 
+
     public class DefaultLoggerConfiguration : LoggerConfiguration
     {
         public const string DefaultTemplate = "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{LogSource}"
@@ -24,7 +27,7 @@ namespace GridDomain.Node
         public DefaultLoggerConfiguration(LogEventLevel level = LogEventLevel.Verbose)
         {
             Enrich.FromLogContext();
-            WriteTo.RollingFile(".\\Logs\\logs-{yyyy-MM-dd_HH_mm_ss}}.txt",level,DefaultTemplate);
+            WriteTo.RollingFile(".\\Logs\\log_{HalfHour}.txt", level,DefaultTemplate);
             MinimumLevel.Is(level);
             Destructure.ByTransforming<Money>(r => new { r.Amount, r.CurrencyCode });
             Destructure.ByTransforming<Exception>(r => new { Type = r.GetType(), r.StackTrace });

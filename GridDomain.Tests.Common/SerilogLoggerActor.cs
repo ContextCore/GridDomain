@@ -2,15 +2,23 @@
 using Akka.Actor;
 using Akka.Dispatch;
 using Akka.Event;
+using GridDomain.Node;
 using Serilog;
+using Serilog.Events;
+using LogEvent = Akka.Event.LogEvent;
 
-namespace GridDomain.Tests.Unit
+namespace GridDomain.Tests.Common
 {
+   
     public class SerilogLoggerActor : ReceiveActor,
                                       IRequiresMessageQueue<ILoggerMessageQueueSemantics>
     {
         private readonly ILogger _logger;
 
+        public SerilogLoggerActor() : this(new DefaultLoggerConfiguration())
+        {
+            
+        }
         /// <summary>
         ///     Initializes a new instance of the <see cref="SerilogLogger" /> class.
         /// </summary>

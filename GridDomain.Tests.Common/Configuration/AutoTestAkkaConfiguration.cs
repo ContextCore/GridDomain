@@ -6,6 +6,6 @@ namespace GridDomain.Tests.Common.Configuration
     public class AutoTestAkkaConfiguration : AkkaConfiguration
     {
         public AutoTestAkkaConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
-            : base(new AutoTestAkkaNetworkAddress(), new AutoTestAkkaDbConfiguration(), verbosity, typeof(LoggerActorDummy)) {}
+            : base(new AutoTestAkkaNetworkAddress(), new AutoTestAkkaDbConfiguration(), verbosity, typeof(SerilogLoggerActor)) {}
     }
 }
