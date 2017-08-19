@@ -59,12 +59,12 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
 
         private class Event
         {
-            public Event(Payload[] payload)
+            public Event(Payload[] payloadProp)
             {
-                Payload = payload;
+                PayloadProp = payloadProp;
             }
 
-            public Payload[] Payload { get; }
+            public Payload[] PayloadProp { get; }
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
 
             var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
 
-            Assert.IsAssignableFrom<SubObject_V2>(restoredEvent.Payload?.FirstOrDefault()?.Property?.FirstOrDefault());
+            Assert.IsAssignableFrom<SubObject_V2>(restoredEvent.PayloadProp?.FirstOrDefault()?.Property?.FirstOrDefault());
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
             var restoredEvent = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
 
-            Assert.IsAssignableFrom<SubObject_V1>(restoredEvent.Payload?.FirstOrDefault()?.Property?.FirstOrDefault());
+            Assert.IsAssignableFrom<SubObject_V1>(restoredEvent.PayloadProp?.FirstOrDefault()?.Property?.FirstOrDefault());
         }
     }
 }

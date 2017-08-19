@@ -23,9 +23,9 @@ namespace GridDomain.EventSourcing
             return new JsonSerializerSettings
                    {
                        Formatting = Formatting.Indented,
-                       PreserveReferencesHandling = PreserveReferencesHandling.All,
+                      // PreserveReferencesHandling = PreserveReferencesHandling.,
                        TypeNameHandling = TypeNameHandling.All,
-                       TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple,
+                       TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                        CheckAdditionalContent = false,
                        ContractResolver = new PrivateSetterContractResolver(),
                        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
