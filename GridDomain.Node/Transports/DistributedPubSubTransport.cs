@@ -59,7 +59,7 @@ namespace GridDomain.Node.Transports
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            Publish(MessageMetadataEnvelop.New(msg, metadata));
+            Publish(MessageMetadataEnvelop.NewTyped(msg, metadata));
         }
     }
 }

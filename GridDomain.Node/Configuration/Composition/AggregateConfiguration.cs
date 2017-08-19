@@ -39,16 +39,17 @@ namespace GridDomain.Node.Configuration.Composition
         {
             container.Register<AggregateHubActor<TAggregate>>(c => new AggregateHubActor<TAggregate>(_persistencChildsRecycleConfiguration));
 
-            container.Register<TAggregateActor>(c => 
-                
-                c.Resolve<TAggregateActor>(new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>),_commandsHandler), 
-                                           new ResolvedParameter((pi,ctx) => pi.ParameterType == typeof(IPublisher),
-                                                                 (pi,ctx) => ctx.Resolve<IPublisher>()),
-                                           new ResolvedParameter((pi,ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
-                                                                 (pi,ctx) => _snapshotsPolicyFactory()),
-                                           new TypedParameter(typeof(IConstructAggregates), _factory),
-                                           new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
-                                                                 (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))));
-        }
+            container.RegisterType<TAggregateActor>()
+                     .WithParameters(new Parameter[] { 
+                                     new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), _commandsHandler),
+                                     new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IPublisher),
+                                         (pi, ctx) => ctx.Resolve<IPublisher>()),
+                                     new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
+                                         (pi, ctx) => _snapshotsPolicyFactory()),
+                                     new TypedParameter(typeof(IConstructAggregates), _factory),
+                                     new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
+                                         (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))
+                                });
+    }
     }
 }

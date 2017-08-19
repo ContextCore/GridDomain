@@ -44,7 +44,7 @@ namespace GridDomain.Node.Transports.Remote
         public void Publish(object msg, IMessageMetadata metadata)
         {
             _local.Publish(msg);
-            var messageMetadataEnvelop = MessageMetadataEnvelop.New(msg, metadata);
+            var messageMetadataEnvelop = MessageMetadataEnvelop.NewTyped(msg, metadata);
 
             _remoteSubscriber.Ask<PublishAck>(new Publish(messageMetadataEnvelop), _timeout).Wait();
         }

@@ -122,7 +122,6 @@ namespace GridDomain.Node.Actors.Aggregates
                                                           return;
                                                       }
 
-                                                      _publisher.Publish(persistedEvent);
                                                       NotifyPersistenceWatchers(persistedEvent);
                                                       SaveSnapshot(ExecutionContext.ProducedState, persistedEvent);
                                                       

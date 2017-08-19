@@ -42,7 +42,7 @@ namespace GridDomain.Node.Transports
         public void Publish(object msg, IMessageMetadata metadata)
         {
             //   _log.Debug("Publishing {Message} to transport with metadata", msg);
-            var messageMetadataEnvelop = MessageMetadataEnvelop.New(msg, metadata);
+            var messageMetadataEnvelop = MessageMetadataEnvelop.NewTyped(msg, metadata);
             _bus.Publish(messageMetadataEnvelop);
         }
 

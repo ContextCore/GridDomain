@@ -42,8 +42,7 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<ProcessManagerActor<TState>>();
 
             RegisterStateAggregate<ProcessStateActor<TState>>(container);
-            container.Register<ProcessManagerHubActor<TState>>(c => new ProcessManagerHubActor<TState>(_persistentChildsRecycleConfiguration));//new InjectionConstructor(new ResolvedParameter<IPersistentChildsRecycleConfiguration>(_registrationName))));
-
+            container.Register<ProcessManagerHubActor<TState>>(c => new ProcessManagerHubActor<TState>(_persistentChildsRecycleConfiguration));
             //for direct access to process state from repositories and for generalization
             RegisterStateAggregate<AggregateActor<ProcessStateAggregate<TState>>>(container);
             container.Register<AggregateHubActor<ProcessStateAggregate<TState>>>(c => new AggregateHubActor<ProcessStateAggregate<TState>>(_persistentChildsRecycleConfiguration));

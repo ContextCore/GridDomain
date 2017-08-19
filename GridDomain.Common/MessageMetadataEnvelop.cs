@@ -20,16 +20,10 @@ namespace GridDomain.Common
             return new MessageMetadataEnvelop<T>(msg, metadata ?? MessageMetadata.Empty);
         }
 
-       // public static IMessageMetadataEnvelop New(object msg, IMessageMetadata metadata)
-       // {
-       //     var msgType = msg.GetType();
-       //     var constructor = GetEnvelopType(msgType).GetTypeInfo().DeclaredConstructors.First(c =>
-       //                                                                                        {
-       //                                                                                            var prms = c.GetParameters();
-       //                                                                                            prms[]
-       //                                                                                        } )r(new []{msgType, typeof(IMessageMetadata)});
-       //     return (IMessageMetadataEnvelop)constructor.Invoke(new []{msg, metadata});
-       // }
+        public static IMessageMetadataEnvelop NewTyped(object msg, IMessageMetadata metadata)
+        {
+            return New(((dynamic)msg), metadata);
+        }
 
         public static Type GetEnvelopType(Type type)
         {

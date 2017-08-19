@@ -90,8 +90,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private static void CheckExecutionError(object t)
         {
             t.Match()
-             .With<Status.Failure>(r => ExceptionDispatchInfo.Capture(r.Cause).Throw())
-             .With<Failure>(r => ExceptionDispatchInfo.Capture(r.Exception).Throw());
+             .With<Status.Failure>(r => throw r.Cause)
+             .With<Failure>(r => throw r.Exception);
         }
     }
 }
