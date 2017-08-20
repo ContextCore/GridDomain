@@ -10,6 +10,8 @@ namespace GridDomain.ProcessManagers.Creation
     {
         private readonly IProcessManagerCreator<TState> _fromStateCreator;
         private readonly IProcessManagerDescriptor _descriptor;
+        private string _registerName;
+        private BindingFlags _bindingFlags;
 
         public ProcessManager—reatorsCatalog(IProcessManagerDescriptor descriptor, IProcessManagerCreator<TState> stateCreator)
         {
@@ -44,9 +46,12 @@ namespace GridDomain.ProcessManagers.Creation
                 if (!expectedFactoryType.IsInstanceOfType(factory))
                     throw new FactoryNotSupportStartMessageException(factory.GetType(), startMessageType);
 
-                var registerMethod = typeof(ProcessManager—reatorsCatalog<TState>)
-                    .GetMethod(nameof(Register), BindingFlags.Instance | BindingFlags.NonPublic)
-                    .MakeGenericMethod(startMessageType);
+                _registerName = nameof(Register);
+                _bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
+
+                var registerMethod =  typeof(ProcessManager—reatorsCatalog<TState>)
+                                        .GetMethod(_registerName, _bindingFlags)
+                                        .MakeGenericMethod(startMessageType);
 
                 registerMethod.Invoke(this, new []{factory});
             }
