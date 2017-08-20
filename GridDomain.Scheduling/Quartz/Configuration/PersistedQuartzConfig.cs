@@ -23,7 +23,8 @@ namespace GridDomain.Scheduling.Quartz.Configuration
                     "Quartz.Impl.AdoJobStore.UpdateLockRowSemaphore, Quartz",
                     ["quartz.dataSource.default.connectionString"] = ConnectionString,
                     ["quartz.dataSource.default.provider"] = "SqlServer-20",
-                    ["quartz.scheduler.instanceId"] = "AUTO"
+                    ["quartz.scheduler.instanceId"] = "AUTO",
+                    ["quartz.serializer.type"] = "json"
                 };
 
         public string Name { get; }

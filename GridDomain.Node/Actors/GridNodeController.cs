@@ -3,19 +3,17 @@ using Akka.Actor;
 
 namespace GridDomain.Node.Actors
 {
-    public class GridNodeController : TypedActor
+    public class GridNodeController : ReceiveActor
     {
         private readonly ActorMonitor _monitor;
 
         public GridNodeController()
         {
             _monitor = new ActorMonitor(Context);
-        }
-
-        public void Handle(Start msg)
-        {
-            _monitor.IncrementMessagesReceived();
-            Sender.Tell(Started.Instance);
+            Receive<Start>(m => {
+                               _monitor.IncrementMessagesReceived();
+                               Sender.Tell(Started.Instance);
+                           });
         }
 
         protected override void PreStart()

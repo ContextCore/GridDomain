@@ -1,5 +1,4 @@
 using System;
-using Akka.Persistence.Sql.Common.Journal;
 
 namespace GridDomain.Node.Configuration.Akka.Hocon
 {
@@ -8,6 +7,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         private readonly IAkkaDbConfiguration _dbConfiguration;
         private readonly IAkkaConfig _eventAdatpersConfig;
         private readonly Type _sqlJournalType;
+        private string _assemblyQualifiedShortName;
 
         public PersistenceJournalConfig(IAkkaDbConfiguration dbConfiguration,
                                         IAkkaConfig eventAdatpersConfig,
@@ -15,7 +15,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
         {
             _eventAdatpersConfig = eventAdatpersConfig;
             _dbConfiguration = dbConfiguration;
-            _sqlJournalType = sqlJournalType ?? typeof(SqlJournal);
+            _sqlJournalType = sqlJournalType;
         }
 
         public string Build()
@@ -24,12 +24,15 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
             if (jornalConnectionTimeoutSeconds <= 0)
                 jornalConnectionTimeoutSeconds = 30;
 
+            _assemblyQualifiedShortName = _sqlJournalType?.AssemblyQualifiedShortName()
+                ?? "Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer";
+
             var persistenceJournalConfig = @"
             journal {
                     plugin = ""akka.persistence.journal.sql-server""
 
                     sql-server {
-                               class = """ + _sqlJournalType.AssemblyQualifiedShortName() + @"""
+                               class = """ + _assemblyQualifiedShortName + @"""
                                plugin-dispatcher = ""akka.actor.default-dispatcher""
                                connection-string =  """ + _dbConfiguration.JournalConnectionString + @"""
                                connection-timeout = " + jornalConnectionTimeoutSeconds + @"s
