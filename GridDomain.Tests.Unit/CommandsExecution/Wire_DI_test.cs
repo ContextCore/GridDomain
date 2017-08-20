@@ -15,8 +15,8 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
                    actor {
                        serialize-creators = on
                        serializers { hyperion = ""Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion""  
-                                     wire = ""Akka.Serialization.WireSerializer, Akka.Serialization.Wire""}
-                       serialization-bindings { ""System.Object"" = wire}
+                                    }
+                       serialization-bindings { ""System.Object"" = hyperion}
                    }
                    actor.provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
                    remote {

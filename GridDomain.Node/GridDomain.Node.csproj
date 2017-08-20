@@ -22,6 +22,7 @@
     <PackageReference Include="Akka.DI.Core" Version="1.3.0" />
     <PackageReference Include="Akka.Persistence" Version="1.3.0" />
     <PackageReference Include="Akka.Persistence.Sql.Common" Version="1.3.0" />
+    <PackageReference Include="Akka.Remote" Version="1.3.0" />
     <PackageReference Include="Akka.Serialization.Hyperion" Version="1.3.0-beta50" />
     <PackageReference Include="Autofac" Version="4.6.1" />
     <PackageReference Include="NMoneys" Version="5.1.4" />
