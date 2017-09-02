@@ -26,17 +26,14 @@ namespace GridDomain.EventSourcing.CommonDomain
         public virtual void Register<T>(Action<T> handler)
         {
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
 
             Register(typeof(T), @event => handler((T) @event));
         }
 
         public virtual void Register(IAggregate aggregate)
         {
-            if (aggregate == null)
-                throw new ArgumentNullException("aggregate");
-
-            registered = aggregate;
+            registered = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
 
             // Get instance methods named Apply with one parameter returning void
             var applyMethods = aggregate.GetType().GetRuntimeMethods()
@@ -68,14 +65,13 @@ namespace GridDomain.EventSourcing.CommonDomain
         public virtual void Dispatch(object eventMessage)
         {
             if (eventMessage == null)
-                throw new ArgumentNullException("eventMessage");
+                throw new ArgumentNullException(nameof(eventMessage));
 
-            Action<object> handler;
-            if (handlers.TryGetValue(eventMessage.GetType(), out handler))
+            if(handlers.TryGetValue(eventMessage.GetType(), out Action<object> handler))
                 handler(eventMessage);
             else
-                if (throwOnApplyNotFound)
-                    registered.ThrowHandlerNotFound(eventMessage);
+                if(throwOnApplyNotFound)
+                registered.ThrowHandlerNotFound(eventMessage);
         }
 
         private void Register(Type messageType, Action<object> handler)

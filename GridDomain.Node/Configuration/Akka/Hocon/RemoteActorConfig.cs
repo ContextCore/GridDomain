@@ -31,7 +31,7 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
 #if DEBUG
             messageSerialization = @"  serialize-messages = on
-                                      # serialize-creators = on";
+                                       serialize-creators = on";
 #endif
             var actorConfig = @"   
        actor {
