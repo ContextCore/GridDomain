@@ -4,6 +4,8 @@ using System.Reflection;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Serialization;
+using Akka.TestKit;
+using Akka.TestKit.TestActors;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -20,7 +22,9 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.CommandPipe;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
+using KellermanSoftware.CompareNetObjects;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Kernel;
 using Xunit;
@@ -34,6 +38,7 @@ namespace GridDomain.Tests.Unit
 
         public Types_should_be_deserializable()
         {
+
            Fixture.Customizations.Add(new TypeRelay(typeof(IMemento), typeof(HomeAggregate)));
            Fixture.Customizations.Add(new TypeRelay(typeof(ICommand), typeof(FakeCommand)));
            Fixture.Customizations.Add(new TypeRelay(typeof(Command), typeof(FakeCommand)));
@@ -42,8 +47,9 @@ namespace GridDomain.Tests.Unit
 
 
             _system = (ExtendedActorSystem)ActorSystem.Create("test");
+            var testActor = _system.ActorOf<BlackHoleActor>();
             _system.InitDomainEventsSerialization(new EventsAdaptersCatalog());
-
+            Fixture.Register<IActorRef>(() => testActor);
             Checker = GetChecker(new DomainEventsJsonAkkaSerializer(_system), new HyperionSerializer(_system));
         }
 
@@ -82,10 +88,24 @@ namespace GridDomain.Tests.Unit
             CheckAllChildrenOf<ICommand>(Checker, AllAssemblies);
         }
 
-        [Fact(Skip = "Postponing rework of all exception to propers support of ISerializable")]
+        [Fact]//(Skip = "Postponing rework of all exception to propers support of ISerializable")]
         public void Exceptions_from_all_assemblies_should_be_deserializable_by_json_and_wire()
         {
-            CheckAllChildrenOf<Exception>(Checker, AllAssemblies);
+
+           //Hyperion cares only about limited set of exception fields https://github.com/akkadotnet/Hyperion/blob/f9487dd154bb3cb8344f860a44e3697e8aac6c3a/Hyperion/SerializerFactories/ExceptionSerializerFactory.cs
+
+            var checker = new ObjectDeserializationChecker(new CompareLogic
+                                                          {
+                                                              Config = new ComparisonConfig() { MembersToInclude = new List<string>
+                                                                                                                   {
+                                                                                                                       nameof(Exception.Message),
+                                                                                                                       nameof(Exception.StackTrace),
+                                                                                                                       nameof(Exception.InnerException)
+                                                                                                                   } }
+                                                          }, 
+                                                          new HyperionSerializer(_system));
+
+            CheckAllChildrenOf<Exception>(checker, AllAssemblies);
         }
 
         [Fact]

@@ -8,6 +8,10 @@ namespace GridDomain.Node.Actors.ProcessManagers.Exceptions
         public object StartMessage { get; }
         public IProcessState ExistingState { get; }
 
+        public ProcessAlreadyStartedException()
+        {
+            
+        }
         public ProcessAlreadyStartedException(IProcessState existingState, object startMessage)
         {
             StartMessage = startMessage;

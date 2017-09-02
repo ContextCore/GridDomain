@@ -6,6 +6,10 @@ namespace GridDomain.ProcessManagers
     {
         public readonly object Msg;
 
+        public UnbindedMessageReceivedException()
+        {
+            
+        }
         public UnbindedMessageReceivedException(object message, Type failedType = null)
         {
             FailedType = failedType;

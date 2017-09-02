@@ -49,7 +49,16 @@ namespace GridDomain.Tests.Unit
         public ILogger Logger { get; private set; }
         public AkkaConfiguration AkkaConfig { get; set; } = DefaultAkkaConfig;
         public string Name => AkkaConfig.Network.SystemName;
-        internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(3);
+
+        private const int DefaultTimeOutSec =
+#if DEBUG
+            10; //in debug mode all messages serialization is enabled, and it slows down all tests greatly
+#endif
+#if !DEBUG
+            3;
+#endif      
+        internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
+
         public ITestOutputHelper Output { get; set; }
         public LogEventLevel LogLevel { get; set; } = LogEventLevel.Verbose;
 

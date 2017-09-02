@@ -50,7 +50,18 @@ namespace GridDomain.EventSourcing.CommonDomain
             foreach (var apply in applyMethods)
             {
                 var applyMethod = apply.Method;
-                handlers.Add(apply.MessageType, m => applyMethod.Invoke(aggregate, new[] {m}));
+                handlers.Add(apply.MessageType,
+                    m =>
+                    {
+                        try
+                        {
+                            applyMethod.Invoke(aggregate, new[] {m});
+                        }
+                        catch (TargetInvocationException ex)
+                        {
+                            throw ex.InnerException;
+                        }
+                    });
             }
         }
 

@@ -49,12 +49,10 @@ namespace GridDomain.Node.Actors.CommandPipe
 
         private static IMessageMetadataEnvelop CreateMessageMetadataEnvelop(object message, IMessageMetadata metadata)
         {
-            var @event = message as DomainEvent;
-            if (@event != null)
+            if(message is DomainEvent @event)
                 return new MessageMetadataEnvelop<DomainEvent>(@event, metadata);
 
-            var fault = message as IFault;
-            if (fault != null)
+            if(message is IFault fault)
                 return new MessageMetadataEnvelop<IFault>(fault, metadata);
 
             return new MessageMetadataEnvelop<object>(message, metadata);

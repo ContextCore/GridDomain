@@ -4,6 +4,10 @@ namespace GridDomain.ProcessManagers.Creation
 {
     public class CannotFindFactoryForProcessManagerCreation : Exception
     {
+        public CannotFindFactoryForProcessManagerCreation()
+        {
+            
+        }
         public CannotFindFactoryForProcessManagerCreation(Type process, object msg)
         {
             Process = process;

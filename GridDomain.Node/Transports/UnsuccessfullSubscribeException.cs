@@ -5,6 +5,11 @@ namespace GridDomain.Node.Transports
 {
     public class UnsuccessfullSubscribeException : Exception
     {
+        public UnsuccessfullSubscribeException()
+        {
+            
+        }
+
         public UnsuccessfullSubscribeException(Type messageType, IActorRef actor)
         {
             MessageType = messageType;

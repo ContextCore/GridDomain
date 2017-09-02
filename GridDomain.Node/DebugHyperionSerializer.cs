@@ -17,11 +17,6 @@ namespace GridDomain.Node {
             catch 
             {
                 system.Log.Error($"Cant deserialize {type} with wire");
-                //if (type == typeof(Akka.Actor.Status.Failure))
-                //{
-                //    system.Log.Error($"Cant deserialize failure with wire: ");
-                //
-                //}
                 throw;
             }
         }
@@ -30,7 +25,7 @@ namespace GridDomain.Node {
         {
             try
             {
-                system.Log.Warning("Serializing " + obj.ToString());
+                //system.Log.Warning("Serializing " + obj.ToString());
                 return base.ToBinary(obj);
 
             }

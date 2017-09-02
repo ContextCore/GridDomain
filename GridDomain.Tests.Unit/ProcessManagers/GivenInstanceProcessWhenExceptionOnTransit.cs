@@ -44,7 +44,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             Assert.IsAssignableFrom<ProcessTransitionException>(exception);
             //Fault_should_have_process_as_producer()
             Assert.Equal(typeof(ProcessManager<SoftwareProgrammingState>), fault.Processor);
-            Assert.True(exception.StackTrace.Contains("Process"));
+
+            Assert.True(exception.StackTrace == null || exception.StackTrace.Contains("Process"));
+             
             //Fault_should_contains_exception_from_process()
             var innerException = exception.InnerException.UnwrapSingle();
             Assert.IsAssignableFrom<EventExecutionException>(innerException);

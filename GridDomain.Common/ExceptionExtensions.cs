@@ -13,6 +13,13 @@ namespace GridDomain.Common
             if (aggregateException.InnerExceptions.Count > 1)
                 return aggregateException;
 
+            if(aggregateException.InnerExceptions.Count == 0)
+            {
+                //for cases when inner exceptions were lost due to hyperion serializer
+                return aggregateException.InnerException ?? aggregateException;
+            }
+
+
             return aggregateException.InnerExceptions.First().UnwrapSingle();
         }
 

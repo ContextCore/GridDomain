@@ -5,6 +5,10 @@ namespace GridDomain.Node.AkkaMessaging
 {
     internal class InvalidHandlerType : Exception
     {
+        public InvalidHandlerType()
+        {
+            
+        }
         public InvalidHandlerType(Type handlerType, Type messageType)
             : base($"Handler {handlerType} should implement {typeof(IHandler<>).MakeGenericType(messageType)}")
         {
