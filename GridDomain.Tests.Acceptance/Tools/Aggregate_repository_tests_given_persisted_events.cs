@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
@@ -20,8 +21,8 @@ namespace GridDomain.Tests.Acceptance.Tools
         private static readonly string AkkaWriteDbConnectionString =
             AutoTestAkkaConfiguration.Persistence.JournalConnectionString;
 
-        public static readonly object[] EventRepositories =
-        {
+        public static readonly IEnumerable<object[]> EventRepositories =
+        new []{
             new object[]
             {
                 ActorSystemJournalRepository.New(
