@@ -38,14 +38,12 @@ namespace GridDomain.Tests.Common
         protected void CheckAllChildrenOf<T>(ObjectDeserializationChecker objectDeserializationChecker, params Assembly[] assembly)
         {
             var allTypes =
-                assembly.SelectMany(a => a.GetTypes())
-                        .Where(
-                               t =>
-                                   typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface && !t.IsGenericTypeDefinition
-                                   && t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
+                assembly.SelectMany(a => a.GetTypes()).Select(t => t.GetTypeInfo())
+                        .Where(tInfo => typeof(T).GetTypeInfo().IsAssignableFrom(tInfo) && tInfo.IsClass && !tInfo.IsAbstract && !tInfo.IsInterface && !tInfo.IsGenericTypeDefinition
+                                   && tInfo.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
                         .Distinct();
 
-            CheckAll<T>(objectDeserializationChecker, allTypes.ToArray());
+            CheckAll<T>(objectDeserializationChecker, allTypes.Select(t => t.GetType()).ToArray());
         }
 
 
