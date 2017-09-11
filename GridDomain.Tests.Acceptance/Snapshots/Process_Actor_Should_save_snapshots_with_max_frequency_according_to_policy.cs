@@ -101,7 +101,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                 new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //Snapshot_should_be_saved_one_time
-            Assert.Equal(1, snapshots.Length);
+            Assert.Single(snapshots);
             //Restored_process_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == processId));
             //Snapshot_should_have_parameters_from_first_event = created event

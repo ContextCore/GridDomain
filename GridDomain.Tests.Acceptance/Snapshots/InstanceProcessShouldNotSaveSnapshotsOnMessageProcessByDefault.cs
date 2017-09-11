@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                     new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(
                                                                                                                                               startEvent.ProcessId);
             //Snapshot_should_be_saved_one_time()
-            Assert.Equal(0, snapshots.Length);
+            Assert.Empty(snapshots);
         }
     }
 }

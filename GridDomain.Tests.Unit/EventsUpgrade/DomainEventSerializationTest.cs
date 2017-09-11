@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             var serializedString = SerializedToString(evt);
 
             var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent_V1)).ToString();
-            Assert.True(serializedString.Contains(expectedTypeName));
+            Assert.Contains(expectedTypeName, serializedString);
         }
 
         //latest version of event, has version 2
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             var serializedString = SerializedToString(evt);
 
             var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent), 2).ToString();
-            Assert.True(serializedString.Contains(expectedTypeName));
+            Assert.Contains(expectedTypeName, serializedString);
         }
     }
 }

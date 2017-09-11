@@ -19,6 +19,3 @@ function replace ($source,$dest,$pattern) {
         } 
     }
 }
-
-$dest = $Version
-replace -source "1.0.0-alfa" -dest $dest -pattern "Version"

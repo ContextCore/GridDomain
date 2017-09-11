@@ -192,6 +192,7 @@
     <Compile Include="CommandExecutionPerfFixtureSql.cs" />
     <Compile Include="CommandExecutionWithProjectionPerfTestSql.cs" />
     <Compile Include="CommandPlan.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="INodeScenario.cs" />
     <Compile Include="InsertOptimazedBulkConfiguration.cs" />

@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                     new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
 
             //Snapshots_should_be_saved_one_time()
-            Assert.Equal(0, snapshots.Length);
+            Assert.Empty(snapshots);
         }
     }
 }
