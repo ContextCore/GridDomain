@@ -9,8 +9,7 @@ using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-
-using GridDomain.Node.Transports;
+using GridDomain.Transport;
 using Serilog;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting

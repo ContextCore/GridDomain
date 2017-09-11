@@ -11,7 +11,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Transports;
+using GridDomain.Transport;
 using Serilog;
 
 namespace GridDomain.Node

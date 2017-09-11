@@ -541,6 +541,10 @@
       <Project>{52d64e51-e1d5-45f6-8c2a-e436c0a03ed3}</Project>
       <Name>GridDomain.Tools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Transport\GridDomain.Transport.csproj">
+      <Project>{ad7b439c-51dd-49d0-aec3-cb6d1b998503}</Project>
+      <Name>GridDomain.Transport</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

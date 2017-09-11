@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Akka.Actor;
 using Akka.DI.AutoFac;
 using Akka.DI.Core;
@@ -15,8 +16,10 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
-using GridDomain.Node.Transports;
-using ActorTransportProxy = GridDomain.Node.Transports.Remote.ActorTransportProxy;
+using GridDomain.Transport.Remote;
+using GridDomain.Transport;
+using GridDomain.Transport.Extension;
+using ICommand = GridDomain.CQRS.ICommand;
 
 namespace GridDomain.Node
 {
@@ -79,7 +82,10 @@ namespace GridDomain.Node
 
             System = Settings.ActorSystemFactory.Invoke();
             System.RegisterOnTermination(OnSystemTermination);
-            Transport = new LocalAkkaEventBusTransport(System);
+
+            System.InitLocalTransportExtension();
+            Transport = System.GetTransport();
+
             _containerBuilder.Register(new GridNodeContainerConfiguration(Transport, Settings.Log));
             _waiterFactory = new MessageWaiterFactory(System, Transport, Settings.DefaultTimeout);
 
@@ -88,7 +94,7 @@ namespace GridDomain.Node
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
             _containerBuilder.Register(Settings.ContainerConfiguration);
 
-            ActorTransportProxy = System.ActorOf(Props.Create(() => new ActorTransportProxy(Transport)), nameof(ActorTransportProxy));
+            ActorTransportProxy = System.ActorOf(Props.Create(() => new LocalTransportProxyActor()), nameof(ActorTransportProxy));
 
             //var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
             //var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();

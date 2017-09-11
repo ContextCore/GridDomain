@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.Transports.Remote
+namespace GridDomain.Transport.Remote
 {
     public class Publish
     {

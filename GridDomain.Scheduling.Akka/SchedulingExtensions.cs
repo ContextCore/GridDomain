@@ -27,7 +27,7 @@ namespace GridDomain.Scheduling.Akka {
             var container = schedulingContainer.Build();
 
             ext.Scheduler = container.Resolve<IScheduler>();
-            ext.SchedulingActor = system.ActorOf(Props.Create(() => new SchedulingActor(ext.Scheduler, publisher)), nameof(SchedulingActor));
+            ext.SchedulingActor = system.ActorOf(Props.Create(() => new SchedulingActor()), nameof(SchedulingActor));
 
             system.RegisterOnTermination(() =>
                                          {

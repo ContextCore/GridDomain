@@ -11,7 +11,6 @@ using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.Transports.Remote;
 
 namespace GridDomain.Node.Actors.PersistentHub
 {

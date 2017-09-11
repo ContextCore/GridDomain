@@ -1,12 +1,13 @@
 using System.Linq;
 using Akka.Actor;
 
-namespace GridDomain.Node.Transports.Remote
+namespace GridDomain.Transport.Remote
 {
-    public class ActorTransportProxy : ReceiveActor
+    public class LocalTransportProxyActor : ReceiveActor
     {
-        public ActorTransportProxy(IActorTransport localTransport)
+        public LocalTransportProxyActor()
         {
+            var localTransport = new LocalAkkaEventBusTransport(Context.System);
             Receive<Publish>(p =>
                              {
                                  localTransport.Publish(p.Msg);

@@ -421,6 +421,10 @@
       <Project>{99763b95-220b-46aa-9155-84e3c1ad6bb2}</Project>
       <Name>GridDomain.Tools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Transport\GridDomain.Transport.csproj">
+      <Project>{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}</Project>
+      <Name>GridDomain.Transport</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

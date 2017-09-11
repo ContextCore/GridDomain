@@ -1,7 +1,6 @@
 ﻿using GridDomain.Common;
-using GridDomain.Configuration.MessageRouting;
 
-namespace GridDomain.Node.Transports
+namespace GridDomain.Transport
 {
     public interface IActorTransport : IPublisher,
                                        IActorSubscriber {}

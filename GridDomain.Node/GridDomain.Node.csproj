@@ -37,6 +37,7 @@
     <ProjectReference Include="..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj" />
     <ProjectReference Include="..\GridDomain.Scheduling.Akka\GridDomain.Scheduling.Akka.csproj" />
     <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj" />
+    <ProjectReference Include="..\GridDomain.Transport\GridDomain.Transport.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">

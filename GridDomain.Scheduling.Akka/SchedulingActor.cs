@@ -9,6 +9,8 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz;
 using Quartz;
 using IScheduler = Quartz.IScheduler;
+using GridDomain.Transport;
+using GridDomain.Transport.Extension;
 
 namespace GridDomain.Scheduling.Akka
 {
@@ -19,11 +21,11 @@ namespace GridDomain.Scheduling.Akka
         private readonly IScheduler _scheduler;
         private readonly IPublisher _publisher;
 
-        public SchedulingActor(IScheduler scheduler, IPublisher publisher)
+        public SchedulingActor()
         {
-            _publisher = publisher;
+            _publisher = Context.System.GetTransport();
             _logger.Debug("Scheduling actor started at path {Path}", Self.Path);
-            _scheduler = scheduler;
+            _scheduler = Context.System.GetExtension<SchedulingExtension>().Scheduler;
             ReceiveAsync<ScheduleCommandExecution>(message => Schedule(message));
             Receive<Unschedule>(message => Unschedule(message));
         }

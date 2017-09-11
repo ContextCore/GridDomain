@@ -3,7 +3,7 @@ using System.Linq;
 using Akka.Actor;
 using GridDomain.Common;
 
-namespace GridDomain.Node.Transports.Remote
+namespace GridDomain.Transport.Remote
 {
     public class RemoteAkkaEventBusTransport : IActorTransport
     {

@@ -9,7 +9,6 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Transports.Remote;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Acceptance.EventsUpgrade;
@@ -23,6 +22,7 @@ using GridDomain.Tools.Repositories.AggregateRepositories;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
+using GridDomain.Transport.Remote;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {

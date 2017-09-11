@@ -5,7 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Transports;
+using GridDomain.Transport;
 
 namespace GridDomain.Node
 {

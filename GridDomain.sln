@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Acceptance
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Stress", "GridDomain.Tests.Stress\GridDomain.Tests.Stress.csproj", "{8F10408A-B6C5-4F76-9378-D08A528DF885}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Transport", "GridDomain.Transport\GridDomain.Transport.csproj", "{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{8F10408A-B6C5-4F76-9378-D08A528DF885}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F10408A-B6C5-4F76-9378-D08A528DF885}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F10408A-B6C5-4F76-9378-D08A528DF885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

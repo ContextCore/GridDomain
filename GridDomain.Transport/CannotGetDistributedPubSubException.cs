@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.Transports
+namespace GridDomain.Transport
 {
     public class CannotGetDistributedPubSubException : Exception
     {

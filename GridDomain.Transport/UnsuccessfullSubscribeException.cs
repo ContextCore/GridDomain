@@ -1,7 +1,7 @@
 using System;
 using Akka.Actor;
 
-namespace GridDomain.Node.Transports
+namespace GridDomain.Transport
 {
     public class UnsuccessfullSubscribeException : Exception
     {

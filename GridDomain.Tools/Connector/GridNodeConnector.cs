@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-
 using GridDomain.Node;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Serializers;
-using GridDomain.Node.Transports;
-using GridDomain.Node.Transports.Remote;
+using GridDomain.Transport;
+using GridDomain.Transport.Remote;
 
 namespace GridDomain.Tools.Connector
 {
@@ -76,7 +75,7 @@ namespace GridDomain.Tools.Connector
             _consoleSystem = _conf.CreateInMemorySystem();
             DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
 
-            var eventBusForwarder = await GetActor(GetSelection(nameof(ActorTransportProxy)));
+            var eventBusForwarder = await GetActor(GetSelection("ActorTransportProxy"));
 
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
                                                                   eventBusForwarder,

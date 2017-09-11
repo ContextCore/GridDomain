@@ -1,7 +1,7 @@
 using System;
 using Akka.Actor;
 
-namespace GridDomain.Node.Transports.Remote
+namespace GridDomain.Transport.Remote
 {
     public class Subscribe
     {

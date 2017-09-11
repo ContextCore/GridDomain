@@ -11,7 +11,7 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
-using SubscribeAck = GridDomain.Node.Transports.Remote.SubscribeAck;
+using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {

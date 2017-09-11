@@ -283,6 +283,10 @@
       <Project>{99763b95-220b-46aa-9155-84e3c1ad6bb2}</Project>
       <Name>GridDomain.Tools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Transport\GridDomain.Transport.csproj">
+      <Project>{ad7b439c-51dd-49d0-aec3-cb6d1b998503}</Project>
+      <Name>GridDomain.Transport</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

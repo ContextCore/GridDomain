@@ -2,7 +2,7 @@ using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Transports;
+using GridDomain.Transport;
 using Serilog;
 
 namespace GridDomain.Node {

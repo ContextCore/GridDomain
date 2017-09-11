@@ -4,7 +4,7 @@ using GridDomain.Configuration;
 using GridDomain.Node;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Configuration.Persistence;
-using GridDomain.Node.Transports;
+using GridDomain.Transport;
 using Serilog;
 using Xunit.Abstractions;
 

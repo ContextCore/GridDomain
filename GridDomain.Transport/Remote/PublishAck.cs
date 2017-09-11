@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Transports.Remote
+namespace GridDomain.Transport.Remote
 {
     public class PublishAck
     {
