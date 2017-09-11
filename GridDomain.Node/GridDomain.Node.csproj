@@ -21,6 +21,7 @@
     <PackageReference Include="Akka.DI.Autofac" Version="1.3.0" />
     <PackageReference Include="Akka.DI.Core" Version="1.3.1" />
     <PackageReference Include="Akka.Persistence" Version="1.3.1" />
+    <PackageReference Include="Akka.Persistence.SqlServer" Version="1.1.1.243-beta" />
     <PackageReference Include="Akka.Remote" Version="1.3.1" />
     <PackageReference Include="Akka.Serialization.Hyperion" Version="1.3.1-beta52" />
     <PackageReference Include="Autofac" Version="4.6.1" />
