@@ -1,7 +1,0 @@
-﻿
-
- As User I can create orders
- As User i have account
- As User I have list of my orders 
- Order can be purchased after paying its cost 
- Goods can be added to order 
