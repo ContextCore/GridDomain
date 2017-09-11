@@ -1,7 +1,4 @@
-﻿param(
-$Version=$(throw "Version should be in script params")
-)
-filter grep($keyword) { if ( ($_ | Out-String) -match $keyword) {  
+﻿filter grep($keyword) { if ( ($_ | Out-String) -match $keyword) {  
     $_ }
 }
 
