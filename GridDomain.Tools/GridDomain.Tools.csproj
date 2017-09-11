@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
@@ -13,6 +13,8 @@
     <RepositoryUrl>https://github.com/andreyleskov/GridDomain/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>CQRS ES DDD Akka</PackageTags>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
