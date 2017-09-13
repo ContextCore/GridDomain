@@ -16,6 +16,7 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Unit;
+using GridDomain.Transport.Extension;
 using Moq;
 using Serilog;
 using Xunit;
@@ -35,6 +36,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             containerBuilder.RegisterInstance(publisherMoq.Object);
 
             Sys.AddDependencyResolver(new AutoFacDependencyResolver(containerBuilder.Build(), Sys));
+            Sys.InitLocalTransportExtension();
             var ext = Sys.InitSchedulingExtension(new InMemoryQuartzConfig(), log, new Mock<IPublisher>().Object, new Mock<ICommandExecutor>().Object);
             _scheduler = ext.SchedulingActor;
             _quartzScheduler = ext.Scheduler;
