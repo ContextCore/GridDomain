@@ -2,7 +2,7 @@
 
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <Description>Framework for distributed business applications development using DDD\ES architecture scaled by CQRS and actor model.</Description>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>
