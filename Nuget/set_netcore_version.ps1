@@ -1,28 +1,10 @@
-function set_netcore_version ($buildNum){
-$configs = Get-ChildItem .\ -Recurse "*.csproj"
-foreach ($projectFile in $configs) {
-Write-Host Processing $projectFile
-$content = [IO.File]::ReadAllText($projectFile)
-
-$regex = new-object System.Text.RegularExpressions.Regex ('()([\d]+.[\d]+.[\d]+)(.[\d]+)(<\/Version>)', 
-         [System.Text.RegularExpressions.RegexOptions]::MultiLine)
-
-$version = $null
-$match = $regex.Match($content)
-if($match.Success) {
-    # from "1.0.0.0" this will extract "1.0.0"
-    $version = $match.groups[2].value
+function set_netcore_version ($project, $packageVersion, $fileVersion, $assemblyVersion) {
+    $content = [IO.File]::ReadAllText($project)
+    $replaced = $content -replace '<Version>1.0.0</Version>',"<Version>$packageVersion</Version>"
+    $replaced = $replaced -replace '<AssemblyVersion>1.0.0.0</AssemblyVersion>',"<AssemblyVersion>$fileVersion</AssemblyVersion>"
+    $replaced = $replaced -replace '<FileVersion>1.0.0.0</FileVersion>',"<FileVersion>$assemblyVersion</FileVersion>"
+    [IO.File]::WriteAllText($project, $replaced)
+    Write-Host set build version $buildNum in $project 
 }
 
-# suffix build number onto $version. eg "1.0.0.15"
-$version = "$version.$buildNum"
-
-# update "1.0.0.0" to "$version"
-$content = $regex.Replace($content, '${1}' + $version + '${4}')
-
-# update csproj file
-[IO.File]::WriteAllText($projectFile, $content)
-}
-# update AppVeyor build
-#Update-AppveyorBuild -Version $version
-}
+ #set_netcore_version "P:\GridDomain\GridDomain.CQRS\GridDomain.CQRS.csproj" "1.1.1" "1.1.1.0" "1.1.1.0"
