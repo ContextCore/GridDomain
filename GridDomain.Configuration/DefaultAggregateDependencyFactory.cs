@@ -24,6 +24,7 @@ namespace GridDomain.Configuration {
         }
     }
 
+
     public class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
     {
         public Func<IMessageRouteMap> MapProducer { protected get; set; }
@@ -39,6 +40,11 @@ namespace GridDomain.Configuration {
             SnapshotPolicyCreator = () => new NoSnapshotsPersistencePolicy();
             AggregateFactoryCreator = () => new AggregateFactory();
             RecycleConfigurationCreator = () => new DefaultPersistentChildsRecycleConfiguration();
+        }
+
+        public static DefaultAggregateDependencyFactory<TCommandAggregate> ForCommandAggregate<TCommandAggregate>(Func<IMessageRouteMap> mapProducer = null) where TCommandAggregate : TAggregate
+        {
+            return new DefaultAggregateDependencyFactory<TCommandAggregate>();
         }
 
         public virtual IAggregateCommandsHandler<TAggregate> CreateCommandsHandler()

@@ -57,7 +57,7 @@ namespace GridDomain.EventSourcing
         /// </summary>
         /// <typeparam name="TCommand"></typeparam>
         /// <param name="commandExecutor"></param>
-        protected void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
+        protected internal void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
         {
             AddCommandExecution<TCommand>(async (c, a) =>
                                           {
@@ -71,7 +71,7 @@ namespace GridDomain.EventSourcing
         /// </summary>
         /// <typeparam name="TCommand"></typeparam>
         /// <param name="commandExecutor"></param>
-        protected void Map<TCommand>(Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+        protected internal void Map<TCommand>(Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             AddCommandExecution<TCommand>((c, a) =>
                                           {
@@ -85,7 +85,7 @@ namespace GridDomain.EventSourcing
         /// </summary>
         /// <typeparam name="TCommand"></typeparam>
         /// <param name="commandExecutor"></param>
-        protected void Map<TCommand>(Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
+        protected internal void Map<TCommand>(Func<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
             AddCommandExecution<TCommand>((c, a) => Task.FromResult(commandExecutor(c)));
         }

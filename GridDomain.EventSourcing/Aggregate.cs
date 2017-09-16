@@ -4,11 +4,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
-    public abstract class Aggregate : IAggregate,
+    public class CommandAggregate : Aggregate
+    {
+        protected CommandAggregate(Guid id) : base(id) { }
+        protected CommandAggregate(IRouteEvents handler) : base(handler) { }
+        public IAggregateCommandsHandler<CommandAggregate> CommandsHandler => _commandsHandler;
+        readonly AggregateCommandsHandler<CommandAggregate> _commandsHandler = new AggregateCommandsHandler<CommandAggregate>();
+
+        protected void Command<T>(Action<T> syncCommandAction) where T : ICommand
+        {
+            _commandsHandler.Map<T>(((c, a) => syncCommandAction(c)));
+        }
+        protected void Command<T>(Func<T,Task> asyncCommandAction) where T : ICommand
+        {
+            _commandsHandler.Map<T>(((c, a) => asyncCommandAction(c)));
+
+        }
+        protected void Command<T>(Func<T, CommandAggregate> aggregateCreator) where T : ICommand
+        {
+            _commandsHandler.Map<T>(aggregateCreator);
+
+        }
+    } 
+
+
+    public class Aggregate : IAggregate,
                                       IMemento,
                                       IEquatable<IAggregate>
     {

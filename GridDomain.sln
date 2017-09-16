@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26711.1
+VisualStudioVersion = 15.0.26906.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.CQRS", "GridDomain.CQRS\GridDomain.CQRS.csproj", "{666BBC35-B3D8-403B-B907-BA0ED62F3F09}"
 EndProject
@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tools", "GridDom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NBenchTest", "NBenchTest\NBenchTest.csproj", "{77606F6D-FAB0-40B6-A221-43C1119418EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Common", "GridDomain.Tests.Common\GridDomain.Tests.Common.csproj", "{AED1BC61-D13E-454B-A07B-B443A9097298}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tests.Common", "GridDomain.Tests.Common\GridDomain.Tests.Common.csproj", "{AED1BC61-D13E-454B-A07B-B443A9097298}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Unit", "GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj", "{46CC4BE2-93BE-4807-9B1A-7A10DFEA29AF}"
 EndProject
@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Acceptance
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Stress", "GridDomain.Tests.Stress\GridDomain.Tests.Stress.csproj", "{8F10408A-B6C5-4F76-9378-D08A528DF885}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Transport", "GridDomain.Transport\GridDomain.Transport.csproj", "{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Transport", "GridDomain.Transport\GridDomain.Transport.csproj", "{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
