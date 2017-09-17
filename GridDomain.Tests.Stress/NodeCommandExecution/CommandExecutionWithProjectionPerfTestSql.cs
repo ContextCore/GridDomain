@@ -62,7 +62,7 @@ namespace GridDomain.Tests.Stress
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions with projections in sql",
-                       NumberOfIterations = 10, RunMode = RunMode.Iterations,
+                       NumberOfIterations = 3, RunMode = RunMode.Iterations,
                        RunTimeMilliseconds = 10000, TestMode = TestMode.Test)]
         //MAX: 400, need several launches to warm up sql server
         // 50 as test is run on 'slow' appveyor

@@ -35,8 +35,6 @@ namespace GridDomain.Tests.Stress
             _testOutputHelper = output;
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
-
-           
         }
 
         [PerfSetup]
@@ -57,7 +55,7 @@ namespace GridDomain.Tests.Stress
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions without projections in memory",
-                       NumberOfIterations = 5, RunMode = RunMode.Iterations,
+                       NumberOfIterations = 3, RunMode = RunMode.Iterations,
                        RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]

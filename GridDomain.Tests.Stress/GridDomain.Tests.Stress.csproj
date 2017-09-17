@@ -194,11 +194,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateCommandsHandlerExecution\AggregateCommandsHandlerPerfTest.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
-    <Compile Include="BalloonsCreationAndChangeScenarioProjection.cs" />
-    <Compile Include="CommandExecutionPerfFixtureInMem.cs" />
-    <Compile Include="CommandExecutionPerfFixtureSql.cs" />
-    <Compile Include="CommandExecutionWithProjectionPerfTestSql.cs" />
+    <Compile Include="NodeCommandExecution\BalloonsCreationAndChangeScenarioProjection.cs" />
+    <Compile Include="NodeCommandExecution\CommandExecutionPerfFixtureInMem.cs" />
+    <Compile Include="NodeCommandExecution\CommandExecutionPerfFixtureSql.cs" />
+    <Compile Include="NodeCommandExecution\CommandExecutionWithProjectionPerfTestSql.cs" />
     <Compile Include="CommandPlan.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GridNodeExtensions.cs" />

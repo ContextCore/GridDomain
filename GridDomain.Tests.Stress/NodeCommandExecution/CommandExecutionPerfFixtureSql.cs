@@ -55,7 +55,7 @@ namespace GridDomain.Tests.Stress
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions without projections with sql server",
-            NumberOfIterations = 5, RunMode = RunMode.Iterations,
+            NumberOfIterations = 3, RunMode = RunMode.Iterations,
             RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
         [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 200)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
