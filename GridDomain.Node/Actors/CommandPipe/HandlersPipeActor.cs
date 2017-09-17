@@ -30,30 +30,25 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                            {
                                                                Log.Debug("Received messages to project. {project}",envelop);
                                                                var project = envelop.Message;
-                                                               var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m, envelop.Metadata))
-                                                                                     .ToArray();
 
-                                                               var chain = envelops.Select(e => {
-                                                                                             //TODO: replace with direct metadata publish
-                                                                                             return handlersCatalog.ProcessMessage(e)
-                                                                                                                   .ContinueWith(t =>
-                                                                                                                                 {
-                                                                                                                                        publisher.Publish(e.Message, envelop.Metadata);
-                                                                                                                                 });
-                                                                                               
-                                                                                           }).ToChain();
-
-                                                               return chain.ContinueWith(t =>
-                                                                                         {
-
-                                                                                             foreach(var env in envelops)
-                                                                                                 processManagerPipeActor.Tell(env);
-                                                                                             var completed = new AllHandlersCompleted(project.ProjectId);
-                                                                                             Log.Debug("Pack projected. {project}", completed);
-                                                                                             return completed;
-
-                                                                                         })
-                                                                           .PipeTo(Sender);
+                                                               return project.Messages.Select(m => CreateMessageMetadataEnvelop(m, envelop.Metadata))
+                                                                                      .Select(e => {
+                                                                                                  //TODO: replace with direct metadata publish
+                                                                                                  return handlersCatalog.ProcessMessage(e)
+                                                                                                                        .ContinueWith(t =>
+                                                                                                                                      {
+                                                                                                                                          publisher.Publish(e.Message, envelop.Metadata);
+                                                                                                                                          processManagerPipeActor.Tell(e);
+                                                                                                                                      });
+                                                                                                        
+                                                                                              })
+                                                                                      .ToChain()
+                                                                                      .ContinueWith(t =>
+                                                                                        {
+                                                                                            Log.Debug("Pack projected. {project}", project);
+                                                                                            return AllHandlersCompleted.Instance;
+                                                                                        })
+                                                                                      .PipeTo(Sender);
                                                            });
         }
 

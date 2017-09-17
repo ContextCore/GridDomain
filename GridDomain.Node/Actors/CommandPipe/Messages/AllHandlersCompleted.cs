@@ -4,11 +4,9 @@ namespace GridDomain.Node.Actors.CommandPipe.Messages
 {
     public class AllHandlersCompleted
     {
-        public AllHandlersCompleted(Guid projectId)
+        private AllHandlersCompleted()
         {
-            ProjectId = projectId;
         }
-
-        public Guid ProjectId { get; }
+        public static AllHandlersCompleted Instance { get; } = new AllHandlersCompleted();
     }
 }

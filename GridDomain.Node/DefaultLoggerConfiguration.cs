@@ -40,7 +40,6 @@ namespace GridDomain.Node
             Destructure.ByTransforming<CreateNewProcess>(r => new { Event = (r.Message.Message as IHaveId)?.Id ?? r.Message.Message, r.EnforcedId, r.Message.Metadata });
             Destructure.ByTransforming<CommandCompleted>(r => new { r.CommandId });
             Destructure.ByTransforming<IMessageMetadataEnvelop<Project>>(r => new { r.Message.ProjectId, ProjectIds = r.Message.Messages.Select(m => (m as IHaveId)?.Id ?? m) });
-            Destructure.ByTransforming<AllHandlersCompleted>(r => new { r.ProjectId });
         }
     }
 
