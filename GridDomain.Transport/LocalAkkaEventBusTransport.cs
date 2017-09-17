@@ -35,13 +35,11 @@ namespace GridDomain.Transport
 
         public void Publish(object msg)
         {
-            // _log.Debug("Publishing {Message} to transport", msg);
-            Publish(msg, MessageMetadata.Empty);
+            _bus.Publish(msg);
         }
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            //   _log.Debug("Publishing {Message} to transport with metadata", msg);
             var messageMetadataEnvelop = MessageMetadataEnvelop.NewTyped(msg, metadata);
             _bus.Publish(messageMetadataEnvelop);
         }

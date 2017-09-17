@@ -183,7 +183,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
         private void Project(object evt, IMessageMetadata commandMetadata)
         {
-            _customHandlersActor.Tell(new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata));
+            _customHandlersActor.Tell(MessageMetadataEnvelop.NewTyped(evt, commandMetadata));
         }
     }
 }

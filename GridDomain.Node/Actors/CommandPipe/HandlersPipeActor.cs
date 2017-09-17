@@ -26,27 +26,16 @@ namespace GridDomain.Node.Actors.CommandPipe
         public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef processManagerPipeActor)
         {
             var publisher = Context.System.GetTransport();
-            ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
+            ReceiveAsync<IMessageMetadataEnvelop>(envelop =>
                                                            {
-                                                               Log.Debug("Received messages to project. {project}",envelop);
-                                                               var project = envelop.Message;
-
-                                                               return project.Messages.Select(m => CreateMessageMetadataEnvelop(m, envelop.Metadata))
-                                                                                      .Select(e => {
-                                                                                                  //TODO: replace with direct metadata publish
-                                                                                                  return handlersCatalog.ProcessMessage(e)
-                                                                                                                        .ContinueWith(t =>
-                                                                                                                                      {
-                                                                                                                                          processManagerPipeActor.Tell(e);
-                                                                                                                                          publisher.Publish(e.Message, envelop.Metadata);
-                                                                                                                                      });
-                                                                                                        
-                                                                                              })
-                                                                                      .ToChain()
-                                                                                      .ContinueWith(t =>
-                                                                                        {
-                                                                                            Log.Debug("Pack projected. {project}", project);
-                                                                                            return AllHandlersCompleted.Instance;
+                                                                 Log.Debug("Received messages to project. {project}",envelop);
+                                                               
+                                                                 return handlersCatalog.ProcessMessage(envelop)
+                                                                                       .ContinueWith(t =>
+                                                                                                     {
+                                                                                                         processManagerPipeActor.Tell(envelop);
+                                                                                                         publisher.Publish(envelop);
+                                                                                                         return AllHandlersCompleted.Instance;
                                                                                         })
                                                                                       .PipeTo(Sender);
                                                            });

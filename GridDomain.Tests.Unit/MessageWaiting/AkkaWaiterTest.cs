@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         protected void Publish(params object[] messages)
         {
             foreach (var msg in messages)
-                _transport.Publish(msg);
+                _transport.Publish(msg, MessageMetadata.Empty);
         }
 
         protected async Task ExpectMsg<T>(T msg, Predicate<T> filter = null)
