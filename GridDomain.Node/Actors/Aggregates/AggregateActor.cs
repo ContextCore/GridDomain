@@ -51,7 +51,7 @@ namespace GridDomain.Node.Actors.Aggregates
         protected virtual void AwaitingCommandBehavior()
         {
             DefaultBehavior();
-
+            
             Command<IMessageMetadataEnvelop<ICommand>>(m =>
                                                        {
                                                            var cmd = m.Message;
@@ -88,11 +88,10 @@ namespace GridDomain.Node.Actors.Aggregates
             var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
             
             //just for catching Failures on events persist
-            Command<IReadOnlyCollection<DomainEvent>>(e =>
+            Command<IReadOnlyCollection<DomainEvent>>(domainEvents =>
                                    {
 
                                        Monitor.Increment(nameof(Messages.PersistEventPack));
-                                       var domainEvents = e;
                                        ExecutionContext.PersistenceWaiter = Sender;
                                        if (!domainEvents.Any())
                                        {
@@ -103,8 +102,6 @@ namespace GridDomain.Node.Actors.Aggregates
                                        //dirty hack, but we know nobody will modify domain events before us 
                                        foreach (var evt in domainEvents)
                                            evt.ProcessId = ExecutionContext.Command.ProcessId;
-
-                                      // ExecutionContext.MessagesToProject = domainEvents;
 
                                        PersistAll(domainEvents,
                                                   persistedEvent =>
@@ -126,15 +123,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
                                                       NotifyPersistenceWatchers(persistedEvent);
                                                       SaveSnapshot(ExecutionContext.ProducedState, persistedEvent);
-
                                                       Project(persistedEvent, producedEventsMetadata);
-                                                      //.ContinueWith(t =>
-                                                      //              {
-                                                      //                  _publisher.Publish(persistedEvent, producedEventsMetadata);
-
-                                                      //                 // Log.Debug("Persisted event pack {@pack}. {@context}", e, ExecutionContext);
-
-                                                      //              });
                                                   });
                                    });
 
@@ -184,21 +173,17 @@ namespace GridDomain.Node.Actors.Aggregates
         private void PublishError(Exception exception)
         {
             var command = ExecutionContext.Command;
-            var commandMetadata = ExecutionContext.CommandMetadata;
-            var commandExecutionException = exception;
 
-            Log.Error(commandExecutionException, "An error occured while command execution. {@context}", ExecutionContext);
+            Log.Error(exception, "An error occured while command execution. {@context}", ExecutionContext);
 
-            var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
-            var fault = Fault.NewGeneric(command, commandExecutionException, command.ProcessId, typeof(TAggregate));
+            var producedFaultMetadata = ExecutionContext.CommandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
+            var fault = Fault.NewGeneric(command, exception, command.ProcessId, typeof(TAggregate));
             Project(fault, producedFaultMetadata);
-
         }
 
         private void Project(object evt, IMessageMetadata commandMetadata)
         {
-            var envelop = new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata);
-            _customHandlersActor.Tell(envelop);
+            _customHandlersActor.Tell(new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata));
         }
     }
 }
