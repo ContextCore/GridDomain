@@ -70,12 +70,13 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                                                   agr =>
                                                                                                   {
                                                                                                       ExecutionContext.ProducedState = (TAggregate) agr;
-                                                                                                      return self.Ask<EventsPersisted>(new PersistEventPack(agr.GetDomainEvents().ToArray()));
+                                                                                                      return self.Ask<EventsPersisted>(agr.GetDomainEvents());
                                                                                                   })
                                                                                     .ContinueWith(t =>
                                                                                                   {
                                                                                                       if (t.IsFaulted) throw t.Exception;
-                                                                                                      return CommandProducedEventsPersisted.Instance;
+                                                                                                      //return CommandProducedEventsPersisted.Instance;
+                                                                                                      return CommandExecuted.Instance;
                                                                                                   })
                                                                                     .PipeTo(Self);
                                                        });
@@ -86,11 +87,12 @@ namespace GridDomain.Node.Actors.Aggregates
             var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
             
             //just for catching Failures on events persist
-            Command<PersistEventPack>(e =>
+            Command<IReadOnlyCollection<DomainEvent>>(e =>
                                    {
 
                                        Monitor.Increment(nameof(Messages.PersistEventPack));
-                                       var domainEvents = e.Events;
+                                       var domainEvents = e;
+                                       var persistenceWaiter = Sender;
                                        if (!domainEvents.Any())
                                        {
                                            Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);
@@ -101,7 +103,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                        foreach (var evt in domainEvents)
                                            evt.ProcessId = ExecutionContext.Command.ProcessId;
 
-                                       ExecutionContext.MessagesToProject.AddRange(domainEvents);
+                                      // ExecutionContext.MessagesToProject = domainEvents;
 
                                        PersistAll(domainEvents,
                                                   persistedEvent =>
@@ -123,35 +125,24 @@ namespace GridDomain.Node.Actors.Aggregates
 
                                                       NotifyPersistenceWatchers(persistedEvent);
                                                       SaveSnapshot(ExecutionContext.ProducedState, persistedEvent);
-                                                      
-                                                      if (ExecutionContext.ProducedState.HasUncommitedEvents)
-                                                          return;
 
-                                                      Log.Debug("Persisted event pack {@pack}. {@context}",e, ExecutionContext);
+                                                      Project(persistedEvent, producedEventsMetadata)
+                                                     .ContinueWith(t =>
+                                                                   {
+                                                                       _publisher.Publish(persistedEvent, producedEventsMetadata);
+                                                                       if (ExecutionContext.ProducedState.HasUncommitedEvents)
+                                                                           return;
 
-                                                      Sender.Tell(EventsPersisted.Instance);
+                                                                       Log.Debug("Persisted event pack {@pack}. {@context}", e, ExecutionContext);
+
+                                                                       persistenceWaiter.Tell(EventsPersisted.Instance);
+                                                                   });
                                                   });
                                    });
             //aggregate raised an error during command execution
             Command<Status.Failure>(f => PublishError(f.Cause.UnwrapSingle())
                                         .ContinueWith(t => CommandExecuted.Instance)
                                         .PipeTo(Self));
-
-            Command<CommandProducedEventsPersisted>(newState =>
-                                             {
-                                                 Log.Debug("Persisted command produced state. {@context}",ExecutionContext);
-
-                                                 ExecutionContext.MessagesToProject.Select(e => Project(e, producedEventsMetadata)).
-                                                                  ToChain().
-                                                                  ContinueWith(t =>
-                                                                               {
-                                                                                   //Publish produced messages
-                                                                                   foreach (var e in ExecutionContext.MessagesToProject)
-                                                                                       _publisher.Publish(e, producedEventsMetadata);
-                                                                                   return CommandExecuted.Instance;
-                                                                               })
-                                                                  .PipeTo(Self);
-                                             });
 
             Command<CommandExecuted>(c =>
                                      {

@@ -14,7 +14,7 @@ namespace GridDomain.Node.Actors.Aggregates {
         public Aggregate ProducedState;
         public ICommand Command;
         public IMessageMetadata CommandMetadata;
-        public readonly List<object> MessagesToProject = new List<object>();
+        public List<DomainEvent> MessagesToProject;
         public IActorRef CommandSender;
 
         public void Clear()
@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.Aggregates {
             Command = null;
             CommandMetadata = null;
             CommandSender = null;
-            MessagesToProject.Clear();;
+            MessagesToProject?.Clear();;
         }
     }
 }
