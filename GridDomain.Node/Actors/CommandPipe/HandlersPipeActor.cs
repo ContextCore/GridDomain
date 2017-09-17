@@ -37,8 +37,8 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                                   return handlersCatalog.ProcessMessage(e)
                                                                                                                         .ContinueWith(t =>
                                                                                                                                       {
-                                                                                                                                          publisher.Publish(e.Message, envelop.Metadata);
                                                                                                                                           processManagerPipeActor.Tell(e);
+                                                                                                                                          publisher.Publish(e.Message, envelop.Metadata);
                                                                                                                                       });
                                                                                                         
                                                                                               })

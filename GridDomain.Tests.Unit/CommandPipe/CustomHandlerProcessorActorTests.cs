@@ -92,11 +92,12 @@ namespace GridDomain.Tests.Unit.CommandPipe
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonCreated);
+            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
+
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonTitleChanged);
             ExpectMsg<HandlerExecuted>(e => e.ProcessingMessage.Message is BalloonTitleChanged);
 
             //HandlersProcessActor should notify next step - process actor that work is done
-            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
@@ -174,10 +175,10 @@ namespace GridDomain.Tests.Unit.CommandPipe
             //async handler will last handler to receive all three messages, but will process them faster
             //maintaining initial order
             ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonCreated && e.Mark == fastHandler.Path.ToString(), TimeSpan.FromDays(1));
-            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonTitleChanged && e.Mark == fastHandler.Path.ToString(), TimeSpan.FromDays(1));
-            
-            //HandlersProcessActor should notify next step - process actor that work is done
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>(e => e.Message is BalloonCreated);
+
+            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonTitleChanged && e.Mark == fastHandler.Path.ToString(), TimeSpan.FromDays(1));
+            //HandlersProcessActor should notify next step - process actor that work is done
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>(e => e.Message is BalloonTitleChanged);
 
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
