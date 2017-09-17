@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0;net462</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <Description>Tools for mainating GridDomain based solutions.</Description>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>
