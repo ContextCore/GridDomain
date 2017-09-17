@@ -9,12 +9,36 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
+
+
+    public class CommandAggregateHandlerProxy<T> : IAggregateCommandsHandler<T> where T : CommandAggregate
+    {
+        private readonly CommandAggregate _aggregate;
+
+        public CommandAggregateHandlerProxy(CommandAggregate aggregate)
+        {
+            _aggregate = aggregate;
+        }
+
+        public Task ExecuteAsync(T aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
+        {
+            return _aggregate._commandsHandler.ExecuteAsync(aggregate, command, persistenceDelegate);
+        }
+
+        public IReadOnlyCollection<Type> RegisteredCommands => _aggregate.RegisteredCommands;
+        public Type AggregateType => _aggregate.AggregateType;
+    }
+
     public class CommandAggregate : Aggregate
     {
-        protected CommandAggregate(Guid id) : base(id) { }
+        protected CommandAggregate(Guid id) : base(id)
+        {
+            AggregateType = GetType();
+        }
+
         protected CommandAggregate(IRouteEvents handler) : base(handler) { }
-        public IAggregateCommandsHandler<CommandAggregate> CommandsHandler => _commandsHandler;
-        readonly AggregateCommandsHandler<CommandAggregate> _commandsHandler = new AggregateCommandsHandler<CommandAggregate>();
+        //TODO: replace with types cache to reduce memory and increase performace
+        internal readonly AggregateCommandsHandler<CommandAggregate> _commandsHandler = new AggregateCommandsHandler<CommandAggregate>();
 
         protected void Command<T>(Action<T> syncCommandAction) where T : ICommand
         {
@@ -28,8 +52,15 @@ namespace GridDomain.EventSourcing
         protected void Command<T>(Func<T, CommandAggregate> aggregateCreator) where T : ICommand
         {
             _commandsHandler.Map<T>(aggregateCreator);
-
         }
+
+        public Task ExecuteAsync(CommandAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
+        {
+            return _commandsHandler.ExecuteAsync(aggregate, command, persistenceDelegate);
+        }
+
+        public IReadOnlyCollection<Type> RegisteredCommands => _commandsHandler.RegisteredCommands;
+        public Type AggregateType { get; }
     } 
 
 

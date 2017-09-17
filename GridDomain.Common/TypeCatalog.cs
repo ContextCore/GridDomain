@@ -5,12 +5,12 @@ namespace GridDomain.Common
 {
     public class TypeCatalog<TData, TMessage> : ICatalog<TData, TMessage>
     {
+        //TODO: replace with fast match builder
         protected readonly IDictionary<Type, TData> Catalog = new Dictionary<Type, TData>();
 
         public virtual TData Get(TMessage message)
         {
-            TData processor;
-            Catalog.TryGetValue(message.GetType(), out processor);
+            Catalog.TryGetValue(message.GetType(), out var processor);
             return processor;
         }
 

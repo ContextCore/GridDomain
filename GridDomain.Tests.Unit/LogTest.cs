@@ -5,6 +5,7 @@ using Akka.Actor;
 using Akka.Event;
 using Akka.Persistence;
 using Akka.TestKit.Xunit2;
+using GridDomain.Node.Actors.Serilog;
 using GridDomain.Tests.Common;
 using NMoneys;
 using Serilog.Events;

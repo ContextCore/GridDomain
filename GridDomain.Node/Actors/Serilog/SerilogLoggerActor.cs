@@ -2,12 +2,10 @@
 using Akka.Actor;
 using Akka.Dispatch;
 using Akka.Event;
-using GridDomain.Node;
 using Serilog;
-using Serilog.Events;
 using LogEvent = Akka.Event.LogEvent;
 
-namespace GridDomain.Tests.Common
+namespace GridDomain.Node.Actors.Serilog
 {
    
     public class SerilogLoggerActor : ReceiveActor,

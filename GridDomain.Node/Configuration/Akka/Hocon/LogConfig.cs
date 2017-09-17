@@ -35,11 +35,11 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
         private readonly LogLevel _verbosity;
 
-        public LogConfig(LogLevel verbosity, bool includeConfig = true, Type logActorType = null)
+        public LogConfig(LogLevel verbosity, Type logActorType, bool includeConfig = true)
         {
             _verbosity = verbosity;
             _includeConfig = includeConfig;
-            _logActorType = logActorType;// ?? typeof(SerilogLogger);
+            _logActorType = logActorType;
         }
 
         public string Build()

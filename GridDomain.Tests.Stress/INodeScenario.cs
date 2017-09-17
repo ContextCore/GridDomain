@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.Node;
 
-namespace GridGomain.Tests.Stress
+namespace GridDomain.Tests.Stress
 {
     public interface INodeScenario {
         Task Execute(IGridDomainNode node, Action<CommandPlan> singlePlanExecutedCallback);

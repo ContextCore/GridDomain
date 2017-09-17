@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using GridDomain.Node;
 
-namespace GridGomain.Tests.Stress
+namespace GridDomain.Tests.Stress
 {
     public static class GridNodeExtensions
     {

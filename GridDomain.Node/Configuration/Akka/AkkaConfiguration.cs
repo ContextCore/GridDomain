@@ -1,5 +1,6 @@
 using System;
 using Akka.Event;
+using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.Configuration.Akka.Hocon;
 
 namespace GridDomain.Node.Configuration.Akka
@@ -9,12 +10,9 @@ namespace GridDomain.Node.Configuration.Akka
         private readonly Type _logActorType;
         private readonly LogLevel _logLevel;
 
-        public AkkaConfiguration(IAkkaNetworkAddress networkConf,
-                                 IAkkaDbConfiguration dbConf,
-                                 LogLevel logLevel = LogLevel.DebugLevel,
-                                 Type logActorType = null)
+        public AkkaConfiguration(IAkkaNetworkAddress networkConf, IAkkaDbConfiguration dbConf, Type logActorType=null, LogLevel logLevel = LogLevel.DebugLevel)
         {
-            _logActorType = logActorType;
+            _logActorType = logActorType ?? typeof(SerilogLoggerActor);
             Network = networkConf;
             Persistence = dbConf;
             _logLevel = logLevel;
@@ -32,12 +30,12 @@ namespace GridDomain.Node.Configuration.Akka
         {
             var network = new AkkaNetworkAddress(name ?? Network.SystemName, Network.Host, newPort ?? Network.PortNumber);
 
-            return new AkkaConfiguration(network, Persistence, _logLevel);
+            return new AkkaConfiguration(network, Persistence, _logActorType,_logLevel);
         }
 
         public string ToClusterSeedNodeSystemConfig(params IAkkaNetworkAddress[] otherSeeds)
         {
-            var cfg = new RootConfig(new LogConfig(_logLevel, false, _logActorType),
+            var cfg = new RootConfig(new LogConfig(_logLevel, _logActorType, false),
                                      ClusterConfig.SeedNode(Network, otherSeeds),
                                      new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                                            new PersistenceSnapshotConfig(this)));
@@ -46,7 +44,7 @@ namespace GridDomain.Node.Configuration.Akka
 
         public virtual string ToStandAloneSystemConfig()
         {
-            var cfg = new RootConfig(new LogConfig(_logLevel, false, _logActorType),
+            var cfg = new RootConfig(new LogConfig(_logLevel, _logActorType, false),
                                      new StandAloneConfig(Network),
                                      new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                                            new PersistenceSnapshotConfig(this)));
@@ -55,7 +53,7 @@ namespace GridDomain.Node.Configuration.Akka
 
         public virtual string ToStandAloneInMemorySystemConfig()
         {
-            var cfg = new RootConfig(new LogConfig(_logLevel, false, _logActorType),
+            var cfg = new RootConfig(new LogConfig(_logLevel, _logActorType, false),
                                      new StandAloneConfig(Network),
                                      new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
                                                            new LocalFilesystemSnapshotConfig()));
@@ -65,7 +63,7 @@ namespace GridDomain.Node.Configuration.Akka
 
         public string ToClusterNonSeedNodeSystemConfig(params IAkkaNetworkAddress[] seeds)
         {
-            var cfg = new RootConfig(new LogConfig(_logLevel, false, _logActorType),
+            var cfg = new RootConfig(new LogConfig(_logLevel, _logActorType, false),
                                      ClusterConfig.NonSeedNode(Network, seeds),
                                      new PersistenceConfig(new PersistenceJournalConfig(Persistence, new DomainEventAdaptersConfig()),
                                                            new PersistenceSnapshotConfig(this)));

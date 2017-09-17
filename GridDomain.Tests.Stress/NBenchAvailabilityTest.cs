@@ -6,7 +6,7 @@ using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
-namespace GridGomain.Tests.Stress {
+namespace GridDomain.Tests.Stress {
     public class NBenchAvailabilityTest
     {
         private const string TotalCommandsExecutedCounter = nameof(TotalCommandsExecutedCounter);
@@ -33,7 +33,7 @@ namespace GridGomain.Tests.Stress {
             RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 1)]
 
-        public void SimpleFact()
+        public void Counter_and_assemblies_load()
         {
             _counter.Increment();
             try
@@ -59,7 +59,7 @@ namespace GridGomain.Tests.Stress {
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 400)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         //MAX: 500
-        public void Benchmark()
+        public void Counter_test()
         {
             _counter.Increment();
         }

@@ -14,7 +14,7 @@ using Pro.NBench.xUnit.XunitExtensions;
 using Serilog.Events;
 using Xunit.Abstractions;
 
-namespace GridGomain.Tests.Stress
+namespace GridDomain.Tests.Stress
 {
     public class CommandExecutionWithProjectionPerfTestSql
     {

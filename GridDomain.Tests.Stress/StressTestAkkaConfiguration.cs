@@ -1,12 +1,14 @@
 using Akka.Event;
+using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.Configuration.Akka;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
 
-namespace GridGomain.Tests.Stress
+namespace GridDomain.Tests.Stress
 {
     public class StressTestAkkaConfiguration : AkkaConfiguration
     {
         public StressTestAkkaConfiguration(LogLevel verbosity = LogLevel.WarningLevel)
-            : base(new StressTestAkkaNetworkAddress(), new AutoTestAkkaDbConfiguration(), verbosity) {}
+            : base(new StressTestAkkaNetworkAddress(), new AutoTestAkkaDbConfiguration(), typeof(SerilogLoggerActor), verbosity) {}
     }
 }

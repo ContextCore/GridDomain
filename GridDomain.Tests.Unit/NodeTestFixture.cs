@@ -7,6 +7,7 @@ using Akka.Event;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Node;
+using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;

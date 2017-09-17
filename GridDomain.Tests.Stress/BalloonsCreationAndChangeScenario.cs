@@ -7,7 +7,7 @@ using GridDomain.Node;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
-namespace GridGomain.Tests.Stress
+namespace GridDomain.Tests.Stress
 {
     public class BalloonsCreationAndChangeScenario : INodeScenario
     {

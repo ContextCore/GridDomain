@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node;
 
-namespace GridGomain.Tests.Stress
+namespace GridDomain.Tests.Stress
 {
     public class CommandPlan
     {

@@ -1,4 +1,5 @@
 using GridDomain.Node;
+using GridDomain.Node.Actors.Serilog;
 using GridDomain.Tests.Common;
 using Serilog;
 using Serilog.Events;

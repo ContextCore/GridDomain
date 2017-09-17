@@ -21,7 +21,7 @@ using NBench;
 using Serilog.Events;
 using Xunit.Abstractions;
 
-namespace GridGomain.Tests.Stress
+namespace GridDomain.Tests.Stress
 {
     public class CommandExecutionPerfFixtureInMem
     {
@@ -47,7 +47,7 @@ namespace GridGomain.Tests.Stress
                           Output = _testOutputHelper,
                           AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
                           LogLevel = LogEventLevel.Error
-                      }.UseSqlPersistence();
+                      };
 
             _fixture.CreateNode().Wait();
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
@@ -65,7 +65,6 @@ namespace GridGomain.Tests.Stress
         public void MeasureCommandExecutionWithoutProjectionsInMemory()
         {
             Scenario.Execute(_fixture.Node, p => _counter.Increment());
-            _counter.Increment();
         }
 
         [PerfCleanup]

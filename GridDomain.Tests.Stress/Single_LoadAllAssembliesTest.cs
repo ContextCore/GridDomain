@@ -4,15 +4,16 @@ using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridGomain.Tests.Stress {
-    public class LoadAllAssembliesTest
+namespace GridDomain.Tests.Stress {
+    public class Single_LoadAllAssembliesTest
     {
         private readonly ITestOutputHelper _helper;
 
-        public LoadAllAssembliesTest(ITestOutputHelper helper)
+        public Single_LoadAllAssembliesTest(ITestOutputHelper helper)
         {
             _helper = helper;
         }
+
         [Fact]
         void Test()
         {

@@ -1,6 +1,6 @@
 using GridDomain.Node.Configuration.Akka;
 
-namespace GridGomain.Tests.Stress
+namespace GridDomain.Tests.Stress
 {
     internal class StressTestAkkaNetworkAddress : IAkkaNetworkAddress
     {
