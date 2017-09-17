@@ -22,6 +22,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution
         private ITestOutputHelper _testOutputHelper;
         private Balloon _aggregate;
         private BalloonCommandHandler _balloonCommandHandler;
+        private WriteTitleCommand _writeTitleCommand;
 
         public AggregateCommandsHandlerPerfTest(ITestOutputHelper output)
         {
@@ -36,48 +37,40 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
             _aggregate = new Balloon(Guid.NewGuid(), "test balloon");
             _balloonCommandHandler = new BalloonCommandHandler();
+            _writeTitleCommand = new WriteTitleCommand(123, _aggregate.Id);
         }
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measure aggregate commands handler performance",
-            NumberOfIterations = 5,
-            RunMode = RunMode.Iterations,
-            RunTimeMilliseconds = 1000,
-            TestMode = TestMode.Test)]
-        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100000)]
+                       NumberOfIterations = 3,
+                       RunMode = RunMode.Throughput,
+                       RunTimeMilliseconds = 1000,
+                       TestMode = TestMode.Measurement)]
+        [CounterMeasurement(TotalCommandsExecutedCounter)]
         public void AggregateCommandsHandlerThroughput()
         {
-            var writeTitleCommand = new WriteTitleCommand(123, _aggregate.Id);
+            _balloonCommandHandler.ExecuteAsync(_aggregate,_writeTitleCommand,Persist).Wait();
+            _counter.Increment();
+        }
 
-            Task Persist(Aggregate a)
-            {
-                a.PersistAll();
-                return Task.CompletedTask;
-            }
-
-            for(int i = 0; i < 110000; i++)
-            {
-                _balloonCommandHandler.ExecuteAsync(_aggregate,writeTitleCommand,Persist)
-                                      .Wait();
-                _counter.Increment();
-            }
+        private Task Persist(Aggregate a)
+        {
+            a.PersistAll();
+            return Task.CompletedTask;
         }
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measure aggregate commands handler performance",
-            NumberOfIterations = 5,
-            RunMode = RunMode.Iterations,
-            RunTimeMilliseconds = 1000,
-            TestMode = TestMode.Test)]
-        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100000)]
+                       NumberOfIterations = 3,
+                       RunMode = RunMode.Throughput,
+                       RunTimeMilliseconds = 1000,
+                       TestMode = TestMode.Measurement)]
+        [CounterMeasurement(TotalCommandsExecutedCounter)]
         public void AggregateDirectThroughput()
         {
-            for(int i = 0; i < 110000; i++)
-            {
-                _aggregate.WriteNewTitle(i);
-                _aggregate.PersistAll();
-                _counter.Increment();
-            }
+             _aggregate.WriteNewTitle(234);
+             _aggregate.PersistAll();
+             _counter.Increment();
         }
     }
 }
