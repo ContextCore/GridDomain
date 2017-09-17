@@ -52,7 +52,6 @@ namespace GridDomain.Node
         private static MessageMetadata CreateEmptyCommandMetadata<T>(T cmd) where T : ICommand
         {
             return new MessageMetadata(cmd.Id,
-                                       BusinessDateTime.UtcNow,
                                        Guid.NewGuid(),
                                        Guid.Empty,
                                        new ProcessHistory(new[] {ExecuteMetadataEntry}));

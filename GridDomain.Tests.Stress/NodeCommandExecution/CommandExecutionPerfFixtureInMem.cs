@@ -90,24 +90,26 @@ namespace GridDomain.Tests.Stress
         public void Setup(BenchmarkContext context)
         {
             _fixture = new BalloonFixture
-                      {
-                          Output = _testOutputHelper,
-                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
-                          LogLevel = LogEventLevel.Error
-                      };
+                       {
+                           Output = _testOutputHelper,
+                           AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
+                           LogLevel = LogEventLevel.Error
+                       };
 
             _fixture.CreateNode().Wait();
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }
 
-        private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(101, 11);
+        private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(11, 11);
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions without projections in memory",
-                       NumberOfIterations = 3, RunMode = RunMode.Iterations,
-                       RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
+                       NumberOfIterations = 3, 
+                       RunMode = RunMode.Iterations,
+                       TestMode = TestMode.Test)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
+       // [CounterMeasurement(TotalCommandsExecutedCounter)]
         //MAX: 500
         public void MeasureCommandExecutionWithoutProjectionsInMemory()
         {

@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         public async Task When_publishing_start_message()
         {
             var evt = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid());
-            var metadata = new MessageMetadata(evt.Id, evt.CreatedTime, Guid.NewGuid());
+            var metadata = new MessageMetadata(evt.Id, Guid.NewGuid());
             var res = await
                 Node.NewDebugWaiter()
                     .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
