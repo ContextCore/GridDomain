@@ -19,6 +19,7 @@ using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Transport;
+using GridDomain.Transport.Extension;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,7 +34,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             var producer = new ProcessManager—reatorsCatalog<TestState>(AsyncLongRunningProcess.Descriptor, creator);
             producer.RegisterAll(creator);
 
-            _localAkkaEventBusTransport = new LocalAkkaEventBusTransport(Sys);
+            _localAkkaEventBusTransport = Sys.InitLocalTransportExtension().Transport;
             var blackHole = Sys.ActorOf(BlackHoleActor.Props);
 
             var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), blackHole)));
@@ -42,21 +43,19 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             var container = new ContainerBuilder();
 
             container.Register<ProcessStateActor<TestState>>(c =>
-                                                                                       new ProcessStateActor<TestState>(new ProcessStateCommandHandler<TestState>(),
-                                                                                                                     _localAkkaEventBusTransport,
-                                                                                                                     new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
-                                                                                                                     messageProcessActor));
+                                                             new ProcessStateActor<TestState>(new ProcessStateCommandHandler<TestState>(),
+                                                                                              new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
+                                                                                              messageProcessActor));
             Sys.AddDependencyResolver(new AutoFacDependencyResolver(container.Build(), Sys));
 
             var name = AggregateActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
-            _processActor = ActorOfAsTestActorRef(() => new ProcessManagerActor<TestState>(producer,
-                                                                              _localAkkaEventBusTransport),
-                                               name);
+            _processActor = ActorOfAsTestActorRef(() => new ProcessManagerActor<TestState>(producer),
+                                                  name);
         }
 
         private readonly TestActorRef<ProcessManagerActor<TestState>> _processActor;
         private readonly Guid _processId;
-        private readonly LocalAkkaEventBusTransport _localAkkaEventBusTransport;
+        private readonly IActorTransport _localAkkaEventBusTransport;
 
         [Fact]
         public void Process_actor_process_one_message_in_time()

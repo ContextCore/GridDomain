@@ -14,8 +14,9 @@ namespace GridDomain.Node.Actors.Aggregates {
         public Aggregate ProducedState;
         public ICommand Command;
         public IMessageMetadata CommandMetadata;
-        public List<DomainEvent> MessagesToProject;
         public IActorRef CommandSender;
+        public Exception Exception;
+        public IActorRef PersistenceWaiter;
 
         public void Clear()
         {
@@ -23,7 +24,8 @@ namespace GridDomain.Node.Actors.Aggregates {
             Command = null;
             CommandMetadata = null;
             CommandSender = null;
-            MessagesToProject?.Clear();;
+            Exception = null;
+            PersistenceWaiter = null;
         }
     }
 }

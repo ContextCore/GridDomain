@@ -15,6 +15,7 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
+using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.Aggregates
 {
@@ -34,13 +35,12 @@ namespace GridDomain.Node.Actors.Aggregates
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
-                              IPublisher publisher,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IConstructAggregates aggregateConstructor,
                               IActorRef customHandlersActor) : base(aggregateConstructor, snapshotsPersistencePolicy)
         {
             _aggregateCommandsHandler = handler;
-            _publisher = publisher;
+            _publisher = Context.System.GetTransport();
             _customHandlersActor = customHandlersActor;
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.PublishingEvent, AggregateActorConstants.CommandExecutionCreatedAnEvent);
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.CommandRaisedAnError);
@@ -70,6 +70,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                                                   agr =>
                                                                                                   {
                                                                                                       ExecutionContext.ProducedState = (TAggregate) agr;
+                                                                                                      
                                                                                                       return self.Ask<EventsPersisted>(agr.GetDomainEvents());
                                                                                                   })
                                                                                     .ContinueWith(t =>
@@ -92,7 +93,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
                                        Monitor.Increment(nameof(Messages.PersistEventPack));
                                        var domainEvents = e;
-                                       var persistenceWaiter = Sender;
+                                       ExecutionContext.PersistenceWaiter = Sender;
                                        if (!domainEvents.Any())
                                        {
                                            Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);
@@ -126,23 +127,36 @@ namespace GridDomain.Node.Actors.Aggregates
                                                       NotifyPersistenceWatchers(persistedEvent);
                                                       SaveSnapshot(ExecutionContext.ProducedState, persistedEvent);
 
-                                                      Project(persistedEvent, producedEventsMetadata)
-                                                     .ContinueWith(t =>
-                                                                   {
-                                                                       _publisher.Publish(persistedEvent, producedEventsMetadata);
-                                                                       if (ExecutionContext.ProducedState.HasUncommitedEvents)
-                                                                           return;
+                                                      Project(persistedEvent, producedEventsMetadata);
+                                                      //.ContinueWith(t =>
+                                                      //              {
+                                                      //                  _publisher.Publish(persistedEvent, producedEventsMetadata);
 
-                                                                       Log.Debug("Persisted event pack {@pack}. {@context}", e, ExecutionContext);
+                                                      //                 // Log.Debug("Persisted event pack {@pack}. {@context}", e, ExecutionContext);
 
-                                                                       persistenceWaiter.Tell(EventsPersisted.Instance);
-                                                                   });
+                                                      //              });
                                                   });
                                    });
+
+            Command<AllHandlersCompleted>(c =>
+                                          {
+                                              if (ExecutionContext.Exception == null)
+                                              {
+                                                  if (ExecutionContext.ProducedState.HasUncommitedEvents)
+                                                      return;
+                                                  ExecutionContext.PersistenceWaiter.Tell(EventsPersisted.Instance);
+                                              }
+                                              else
+                                              {
+                                                  Self.Tell(CommandExecuted.Instance);
+                                              }
+                                          });
             //aggregate raised an error during command execution
-            Command<Status.Failure>(f => PublishError(f.Cause.UnwrapSingle())
-                                        .ContinueWith(t => CommandExecuted.Instance)
-                                        .PipeTo(Self));
+            Command<Status.Failure>(f =>
+                                    {
+                                        ExecutionContext.Exception = f.Cause.UnwrapSingle();
+                                        PublishError(ExecutionContext.Exception);
+                                    });
 
             Command<CommandExecuted>(c =>
                                      {
@@ -167,7 +181,7 @@ namespace GridDomain.Node.Actors.Aggregates
             DefaultBehavior();
         }
 
-        private Task<AllHandlersCompleted> PublishError(Exception exception)
+        private void PublishError(Exception exception)
         {
             var command = ExecutionContext.Command;
             var commandMetadata = ExecutionContext.CommandMetadata;
@@ -177,18 +191,14 @@ namespace GridDomain.Node.Actors.Aggregates
 
             var producedFaultMetadata = commandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
             var fault = Fault.NewGeneric(command, commandExecutionException, command.ProcessId, typeof(TAggregate));
-            return Project(fault, producedFaultMetadata)
-                        .ContinueWith(t =>
-                                     {
-                                         _publisher.Publish(fault, producedFaultMetadata);
-                                         return t.Result;
-                                     });
+            Project(fault, producedFaultMetadata);
+
         }
 
-        private Task<AllHandlersCompleted> Project(object evt, IMessageMetadata commandMetadata)
+        private void Project(object evt, IMessageMetadata commandMetadata)
         {
             var envelop = new MessageMetadataEnvelop<Project>(new Project(evt), commandMetadata);
-            return _customHandlersActor.Ask<AllHandlersCompleted>(envelop);
+            _customHandlersActor.Tell(envelop);
         }
     }
 }

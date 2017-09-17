@@ -16,6 +16,7 @@ using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Transport;
+using GridDomain.Transport.Extension;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
@@ -53,12 +54,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         {
             var command = new GoSleepCommand(Guid.Empty, Guid.Empty).CloneForProcess(Guid.NewGuid());
 
-            var transport = new LocalAkkaEventBusTransport(Sys);
+            var transport = Sys.InitLocalTransportExtension().Transport;
             transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
             var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), TestActor)));
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
-                                                                                         transport,
                                                                                          new SnapshotsPersistencePolicy(1, 5, null, null),
                                                                                          new AggregateFactory(),
                                                                                          handlersActor)),

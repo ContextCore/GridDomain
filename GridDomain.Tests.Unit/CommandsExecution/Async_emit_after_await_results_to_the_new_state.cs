@@ -26,7 +26,6 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
 
             var res = waiter.Result;
 
-
             var event_generated_from_changed_state = res.Message<BalloonTitleChanged>();
 
             var finalValue = (asyncCommand.Value + 1).ToString();

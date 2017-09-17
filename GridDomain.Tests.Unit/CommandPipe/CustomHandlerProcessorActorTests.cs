@@ -9,6 +9,7 @@ using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Transport.Extension;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.CommandPipe
@@ -18,6 +19,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void All_async_handlers_performs_in_parralel()
         {
+            Sys.InitLocalTransportExtension();
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(100), TestActor)));
             var catalog = new ProcessorListCatalog();
 
@@ -51,6 +53,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         public void Given_no_processors_pipe_still_reply_with_completed_messages()
         {
             var catalog = new ProcessorListCatalog();
+            Sys.InitLocalTransportExtension();
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid());
@@ -60,15 +63,16 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             actor.Tell(msgA);
 
-            //HandlersProcessActor should notify next step - process actor that work is done
+            //HandlersPipeActor should notify next step - process actor that work is done
             ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
-            //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
+            //HandlersPipeActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
         }
 
         [Fact]
         public void All_sync_handlers_performs_one_after_one()
         {
+            Sys.InitLocalTransportExtension();
             var delayActor = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(50), TestActor)));
             var catalog = new ProcessorListCatalog();
 
@@ -107,6 +111,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void CustomHandlerExecutor_does_not_support_domain_event_inheritance()
         {
+            Sys.InitLocalTransportExtension();
+
             var catalog = new ProcessorListCatalog();
             catalog.Add<BalloonCreated>(new SyncProjectionProcessor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
@@ -123,6 +129,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void CustomHandlerProcessor_routes_events_by_type()
         {
+            Sys.InitLocalTransportExtension();
+
             var catalog = new ProcessorListCatalog();
             catalog.Add<BalloonCreated>(new FireAndForgetMessageProcessor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
@@ -143,6 +151,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void Sync_and_async_handlers_performs_independent()
         {
+            Sys.InitLocalTransportExtension();
+
             var fastHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(1), TestActor)));
             var slowHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(500), TestActor)));
             var catalog = new ProcessorListCatalog();

@@ -19,6 +19,7 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
+using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {
@@ -58,8 +59,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         private Guid Id { get; }
 
-        public ProcessManagerActor(IProcessManagerCreatorCatalog<TState> сreatorCatalog,
-                         IPublisher publisher)
+        public ProcessManagerActor(IProcessManagerCreatorCatalog<TState> сreatorCatalog)
 
         {
             Monitor = new ActorMonitor(Context, "Process" + typeof(TState).Name);
@@ -70,7 +70,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 throw new BadNameFormatException();
             Id = id;
 
-            _publisher = publisher;
+            _publisher = Context.System.GetTransport();
             _сreatorCatalog = сreatorCatalog;
             _log = Context.GetLogger(new SerilogLogMessageFormatter());
 
