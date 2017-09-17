@@ -65,8 +65,8 @@ namespace GridDomain.EventSourcing
 
 
     public class Aggregate : IAggregate,
-                                      IMemento,
-                                      IEquatable<IAggregate>
+                             IMemento,
+                             IEquatable<IAggregate>
     {
         private static readonly AggregateFactory Factory = new AggregateFactory();
         public static T Empty<T>(Guid? id = null) where T : IAggregate
@@ -74,7 +74,7 @@ namespace GridDomain.EventSourcing
             return Factory.Build<T>(id ?? Guid.NewGuid());
         }
 
-        private readonly ICollection<object> _uncommittedEvents = new LinkedList<object>();
+        private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
         private IRouteEvents _registeredRoutes;
 
@@ -130,15 +130,15 @@ namespace GridDomain.EventSourcing
         public Guid Id { get; protected set; }
         public int Version { get; protected set; }
 
-        void IAggregate.ApplyEvent(object @event)
+        void IAggregate.ApplyEvent(DomainEvent @event)
         {
             RegisteredRoutes.Dispatch(@event);
             Version++;
         }
 
-        ICollection IAggregate.GetUncommittedEvents()
+        IReadOnlyCollection<DomainEvent> IAggregate.GetUncommittedEvents()
         {
-            return (ICollection) _uncommittedEvents;
+            return  _uncommittedEvents;
         }
 
         void IAggregate.ClearUncommittedEvents()

@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-
+using System.Collections.Generic;
 
 namespace GridDomain.EventSourcing.CommonDomain
 {
@@ -9,8 +9,8 @@ namespace GridDomain.EventSourcing.CommonDomain
         Guid Id { get; }
         int Version { get; }
 
-        void ApplyEvent(object @event);
-        ICollection GetUncommittedEvents();
+        void ApplyEvent(DomainEvent @event);
+        IReadOnlyCollection<DomainEvent> GetUncommittedEvents();
         void ClearUncommittedEvents();
         IMemento GetSnapshot();
     }

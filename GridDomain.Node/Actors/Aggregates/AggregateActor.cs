@@ -70,7 +70,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                                                   agr =>
                                                                                                   {
                                                                                                       ExecutionContext.ProducedState = (TAggregate) agr;
-                                                                                                      return self.Ask<EventsPersisted>(new PersistEventPack(agr.GetDomainEvents()));
+                                                                                                      return self.Ask<EventsPersisted>(new PersistEventPack(agr.GetDomainEvents().ToArray()));
                                                                                                   })
                                                                                     .ContinueWith(t =>
                                                                                                   {
