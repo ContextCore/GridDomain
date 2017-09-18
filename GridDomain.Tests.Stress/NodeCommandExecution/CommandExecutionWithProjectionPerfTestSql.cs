@@ -9,6 +9,7 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Serilog.Events;
@@ -36,12 +37,12 @@ namespace GridDomain.Tests.Stress
             _fixture = new BalloonWithProjectionFixture()
                       {
                           Output = _testOutputHelper,
-                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.WarningLevel),
-                          LogLevel = LogEventLevel.Warning
-                      }.UseSqlPersistence();
+                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
+                          LogLevel = LogEventLevel.Error
+            }.UseSqlPersistence();
 
-            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(_fixture.AkkaConfig.Persistence.JournalConnectionString).Options;
-
+            var readDb = new AutoTestLocalDbConfiguration();
+            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString).Options;
             //warm up EF 
             using(var ctx = new BalloonContext(_dbContextOptions))
             {
@@ -52,18 +53,19 @@ namespace GridDomain.Tests.Stress
             TestDbTools.Truncate(_fixture.AkkaConfig.Persistence.JournalConnectionString,
                                  "BalloonCatalog")
                        .Wait();
-
+           
             _fixture.CreateNode().Wait();
 
             _counter = context.GetCounter("TotalCommandsExecutedCounter");
         }
 
-        private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenarioProjection(50, 5);
+        private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenarioProjection(2, 2);
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions with projections in sql",
-                       NumberOfIterations = 3, RunMode = RunMode.Iterations,
-                       RunTimeMilliseconds = 10000, TestMode = TestMode.Test)]
+                       NumberOfIterations = 3, 
+                       RunMode = RunMode.Iterations,
+                       TestMode = TestMode.Test)]
         //MAX: 400, need several launches to warm up sql server
         // 50 as test is run on 'slow' appveyor
         [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 50)]

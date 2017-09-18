@@ -25,10 +25,10 @@ namespace GridDomain.Tests.Stress
         private IEnumerable<CommandPlan> CreateAggregatePlan(int changeAmount)
         {
             var balloonId = Guid.NewGuid();
-            yield return new CommandPlan(new InflateNewBallonCommand(_random.Next(), balloonId), w => w.Expect<BalloonCreated>()
+            yield return new CommandPlan(new InflateNewBallonCommand(_random.Next(), balloonId), (n,c) => n.Prepare(c).Expect<BalloonCreated>()
                                                                                                        .Execute());
             for (var num = 0; num < changeAmount; num++)
-                yield return new CommandPlan(new WriteTitleCommand(_random.Next(), balloonId), w => w.Expect<BalloonTitleChanged>()
+                yield return new CommandPlan(new WriteTitleCommand(_random.Next(), balloonId), (n,c) => n.Prepare(c).Expect<BalloonTitleChanged>()
                                                                                                      .Execute());
         }
 

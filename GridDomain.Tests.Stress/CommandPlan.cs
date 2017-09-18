@@ -7,15 +7,15 @@ namespace GridDomain.Tests.Stress
 {
     public class CommandPlan
     {
-        private readonly Func<ICommandWaiter, Task> _action;
+        private readonly Func<IGridDomainNode, ICommand, Task> _action;
         public ICommand Command { get; }
 
         public Task Execute(IGridDomainNode node)
         {
-            return _action(node.Prepare(Command));
+            return _action(node,Command);
         }
 
-        public CommandPlan(ICommand command, Func<ICommandWaiter, Task> action)
+        public CommandPlan(ICommand command, Func<IGridDomainNode,ICommand, Task> action)
         {
             _action = action;
             Command = command;

@@ -55,7 +55,6 @@ namespace GridDomain.Node.Actors.Hadlers
 
         protected virtual void PublishError(TMessage msg, IMessageMetadata metadata, Exception ex)
         {
-            var messageProcessException = new MessageProcessFailedException(ex);
             _log.Error(ex,
                        "Handler actor raised an error on message process: {@msg}. Count: {count}",
                        msg,
