@@ -34,14 +34,15 @@ namespace GridDomain.Tests.Stress
         [PerfSetup]
         public void Setup(BenchmarkContext context)
         {
-            _fixture = new BalloonWithProjectionFixture()
+            var readDb = new AutoTestLocalDbConfiguration();
+
+            _fixture = new BalloonWithProjectionFixture(new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString).Options)
                       {
                           Output = _testOutputHelper,
                           AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
                           LogLevel = LogEventLevel.Error
             }.UseSqlPersistence();
 
-            var readDb = new AutoTestLocalDbConfiguration();
             _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString).Options;
             //warm up EF 
             using(var ctx = new BalloonContext(_dbContextOptions))
