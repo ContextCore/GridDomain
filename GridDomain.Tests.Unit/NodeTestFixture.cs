@@ -61,7 +61,13 @@ namespace GridDomain.Tests.Unit
         internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
 
         public ITestOutputHelper Output { get; set; }
-        public LogEventLevel LogLevel { get; set; } = LogEventLevel.Verbose;
+        public LogEventLevel LogLevel { get; set; } =
+#if DEBUG 
+            LogEventLevel.Verbose;
+#endif
+#if !DEBUG
+            LogEventLevel.Warning;
+#endif
 
         public void Dispose()
         {
