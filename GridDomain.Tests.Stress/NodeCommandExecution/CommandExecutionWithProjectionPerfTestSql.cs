@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Stress
                 ctx.SaveChanges();
             }
 
-            TestDbTools.Truncate(_fixture.AkkaConfig.Persistence.JournalConnectionString,
+            TestDbTools.Truncate(readDb.ReadModelConnectionString,
                                  "BalloonCatalog")
                        .Wait();
            
@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Stress
             _counter = context.GetCounter("TotalCommandsExecutedCounter");
         }
 
-        private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenarioProjection(2, 2);
+        private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenarioProjection(10, 10);
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions with projections in sql",
