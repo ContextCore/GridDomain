@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
-using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 
-namespace GridDomain.Tests.Stress
+namespace GridDomain.Tests.Stress.NodeCommandExecution
 {
     public class BalloonsCreationAndChangeScenarioProjection : INodeScenario
     {

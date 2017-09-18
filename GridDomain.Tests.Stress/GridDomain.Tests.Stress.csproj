@@ -203,10 +203,12 @@
   <ItemGroup>
     <Compile Include="AggregateCommandsHandlerExecution\AggregateCommandsHandlerPerfTest.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
+    <Compile Include="NodeCommandExecution\AggregateActorPerfFixtureInMem.cs" />
     <Compile Include="NodeCommandExecution\BalloonsCreationAndChangeScenarioProjection.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionPerfFixtureInMem.cs" />
+    <Compile Include="NodeCommandExecution\ScenarionInMemPerfTest.cs" />
     <Compile Include="NodeCommandExecution\CommandExecutionPerfFixtureSql.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionWithProjectionPerfTestInMem.cs" />
+    <Compile Include="NodeCommandExecution\CommandExecutionWithEventWait.cs" />
+    <Compile Include="NodeCommandExecution\CommandExecutionWithProjection.cs" />
     <Compile Include="NodeCommandExecution\CommandExecutionWithProjectionPerfTestSql.cs" />
     <Compile Include="CommandPlan.cs" />
     <Compile Include="GlobalSuppressions.cs" />

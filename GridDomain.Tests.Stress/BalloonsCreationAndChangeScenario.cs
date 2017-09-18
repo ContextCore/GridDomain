@@ -26,10 +26,10 @@ namespace GridDomain.Tests.Stress
         {
             var balloonId = Guid.NewGuid();
             yield return new CommandPlan(new InflateNewBallonCommand(_random.Next(), balloonId), (n,c) => n.Prepare(c).Expect<BalloonCreated>()
-                                                                                                       .Execute());
+                                                                                                                      .Execute());
             for (var num = 0; num < changeAmount; num++)
                 yield return new CommandPlan(new WriteTitleCommand(_random.Next(), balloonId), (n,c) => n.Prepare(c).Expect<BalloonTitleChanged>()
-                                                                                                     .Execute());
+                                                                                                                    .Execute());
         }
 
         public Task Execute(IGridDomainNode node, Action<CommandPlan> singlePlanExecutedCallback)

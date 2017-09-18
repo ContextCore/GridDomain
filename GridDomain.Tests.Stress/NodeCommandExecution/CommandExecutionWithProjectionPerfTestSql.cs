@@ -9,13 +9,12 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tools.Repositories.RawDataRepositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Serilog.Events;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Stress
+namespace GridDomain.Tests.Stress.NodeCommandExecution
 {
     public class CommandExecutionWithProjectionPerfTestSql
     {

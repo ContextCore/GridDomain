@@ -1,28 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Akka.Actor;
 using Akka.Event;
-using Akka.Util.Internal;
-using GridDomain.CQRS;
-using GridDomain.Node;
-using GridDomain.Node.Actors;
-using GridDomain.Node.Configuration.Akka;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
-using GridDomain.Tools.Repositories.RawDataRepositories;
-using Microsoft.EntityFrameworkCore;
-using Pro.NBench.xUnit.XunitExtensions;
 using NBench;
+using Pro.NBench.xUnit.XunitExtensions;
 using Serilog.Events;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Stress
+namespace GridDomain.Tests.Stress.NodeCommandExecution
 {
     public class CommandExecutionPerfFixtureSql
     {
