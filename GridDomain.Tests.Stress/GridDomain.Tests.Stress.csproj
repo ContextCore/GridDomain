@@ -49,6 +49,10 @@
     <Reference Include="Google.Protobuf, Version=3.3.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.3.0\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
+    <Reference Include="GridDomain.Transport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GridDomain.Node\bin\Release\net46\GridDomain.Transport.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.EntityFrameworkCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.EntityFrameworkCore.2.0.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
     </Reference>
@@ -201,9 +205,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateActor\AggregateActorPerfFixture.cs" />
     <Compile Include="AggregateCommandsHandlerExecution\AggregateCommandsHandlerPerfTest.cs" />
+    <Compile Include="AnemicEF\AnemicModelEFCOntextInMem.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
-    <Compile Include="NodeCommandExecution\AggregateActorPerfFixtureInMem.cs" />
+    <Compile Include="AggregateActor\AggregateActorPerfFixtureInMem.cs" />
+    <Compile Include="AnemicEF\AnemicModelEFContextPerformance.cs" />
+    <Compile Include="AnemicEF\AnemicModelEFContextPerformanceSql.cs" />
+    <Compile Include="AnemicEF\IEFCommand.cs" />
+    <Compile Include="AnemicEF\InflateNewBallonCommandEF.cs" />
+    <Compile Include="AnemicEF\UpdateBallonCommandEF.cs" />
+    <Compile Include="AggregateActor\AggregateActorPerfFixtureSql.cs" />
     <Compile Include="NodeCommandExecution\BalloonsCreationAndChangeScenarioProjection.cs" />
     <Compile Include="NodeCommandExecution\ScenarionInMemPerfTest.cs" />
     <Compile Include="NodeCommandExecution\CommandExecutionPerfFixtureSql.cs" />
