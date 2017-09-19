@@ -8,7 +8,7 @@ using Serilog.Events;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.NodeCommandExecution {
-    public class CommandExecutionWithProjection : ScenarionInMemPerfTest
+    public class CommandExecutionWithProjection : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
         private DbContextOptions<BalloonContext> _dbContextOptions;

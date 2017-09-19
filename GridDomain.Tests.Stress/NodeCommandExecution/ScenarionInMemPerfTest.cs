@@ -7,20 +7,20 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Stress.NodeCommandExecution
 {
 
-    public abstract class ScenarionInMemPerfTest
+    public abstract class ScenarionPerfTest
     {
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
         private IGridDomainNode _gridDomainNode;
 
-        protected ScenarionInMemPerfTest(ITestOutputHelper output)
+        protected ScenarionPerfTest(ITestOutputHelper output)
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
         }
 
         [PerfSetup]
-        public void Setup(BenchmarkContext context)
+        public virtual void Setup(BenchmarkContext context)
         {
             OnSetup();
             _gridDomainNode = CreateNode();

@@ -23,8 +23,8 @@ namespace GridDomain.Tests.Stress.AnemicEF {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
             _contextCreator = () => new BalloonContext(options);
-            _efCommands = Enumerable.Range(0, 10)
-                                    .SelectMany(n => CreateAggregatePlan(10))
+            _efCommands = Enumerable.Range(0, 50)
+                                    .SelectMany(n => CreateAggregatePlan(50))
                                     .ToArray();
         }
 
@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Stress.AnemicEF {
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
 
-        public void MeasureCommandExecutionWithoutProjectionsInMemory()
+        public void MeasureCommandExecution()
         {
             Task.WhenAll(_efCommands.Select(c => c.Execute()
                                                   .ContinueWith(t => _counter.Increment())))

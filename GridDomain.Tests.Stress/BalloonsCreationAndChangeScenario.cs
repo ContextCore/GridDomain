@@ -18,8 +18,8 @@ namespace GridDomain.Tests.Stress
                                                  int aggregateChangeAmount = 10)
         {
             CommandPlans = Enumerable.Range(0, aggregateScenariosCount)
-                                      .SelectMany(c => CreateAggregatePlan(aggregateChangeAmount))
-                                      .ToArray();
+                                     .SelectMany(c => CreateAggregatePlan(aggregateChangeAmount))
+                                     .ToArray();
         }
 
         private IEnumerable<CommandPlan> CreateAggregatePlan(int changeAmount)
@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Stress
         public Task Execute(IGridDomainNode node, Action<CommandPlan> singlePlanExecutedCallback)
         {
             return Task.WhenAll(CommandPlans.Select(p => node.ExecutePlan(p)
-                                                              .ContinueWith(t => singlePlanExecutedCallback(p))));
+                                                             .ContinueWith(t => singlePlanExecutedCallback(p))));
         }
     }
 }

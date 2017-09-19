@@ -36,8 +36,8 @@ namespace GridDomain.Tests.Stress.AggregateActor {
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
-            _commands = Enumerable.Range(0, 1)
-                                  .SelectMany(n => CreateAggregatePlan(1))
+            _commands = Enumerable.Range(0, 40)
+                                  .SelectMany(n => CreateAggregatePlan(40))
                                   .ToArray();
 
             var sys = ActorSystem.Create("test",actorSystemConfig);
@@ -79,8 +79,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             TestMode = TestMode.Test)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
-        //MAX: 500
-        public void MeasureCommandExecutionWithoutProjectionsInMemory()
+        public void MeasureCommandExecution()
         {
             Task.WhenAll(_commands.Select(c => _aggregateActor.Ask<CommandExecuted>(new MessageMetadataEnvelop<ICommand>(c, MessageMetadata.Empty))
                                                               .ContinueWith(t => _counter.Increment())))

@@ -299,7 +299,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
         private void FinishProcessTransition(IProcessCompleted message, IActorRef messageSender)
         {
             messageSender.Tell(message);
-            Stash.UnstashAll();
+            Stash.Unstash();
         }
 
         private Guid GetProcessId(object msg)
