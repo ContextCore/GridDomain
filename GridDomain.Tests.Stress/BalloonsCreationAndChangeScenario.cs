@@ -25,11 +25,9 @@ namespace GridDomain.Tests.Stress
         private IEnumerable<CommandPlan> CreateAggregatePlan(int changeAmount)
         {
             var balloonId = Guid.NewGuid();
-            yield return new CommandPlan(new InflateNewBallonCommand(_random.Next(), balloonId), (n,c) => n.Prepare(c).Expect<BalloonCreated>()
-                                                                                                                      .Execute());
+            yield return new CommandPlan(new InflateNewBallonCommand(_random.Next(), balloonId), (n,c) => n.Execute(c));
             for (var num = 0; num < changeAmount; num++)
-                yield return new CommandPlan(new WriteTitleCommand(_random.Next(), balloonId), (n,c) => n.Prepare(c).Expect<BalloonTitleChanged>()
-                                                                                                                    .Execute());
+                yield return new CommandPlan(new WriteTitleCommand(_random.Next(), balloonId), (n,c) => n.Execute(c));
         }
 
         public Task Execute(IGridDomainNode node, Action<CommandPlan> singlePlanExecutedCallback)

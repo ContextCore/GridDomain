@@ -81,7 +81,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private bool IsExpected(object message)
         {
             return ConditionBuilder.MessageFilters
-                                   .Where(p => p.Key.IsInstanceOfType(message))
                                    .SelectMany(v => v.Value)
                                    .Any(filter => filter(message));
         }

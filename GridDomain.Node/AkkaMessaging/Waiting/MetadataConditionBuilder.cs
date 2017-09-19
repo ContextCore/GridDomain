@@ -16,13 +16,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         protected override bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter)
         {
-            var envelop = receivedMessage as IMessageMetadataEnvelop<TMsg>;
-            return envelop != null && domainMessageFilter(envelop.Message);
+            var envelop = receivedMessage as IMessageMetadataEnvelop;
+
+            return envelop != null && envelop.Message != null && domainMessageFilter((TMsg)envelop.Message);
         }
 
         protected override void AddFilter(Type type, Func<object, bool> filter)
         {
-            base.AddFilter(MessageMetadataEnvelop.GetEnvelopType(type), filter);
+            base.AddFilter(typeof(MessageMetadataEnvelop), filter);
         }
     }
 }

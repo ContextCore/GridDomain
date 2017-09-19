@@ -11,6 +11,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
+using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
@@ -22,7 +23,7 @@ namespace GridDomain.Node
 {
     public class CommandPipe : IMessagesRouter
     {
-        private readonly TypeCatalog<IMessageProcessor, ICommand> _aggregatesCatalog = new TypeCatalog<IMessageProcessor, ICommand>();
+        private readonly TypeCatalog<IMessageProcessor<CommandExecuted>, ICommand> _aggregatesCatalog = new TypeCatalog<IMessageProcessor<CommandExecuted>, ICommand>();
         private readonly ProcessorListCatalog _handlersCatalog = new ProcessorListCatalog();
 
         private readonly ILoggingAdapter _log;
@@ -45,7 +46,7 @@ namespace GridDomain.Node
 
             var aggregateActor = CreateDIActor(aggregateHubType, descriptor.AggregateType.BeautyName() + "_Hub");
 
-            var processor = new FireAndForgetMessageProcessor(aggregateActor);
+            var processor = new CommandProcessor(aggregateActor);
 
             foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
                 _aggregatesCatalog.Add(aggregateCommandInfo, processor);

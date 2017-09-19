@@ -16,6 +16,6 @@ namespace GridDomain.CQRS
         /// </summary>
         /// <param name="defaultTimeout"></param>
         /// <returns></returns>
-        IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null);
+       // IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null);
     }
 }

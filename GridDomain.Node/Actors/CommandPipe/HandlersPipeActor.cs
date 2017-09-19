@@ -34,7 +34,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                        .ContinueWith(t =>
                                                                                                      {
                                                                                                          processManagerPipeActor.Tell(envelop);
-                                                                                                         publisher.Publish(envelop);
+                                                                                                         publisher.Publish(envelop.Message);
                                                                                                          return AllHandlersCompleted.Instance;
                                                                                         })
                                                                                       .PipeTo(Sender);

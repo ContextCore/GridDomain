@@ -10,6 +10,7 @@ using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced.Messages;
@@ -198,14 +199,14 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                        pendingState = processManager.State;
                                        var cmd = new CreateNewStateCommand<TState>(Id, pendingState);
 
-                                       _stateAggregateActor.Ask<CommandCompleted>(new MessageMetadataEnvelop<ICommand>(cmd, processingMessage.Metadata))
+                                       _stateAggregateActor.Ask<CommandExecuted>(new MessageMetadataEnvelop<ICommand>(cmd, processingMessage.Metadata))
                                                            .PipeTo(Self);
                                    });
 
             Receive<Status.Failure>(f => FinishWithError(processingMessage, processingMessageSender, f.Cause));
 
             //from state aggregate actro after persist
-            Receive<CommandCompleted>(c =>
+            Receive<CommandExecuted>(c =>
                                       {
                                           _log.Debug("Process state mutated with command {@processResult}", c);
                                           ProcessManager = _сreatorCatalog.Create(pendingState);
@@ -256,10 +257,10 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                                                          ProcessManager.State.CurrentStateName,
                                                                                          processingEnvelop);
 
-                                                  return _stateAggregateActor.Ask<CommandCompleted>(new MessageMetadataEnvelop<ICommand>(cmd, processingEnvelop.Metadata))
+                                                  return _stateAggregateActor.Ask<CommandExecuted>(new MessageMetadataEnvelop<ICommand>(cmd, processingEnvelop.Metadata))
                                                                              .PipeTo(Self);
                                               });
-            Receive<CommandCompleted>(c =>
+            Receive<CommandExecuted>(c =>
                                       {
                                           ProcessManager = _сreatorCatalog.Create(pendingState);
                                           FinishProcessTransition(new ProcessTransited(producedCommands.ToArray(),

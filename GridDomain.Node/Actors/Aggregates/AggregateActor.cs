@@ -76,7 +76,6 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                                     .ContinueWith(t =>
                                                                                                   {
                                                                                                       if (t.IsFaulted) throw t.Exception;
-                                                                                                      //return CommandProducedEventsPersisted.Instance;
                                                                                                       return CommandExecuted.Instance;
                                                                                                   })
                                                                                     .PipeTo(Self);
@@ -91,7 +90,7 @@ namespace GridDomain.Node.Actors.Aggregates
             Command<IReadOnlyCollection<DomainEvent>>(domainEvents =>
                                    {
 
-                                       Monitor.Increment(nameof(Messages.PersistEventPack));
+                                       Monitor.Increment(nameof(PersistEventPack));
                                        ExecutionContext.PersistenceWaiter = Sender;
                                        if (!domainEvents.Any())
                                        {
@@ -152,19 +151,18 @@ namespace GridDomain.Node.Actors.Aggregates
                                          Log.Debug("Command executed. {@context}", ExecutionContext.CommandMetadata);
                                          //finish command execution. produced state can be null on execution error
                                          State = (TAggregate)ExecutionContext.ProducedState ?? State;
-                                         var commandCompleted = new CommandCompleted(ExecutionContext.Command.Id);
                                          var completedMetadata = ExecutionContext.CommandMetadata
                                                                                  .CreateChild(ExecutionContext.Command.Id, _commandCompletedProcessEntry);
-                                         _publisher.Publish(commandCompleted, completedMetadata);
 
-                                         ExecutionContext.CommandSender.Tell(commandCompleted);
+                                         _publisher.Publish(c, completedMetadata);
+
+                                         ExecutionContext.CommandSender.Tell(c);
                                          ExecutionContext.Clear();
                                          Behavior.Unbecome();
-                                         Stash.UnstashAll();
+                                         Stash.Unstash();
                                      });
 
-            Command<IMessageMetadataEnvelop<ICommand>>(o => StashMessage(o));
-
+            Command<IMessageMetadataEnvelop>(o => StashMessage(o));
             Command<GracefullShutdownRequest>(o => StashMessage(o));
 
             DefaultBehavior();
@@ -183,7 +181,21 @@ namespace GridDomain.Node.Actors.Aggregates
 
         private void Project(object evt, IMessageMetadata commandMetadata)
         {
-            _customHandlersActor.Tell(MessageMetadataEnvelop.NewTyped(evt, commandMetadata));
+          IMessageMetadataEnvelop env;
+          //switch (evt)
+          //{
+          //    case DomainEvent @event:
+          //        env = new MessageMetadataEnvelop<DomainEvent>(@event, commandMetadata);
+          //        break;
+          //    case IFault fault:
+          //        env = new MessageMetadataEnvelop<IFault>(fault, commandMetadata);
+          //        break;
+          //    default:
+          //        env = new MessageMetadataEnvelop<object>(evt, commandMetadata);
+          //        break;
+          //}
+
+            _customHandlersActor.Tell(new MessageMetadataEnvelop(evt, commandMetadata));
         }
     }
 }

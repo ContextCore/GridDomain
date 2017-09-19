@@ -159,7 +159,7 @@ namespace GridDomain.Node
 
         public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return _waiterFactory.NewWaiter(defaultTimeout);
+            return _waiterFactory.NewExplicitWaiter(defaultTimeout);
         }
     }
 }

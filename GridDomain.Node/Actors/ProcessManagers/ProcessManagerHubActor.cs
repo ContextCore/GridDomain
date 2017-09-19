@@ -25,7 +25,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                        {
                                            redirect.MessageToRedirect.Metadata.History.Add(_redirectEntry);
                                            var name = GetChildActorName(redirect.ProcessId);
-                                           SendToChild(redirect, redirect.ProcessId, name);
+                                           SendToChild(redirect, redirect.ProcessId, name, Sender);
                                        });
         }
 
@@ -50,7 +50,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         protected override Type ChildActorType { get; } = typeof(ProcessManagerActor<TState>);
 
-        protected override void SendMessageToChild(ChildInfo knownChild, object message)
+        protected override void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
         {
             var msgSender = Sender;
             var self = Self;

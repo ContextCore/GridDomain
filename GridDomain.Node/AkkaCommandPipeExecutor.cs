@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Transport;
@@ -34,9 +35,7 @@ namespace GridDomain.Node
 
         public Task Execute(ICommand command, IMessageMetadata metadata = null)
         {
-            return Prepare(command, metadata)
-                    .Expect<CommandCompleted>() //correlation id is used to determine command complete binding to command
-                    .Execute();
+            return _commandExecutorActor.Ask<CommandExecuted>(new MessageMetadataEnvelop(command, metadata));
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
