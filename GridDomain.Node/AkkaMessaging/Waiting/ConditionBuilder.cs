@@ -41,14 +41,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             CreateResultFunc = createResultFunc;
         }
 
-        public IConditionBuilder<T> And<TMsg>(Predicate<TMsg> filter = null)
+        public IConditionBuilder<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return filter == null
                        ? And(typeof(TMsg), DefaultFilter<TMsg>)
                        : And(typeof(TMsg), o => FilterDecorator(o, filter));
         }
 
-        public IConditionBuilder<T> Or<TMsg>(Predicate<TMsg> filter = null)
+        public IConditionBuilder<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return filter == null
                        ? Or(typeof(TMsg), DefaultFilter<TMsg>)
@@ -80,9 +80,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return message is TMsg;
         }
 
-        protected virtual bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter)
+        protected virtual bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter) where TMsg : class
         {
-            return receivedMessage is TMsg && domainMessageFilter((TMsg) receivedMessage);
+            var msg = receivedMessage as TMsg;
+            return msg != null && domainMessageFilter(msg);
         }
 
         protected virtual void AddFilter(Type type, Func<object, bool> filter)

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -50,13 +51,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == _command.Id;
         }
 
-        public new ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter = null)
+        ICommandConditionBuilder ICommandConditionBuilder.And<TMsg>(Predicate<TMsg> filter = null)
         {
             base.And(filter);
             return this;
         }
 
-        public new ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter = null)
+        ICommandConditionBuilder ICommandConditionBuilder.Or<TMsg>(Predicate<TMsg> filter = null)
         {
             base.Or(filter);
             return this;
@@ -65,7 +66,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected override bool DefaultFilter<TMsg>(object received)
         {
             var msg = received as IMessageMetadataEnvelop;
-            return received is TMsg && msg.Metadata?.CorrelationId == _commandMetadata.CorrelationId;
+            return msg?.Message is TMsg && msg.Metadata?.CorrelationId == _commandMetadata.CorrelationId;
         }
     }
 }

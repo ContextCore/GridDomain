@@ -92,11 +92,10 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             _processActor.Ref.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _processId),
                                                            MessageMetadata.Empty));
 
-            _localAkkaEventBusTransport.Subscribe(typeof(IMessageMetadataEnvelop<ProcessManagerCreated<TestState>>), TestActor);
-            _localAkkaEventBusTransport.Subscribe(typeof(IMessageMetadataEnvelop<ProcessReceivedMessage<TestState>>), TestActor);
+            _localAkkaEventBusTransport.Subscribe(typeof(IMessageMetadataEnvelop), TestActor);
 
-            FishForMessage<IMessageMetadataEnvelop<ProcessManagerCreated<TestState>>>(m => true);
-            FishForMessage<IMessageMetadataEnvelop<ProcessReceivedMessage<TestState>>>(m => true);
+            FishForMessage<MessageMetadataEnvelop>(m => m.Message is ProcessManagerCreated<TestState>);
+            FishForMessage<MessageMetadataEnvelop>(m => m.Message is ProcessReceivedMessage<TestState>);
         }
     }
 }

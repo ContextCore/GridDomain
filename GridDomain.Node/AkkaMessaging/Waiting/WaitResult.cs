@@ -18,10 +18,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
     public class WaitResult<T> : WaitResult, IWaitResult<T> where T : class
     {
-        public WaitResult(IMessageMetadataEnvelop<T> message, IMessageMetadataEnvelop<IFault> fault = null):base(new object[]{ message})
+        public WaitResult(IMessageMetadataEnvelop message, IMessageMetadataEnvelop fault = null):base(new object[]{ message})
         {
-            Received = message?.Message;
-            Fault = fault?.Message;
+            Received = message?.Message as T;
+            Fault = fault?.Message as IFault;
             ReceivedMetadata = message?.Metadata ?? fault?.Metadata;
         }
 

@@ -53,13 +53,12 @@ namespace GridDomain.Transport
         public void Publish(object msg)
         {
             var topic = msg.GetType().FullName;
-            //  _log.Debug("Publishing message {Message} to akka distributed pub sub with topic {Topic}", msg.ToPropsString(),topic);
             _transport.Tell(new Publish(topic, msg));
         }
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            Publish(MessageMetadataEnvelop.NewTyped(msg, metadata));
+            _transport.Tell(new Publish(msg.GetType().FullName, new MessageMetadataEnvelop(msg, metadata)));
         }
     }
 }

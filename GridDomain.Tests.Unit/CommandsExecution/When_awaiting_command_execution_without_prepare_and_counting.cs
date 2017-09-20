@@ -24,6 +24,10 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
             }
         }
 
+        class IntResult
+        {
+            public int Value;
+        }
         class CountingMessageHandler : IHandler<BalloonCreated>,
                                        IHandler<BalloonTitleChanged>
         {
@@ -53,7 +57,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
             public async Task Handle(BalloonCreated message, IMessageMetadata metadata = null)
             {
                 await Task.Delay(2000);
-                _publisher.Publish(500,MessageMetadata.Empty);
+                _publisher.Publish(new IntResult{Value = 500}, MessageMetadata.Empty);
                 CreatedCount++;
             }
         }
@@ -66,7 +70,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         {
             var aggregateId = Guid.NewGuid();
             var slowCounterWaiter = Node.NewWaiter()
-                                        .Expect<int>()
+                                        .Expect<IntResult>()
                                         .Create();
 
             //will produce one created message and two title changed

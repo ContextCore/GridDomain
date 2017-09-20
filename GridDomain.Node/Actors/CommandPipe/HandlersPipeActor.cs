@@ -34,22 +34,11 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                        .ContinueWith(t =>
                                                                                                      {
                                                                                                          processManagerPipeActor.Tell(envelop);
-                                                                                                         publisher.Publish(envelop.Message);
+                                                                                                         publisher.Publish(envelop);
                                                                                                          return AllHandlersCompleted.Instance;
                                                                                         })
-                                                                                      .PipeTo(Sender);
+                                                                                       .PipeTo(Sender);
                                                            });
-        }
-
-        private static IMessageMetadataEnvelop CreateMessageMetadataEnvelop(object message, IMessageMetadata metadata)
-        {
-            if(message is DomainEvent @event)
-                return new MessageMetadataEnvelop<DomainEvent>(@event, metadata);
-
-            if(message is IFault fault)
-                return new MessageMetadataEnvelop<IFault>(fault, metadata);
-
-            return new MessageMetadataEnvelop<object>(message, metadata);
         }
     }
 }

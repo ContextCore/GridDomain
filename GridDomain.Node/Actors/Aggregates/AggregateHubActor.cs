@@ -15,16 +15,11 @@ namespace GridDomain.Node.Actors.Aggregates
         public AggregateHubActor(IPersistentChildsRecycleConfiguration conf) : base(conf, typeof(TAggregate).Name)
         {
             ChildActorType = typeof(AggregateActor<TAggregate>);
-            Receive<CommandExecuted>(c => { }); 
-            //TODO: can be awaited in message waiters
         }
 
         protected override void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
         {
-            knownChild.Ref
-                      .Ask<CommandExecuted>(message)
-                      .ContinueWith(t => t.Result)
-                      .PipeTo(sender);
+            knownChild.Ref.Tell(message, sender);
         }
 
         protected override string GetChildActorName(Guid childId)

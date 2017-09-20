@@ -30,7 +30,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             ConditionBuilder = conditionBuilder;
         }
 
-        public IConditionBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null)
+        IConditionBuilder<T> IMessageWaiterBase<T, IConditionBuilder<T>>.Expect<TMsg>(Predicate<TMsg> filter = null)
+        {
+            return Expect(filter);
+        }
+
+        public IConditionBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg:class
         {
             return ConditionBuilder.And(filter);
         }
@@ -90,6 +95,28 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             t.Match()
              .With<Status.Failure>(r => throw r.Cause)
              .With<Failure>(r => throw r.Exception);
+        }
+    }
+
+    public class LocalMessagesWaiter : LocalMessagesWaiter<Task<IWaitResult>>
+    {
+        public LocalMessagesWaiter(ActorSystem system,
+                                   IActorSubscriber subscriber,
+                                   TimeSpan defaultTimeout) : this(system,
+                                                                   subscriber,
+                                                                   defaultTimeout,
+                                                                   new MetadataConditionBuilder<Task<IWaitResult>>())
+        { }
+
+        private LocalMessagesWaiter(ActorSystem system,
+                                    IActorSubscriber subscriber,
+                                    TimeSpan defaultTimeout,
+                                    ConditionBuilder<Task<IWaitResult>> conditionBuilder) : base(system,
+                                                                                                 subscriber,
+                                                                                                 defaultTimeout,
+                                                                                                 conditionBuilder)
+        {
+            conditionBuilder.CreateResultFunc = Start;
         }
     }
 }

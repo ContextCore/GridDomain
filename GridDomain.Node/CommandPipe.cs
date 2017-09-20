@@ -23,7 +23,7 @@ namespace GridDomain.Node
 {
     public class CommandPipe : IMessagesRouter
     {
-        private readonly TypeCatalog<IMessageProcessor<CommandExecuted>, ICommand> _aggregatesCatalog = new TypeCatalog<IMessageProcessor<CommandExecuted>, ICommand>();
+        private readonly TypeCatalog<IActorRef, object> _aggregatesCatalog = new TypeCatalog<IActorRef, object>();
         private readonly ProcessorListCatalog _handlersCatalog = new ProcessorListCatalog();
 
         private readonly ILoggingAdapter _log;
@@ -46,10 +46,8 @@ namespace GridDomain.Node
 
             var aggregateActor = CreateDIActor(aggregateHubType, descriptor.AggregateType.BeautyName() + "_Hub");
 
-            var processor = new CommandProcessor(aggregateActor);
-
             foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
-                _aggregatesCatalog.Add(aggregateCommandInfo, processor);
+                _aggregatesCatalog.Add(aggregateCommandInfo, aggregateActor);
 
             return Task.CompletedTask;
         }
@@ -78,7 +76,7 @@ namespace GridDomain.Node
             return RegisterHandler<TMessage, THandler>(actor => new FireAndForgetMessageProcessor(actor));
         }
         public Task RegisterParralelHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                                       where TMessage : class, IHaveProcessId, IHaveId
+                                                                  where TMessage : class, IHaveProcessId, IHaveId
         {
             return RegisterHandler<TMessage, THandler>(actor => new ParallelMessageProcessor<HandlerExecuted>(actor));
         }
@@ -108,7 +106,7 @@ namespace GridDomain.Node
         private Task RegisterHandler<TMessage, THandler>(Func<IActorRef, IMessageProcessor> processorCreator) where THandler : IHandler<TMessage>
                                                                            where TMessage : class, IHaveProcessId, IHaveId
         {
-            var handlerActorType = typeof(MessageProcessActor<TMessage, THandler>);
+            var handlerActorType = typeof(MessageHandleActor<TMessage, THandler>);
             var handlerActor = CreateDIActor(handlerActorType, handlerActorType.BeautyName());
 
             _handlersCatalog.Add<TMessage>(processorCreator(handlerActor));

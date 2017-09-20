@@ -5,14 +5,14 @@ using Serilog.Events;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.NodeCommandExecution {
-    public class CommandExecutionWithEventWaitInMemory : ScenarionPerfTest
+    public class NodeCommandExecutionInMem : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
-        public CommandExecutionWithEventWaitInMemory(ITestOutputHelper output) : base(output)
+        public NodeCommandExecutionInMem(ITestOutputHelper output) : base(output)
         {
             _testOutputHelper = output;
         }
-        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(1, 500);
+        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 20);
         protected override IGridDomainNode CreateNode()
         {
             return new BalloonFixture

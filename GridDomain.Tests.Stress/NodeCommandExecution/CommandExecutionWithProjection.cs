@@ -8,12 +8,12 @@ using Serilog.Events;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.NodeCommandExecution {
-    public class CommandExecutionWithProjection : ScenarionPerfTest
+    public class NodeCommandExecutionWithProjectionInMem : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
         private DbContextOptions<BalloonContext> _dbContextOptions;
 
-        public CommandExecutionWithProjection(ITestOutputHelper output):base(output)
+        public NodeCommandExecutionWithProjectionInMem(ITestOutputHelper output):base(output)
         {
             _testOutputHelper = output;
             Trace.Listeners.Clear();
@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         }
         protected override void OnSetup()
         {
-            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CommandExecutionWithProjection)).Options;
+            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(NodeCommandExecutionWithProjectionInMem)).Options;
             using(var ctx = new BalloonContext(_dbContextOptions))
             {
                 ctx.Database.EnsureDeleted();

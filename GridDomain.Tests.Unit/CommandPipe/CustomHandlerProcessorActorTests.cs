@@ -31,16 +31,15 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid());
             var sampleAggregateChangedEvent = new BalloonTitleChanged("1", Guid.NewGuid());
 
-            actor.Tell(MessageMetadataEnvelop.NewTyped(sampleAggregateCreatedEvent, MessageMetadata.Empty));
-//            ExpectMsg<HandlerExecuted>();
+            actor.Tell(new MessageMetadataEnvelop(sampleAggregateCreatedEvent));
 
             //HandlersProcessActor should notify next step - process actor that work is done
-            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
+            ExpectMsg<IMessageMetadataEnvelop>(m => m.Message is DomainEvent);
             ExpectMsg<AllHandlersCompleted>();
             //but handlers will finish their work later in undefined sequence
 
-            actor.Tell(MessageMetadataEnvelop.NewTyped(sampleAggregateChangedEvent, MessageMetadata.Empty));
-            ExpectMsg<IMessageMetadataEnvelop<DomainEvent>>();
+            actor.Tell(new MessageMetadataEnvelop(sampleAggregateChangedEvent));
+            ExpectMsg<IMessageMetadataEnvelop>(m => m.Message is DomainEvent);
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
 

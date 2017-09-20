@@ -6,8 +6,8 @@ namespace GridDomain.CQRS
     public interface ICommandConditionBuilder
     {
         Task<IWaitResult> Execute(TimeSpan? timeout, bool failOnAnyFault);
-        ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter = null);
-        ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter = null);
+        ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class;
+        ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class;
     }
 
     public interface ICommandConditionBuilder<T>: ICommandConditionBuilder

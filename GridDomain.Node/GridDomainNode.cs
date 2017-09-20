@@ -110,13 +110,12 @@ namespace GridDomain.Node
             _commandExecutor = await CreateCommandExecutor();
             _containerBuilder.RegisterInstance(_commandExecutor);
 
-            var domainBuilder = ConfigureDomain();
+            var domainBuilder = CreateDomainBuilder();
+            domainBuilder.Configure(_containerBuilder);
+
             Container = _containerBuilder.Build();
             System.AddDependencyResolver(new AutoFacDependencyResolver(Container, System));
-
-            foreach(var m in domainBuilder.MessageRouteMaps)
-                await m.Register(Pipe);
-
+            domainBuilder.Configure(Pipe);
             var nodeController = System.ActorOf(Props.Create(() => new GridNodeController()), nameof(GridNodeController));
 
             await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start());
@@ -131,11 +130,10 @@ namespace GridDomain.Node
             return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, Settings.DefaultTimeout);
         }
 
-        private DomainBuilder ConfigureDomain()
+        private DomainBuilder CreateDomainBuilder()
         {
             var domainBuilder = new DomainBuilder();
             Settings.DomainConfigurations.ForEach(c => domainBuilder.Register(c));
-            domainBuilder.ContainerConfigurations.ForEach(c => _containerBuilder.Register(c));
             return domainBuilder;
         }
 
@@ -159,7 +157,7 @@ namespace GridDomain.Node
 
         public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            return _waiterFactory.NewExplicitWaiter(defaultTimeout);
+            return _waiterFactory.NewWaiter(defaultTimeout);
         }
     }
 }

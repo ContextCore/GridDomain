@@ -75,7 +75,7 @@ namespace GridDomain.Scheduling.Akka
                     Sender.Tell(new Status.Failure(e));
 
                  var fault = Fault.New(message, e, message.Command.ProcessId, typeof(SchedulingActor));
-                 _publisher.Publish(fault);
+                 _publisher.Publish(fault, message.CommandMetadata);
             }
         }
     }

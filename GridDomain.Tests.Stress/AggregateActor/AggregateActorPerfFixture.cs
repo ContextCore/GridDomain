@@ -29,9 +29,9 @@ namespace GridDomain.Tests.Stress.AggregateActor {
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
         private readonly ITestOutputHelper _testOutputHelper;
-        private IActorRef _aggregateActor;
-        private ICommand[] _commands;
-        private Guid _aggregateId;
+        private readonly IActorRef _aggregateActor;
+        private readonly ICommand[] _commands;
+        private readonly Guid _aggregateId;
 
         protected AggregateActorPerf(ITestOutputHelper output,string actorSystemConfig)
         {

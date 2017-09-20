@@ -12,19 +12,19 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class AggregatesPipeActor : ReceiveActor
     {
         private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
-        public AggregatesPipeActor(ICatalog<IMessageProcessor<CommandExecuted>, ICommand> aggregateCatalog)
+        public AggregatesPipeActor(ICatalog<IActorRef,object> aggregateCatalog)
         {
-            Receive<IMessageMetadataEnvelop<ICommand>>(c =>
-                                                       {
-                                                           var aggregateProcessor = aggregateCatalog.Get(c.Message);
-                                                           if (aggregateProcessor == null)
-                                                               throw new CannotFindAggregateForCommandExñeption(c.Message,
-                                                                                                                c.Message.GetType());
+            Receive<IMessageMetadataEnvelop>(c =>
+                                            {
+                                                var aggregateProcessor = aggregateCatalog.Get(c.Message);
+                                                if (aggregateProcessor == null)
+                                                    throw new CannotFindAggregateForCommandExñeption(c.Message,
+                                                                                                     c.Message.GetType());
 
-                                                           var workInProgressTask = Task.CompletedTask;
-                                                           Log.Debug("Received command {@c}",c);
-                                                           aggregateProcessor.Process(c, ref workInProgressTask).PipeTo(Sender);
-                                                       });
+                                                Log.Debug("Received command {@c}",c);
+                                                aggregateProcessor.Tell(c, Sender);
+                                            });
+
         }
     }
 }

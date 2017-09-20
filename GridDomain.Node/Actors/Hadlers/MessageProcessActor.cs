@@ -9,7 +9,7 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Actors.Hadlers
 {
-    public class MessageProcessActor<TMessage, THandler> : ReceiveActor where THandler : IHandler<TMessage>
+    public class MessageHandleActor<TMessage, THandler> : ReceiveActor where THandler : IHandler<TMessage>
                                                                         where TMessage : class, IHaveProcessId, IHaveId
     {
         private static readonly ProcessEntry FaltProcessEntry = new ProcessEntry(typeof(THandler).Name,
@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.Hadlers
 
         private int _publishFaultCount;
 
-        public MessageProcessActor(THandler handler, IPublisher publisher)
+        public MessageHandleActor(THandler handler, IPublisher publisher)
         {
             Publisher = publisher;
             _monitor = new ActorMonitor(Context, typeof(THandler).Name);
@@ -48,7 +48,8 @@ namespace GridDomain.Node.Actors.Hadlers
                                                      if(error != null)
                                                          PublishError((TMessage)envelop.Message, envelop.Metadata, error);
                                                      return new HandlerExecuted(envelop, error);
-                                                 }).PipeTo(Sender);
+                                                 })
+                                                 .PipeTo(Sender);
                                              },
                                              m => m.Message is TMessage);
         }

@@ -65,13 +65,13 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                       .Execute()
                       .ShouldThrow<TimeoutException>();
         }
-
+        
         [Fact]
         public async Task MessageWaiter_after_cmd_execute_should_waits_until_aggregate_event()
         {
             var cmd = new PlanTitleWriteCommand(100, Guid.NewGuid());
             var waiter = Node.NewExplicitWaiter()
-                             .Expect<IMessageMetadataEnvelop<BalloonTitleChanged>>(e => e.Message.SourceId == cmd.AggregateId)
+                             .Expect<MessageMetadataEnvelop>(e => (e.Message as BalloonTitleChanged)?.SourceId == cmd.AggregateId)
                              .Create();
 
             await Node.Execute(cmd);

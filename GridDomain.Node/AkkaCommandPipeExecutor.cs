@@ -35,7 +35,17 @@ namespace GridDomain.Node
 
         public Task Execute(ICommand command, IMessageMetadata metadata = null)
         {
-            return _commandExecutorActor.Ask<CommandExecuted>(new MessageMetadataEnvelop(command, metadata));
+            return _commandExecutorActor.Ask<object>(new MessageMetadataEnvelop(command, metadata ?? CreateEmptyCommandMetadata(command)))
+                                        .ContinueWith(t =>
+                                                      {
+                                                          if(t.Result is CommandExecuted commandCompelted)
+                                                              return commandCompelted; 
+
+                                                          if (t.Result is IFault fault)
+                                                              throw fault.Exception;
+
+                                                          throw new InvalidMessageException($"expected {typeof(CommandExecuted)} , but received{t.Result.GetType()}");
+                                                      });
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand

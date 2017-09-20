@@ -37,16 +37,16 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
                 Sys.ActorOf(
                             Props.Create(
                                          () =>
-                                             new MessageProcessActor<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>(
+                                             new MessageHandleActor<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>(
                                                                                                                    new BalloonTitleChangedOddFaultyMessageHandler(transport),
                                                                                                                    transport)));
 
             actor.Tell(new MessageMetadataEnvelop<DomainEvent>(message, MessageMetadata.Empty));
 
-            var fault = FishForMessage<IMessageMetadataEnvelop<IFault>>(m => true);
+            var fault = FishForMessage<IMessageMetadataEnvelop>(m => m.Message is IFault).Message as IFault;
 
-            Assert.Equal(message.ProcessId, fault.Message.ProcessId);
-            Assert.IsAssignableFrom<Fault<BalloonTitleChanged>>(fault.Message);
+            Assert.Equal(message.ProcessId, fault.ProcessId);
+            Assert.IsAssignableFrom<Fault<BalloonTitleChanged>>(fault);
         }
 
         [Fact]
@@ -66,9 +66,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 
             actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 
-            var fault = FishForMessage<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(m => true,TimeSpan.FromMinutes(100));
+            var fault = FishForMessage<MessageMetadataEnvelop>(m => m.Message is Fault<GoSleepCommand>).Message as IFault;
 
-            Assert.Equal(command.ProcessId, fault.Message.ProcessId);
+            Assert.Equal(command.ProcessId, fault.ProcessId);
         }
     }
 }
