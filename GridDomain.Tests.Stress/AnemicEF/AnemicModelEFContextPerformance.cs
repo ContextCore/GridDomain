@@ -23,8 +23,8 @@ namespace GridDomain.Tests.Stress.AnemicEF {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
             _contextCreator = () => new BalloonContext(options);
-            _efCommands = Enumerable.Range(0, 50)
-                                    .SelectMany(n => CreateAggregatePlan(50))
+            _efCommands = Enumerable.Range(0, 20)
+                                    .SelectMany(n => CreateAggregatePlan(20))
                                     .ToArray();
         }
 

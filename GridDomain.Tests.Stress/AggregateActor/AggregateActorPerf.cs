@@ -67,12 +67,6 @@ namespace GridDomain.Tests.Stress.AggregateActor {
                 yield return new WriteTitleCommand(random.Next(), _aggregateId);
         }
 
-        [Fact]
-        public void TestFact()
-        {
-            Task.WhenAll(_commands.Select(c => _aggregateActor.Ask<CommandExecuted>(new MessageMetadataEnvelop<ICommand>(c, MessageMetadata.Empty))))
-                .Wait();
-        }
         [PerfSetup]
         public virtual void Setup(BenchmarkContext context)
         {

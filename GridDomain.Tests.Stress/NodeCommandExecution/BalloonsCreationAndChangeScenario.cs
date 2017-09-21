@@ -7,13 +7,13 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 
 namespace GridDomain.Tests.Stress.NodeCommandExecution
 {
-    public class BalloonsCreationAndChangeScenarioProjection : INodeScenario
+    public class BalloonsCreationAndChangeScenario : INodeScenario
     {
         private readonly Random _random = new Random();
         public ICollection<CommandPlan> CommandPlans { get; }
 
-        public BalloonsCreationAndChangeScenarioProjection(int aggregateScenariosCount = 100,
-                                                           int aggregateChangeAmount = 10)
+        public BalloonsCreationAndChangeScenario(int aggregateScenariosCount,
+                                                 int aggregateChangeAmount)
         {
             CommandPlans = Enumerable.Range(0, aggregateScenariosCount)
                                      .SelectMany(c => CreateAggregatePlan(aggregateChangeAmount))

@@ -205,22 +205,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateActor\AggregateActorPerfFixture.cs" />
+    <Compile Include="AggregateActor\AggregateActorPerf.cs" />
     <Compile Include="AggregateCommandsHandlerExecution\AggregateCommandsHandlerPerfTest.cs" />
     <Compile Include="AnemicEF\AnemicModelEFCOntextInMem.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
-    <Compile Include="AggregateActor\AggregateActorPerfFixtureInMem.cs" />
+    <Compile Include="AggregateActor\AggregateActorPerfInMem.cs" />
     <Compile Include="AnemicEF\AnemicModelEFContextPerformance.cs" />
     <Compile Include="AnemicEF\AnemicModelEFContextPerformanceSql.cs" />
     <Compile Include="AnemicEF\IEFCommand.cs" />
     <Compile Include="AnemicEF\InflateNewBallonCommandEF.cs" />
     <Compile Include="AnemicEF\UpdateBallonCommandEF.cs" />
-    <Compile Include="AggregateActor\AggregateActorPerfFixtureSql.cs" />
-    <Compile Include="NodeCommandExecution\BalloonsCreationAndChangeScenarioProjection.cs" />
-    <Compile Include="NodeCommandExecution\ScenarionInMemPerfTest.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionPerfFixtureSql.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionWithEventWait.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionWithProjection.cs" />
+    <Compile Include="AggregateActor\AggregateActorPerfSql.cs" />
+    <Compile Include="NodeCommandExecution\BalloonsCreationAndChangeScenario.cs" />
+    <Compile Include="NodeCommandExecution\BalloonWriteOnlyFixture.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInMem.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInSql.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInSql.cs" />
+    <Compile Include="NodeCommandExecution\ScenarionPerfTest.cs" />
+    <Compile Include="NodeCommandExecution\BallonWriteOnlyDomain.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInMem.cs" />
     <Compile Include="NodeCommandExecution\CommandExecutionWithProjectionPerfTestSql.cs" />
     <Compile Include="CommandPlan.cs" />
     <Compile Include="GlobalSuppressions.cs" />

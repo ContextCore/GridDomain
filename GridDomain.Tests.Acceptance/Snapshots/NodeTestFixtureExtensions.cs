@@ -12,9 +12,9 @@ using GridDomain.Tests.Unit;
 namespace GridDomain.Tests.Acceptance.Snapshots {
     public static class NodeTestFixtureExtensions
     {
-        public static T UseSqlPersistence<T>(this T fixture,bool clearData = true) where T: NodeTestFixture
+        public static T UseSqlPersistence<T>(this T fixture, bool clearData = true, IAkkaDbConfiguration dbConfig = null) where T: NodeTestFixture
         {
-            fixture.AkkaConfig.Persistence = new AutoTestAkkaDbConfiguration();
+            fixture.AkkaConfig.Persistence = dbConfig ?? new AutoTestAkkaDbConfiguration();
             if(clearData)
                 fixture.OnNodePreparingEvent += (s, e) =>
                                                 {

@@ -14,8 +14,8 @@ namespace GridDomain.Tests.Stress
         private readonly Random _random = new Random();
         public ICollection<CommandPlan> CommandPlans { get; }
 
-        public BalloonsCreationAndChangeScenario(int aggregateScenariosCount = 100, 
-                                                 int aggregateChangeAmount = 10)
+        public BalloonsCreationAndChangeScenario(int aggregateScenariosCount, 
+                                                 int aggregateChangeAmount)
         {
             CommandPlans = Enumerable.Range(0, aggregateScenariosCount)
                                      .SelectMany(c => CreateAggregatePlan(aggregateChangeAmount))
