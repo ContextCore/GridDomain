@@ -96,7 +96,10 @@
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="NBench, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NBench.1.0.4\lib\net452\NBench.dll</HintPath>
+      <HintPath>..\packages\NBench.Runner.1.0.4\lib\net452\NBench.dll</HintPath>
+    </Reference>
+    <Reference Include="NBench.Runner, Version=1.0.4.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\NBench.Runner.1.0.4\lib\net452\NBench.Runner.exe</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>

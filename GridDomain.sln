@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Scheduling.Akka"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tools", "GridDomain.Tools\GridDomain.Tools.csproj", "{99763B95-220B-46AA-9155-84E3C1AD6BB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NBenchTest", "NBenchTest\NBenchTest.csproj", "{77606F6D-FAB0-40B6-A221-43C1119418EE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Tests.Common", "GridDomain.Tests.Common\GridDomain.Tests.Common.csproj", "{AED1BC61-D13E-454B-A07B-B443A9097298}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Unit", "GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj", "{46CC4BE2-93BE-4807-9B1A-7A10DFEA29AF}"
@@ -75,10 +73,6 @@ Global
 		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99763B95-220B-46AA-9155-84E3C1AD6BB2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{77606F6D-FAB0-40B6-A221-43C1119418EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{77606F6D-FAB0-40B6-A221-43C1119418EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{77606F6D-FAB0-40B6-A221-43C1119418EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{77606F6D-FAB0-40B6-A221-43C1119418EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AED1BC61-D13E-454B-A07B-B443A9097298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AED1BC61-D13E-454B-A07B-B443A9097298}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AED1BC61-D13E-454B-A07B-B443A9097298}.Release|Any CPU.ActiveCfg = Release|Any CPU

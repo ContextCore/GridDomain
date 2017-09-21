@@ -22,8 +22,8 @@ namespace NBenchTest {
 
         [NBenchFact]
         [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
-            NumberOfIterations = 5, RunMode = RunMode.Iterations,
-            RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
+            NumberOfIterations = 3, RunMode = RunMode.Throughput,
+            RunTimeMilliseconds = 500, TestMode = TestMode.Test)]
         [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 400)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         //MAX: 500

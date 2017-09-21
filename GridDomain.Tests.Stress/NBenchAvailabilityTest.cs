@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Stress {
         }
 
 
-        [NBenchFact]
+        [NBenchFact(Skip = "only for debugging purposes")]
         [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
             NumberOfIterations = 1, RunMode = RunMode.Iterations,
             RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]

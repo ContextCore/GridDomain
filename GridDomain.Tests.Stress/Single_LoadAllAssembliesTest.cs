@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Stress {
             _helper = helper;
         }
 
-        [Fact]
+        [Fact(Skip = "only for debugging purposes")]
         void Test()
         {
             try
