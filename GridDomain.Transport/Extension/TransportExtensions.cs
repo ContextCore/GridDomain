@@ -10,8 +10,7 @@ namespace GridDomain.Transport.Extension {
 
         public static IActorTransport GetTransport(this ActorSystem system)
         {
-            return system.GetExtension<TransportExtension>()
-                         .Transport;
+            return system.GetExtension<TransportExtension>().Transport;
         }
     }
 }

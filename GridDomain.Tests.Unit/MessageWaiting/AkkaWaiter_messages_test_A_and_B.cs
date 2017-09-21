@@ -8,12 +8,16 @@ namespace GridDomain.Tests.Unit.MessageWaiting
 {
     public class AkkaWaiter_messages_test_A_and_B : AkkaWaiterTest
     {
+        class B
+        {
+            
+        }
         private readonly MessageMetadataEnvelop<string> _messageEnvelopeA = new MessageMetadataEnvelop<string>("et", MessageMetadata.Empty);
-        private readonly MessageMetadataEnvelop<char> _messageEnvelopeB = new MessageMetadataEnvelop<char>('a', MessageMetadata.Empty);
+        private readonly MessageMetadataEnvelop<B> _messageEnvelopeB = new MessageMetadataEnvelop<B>(new B(), MessageMetadata.Empty);
 
         protected override Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter)
         {
-            var task = Waiter.Expect<string>().And<char>().Create();
+            var task = Waiter.Expect<string>().And<B>().Create();
 
             Publish(_messageEnvelopeA.Message);
             Publish(_messageEnvelopeB.Message);

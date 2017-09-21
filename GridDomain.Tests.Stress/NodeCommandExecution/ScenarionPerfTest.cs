@@ -7,23 +7,23 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Stress.NodeCommandExecution
 {
 
-    public abstract class ScenarionInMemPerfTest
+    public abstract class ScenarionPerfTest
     {
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
-        private IGridDomainNode _gridDomainNode;
+        protected IGridDomainNode Node;
 
-        protected ScenarionInMemPerfTest(ITestOutputHelper output)
+        protected ScenarionPerfTest(ITestOutputHelper output)
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
         }
 
         [PerfSetup]
-        public void Setup(BenchmarkContext context)
+        public virtual void Setup(BenchmarkContext context)
         {
             OnSetup();
-            _gridDomainNode = CreateNode();
+            Node = CreateNode();
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }
         protected virtual void OnSetup() { }
@@ -39,15 +39,15 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 1)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         //MAX: 500
-        public void MeasureCommandExecutionWithoutProjectionsInMemory()
+        public void MeasureCommandsPerSecond()
         {
-            Scenario.Execute(_gridDomainNode, p => _counter.Increment());
+            Scenario.Execute(Node, p => _counter.Increment()).Wait();
         }
 
         [PerfCleanup]
-        public void Cleanup()
+        public virtual void Cleanup()
         {
-            _gridDomainNode.Dispose();
+            Node.Dispose();
         }
     }
 }

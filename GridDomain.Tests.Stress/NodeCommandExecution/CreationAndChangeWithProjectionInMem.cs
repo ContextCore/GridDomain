@@ -8,20 +8,19 @@ using Serilog.Events;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.NodeCommandExecution {
-    public class CommandExecutionWithProjection : ScenarionInMemPerfTest
+
+    public class CreationAndChangeWithProjectionInMem : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
         private DbContextOptions<BalloonContext> _dbContextOptions;
 
-        public CommandExecutionWithProjection(ITestOutputHelper output):base(output)
+        public CreationAndChangeWithProjectionInMem(ITestOutputHelper output):base(output)
         {
             _testOutputHelper = output;
-            Trace.Listeners.Clear();
-            Trace.Listeners.Add(new XunitTraceListener(output));
         }
         protected override void OnSetup()
         {
-            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CommandExecutionWithProjection)).Options;
+            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CreationAndChangeWithProjectionInMem)).Options;
             using(var ctx = new BalloonContext(_dbContextOptions))
             {
                 ctx.Database.EnsureDeleted();
@@ -29,7 +28,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             }
         }
 
-        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenarioProjection(10, 10);
+        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 20);
         protected override IGridDomainNode CreateNode()
         {
             return new BalloonWithProjectionFixture(_dbContextOptions)

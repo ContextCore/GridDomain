@@ -49,6 +49,10 @@
     <Reference Include="Google.Protobuf, Version=3.3.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.3.0\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
+    <Reference Include="GridDomain.Transport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GridDomain.Node\bin\Release\net46\GridDomain.Transport.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.EntityFrameworkCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.EntityFrameworkCore.2.0.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
     </Reference>
@@ -201,14 +205,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateActor\AggregateActorPerf.cs" />
     <Compile Include="AggregateCommandsHandlerExecution\AggregateCommandsHandlerPerfTest.cs" />
+    <Compile Include="AnemicEF\AnemicModelEFCOntextInMem.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
-    <Compile Include="NodeCommandExecution\AggregateActorPerfFixtureInMem.cs" />
-    <Compile Include="NodeCommandExecution\BalloonsCreationAndChangeScenarioProjection.cs" />
-    <Compile Include="NodeCommandExecution\ScenarionInMemPerfTest.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionPerfFixtureSql.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionWithEventWait.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionWithProjection.cs" />
+    <Compile Include="AggregateActor\AggregateActorPerfInMem.cs" />
+    <Compile Include="AnemicEF\AnemicModelEFContextPerformance.cs" />
+    <Compile Include="AnemicEF\AnemicModelEFContextPerformanceSql.cs" />
+    <Compile Include="AnemicEF\IEFCommand.cs" />
+    <Compile Include="AnemicEF\InflateNewBallonCommandEF.cs" />
+    <Compile Include="AnemicEF\UpdateBallonCommandEF.cs" />
+    <Compile Include="AggregateActor\AggregateActorPerfSql.cs" />
+    <Compile Include="NodeCommandExecution\BalloonsCreationAndChangeScenario.cs" />
+    <Compile Include="NodeCommandExecution\BalloonWriteOnlyFixture.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInMem.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInSql.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInSql.cs" />
+    <Compile Include="NodeCommandExecution\ScenarionPerfTest.cs" />
+    <Compile Include="NodeCommandExecution\BallonWriteOnlyDomain.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInMem.cs" />
     <Compile Include="NodeCommandExecution\CommandExecutionWithProjectionPerfTestSql.cs" />
     <Compile Include="CommandPlan.cs" />
     <Compile Include="GlobalSuppressions.cs" />

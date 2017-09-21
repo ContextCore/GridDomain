@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Node.Actors.Aggregates.Messages;
 
-namespace GridDomain.Node.Actors.CommandPipe.MessageProcessors {
-
-
+namespace GridDomain.Node.Actors.CommandPipe.MessageProcessors
+{
     public class FireAndForgetMessageProcessor : IMessageProcessor
     {
         public FireAndForgetMessageProcessor(IActorRef processor)

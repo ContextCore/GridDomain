@@ -7,15 +7,17 @@ namespace GridDomain.Tests.Unit.MessageWaiting
 {
     public class AkkaWaiter_messages_test_A_or_B : AkkaWaiterTest
     {
+        class A { }
+
         protected override Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter)
         {
-            return waiter.Expect<string>().Or<char>().Create();
+            return waiter.Expect<string>().Or<A>().Create();
         }
 
         [Fact]
         public async Task When_publish_one_of_subscribed_message_Then_wait_is_over_And_message_received()
         {
-            var msg = 'a';
+            var msg = new A();
             Publish(msg);
             await ExpectMsg(msg);
         }

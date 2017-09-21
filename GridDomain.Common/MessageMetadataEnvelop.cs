@@ -6,10 +6,10 @@ namespace GridDomain.Common
 {
     public class MessageMetadataEnvelop : IMessageMetadataEnvelop
     {
-        protected MessageMetadataEnvelop(object message, IMessageMetadata metadata)
+        public MessageMetadataEnvelop(object message, IMessageMetadata metadata = null)
         {
             Message = message;
-            Metadata = metadata;
+            Metadata = metadata ?? MessageMetadata.Empty;
         }
 
         public object Message { get; }
@@ -17,17 +17,7 @@ namespace GridDomain.Common
 
         public static MessageMetadataEnvelop New<T>(T msg, IMessageMetadata metadata = null)
         {
-            return new MessageMetadataEnvelop<T>(msg, metadata ?? MessageMetadata.Empty);
-        }
-
-        public static IMessageMetadataEnvelop NewTyped(object msg, IMessageMetadata metadata)
-        {
-            return New(((dynamic)msg), metadata);
-        }
-
-        public static Type GetEnvelopType(Type type)
-        {
-            return typeof(MessageMetadataEnvelop<>).MakeGenericType(type);
+            return new MessageMetadataEnvelop<T>(msg, metadata);
         }
     }
 

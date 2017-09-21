@@ -52,35 +52,34 @@ namespace GridDomain.Node.Actors.Aggregates
         {
             DefaultBehavior();
             
-            Command<IMessageMetadataEnvelop<ICommand>>(m =>
-                                                       {
-                                                           var cmd = m.Message;
-                                                           Monitor.Increment(nameof(CQRS.Command));
-
-                                                           ExecutionContext.Command = cmd;
-                                                           ExecutionContext.CommandMetadata = m.Metadata;
-                                                           ExecutionContext.CommandSender = Sender;
-                                                           var self = Self;
-                                                           Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
-
-                                                           Log.Debug("Executing command. {@m}", ExecutionContext);
-
-                                                           _aggregateCommandsHandler.ExecuteAsync(State,
-                                                                                                  cmd,
-                                                                                                  agr =>
-                                                                                                  {
-                                                                                                      ExecutionContext.ProducedState = (TAggregate) agr;
-                                                                                                      
-                                                                                                      return self.Ask<EventsPersisted>(agr.GetDomainEvents());
-                                                                                                  })
-                                                                                    .ContinueWith(t =>
-                                                                                                  {
-                                                                                                      if (t.IsFaulted) throw t.Exception;
-                                                                                                      //return CommandProducedEventsPersisted.Instance;
-                                                                                                      return CommandExecuted.Instance;
-                                                                                                  })
-                                                                                    .PipeTo(Self);
-                                                       });
+            Command<IMessageMetadataEnvelop>(m =>
+                                            {
+                                                var cmd = (ICommand)m.Message;
+                                                Monitor.Increment(nameof(CQRS.Command));
+                                            
+                                                ExecutionContext.Command = cmd;
+                                                ExecutionContext.CommandMetadata = m.Metadata;
+                                                ExecutionContext.CommandSender = Sender;
+                                                var self = Self;
+                                                Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
+                                            
+                                                Log.Debug("Executing command. {@m}", ExecutionContext);
+                                            
+                                                _aggregateCommandsHandler.ExecuteAsync(State,
+                                                                                       cmd,
+                                                                                       agr =>
+                                                                                       {
+                                                                                           ExecutionContext.ProducedState = (TAggregate) agr;
+                                                                                           
+                                                                                           return self.Ask<EventsPersisted>(agr.GetDomainEvents());
+                                                                                       })
+                                                                         .ContinueWith(t =>
+                                                                                       {
+                                                                                           if (t.IsFaulted) throw t.Exception;
+                                                                                           return CommandExecuted.Instance;
+                                                                                       })
+                                                                         .PipeTo(Self);
+                                            }, m => m.Message is ICommand);
         }
 
         private void ProcessingCommandBehavior()
@@ -91,7 +90,7 @@ namespace GridDomain.Node.Actors.Aggregates
             Command<IReadOnlyCollection<DomainEvent>>(domainEvents =>
                                    {
 
-                                       Monitor.Increment(nameof(Messages.PersistEventPack));
+                                       Monitor.Increment(nameof(PersistEventPack));
                                        ExecutionContext.PersistenceWaiter = Sender;
                                        if (!domainEvents.Any())
                                        {
@@ -144,7 +143,8 @@ namespace GridDomain.Node.Actors.Aggregates
             Command<Status.Failure>(f =>
                                     {
                                         ExecutionContext.Exception = f.Cause.UnwrapSingle();
-                                        PublishError(ExecutionContext.Exception);
+                                        var fault = PublishError(ExecutionContext.Exception);
+                                        ExecutionContext.CommandSender.Tell(fault);
                                     });
 
             Command<CommandExecuted>(c =>
@@ -152,25 +152,24 @@ namespace GridDomain.Node.Actors.Aggregates
                                          Log.Debug("Command executed. {@context}", ExecutionContext.CommandMetadata);
                                          //finish command execution. produced state can be null on execution error
                                          State = (TAggregate)ExecutionContext.ProducedState ?? State;
-                                         var commandCompleted = new CommandCompleted(ExecutionContext.Command.Id);
                                          var completedMetadata = ExecutionContext.CommandMetadata
                                                                                  .CreateChild(ExecutionContext.Command.Id, _commandCompletedProcessEntry);
-                                         _publisher.Publish(commandCompleted, completedMetadata);
 
-                                         ExecutionContext.CommandSender.Tell(commandCompleted);
+                                         _publisher.Publish(c, completedMetadata);
+
+                                         ExecutionContext.CommandSender.Tell(c);
                                          ExecutionContext.Clear();
                                          Behavior.Unbecome();
-                                         Stash.UnstashAll();
+                                         Stash.Unstash();
                                      });
 
-            Command<IMessageMetadataEnvelop<ICommand>>(o => StashMessage(o));
-
+            Command<IMessageMetadataEnvelop>(o => StashMessage(o));
             Command<GracefullShutdownRequest>(o => StashMessage(o));
 
             DefaultBehavior();
         }
 
-        private void PublishError(Exception exception)
+        private IFault PublishError(Exception exception)
         {
             var command = ExecutionContext.Command;
 
@@ -179,11 +178,12 @@ namespace GridDomain.Node.Actors.Aggregates
             var producedFaultMetadata = ExecutionContext.CommandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
             var fault = Fault.NewGeneric(command, exception, command.ProcessId, typeof(TAggregate));
             Project(fault, producedFaultMetadata);
+            return fault;
         }
 
         private void Project(object evt, IMessageMetadata commandMetadata)
         {
-            _customHandlersActor.Tell(MessageMetadataEnvelop.NewTyped(evt, commandMetadata));
+            _customHandlersActor.Tell(new MessageMetadataEnvelop(evt, commandMetadata));
         }
     }
 }

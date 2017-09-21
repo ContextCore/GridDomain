@@ -65,7 +65,7 @@ namespace GridDomain.Node.Actors.PersistentHub
                                                  var childId = GetChildActorId(messageWithMetadata);
                                                  var name = GetChildActorName(childId);
                                                  messageWithMetadata.Metadata.History.Add(_forwardEntry);
-                                                 SendToChild(messageWithMetadata, childId, name);
+                                                 SendToChild(messageWithMetadata, childId, name, Sender);
                                              });
         }
 
@@ -80,7 +80,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             return true;
         }
 
-        protected void SendToChild(object message, Guid childId, string name)
+        protected void SendToChild(object message, Guid childId, string name, IActorRef sender)
         {
             ChildInfo knownChild;
             //TODO: refactor this suspicious logic of child terminaition cancel
@@ -102,7 +102,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
             knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
 
-            SendMessageToChild(knownChild, message);
+            SendMessageToChild(knownChild, message, sender);
             LogMessageSentToChild(message, childId, childWasCreated);
         }
 
@@ -132,7 +132,7 @@ namespace GridDomain.Node.Actors.PersistentHub
         protected abstract Guid GetChildActorId(IMessageMetadataEnvelop message);
         protected abstract Type ChildActorType { get; }
 
-        protected virtual void SendMessageToChild(ChildInfo knownChild, object message)
+        protected virtual void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
         {
             knownChild.Ref.Tell(message);
         }

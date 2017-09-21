@@ -14,28 +14,26 @@ namespace GridDomain.Tests.Stress
         private readonly Random _random = new Random();
         public ICollection<CommandPlan> CommandPlans { get; }
 
-        public BalloonsCreationAndChangeScenario(int aggregateScenariosCount = 100, 
-                                                 int aggregateChangeAmount = 10)
+        public BalloonsCreationAndChangeScenario(int aggregateScenariosCount, 
+                                                 int aggregateChangeAmount)
         {
             CommandPlans = Enumerable.Range(0, aggregateScenariosCount)
-                                      .SelectMany(c => CreateAggregatePlan(aggregateChangeAmount))
-                                      .ToArray();
+                                     .SelectMany(c => CreateAggregatePlan(aggregateChangeAmount))
+                                     .ToArray();
         }
 
         private IEnumerable<CommandPlan> CreateAggregatePlan(int changeAmount)
         {
             var balloonId = Guid.NewGuid();
-            yield return new CommandPlan(new InflateNewBallonCommand(_random.Next(), balloonId), (n,c) => n.Prepare(c).Expect<BalloonCreated>()
-                                                                                                                      .Execute());
+            yield return new CommandPlan(new InflateNewBallonCommand(_random.Next(), balloonId), (n,c) => n.Execute(c));
             for (var num = 0; num < changeAmount; num++)
-                yield return new CommandPlan(new WriteTitleCommand(_random.Next(), balloonId), (n,c) => n.Prepare(c).Expect<BalloonTitleChanged>()
-                                                                                                                    .Execute());
+                yield return new CommandPlan(new WriteTitleCommand(_random.Next(), balloonId), (n,c) => n.Execute(c));
         }
 
         public Task Execute(IGridDomainNode node, Action<CommandPlan> singlePlanExecutedCallback)
         {
             return Task.WhenAll(CommandPlans.Select(p => node.ExecutePlan(p)
-                                                              .ContinueWith(t => singlePlanExecutedCallback(p))));
+                                                             .ContinueWith(t => singlePlanExecutedCallback(p))));
         }
     }
 }

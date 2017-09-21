@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Akka.Util.Internal;
 using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
@@ -17,11 +18,23 @@ namespace GridDomain.Node.Configuration.Composition
     public class DomainBuilder : IDomainBuilder
     {
         private readonly List<IMessageRouteMap> _maps = new List<IMessageRouteMap>();
-        public IReadOnlyCollection<IMessageRouteMap> MessageRouteMaps => _maps;
 
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
         public IReadOnlyCollection<IContainerConfiguration> ContainerConfigurations => _containerConfigurations;
-        
+
+        public void Configure(ContainerBuilder container)
+        {
+            ContainerConfigurations.ForEach(container.Register);
+
+        }
+
+        public void Configure(IMessagesRouter router)
+        {
+            foreach (var m in (IReadOnlyCollection<IMessageRouteMap>) _maps)
+                m.Register(router)
+                 .Wait();
+        }
+
         public void RegisterProcessManager<TState>(IProcessManagerDependencyFactory<TState> factory) where TState : class, IProcessState
         {
             _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(factory.CreateCatalog,
@@ -45,7 +58,7 @@ namespace GridDomain.Node.Configuration.Composition
         public void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage> where TMessage : class, IHaveProcessId, IHaveId
         {
             var cfg = new ContainerConfiguration(c => c.Register<THandler>(ctx => factory.Create(ctx.Resolve<IMessageProcessContext>())),
-                                                c => c.RegisterType<MessageProcessActor<TMessage, THandler>>());
+                                                c => c.RegisterType<MessageHandleActor<TMessage, THandler>>());
             _containerConfigurations.Add(cfg);
             _maps.Add(factory.CreateRouteMap());
         }

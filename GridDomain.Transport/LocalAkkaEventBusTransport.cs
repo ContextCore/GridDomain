@@ -40,8 +40,7 @@ namespace GridDomain.Transport
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            var messageMetadataEnvelop = MessageMetadataEnvelop.NewTyped(msg, metadata);
-            _bus.Publish(messageMetadataEnvelop);
+            _bus.Publish(new MessageMetadataEnvelop(msg, metadata));
         }
 
         public void Subscribe(Type messageType, IActorRef actor)

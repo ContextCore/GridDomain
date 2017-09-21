@@ -59,17 +59,17 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
             _counter = context.GetCounter("TotalCommandsExecutedCounter");
         }
 
-        private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenarioProjection(10, 10);
+        private INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(5, 5);
 
-        [NBenchFact]
-        [PerfBenchmark(Description = "Measuring command executions with projections in sql",
-                       NumberOfIterations = 3, 
-                       RunMode = RunMode.Iterations,
-                       TestMode = TestMode.Test)]
-        //MAX: 400, need several launches to warm up sql server
-        // 50 as test is run on 'slow' appveyor
-        [CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 50)]
-        [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
+        //[NBenchFact]
+        //[PerfBenchmark(Description = "Measuring command executions with projections in sql",
+        //               NumberOfIterations = 3, 
+        //               RunMode = RunMode.Iterations,
+        //               TestMode = TestMode.Test)]
+        ////MAX: 400, need several launches to warm up sql server
+        //// 50 as test is run on 'slow' appveyor
+        //[CounterThroughputAssertion("TotalCommandsExecutedCounter", MustBe.GreaterThan, 50)]
+        //[MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         public void MeasureCommandExecutionWithProjectionsInSql()
         {
             Scenario.Execute(_fixture.Node, p => _counter.Increment());

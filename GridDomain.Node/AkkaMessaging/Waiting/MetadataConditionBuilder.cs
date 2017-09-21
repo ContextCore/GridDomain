@@ -9,20 +9,21 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     /// <typeparam name="T"></typeparam>
     public class MetadataConditionBuilder<T> : ConditionBuilder<T>
     {
+
         protected override bool DefaultFilter<TMsg>(object received)
         {
-            return received is IMessageMetadataEnvelop<TMsg>;
+            return (received as IMessageMetadataEnvelop)?.Message is TMsg;
         }
 
         protected override bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter)
         {
-            var envelop = receivedMessage as IMessageMetadataEnvelop<TMsg>;
-            return envelop != null && domainMessageFilter(envelop.Message);
+            var msg = (receivedMessage as IMessageMetadataEnvelop)?.Message as TMsg;
+            return msg != null && domainMessageFilter(msg);
         }
 
         protected override void AddFilter(Type type, Func<object, bool> filter)
         {
-            base.AddFilter(MessageMetadataEnvelop.GetEnvelopType(type), filter);
+            base.AddFilter(typeof(MessageMetadataEnvelop), filter);
         }
     }
 }
