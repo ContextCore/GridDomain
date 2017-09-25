@@ -8,7 +8,6 @@ using Serilog.Events;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.NodeCommandExecution {
-
     public class CreationAndChangeWithProjectionInMem : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _testOutputHelper;

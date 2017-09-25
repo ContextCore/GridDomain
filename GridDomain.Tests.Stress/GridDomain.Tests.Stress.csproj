@@ -221,6 +221,8 @@
     <Compile Include="AggregateActor\AggregateActorPerfSql.cs" />
     <Compile Include="NodeCommandExecution\BalloonsCreationAndChangeScenario.cs" />
     <Compile Include="NodeCommandExecution\BalloonWriteOnlyFixture.cs" />
+    <Compile Include="NodeCommandExecution\ConnectorCreationAndChangeWithProjectionInMem.cs" />
+    <Compile Include="NodeCommandExecution\ConnectorCreationAndChangeWithProjectionInSql.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInMem.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInSql.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInSql.cs" />
