@@ -6,11 +6,9 @@ namespace GridDomain.Node.Configuration.Akka.Hocon
 
         public override string BuildActorProvider()
         {
-            var clusterConfigString = @"
+            return @"
             actor.provider =  ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
             ";
-
-            return clusterConfigString;
         }
     }
 }

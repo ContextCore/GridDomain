@@ -32,7 +32,7 @@ namespace GridDomain.Tools.Connector
         {
             _serverAddress = serverAddress;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
-            _conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
+            _conf = clientConfiguration ?? new ConsoleAkkaConfiguration();
         }
 
         public void Dispose()
