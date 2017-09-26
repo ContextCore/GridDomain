@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.Tools {
 
     public class ConsoleSerilogLoggerActor : SerilogLoggerActor
     {
-        public ConsoleSerilogLoggerActor():base(new DefaultLoggerConfiguration())
+        public ConsoleSerilogLoggerActor():base(new DefaultLoggerConfiguration().CreateLogger())
         {
             
         }

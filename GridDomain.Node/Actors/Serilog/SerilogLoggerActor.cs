@@ -13,16 +13,17 @@ namespace GridDomain.Node.Actors.Serilog
     {
         private readonly ILogger _logger;
 
-        public SerilogLoggerActor() : this(new DefaultLoggerConfiguration())
+        public SerilogLoggerActor() : this(Log.Logger)
         {
             
         }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="SerilogLogger" /> class.
         /// </summary>
-        public SerilogLoggerActor(LoggerConfiguration loggerConf)
+        public SerilogLoggerActor(ILogger log)
         {
-            _logger = loggerConf.CreateLogger();
+            _logger = log;
 
             Receive<Error>(m => Handle(m));
             Receive<Warning>(m => Handle(m));
@@ -45,9 +46,8 @@ namespace GridDomain.Node.Actors.Serilog
 
         private static object[] GetArgs(object message)
         {
-            var logMessage = message as LogMessage;
-            if (logMessage != null) return logMessage.Args;
-            else return new[] {message};
+            if (message is LogMessage logMessage) return logMessage.Args;
+            return new[] {message};
         }
 
         private ILogger GetLogger(LogEvent logEvent)
