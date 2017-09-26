@@ -2,6 +2,7 @@ using System;
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.CQRS;
+using GridDomain.Node.Configuration;
 using NBench;
 using Xunit.Abstractions;
 

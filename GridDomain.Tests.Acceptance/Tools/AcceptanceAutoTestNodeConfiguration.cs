@@ -10,6 +10,9 @@ namespace GridDomain.Tests.Acceptance.Tools {
     public class AcceptanceAutoTestNodeConfiguration : NodeConfiguration
     {
         public AcceptanceAutoTestNodeConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
-            : base(new AutoTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), typeof(ConsoleSerilogLoggerActor), verbosity) { }
+            : base(new AutoTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), verbosity)
+        {
+            LogActorType = typeof(ConsoleSerilogLoggerActor);
+        }
     }
 }

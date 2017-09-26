@@ -1,4 +1,5 @@
 using Akka.Event;
+using GridDomain.Node.Configuration;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.AggregateActor {

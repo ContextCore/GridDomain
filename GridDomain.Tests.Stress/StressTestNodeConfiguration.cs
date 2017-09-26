@@ -9,6 +9,6 @@ namespace GridDomain.Tests.Stress
     public class StressTestNodeConfiguration : NodeConfiguration
     {
         public StressTestNodeConfiguration(LogLevel verbosity = LogLevel.WarningLevel)
-            : base(new StressTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), typeof(SerilogLoggerActor), verbosity) {}
+            : base(new StressTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), verbosity) {}
     }
 }

@@ -1,15 +1,8 @@
 using System;
 using Akka.Actor;
-using Akka.Event;
-using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.Configuration.Hocon;
 
-namespace GridDomain.Node.Configuration
-{
-
-
-
-    
+namespace GridDomain.Node.Configuration {
     public static class NodeConfigurationExtensions
     {
         public static ActorSystem CreateInMemorySystem(this NodeConfiguration conf)
@@ -58,24 +51,5 @@ namespace GridDomain.Node.Configuration
                                                            new PersistenceSnapshotConfig(conf)));
             return cfg.Build();
         }
-    }
-
-    public class NodeConfiguration
-    {
-        public Type LogActorType { get; set; } = typeof(SerilogLoggerActor);
-        public LogLevel LogLevel { get; set; }
-
-        public NodeConfiguration(INodeNetworkAddress networkConf, INodeDbConfiguration dbConf, LogLevel logLevel = LogLevel.DebugLevel)
-        {
-            Network = networkConf;
-            Persistence = dbConf;
-            LogLevel = logLevel;
-        }
-        public NodeConfiguration(INodeNetworkAddress networkConf, LogLevel logLevel = LogLevel.DebugLevel):this(networkConf,null,logLevel)
-        {
-        }
-
-        public INodeNetworkAddress Network { get; set; }
-        public INodeDbConfiguration Persistence { get; set; }
     }
 }

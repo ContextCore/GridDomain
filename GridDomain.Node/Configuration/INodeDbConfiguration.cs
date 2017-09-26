@@ -9,7 +9,6 @@ namespace GridDomain.Node.Configuration
         int JornalConnectionTimeoutSeconds { get; }
         int SnapshotsConnectionTimeoutSeconds { get; }
         string SnapshotTableName { get; }
-
         string SchemaName { get; }
     }
 }

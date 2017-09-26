@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.Unit.EventsUpgrade.Events;
 using Xunit;
@@ -11,12 +12,6 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     {
         private static string SerializedToString<T>(T evt)
         {
-            //XmlSerializer xmlSerializer = new XmlSerializer(evt.GetType());
-            //using (StringWriter textWriter = new StringWriter())
-            //{
-            //    xmlSerializer.Serialize(textWriter, evt);
-            //    return textWriter.ToString();
-            //}
             var system = ActorSystem.Create("example", new AutoTestNodeConfiguration().ToStandAloneInMemorySystemConfig());
 
             // Get the Serialization Extension
@@ -24,11 +19,6 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
 
             // Find the Serializer for it
             var serializer = serialization.FindSerializerFor(evt);
-
-            //var serializedString = JsonConvert.SerializeObject(evt, new JsonSerializerSettings
-            //{
-            //    TypeNameHandling = TypeNameHandling.All
-            //});
 
             return serializer.ToBinary(evt).ToString();
         }

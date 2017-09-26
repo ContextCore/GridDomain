@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots {
             if(clearData)
                 fixture.OnNodePreparingEvent += (s, e) =>
                                                 {
-                                                    TestDbTools.ClearData(e.NodeConfig.Persistence).Wait();
+                                                    TestDbTools.ClearData(fixture.NodeConfig.Persistence).Wait();
                                                 };
 
             fixture.SystemConfigFactory = () => fixture.NodeConfig.ToStandAloneSystemConfig();

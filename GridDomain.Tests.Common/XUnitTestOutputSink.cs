@@ -14,13 +14,8 @@ namespace GridDomain.Tests.Common
 
         public XUnitTestOutputSink(ITestOutputHelper testOutputHelper, ITextFormatter textFormatter)
         {
-            if (testOutputHelper == null)
-                throw new ArgumentNullException(nameof(testOutputHelper));
-            if (textFormatter == null)
-                throw new ArgumentNullException(nameof(textFormatter));
-
-            _output = testOutputHelper;
-            _textFormatter = textFormatter;
+            _output = testOutputHelper ?? throw new ArgumentNullException(nameof(testOutputHelper));
+            _textFormatter = textFormatter ?? throw new ArgumentNullException(nameof(textFormatter));
         }
 
         public void Emit(LogEvent logEvent)

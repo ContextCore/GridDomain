@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tools.Repositories;
 using Xunit;

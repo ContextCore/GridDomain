@@ -7,6 +7,7 @@ using Akka.Actor;
 using Autofac;
 using Autofac.Core;
 using GridDomain.Node;
+using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;

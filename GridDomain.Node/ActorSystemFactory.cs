@@ -10,12 +10,15 @@ namespace GridDomain.Node
         public static AkkaCluster CreateCluster(NodeConfiguration nodeConf, int seedNodeNumber = 2, int childNodeNumber = 3)
         {
             var port = nodeConf.Network.PortNumber;
-            var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber).Select(n => nodeConf.Copy(port++)).ToArray();
-            var seedAdresses = seedNodeConfigs.Select(s => s.Network).ToArray();
+            var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber)
+                                            .Select(n => Copy(nodeConf, port++))
+                                            .ToArray();
+            var seedAdresses = seedNodeConfigs.Select(s => s.Network)
+                                              .ToArray();
 
             var seedSystems =
                 seedNodeConfigs.Select(
-                                       c => ActorSystem.Create(c.Network.SystemName, c.ToClusterSeedNodeSystemConfig(seedAdresses)));
+                                       c => ActorSystem.Create(c.Network.SystemName, c.ToClusterSeedNodeSystemConfig()));
 
             var nonSeedConfiguration =
                 Enumerable.Range(0, childNodeNumber)
@@ -28,10 +31,11 @@ namespace GridDomain.Node
             return new AkkaCluster {SeedNodes = seedSystems.ToArray(), NonSeedNodes = nonSeedConfiguration.ToArray()};
         }
 
-        [Obsolete("Use extensions methods fot AkkaConfiguration from AkkaConfigurationExtensions instead")]
-        public static ActorSystem CreateActorSystem(NodeConfiguration nodeConf)
+        private static NodeConfiguration Copy(NodeConfiguration cfg, int newPort)
         {
-            return nodeConf.CreateSystem();
+            return new NodeConfiguration(new NodeNetworkAddress(cfg.Network.SystemName, cfg.Network.Host, newPort),
+                                         cfg.Persistence,
+                                         cfg.LogLevel){LogActorType = cfg.LogActorType };
         }
     }
 }

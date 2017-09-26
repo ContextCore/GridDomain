@@ -7,6 +7,6 @@ namespace GridDomain.Tests.Common.Configuration
     public class AutoTestNodeConfiguration : NodeConfiguration
     {
         public AutoTestNodeConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
-            : base(new AutoTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), typeof(SerilogLoggerActor), verbosity) {}
+            : base(new AutoTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), verbosity) {}
     }
 }
