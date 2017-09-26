@@ -1,16 +1,16 @@
 using System;
 using System.Linq;
 using Akka.Actor;
-using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration;
 
 namespace GridDomain.Node
 {
     public class ActorSystemFactory
     {
-        public static AkkaCluster CreateCluster(AkkaConfiguration akkaConf, int seedNodeNumber = 2, int childNodeNumber = 3)
+        public static AkkaCluster CreateCluster(NodeConfiguration nodeConf, int seedNodeNumber = 2, int childNodeNumber = 3)
         {
-            var port = akkaConf.Network.PortNumber;
-            var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber).Select(n => akkaConf.Copy(port++)).ToArray();
+            var port = nodeConf.Network.PortNumber;
+            var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber).Select(n => nodeConf.Copy(port++)).ToArray();
             var seedAdresses = seedNodeConfigs.Select(s => s.Network).ToArray();
 
             var seedSystems =
@@ -21,17 +21,17 @@ namespace GridDomain.Node
                 Enumerable.Range(0, childNodeNumber)
                           .Select(
                                   n =>
-                                      ActorSystem.Create(akkaConf.Network.SystemName,
-                                                         akkaConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));
+                                      ActorSystem.Create(nodeConf.Network.SystemName,
+                                                         nodeConf.ToClusterNonSeedNodeSystemConfig(seedAdresses)));
 
 
             return new AkkaCluster {SeedNodes = seedSystems.ToArray(), NonSeedNodes = nonSeedConfiguration.ToArray()};
         }
 
         [Obsolete("Use extensions methods fot AkkaConfiguration from AkkaConfigurationExtensions instead")]
-        public static ActorSystem CreateActorSystem(AkkaConfiguration akkaConf)
+        public static ActorSystem CreateActorSystem(NodeConfiguration nodeConf)
         {
-            return akkaConf.CreateSystem();
+            return nodeConf.CreateSystem();
         }
     }
 }

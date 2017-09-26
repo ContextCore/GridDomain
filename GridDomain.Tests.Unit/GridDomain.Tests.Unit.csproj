@@ -485,6 +485,7 @@
     <Compile Include="Serialization\Aggregate_Should_serializer_and_deserialize_by_json.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_createdTime_defaulted_in_constructor.cs" />
     <Compile Include="Serialization\Domain_event_should_retain_processId_and_createdTime.cs" />
+    <Compile Include="Serialization\Message_serialization.cs" />
     <Compile Include="Serialization\Process_state_aggregate_should_be_serializable.cs" />
     <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />

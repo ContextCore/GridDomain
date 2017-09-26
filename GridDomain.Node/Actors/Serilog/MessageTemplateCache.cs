@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Serilog.Events;
 using Serilog.Parsing;
 
-namespace GridDomain.Node.Actors.CommandPipe {
+namespace GridDomain.Node.Actors.Serilog {
     internal class MessageTemplateCache
     {
         private readonly MessageTemplateParser _innerParser;

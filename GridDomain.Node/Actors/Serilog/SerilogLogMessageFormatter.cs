@@ -4,7 +4,7 @@ using Akka.Event;
 using Serilog.Events;
 using Serilog.Parsing;
 
-namespace GridDomain.Node.Actors.CommandPipe {
+namespace GridDomain.Node.Actors.Serilog {
     /// <summary>
     /// This class contains methods used to convert Serilog templated messages
     /// into normal text messages.

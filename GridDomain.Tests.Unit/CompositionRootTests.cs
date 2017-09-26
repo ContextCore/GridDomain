@@ -21,13 +21,13 @@ namespace GridDomain.Tests.Unit
             {
                 {
                     TransportMode.Standalone,
-                    () => new AutoTestAkkaConfiguration().CreateSystem()
+                    () => new AutoTestNodeConfiguration().CreateSystem()
                 },
                 {
                     TransportMode.Cluster,
                     () =>
                         ActorSystemFactory.CreateCluster(
-                                                         new AutoTestAkkaConfiguration())
+                                                         new AutoTestNodeConfiguration())
                                           .RandomNode()
                 }
             };

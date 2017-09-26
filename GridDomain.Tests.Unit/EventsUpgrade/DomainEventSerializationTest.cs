@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             //    xmlSerializer.Serialize(textWriter, evt);
             //    return textWriter.ToString();
             //}
-            var system = ActorSystem.Create("example", new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig());
+            var system = ActorSystem.Create("example", new AutoTestNodeConfiguration().ToStandAloneInMemorySystemConfig());
 
             // Get the Serialization Extension
             var serialization = system.Serialization;

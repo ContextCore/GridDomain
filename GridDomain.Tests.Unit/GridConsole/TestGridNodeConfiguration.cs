@@ -1,11 +1,11 @@
-using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common.Configuration;
 
 namespace GridDomain.Tests.Unit.GridConsole
 {
-    internal class TestGridNodeConfiguration : AkkaConfiguration
+    internal class TestGridNodeConfiguration : NodeConfiguration
     {
         public TestGridNodeConfiguration(int port)
-            : base(new AkkaNetworkAddress("ServerSystem", "localhost", port), new AutoTestAkkaDbConfiguration()) {}
+            : base(new NodeNetworkAddress("ServerSystem", "localhost", port), new AutoTestNodeDbConfiguration()) {}
     }
 }

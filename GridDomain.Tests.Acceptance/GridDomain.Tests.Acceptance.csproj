@@ -328,6 +328,7 @@
     <Compile Include="BalloonDomain\BalloonDomainEventsExtensions.cs" />
     <Compile Include="BalloonDomain\BalloonWithProjectionDomainConfiguration.cs" />
     <Compile Include="BalloonDomain\BalloonWithProjectionFixture.cs" />
+    <Compile Include="ConsoleSerilogLoggerActor.cs" />
     <Compile Include="EventsUpgrade\Future_events_class_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal.cs" />
@@ -376,7 +377,7 @@
     <Compile Include="Snapshots\Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy.cs" />
     <Compile Include="Snapshots\NodeTestFixtureExtensions.cs" />
     <Compile Include="Snapshots\SnapshotsPersistenceAfterEachMessagePolicy.cs" />
-    <Compile Include="Tools\AcceptanceAutoTestAkkaConfiguration.cs" />
+    <Compile Include="Tools\AcceptanceAutoTestNodeConfiguration.cs" />
     <Compile Include="Tools\Aggregate_repository_tests_given_persisted_events.cs" />
     <Compile Include="DefaultConsoleLoggerConfiguration.cs" />
     <Compile Include="Tools\Given_persisted_aggreate_It_can_be_loaded_and_saved.cs" />

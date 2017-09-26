@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             return new BalloonWithProjectionFixture(_dbContextOptions)
                    {
                        Output = _testOutputHelper,
-                       AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
+                       NodeConfig = new StressTestNodeConfiguration(LogLevel.ErrorLevel),
                        LogLevel = LogEventLevel.Error
                    }.CreateNode().Result;
         }

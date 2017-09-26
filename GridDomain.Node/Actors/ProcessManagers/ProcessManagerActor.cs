@@ -16,6 +16,7 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.ProcessManagers.Exceptions;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
+using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
@@ -24,19 +25,6 @@ using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {
-
-    public class CreateNewProcess
-    {
-        public IMessageMetadataEnvelop Message { get; }
-        public Guid? EnforcedId { get; }
-
-        public CreateNewProcess(IMessageMetadataEnvelop message, Guid? enforcedId = null)
-        {
-            Message = message;
-            EnforcedId = enforcedId;
-        }
-    }
-
     //TODO: add status info, e.g. was any errors during execution or recover
     /// <summary>
     ///     Name should be parse by AggregateActorName

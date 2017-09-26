@@ -238,8 +238,8 @@
     <Compile Include="Single_LoadAllAssembliesTest.cs" />
     <Compile Include="NBenchAvailabilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StressTestAkkaConfiguration.cs" />
-    <Compile Include="StressTestAkkaNetworkAddress.cs" />
+    <Compile Include="StressTestNodeConfiguration.cs" />
+    <Compile Include="StressTestNodeNetworkAddress.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,5 +1,4 @@
 using System;
-using Xunit;
 
 namespace GridDomain.Tests.Common
 {
@@ -10,15 +9,5 @@ namespace GridDomain.Tests.Common
 
         public static Guid GUID { get; } = AnyGuid;
         public static DateTime DateTime { get; } = AnyDateTime;
-    }
-
-
-    public class XUnitTest
-    {
-        [Fact]
-        public void Haha()
-        {
-            
-        }
     }
 }

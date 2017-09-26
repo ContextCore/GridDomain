@@ -97,7 +97,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             this.Log.Info("Enforced additional snapshot save & delete");
 
-            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+            var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
                 new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //Snapshot_should_be_saved_one_time

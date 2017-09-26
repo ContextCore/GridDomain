@@ -16,27 +16,27 @@ namespace GridDomain.Tests.Acceptance.Tools
 {
     public class Aggregate_repository_tests_given_persisted_events
     {
-        private static readonly AutoTestAkkaConfiguration AutoTestAkkaConfiguration = new AutoTestAkkaConfiguration();
+        private static readonly AutoTestNodeConfiguration AutoTestNodeConfiguration = new AutoTestNodeConfiguration();
 
         private static readonly string AkkaWriteDbConnectionString =
-            AutoTestAkkaConfiguration.Persistence.JournalConnectionString;
+            AutoTestNodeConfiguration.Persistence.JournalConnectionString;
 
         public static readonly IEnumerable<object[]> EventRepositories =
         new []{
             new object[]
             {
                 ActorSystemJournalRepository.New(
-                                                 AutoTestAkkaConfiguration,
+                                                 AutoTestNodeConfiguration,
                                                  new EventsAdaptersCatalog()),
                 new AggregateRepository(
                                         ActorSystemJournalRepository.New(
-                                                                         new AutoTestAkkaConfiguration(),
+                                                                         new AutoTestNodeConfiguration(),
                                                                          new EventsAdaptersCatalog()))
             },
             new object[]
             {
                 ActorSystemJournalRepository.New(
-                                                 AutoTestAkkaConfiguration,
+                                                 AutoTestNodeConfiguration,
                                                  new EventsAdaptersCatalog()),
                 AggregateRepository.New(
                                         AkkaWriteDbConnectionString)
@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Acceptance.Tools
                                            AkkaWriteDbConnectionString),
                 new AggregateRepository(
                                         ActorSystemJournalRepository.New(
-                                                                         new AutoTestAkkaConfiguration(),
+                                                                         new AutoTestNodeConfiguration(),
                                                                          new EventsAdaptersCatalog()))
             }
         };

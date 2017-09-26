@@ -6,7 +6,7 @@ using Akka.Actor;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
-using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration;
 using GridDomain.Node.Serializers;
 
 namespace GridDomain.Tools.Repositories.EventRepositories
@@ -57,7 +57,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
         public void Dispose() {}
 
-        public static ActorSystemEventRepository New(AkkaConfiguration conf, EventsAdaptersCatalog eventsAdaptersCatalog)
+        public static ActorSystemEventRepository New(NodeConfiguration conf, EventsAdaptersCatalog eventsAdaptersCatalog)
         {
             var actorSystem = conf.CreateSystem();
             actorSystem.InitDomainEventsSerialization(eventsAdaptersCatalog);

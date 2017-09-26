@@ -9,6 +9,7 @@ using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
@@ -47,7 +48,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //sql server still need some time to commit deleted snapshots;
             await Task.Delay(500);
 
-            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+            var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
                 new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
 
             //Only_2_Snapshots_should_left()

@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
 
     public class AggregateActorPerfSql: AggregateActorPerf
     {
-        public AggregateActorPerfSql(ITestOutputHelper output):base(output,new StressTestAkkaConfiguration(LogLevel.ErrorLevel).ToStandAloneSystemConfig())
+        public AggregateActorPerfSql(ITestOutputHelper output):base(output,new StressTestNodeConfiguration(LogLevel.ErrorLevel).ToStandAloneSystemConfig())
         {
             
         }
