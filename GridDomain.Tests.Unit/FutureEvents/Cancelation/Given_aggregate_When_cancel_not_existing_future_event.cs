@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
 
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
 
-            aggregate.ClearEvents();
+            aggregate.PersistAll();
 
             aggregate.CancelFutureEvents("will not be found in any future event");
            //No_events_were_produced()

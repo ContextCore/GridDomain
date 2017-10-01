@@ -21,11 +21,6 @@ namespace GridDomain.Tests.Common
             return evt;
         }
 
-        public static void ClearEvents(this IAggregate aggregate)
-        {
-            aggregate.ClearUncommittedEvents();
-        }
-
         public static IReadOnlyCollection<TEvent> GetEvents<TEvent>(this IAggregate aggregate) where TEvent : DomainEvent
         {
             return aggregate.GetUncommittedEvents().OfType<TEvent>().ToArray();

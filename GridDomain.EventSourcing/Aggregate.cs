@@ -19,28 +19,19 @@ namespace GridDomain.EventSourcing
         }
 
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
-        public bool HasUncommitedEvents => _uncommittedEvents.Any();
         private IRouteEvents _registeredRoutes;
-
         private PersistenceDelegate _persist;
+
+        public bool HasUncommitedEvents => _uncommittedEvents.Any();
 
         public void SetPersistProvider(PersistenceDelegate caller)
         {
             _persist = caller;
         }
 
-        protected Aggregate(Guid id) : this(null)
+        protected Aggregate(Guid id)
         {
             Id = id;
-        }
-
-        protected Aggregate(IRouteEvents handler)
-        {
-            if (handler == null)
-                return;
-
-            RegisteredRoutes = handler;
-            RegisteredRoutes.Register(this);
         }
 
         Guid IMemento.Id
@@ -55,28 +46,20 @@ namespace GridDomain.EventSourcing
             set => Version = value;
         }
 
-        protected void Apply<T>(Action<T> action) where T : DomainEvent
-        {
-            Register(action);
-        }
-
         public virtual IMemento GetSnapshot()
         {
             return this;
         }
+        //TODO: think how to reduce pain from static cache 
 
-        protected IRouteEvents RegisteredRoutes
-        {
-            get => _registeredRoutes ?? (_registeredRoutes = new ConventionEventRouter(true, this));
-            set => _registeredRoutes = value ?? throw new InvalidOperationException("AggregateBase must have an event router to function");
-        }
+        private IRouteEvents RegisteredRoutes => _registeredRoutes ?? (_registeredRoutes = EventRouterCache.Instance.Get(this));
 
         public Guid Id { get; protected set; }
         public int Version { get; protected set; }
 
         void IAggregate.ApplyEvent(DomainEvent @event)
         {
-            RegisteredRoutes.Dispatch(@event);
+            RegisteredRoutes.Dispatch(this,@event);
             Version++;
         }
 
@@ -85,19 +68,9 @@ namespace GridDomain.EventSourcing
             return  _uncommittedEvents;
         }
 
-        void IAggregate.ClearUncommittedEvents()
-        {
-            _uncommittedEvents.Clear();
-        }
-
         public virtual bool Equals(IAggregate other)
         {
             return null != other && other.Id == Id;
-        }
-
-        protected void Register<T>(Action<T> route)
-        {
-            RegisteredRoutes.Register(route);
         }
 
         protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent

@@ -104,9 +104,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected void SaveSnapshot(IAggregate aggregate, object lastEventPersisted)
         {
-            if (!_snapshotsPolicy.ShouldSave(
-                SnapshotSequenceNr,
-                BusinessDateTime.UtcNow)) return;
+            if (!_snapshotsPolicy.ShouldSave(SnapshotSequenceNr, BusinessDateTime.UtcNow)) return;
             Log.Debug("Started snapshot save, cased by persisted event {event}",lastEventPersisted);
             _snapshotsPolicy.MarkSnapshotSaving();
             SaveSnapshot(aggregate.GetSnapshot());

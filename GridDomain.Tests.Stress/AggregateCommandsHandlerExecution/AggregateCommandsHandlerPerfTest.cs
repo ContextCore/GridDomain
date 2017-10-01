@@ -49,14 +49,12 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution
         [CounterMeasurement(TotalCommandsExecutedCounter)]
         public void AggregateCommandsHandlerThroughput()
         {
-            _balloonCommandHandler.ExecuteAsync(_aggregate,_writeTitleCommand,Persist).Wait();
+            _balloonCommandHandler.ExecuteAsync(_aggregate,_writeTitleCommand,a =>
+                                                                              {
+                                                                                  a.PersistAll();
+                                                                                  return Task.CompletedTask;
+                                                                              }).Wait();
             _counter.Increment();
-        }
-
-        private Task Persist(Aggregate a)
-        {
-            a.PersistAll();
-            return Task.CompletedTask;
         }
 
         [NBenchFact]

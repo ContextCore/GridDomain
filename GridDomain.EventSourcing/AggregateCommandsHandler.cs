@@ -9,9 +9,6 @@ using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing
 {
-
-
-    
     public class AggregateCommandsHandler<TAggregate> : TypeCatalog<CommandExecutionDelegate<TAggregate>, ICommand>,
                                                         IAggregateCommandsHandler<TAggregate> where TAggregate : Aggregate
                                                       
@@ -45,9 +42,9 @@ namespace GridDomain.EventSourcing
         {
             Add<TCommand>(async (a, c, p) =>
             {
-                a.SetPersistProvider(p);
                 TAggregate aggregate = await commandExecutor((TCommand)c, a);
-                if(!a.Equals(aggregate)) aggregate.SetPersistProvider(p);
+                if(!a.Equals(aggregate))
+                    aggregate.SetPersistProvider(p);
                 if (!aggregate.HasUncommitedEvents) return aggregate;
                 //for cases when we call Produce and expect events persistence after aggregate methods invocation;
                 await p(aggregate);
