@@ -7,8 +7,8 @@ using Akka.Event;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Node;
+using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.Configuration;
-using GridDomain.Node.Configuration.Akka;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;
@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit
 
     public class NodeTestFixture : IDisposable
     {
-        private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
+        private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null, TimeSpan? defaultTimeout = null, ITestOutputHelper helper = null)
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
-            SystemConfigFactory = () => AkkaConfig.ToStandAloneInMemorySystemConfig();
+            SystemConfigFactory = () => NodeConfig.ToStandAloneInMemorySystemConfig();
             ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
           
         }
@@ -47,11 +47,26 @@ namespace GridDomain.Tests.Unit
         public ActorSystem System { get; private set; }
         public Func<string> SystemConfigFactory { get; set; }
         public ILogger Logger { get; private set; }
-        public AkkaConfiguration AkkaConfig { get; set; } = DefaultAkkaConfig;
-        public string Name => AkkaConfig.Network.SystemName;
-        internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(3);
+        public NodeConfiguration NodeConfig { get; set; } = DefaultNodeConfig;
+        public string Name => NodeConfig.Network.SystemName;
+
+        private const int DefaultTimeOutSec =
+#if DEBUG
+            10; //in debug mode all messages serialization is enabled, and it slows down all tests greatly
+#endif
+#if !DEBUG
+            3;
+#endif      
+        internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
+
         public ITestOutputHelper Output { get; set; }
-        public LogEventLevel LogLevel { get; set; } = LogEventLevel.Verbose;
+        public LogEventLevel LogLevel { get; set; } =
+#if DEBUG 
+            LogEventLevel.Verbose;
+#endif
+#if !DEBUG
+            LogEventLevel.Warning;
+#endif
 
         public void Dispose()
         {
@@ -106,7 +121,7 @@ namespace GridDomain.Tests.Unit
 
             ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
 
-            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel))), "node-log-test");
+            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
 
             logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
             return System;

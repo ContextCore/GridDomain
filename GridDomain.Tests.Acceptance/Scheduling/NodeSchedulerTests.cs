@@ -12,7 +12,6 @@ using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
-using Microsoft.Practices.Unity;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -35,8 +35,8 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             //Then_recieve_non_empty_collection()
             Assert.True(_allReceivedMessages.Any());
             //Then_recieve_collection_of_expected_messages()
-            Assert.True(_allReceivedMessages.Any(m => m is IMessageMetadataEnvelop<BalloonTitleChanged>));
-            Assert.True(_allReceivedMessages.Any(m => m is IMessageMetadataEnvelop<BalloonCreated>));
+            Assert.Contains(_allReceivedMessages, m => (m as IMessageMetadataEnvelop)?.Message is BalloonTitleChanged);
+            Assert.Contains(_allReceivedMessages, m => (m as IMessageMetadataEnvelop)?.Message is BalloonCreated);
             //Then_recieve_only_expected_messages()
             Assert.True(_allReceivedMessages.Length == 2);
         }

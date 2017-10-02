@@ -8,6 +8,7 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using QuickGraph.Serialization;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -33,11 +34,11 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 
             var scheduleCommandExecution = new ScheduleCommandExecution(command, new ScheduleKey("test", "test"), executionOptions);
             scheduler.Tell(scheduleCommandExecution);
-            Node.Transport.Subscribe<MessageMetadataEnvelop<JobFailed>>(TestActor);
+            Node.Transport.Subscribe<MessageMetadataEnvelop>(TestActor);
 
             //job will be retried one time, but aggregate will fail permanently due to error on apply method
-            FishForMessage<MessageMetadataEnvelop<JobFailed>>(m => true);
-            FishForMessage<MessageMetadataEnvelop<JobFailed>>(m => true);
+            FishForMessage<MessageMetadataEnvelop>(m => m.Message is JobFailed);
+            FishForMessage<MessageMetadataEnvelop>(m => m.Message is JobFailed);
         }
     }
 }

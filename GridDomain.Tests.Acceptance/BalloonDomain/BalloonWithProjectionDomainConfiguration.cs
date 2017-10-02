@@ -9,19 +9,18 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
 {
     public class BalloonWithProjectionDomainConfiguration : IDomainConfiguration
     {
-        private readonly string _balloonConnString;
+        private readonly DbContextOptions<BalloonContext> _dbContextOptions;
 
-        public BalloonWithProjectionDomainConfiguration(string balloonConnString)
+        public BalloonWithProjectionDomainConfiguration(DbContextOptions<BalloonContext> dbContextOptions)
         {
-            _balloonConnString = balloonConnString;
+            _dbContextOptions = dbContextOptions;
         }
 
         public void Register(IDomainBuilder builder)
         {
             builder.RegisterAggregate(new BalloonDependencyFactory());
 
-            var options = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(_balloonConnString).Options;
-            BalloonContext BalloonContextProducer () => new BalloonContext(options);
+            BalloonContext BalloonContextProducer () => new BalloonContext(_dbContextOptions);
 
             builder.RegisterHandler<BalloonTitleChanged, BalloonCatalogProjection>(c => new BalloonCatalogProjection(BalloonContextProducer, c.Publisher, c.Log))
                    .AsSync();

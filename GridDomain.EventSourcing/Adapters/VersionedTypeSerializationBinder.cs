@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace GridDomain.EventSourcing.Adapters
 {
-    public class VersionedTypeSerializationBinder : SerializationBinder
+    public class VersionedTypeSerializationBinder : ISerializationBinder
     {
         private readonly IDictionary<Type, int> _typeMaxVersions;
 
@@ -14,7 +16,7 @@ namespace GridDomain.EventSourcing.Adapters
             _typeMaxVersions = typeMaxVersions;
         }
 
-        public override Type BindToType(string assemblyName, string typeName)
+        public Type BindToType(string assemblyName, string typeName)
         {
             var versionedTypeName = VersionedTypeName.Parse(typeName);
             var originalTypeFullName = $"{versionedTypeName.OriginalName}, {assemblyName}";
@@ -34,6 +36,11 @@ namespace GridDomain.EventSourcing.Adapters
             //otherwise return original type, as it acts like "history"
             originalTypeFullName = $"{typeName}, {assemblyName}";
             return Type.GetType(originalTypeFullName);
+        }
+
+        public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+        {
+           throw new NotImplementedException();
         }
     }
 }

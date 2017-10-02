@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Autofac;
+using Autofac.Core;
 using GridDomain.Node;
+using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
-using Microsoft.Practices.Unity;
 using Xunit;
 
 namespace GridDomain.Tests.Unit
@@ -20,13 +22,14 @@ namespace GridDomain.Tests.Unit
             {
                 {
                     TransportMode.Standalone,
-                    () => new AutoTestAkkaConfiguration().CreateSystem()
+                    () => new AutoTestNodeConfiguration().CreateSystem()
                 },
                 {
                     TransportMode.Cluster,
                     () =>
                         ActorSystemFactory.CreateCluster(
-                                                         new AutoTestAkkaConfiguration()).RandomNode()
+                                                         new AutoTestNodeConfiguration())
+                                          .RandomNode()
                 }
             };
 
@@ -48,36 +51,27 @@ namespace GridDomain.Tests.Unit
 
             var container = createContainer.Result;
 
-            var registrations = container.Registrations.ToArray();
-
-            foreach (var reg in registrations)
-            {
-                Console.WriteLine("Registration");
-                Console.WriteLine(reg.Name);
-                Console.WriteLine(reg.MappedToType);
-                Console.WriteLine(reg.RegisteredType);
-                Console.WriteLine("end of registration");
-                Console.WriteLine();
-            }
-
-
-            if (!Task.Run(() => container.Dispose()).Wait(TimeSpan.FromSeconds(5)))
+            if (!Task.Run(() => container.Dispose())
+                     .Wait(TimeSpan.FromSeconds(5)))
                 throw new TimeoutException("Container dispose took too much time");
 
             Console.WriteLine("Container disposed");
         }
 
-        protected abstract IUnityContainer CreateContainer(TransportMode mode, IDbConfiguration conf);
+        protected abstract IContainer CreateContainer(TransportMode mode, IDbConfiguration conf);
 
-        private void ResolveAll(IUnityContainer container)
+        //TODO: add named services resolution
+        private void ResolveAll(IContainer container)
         {
             Console.WriteLine();
-            var errors = new Dictionary<ContainerRegistration, Exception>();
-            foreach (var reg in container.Registrations.Where(r => !r.RegisteredType.Name.Contains("Actor")))
+            var errors = new Dictionary<IServiceWithType, Exception>();
+            foreach (var reg in container.ComponentRegistry.Registrations.SelectMany(x => x.Services)
+                                                                         .OfType<IServiceWithType>()
+                                                                         .Where(r => !r.ServiceType.Name.Contains("Actor")))
                 try
                 {
-                    container.Resolve(reg.RegisteredType, reg.Name);
-                    Console.WriteLine($"resolved {reg.RegisteredType} {reg.Name}");
+                    container.Resolve(reg.ServiceType);
+                    Console.WriteLine($"resolved {reg.ServiceType}");
                 }
                 catch (Exception ex)
                 {
@@ -90,7 +84,7 @@ namespace GridDomain.Tests.Unit
 
             var builder = new StringBuilder();
             foreach (var error in errors.Take(5))
-                builder.AppendLine($"Exception while resolving {error.Key.RegisteredType} {error.Key.Name} : {error.Value}");
+                builder.AppendLine($"Exception while resolving {error.Key.ServiceType} : {error.Value}");
 
             Assert.True(false, "Can not resolve registrations: \r\n " + builder);
         }

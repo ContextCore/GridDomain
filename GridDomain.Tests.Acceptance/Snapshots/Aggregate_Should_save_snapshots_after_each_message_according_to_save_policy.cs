@@ -10,6 +10,7 @@ using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
@@ -40,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             Thread.Sleep(100);
 
-            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+            var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
                                                                   new BalloonAggregateFactory())
                                                                   .Load<Balloon>(aggregateId);
             //Snapshots_should_be_saved_two_times()

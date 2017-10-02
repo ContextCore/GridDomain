@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
@@ -17,11 +18,13 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         [Fact]
         public async Task When_publishing_start_message()
         {
+            var evt = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid());
+            var metadata = new MessageMetadata(evt.Id, Guid.NewGuid());
             var res = await
                 Node.NewDebugWaiter()
                     .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
                     .Create()
-                    .SendToProcessManagers(new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid()));
+                    .SendToProcessManagers(evt, metadata);
 
             var processCreatedEvent = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>();
 

@@ -6,7 +6,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Transports;
+using GridDomain.Transport;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.MessageWaiting
@@ -21,9 +21,9 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             var waiter = new LocalMessagesWaiter(actorSystem, transport, TimeSpan.FromSeconds(10));
             waiter.Expect<string>();
 
-            _results = waiter.Start(TimeSpan.FromSeconds(1000));
+            _results = waiter.Start(TimeSpan.FromSeconds(10));
             _testmsg = "TestMsg";
-            transport.Publish(_testmsg);
+            transport.Publish(_testmsg,MessageMetadata.Empty);
         }
 
         private readonly string _testmsg;

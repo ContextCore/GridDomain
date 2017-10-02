@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
             var i = int.Parse(msg.Value);
 
             if (i % 8 == 0)
-                return Task.Run(() => { throw new MessageHandleException(msg); });
+                return Task.Run(() => throw new MessageHandleException(msg));
 
             if (i % 2 == 0)
                 throw new MessageHandleException(msg);

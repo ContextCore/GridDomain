@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
-
 using GridDomain.Node;
 using GridDomain.Node.Actors.CommandPipe;
-using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration;
 using GridDomain.Node.Serializers;
-using GridDomain.Node.Transports;
-using GridDomain.Node.Transports.Remote;
+using GridDomain.Transport;
+using GridDomain.Transport.Remote;
 
 namespace GridDomain.Tools.Connector
 {
@@ -18,22 +17,22 @@ namespace GridDomain.Tools.Connector
     /// </summary>
     public class GridNodeConnector : IGridDomainNode
     {
-        private readonly AkkaConfiguration _conf;
+        private readonly NodeConfiguration _conf;
 
         private readonly TimeSpan _defaultTimeout;
-        private readonly IAkkaNetworkAddress _serverAddress;
+        private readonly INodeNetworkAddress _serverAddress;
 
         private ICommandExecutor _commandExecutor;
         private ActorSystem _consoleSystem;
         private MessageWaiterFactory _waiterFactory;
 
-        public GridNodeConnector(IAkkaNetworkAddress serverAddress,
-                                 AkkaConfiguration clientConfiguration = null,
+        public GridNodeConnector(INodeNetworkAddress serverAddress,
+                                 NodeConfiguration clientConfiguration = null,
                                  TimeSpan? defaultTimeout = null)
         {
             _serverAddress = serverAddress;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
-            _conf = clientConfiguration ?? new ConsoleAkkaConfiguretion();
+            _conf = clientConfiguration ?? new ConsoleNodeConfiguration();
         }
 
         public void Dispose()
@@ -76,7 +75,7 @@ namespace GridDomain.Tools.Connector
             _consoleSystem = _conf.CreateInMemorySystem();
             DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
 
-            var eventBusForwarder = await GetActor(GetSelection(nameof(ActorTransportProxy)));
+            var eventBusForwarder = await GetActor(GetSelection("ActorTransportProxy"));
 
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
                                                                   eventBusForwarder,

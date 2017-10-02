@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Practices.Unity;
+using Autofac;
 using Quartz;
 using Quartz.Spi;
 
@@ -7,16 +7,16 @@ namespace GridDomain.Scheduling.Akka
 {
     public class JobFactory : IJobFactory
     {
-        private readonly IUnityContainer _container;
+        private readonly ILifetimeScope _scope;
 
-        public JobFactory(IUnityContainer container)
+        public JobFactory(ILifetimeScope scope)
         {
-            _container = container;
+            _scope = scope;
         }
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            return (IJob) _container.Resolve(bundle.JobDetail.JobType);
+            return (IJob) _scope.Resolve(bundle.JobDetail.JobType);
         }
 
         public void ReturnJob(IJob job)

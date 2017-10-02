@@ -7,6 +7,10 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
     {
         public readonly BalloonTitleChanged Msg;
 
+        public MessageHandleException()
+        {
+            
+        }
         public MessageHandleException(BalloonTitleChanged msg)
         {
             Msg = msg;

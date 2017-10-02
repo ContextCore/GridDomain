@@ -2,7 +2,7 @@ using System;
 using Akka.Actor;
 using Akka.Persistence.Journal;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.Node.Configuration.Akka.Hocon;
+using GridDomain.Node.Configuration.Hocon;
 using GridDomain.Node.Serializers;
 using IEventAdapter = Akka.Persistence.Journal.IEventAdapter;
 

@@ -19,12 +19,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting {
             return _commandConditionBuilder.Execute(timeout, failOnAnyFault);
         }
 
-        public ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter = null)
+        public ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return _commandConditionBuilder.And(filter);
         }
 
-        public ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter = null)
+        public ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return _commandConditionBuilder.Or(filter);
         }
@@ -32,8 +32,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting {
         async Task<IWaitResult<T>> ICommandConditionBuilder<T>.Execute(TimeSpan? timeout, bool failOnAnyFault)
         {
             var res = await _commandConditionBuilder.Execute(timeout, failOnAnyFault);
-            return new WaitResult<T>(res.All.OfType<IMessageMetadataEnvelop<T>>().FirstOrDefault(),
-                res.All.OfType<IMessageMetadataEnvelop<IFault>>().FirstOrDefault());
+            return new WaitResult<T>(res.All.OfType<IMessageMetadataEnvelop>().FirstOrDefault(r => !(r.Message is IFault)),
+                                     res.All.OfType<IMessageMetadataEnvelop>().FirstOrDefault(r => r.Message is IFault));
         }
     }
 }

@@ -6,6 +6,7 @@ using GridDomain.Tests.Acceptance.EventsUpgrade;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
@@ -24,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             aggregate.WriteNewTitle(10);
             aggregate.PersistAll();
 
-            var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+            var repo = new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
                                                        new BalloonAggregateFactory());
             await repo.Add(aggregate);
 

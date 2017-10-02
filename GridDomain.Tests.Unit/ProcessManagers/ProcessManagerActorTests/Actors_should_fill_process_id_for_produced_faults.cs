@@ -11,11 +11,12 @@ using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.Transports;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
+using GridDomain.Transport;
+using GridDomain.Transport.Extension;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
@@ -36,16 +37,16 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
                 Sys.ActorOf(
                             Props.Create(
                                          () =>
-                                             new MessageProcessActor<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>(
+                                             new MessageHandleActor<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>(
                                                                                                                    new BalloonTitleChangedOddFaultyMessageHandler(transport),
                                                                                                                    transport)));
 
             actor.Tell(new MessageMetadataEnvelop<DomainEvent>(message, MessageMetadata.Empty));
 
-            var fault = FishForMessage<IMessageMetadataEnvelop<IFault>>(m => true);
+            var fault = FishForMessage<IMessageMetadataEnvelop>(m => m.Message is IFault).Message as IFault;
 
-            Assert.Equal(message.ProcessId, fault.Message.ProcessId);
-            Assert.IsAssignableFrom<Fault<BalloonTitleChanged>>(fault.Message);
+            Assert.Equal(message.ProcessId, fault.ProcessId);
+            Assert.IsAssignableFrom<Fault<BalloonTitleChanged>>(fault);
         }
 
         [Fact]
@@ -53,12 +54,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         {
             var command = new GoSleepCommand(Guid.Empty, Guid.Empty).CloneForProcess(Guid.NewGuid());
 
-            var transport = new LocalAkkaEventBusTransport(Sys);
+            var transport = Sys.InitLocalTransportExtension().Transport;
             transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
             var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), TestActor)));
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
-                                                                                         transport,
                                                                                          new SnapshotsPersistencePolicy(1, 5, null, null),
                                                                                          new AggregateFactory(),
                                                                                          handlersActor)),
@@ -66,9 +66,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 
             actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 
-            var fault = FishForMessage<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(m => true,TimeSpan.FromMinutes(100));
+            var fault = FishForMessage<MessageMetadataEnvelop>(m => m.Message is Fault<GoSleepCommand>).Message as IFault;
 
-            Assert.Equal(command.ProcessId, fault.Message.ProcessId);
+            Assert.Equal(command.ProcessId, fault.ProcessId);
         }
     }
 }

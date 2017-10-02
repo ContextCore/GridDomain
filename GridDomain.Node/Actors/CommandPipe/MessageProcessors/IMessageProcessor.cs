@@ -11,13 +11,4 @@ namespace GridDomain.Node.Actors.CommandPipe.MessageProcessors {
     {
         Task Process(object message, ref Task workInProgress);
     }
-
-    public class MessageProcessor
-    {
-        IMessageProcessor FireAndForget(IActorRef actor)
-        {
-            return new FireAndForgetMessageProcessor(actor);
-        }
-        
-    }
 }

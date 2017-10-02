@@ -14,7 +14,6 @@ namespace GridDomain.Tests.Common
         private readonly HashSet<Type> _excludes;
         protected abstract ObjectDeserializationChecker Checker { get; }
                                                        
-        protected readonly Fixture Fixture;
 
         protected TypesDeserializationTest()
         {
@@ -26,9 +25,11 @@ namespace GridDomain.Tests.Common
                              .ToArray();
 
             _excludes = new HashSet<Type>(ExcludeTypes);
-
             Fixture = new Fixture();
+
         }
+
+        public Fixture Fixture { get; }
 
         protected abstract Assembly[] AllAssemblies { get; }
         protected virtual IEnumerable<Type> ExcludeTypes { get; } = new Type[] {};
@@ -37,14 +38,12 @@ namespace GridDomain.Tests.Common
         protected void CheckAllChildrenOf<T>(ObjectDeserializationChecker objectDeserializationChecker, params Assembly[] assembly)
         {
             var allTypes =
-                assembly.SelectMany(a => a.GetTypes())
-                        .Where(
-                               t =>
-                                   typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract && !t.IsInterface && !t.IsGenericTypeDefinition
-                                   && t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
+                assembly.SelectMany(a => a.GetTypes()).Select(t => t.GetTypeInfo())
+                        .Where(tInfo => typeof(T).GetTypeInfo().IsAssignableFrom(tInfo) && tInfo.IsClass && !tInfo.IsAbstract && !tInfo.IsInterface && !tInfo.IsGenericTypeDefinition
+                                   && tInfo.GetConstructors(BindingFlags.Instance | BindingFlags.Public).Any())
                         .Distinct();
 
-            CheckAll<T>(objectDeserializationChecker, allTypes.ToArray());
+            CheckAll<T>(objectDeserializationChecker, allTypes.Select(t => t.GetType()).ToArray());
         }
 
 

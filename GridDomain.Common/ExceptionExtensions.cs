@@ -13,6 +13,13 @@ namespace GridDomain.Common
             if (aggregateException.InnerExceptions.Count > 1)
                 return aggregateException;
 
+            if(aggregateException.InnerExceptions.Count == 0)
+            {
+                //for cases when inner exceptions were lost due to hyperion serializer
+                return aggregateException.InnerException ?? aggregateException;
+            }
+
+
             return aggregateException.InnerExceptions.First().UnwrapSingle();
         }
 
@@ -20,8 +27,8 @@ namespace GridDomain.Common
         {
             if (exeption == null)
                 return null;
-            var ex = exeption as AggregateException;
-            return ex == null ? exeption : ex.UnwrapSingle();
+            var aggregateException = exeption as AggregateException;
+            return aggregateException == null ? exeption : aggregateException.InnerException.UnwrapSingle();
         }
     }
 }

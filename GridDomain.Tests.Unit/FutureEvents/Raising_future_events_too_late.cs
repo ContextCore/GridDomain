@@ -23,7 +23,6 @@ namespace GridDomain.Tests.Unit.FutureEvents
 
             await Node.Prepare(testCommand)
                       .Expect<JobSucceeded>()
-                      .And<JobSucceeded>()
                       .Execute();
 
             var aggregate = await Node.LoadAggregate<TestFutureEventsAggregate>(testCommand.AggregateId);

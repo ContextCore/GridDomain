@@ -5,6 +5,10 @@ namespace GridDomain.EventSourcing
 {
     public class InvalidDefaultMementoException : Exception
     {
+        public InvalidDefaultMementoException()
+        {
+            
+        }
         public InvalidDefaultMementoException(Type type, Guid id, IMemento snapshot)
             : base("Aggregate cannot be constructed from snapshot by default convention, memento is not IAggregate")
         {

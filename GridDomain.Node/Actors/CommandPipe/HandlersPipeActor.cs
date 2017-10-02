@@ -3,12 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
+using Akka.Event;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
+using GridDomain.Node.Actors.Serilog;
+using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
@@ -20,40 +23,23 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class HandlersPipeActor : ReceiveActor
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
-
+        private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
         public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef processManagerPipeActor)
         {
-            ReceiveAsync<IMessageMetadataEnvelop<Project>>(envelop =>
+            var publisher = Context.System.GetTransport();
+            ReceiveAsync<IMessageMetadataEnvelop>(envelop =>
                                                            {
-                                                               var project = envelop.Message;
-                                                               var envelops = project.Messages.Select(m => CreateMessageMetadataEnvelop(m, envelop.Metadata))
-                                                                                     .ToArray();
-
-                                                               var chain = envelops.Select(handlersCatalog.ProcessMessage)
-                                                                                   .ToChain();
-
-                                                               return chain.ContinueWith(t =>
-                                                                                         {
-                                                                                             foreach (var env in envelops)
-                                                                                                 processManagerPipeActor.Tell(env);
-
-                                                                                             return new AllHandlersCompleted(project.ProjectId);
-                                                                                         })
-                                                                           .PipeTo(Sender);
+                                                                 Log.Debug("Received messages to project. {project}",envelop);
+                                                               
+                                                                 return handlersCatalog.ProcessMessage(envelop)
+                                                                                       .ContinueWith(t =>
+                                                                                                     {
+                                                                                                         processManagerPipeActor.Tell(envelop);
+                                                                                                         publisher.Publish(envelop);
+                                                                                                         return AllHandlersCompleted.Instance;
+                                                                                        })
+                                                                                       .PipeTo(Sender);
                                                            });
-        }
-
-        private static IMessageMetadataEnvelop CreateMessageMetadataEnvelop(object message, IMessageMetadata metadata)
-        {
-            var @event = message as DomainEvent;
-            if (@event != null)
-                return new MessageMetadataEnvelop<DomainEvent>(@event, metadata);
-
-            var fault = message as IFault;
-            if (fault != null)
-                return new MessageMetadataEnvelop<IFault>(fault, metadata);
-
-            return new MessageMetadataEnvelop<object>(message, metadata);
         }
     }
 }

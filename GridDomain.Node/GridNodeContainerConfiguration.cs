@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Akka.DI.Core;
-using Akka.DI.Unity;
+using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
@@ -11,8 +11,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
-using GridDomain.Node.Transports;
-using Microsoft.Practices.Unity;
+using GridDomain.Transport;
 using Serilog;
 
 namespace GridDomain.Node
@@ -28,7 +27,7 @@ namespace GridDomain.Node
             _actorTransport = transportMode;
         }
 
-        public void Register(IUnityContainer container)
+        public void Register(ContainerBuilder container)
         {
             container.RegisterInstance(_log);
             container.RegisterInstance<IPublisher>(_actorTransport);

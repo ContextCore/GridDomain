@@ -3,25 +3,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.TestKit.Xunit2;
 using Akka.Util;
+using GridDomain.Common;
 using GridDomain.CQRS;
 
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Transports;
+using GridDomain.Transport;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.MessageWaiting
 {
     public class AkkaWaiter_message_test_filtered_message : TestKit
     {
+
         public AkkaWaiter_message_test_filtered_message()
         {
             _transport = new LocalAkkaEventBusTransport(Sys);
-            var waiter = new LocalMessagesWaiter(Sys,
-                                                               _transport,
-                                                               TimeSpan.FromSeconds(2));
+            var waiter = new LocalMessagesWaiter(Sys,_transport,TimeSpan.FromSeconds(2));
 
             waiter.Expect<string>(m => m.Like("Msg"));
-            _results = waiter.Start(TimeSpan.FromMilliseconds(50));
+            _results = waiter.Start(TimeSpan.FromSeconds(10));
         }
 
         private readonly LocalAkkaEventBusTransport _transport;
@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         [Fact]
         public void Message_not_satisfying_filter_should_not_be_received()
         {
-            _transport.Publish("Test");
+            _transport.Publish("Test", MessageMetadata.Empty);
 
             var e = Assert.Throws<AggregateException>(() => _results.Result.Message<string>());
             Assert.IsAssignableFrom<TimeoutException>(e.InnerException);
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         [Fact]
         public void Message_satisfying_filter_should_be_received()
         {
-            _transport.Publish("TestMsg");
+            _transport.Publish("TestMsg",MessageMetadata.Empty);
             Assert.Equal("TestMsg", _results.Result.Message<string>());
         }
 

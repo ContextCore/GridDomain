@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tools.Repositories;
 using Xunit;
@@ -9,7 +10,7 @@ namespace GridDomain.Tests.Unit.Tools.Repositories
 {
     public class EventPersistenceActor_Tests : TestKit
     {
-        public EventPersistenceActor_Tests() : base(new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig()) {}
+        public EventPersistenceActor_Tests() : base(new AutoTestNodeConfiguration().ToStandAloneInMemorySystemConfig()) {}
 
         private IActorRef CreateActor(string persistenceId)
         {

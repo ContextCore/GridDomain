@@ -1,18 +1,18 @@
 ﻿using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using GridDomain.Node.Configuration.Akka;
+using GridDomain.Node.Configuration;
 
 namespace GridDomain.Tests.Common
 {
     public static class TestDbTools
     {
-        public static async Task ClearData(IAkkaDbConfiguration akkaConf)
+        public static async Task ClearData(INodeDbConfiguration nodeConf)
         {
-            await Truncate(akkaConf.SnapshotConnectionString.Replace("\\\\", "\\"), akkaConf.SnapshotTableName);
-            await Truncate(akkaConf.JournalConnectionString.Replace("\\\\", "\\"),
-                         akkaConf.JournalTableName,
-                         akkaConf.MetadataTableName);
+            await Truncate(nodeConf.SnapshotConnectionString.Replace("\\\\", "\\"), nodeConf.SnapshotTableName);
+            await Truncate(nodeConf.JournalConnectionString.Replace("\\\\", "\\"),
+                         nodeConf.JournalTableName,
+                         nodeConf.MetadataTableName);
         }
 
         public static async Task Truncate(string connection, params string[] tableNames)

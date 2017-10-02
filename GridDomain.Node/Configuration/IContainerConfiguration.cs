@@ -1,9 +1,9 @@
-using Microsoft.Practices.Unity;
+using Autofac;
 
 namespace GridDomain.Node.Configuration
 {
     public interface IContainerConfiguration
     {
-        void Register(IUnityContainer container);
+        void Register(ContainerBuilder container);
     }
 }

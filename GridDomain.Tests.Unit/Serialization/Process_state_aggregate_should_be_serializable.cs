@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;

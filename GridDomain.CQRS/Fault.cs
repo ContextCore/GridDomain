@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using GridDomain.Common;
 
 namespace GridDomain.CQRS
@@ -17,6 +18,8 @@ namespace GridDomain.CQRS
 
     public class Fault : IFault
     {
+        private static readonly MethodInfo MethodOpenType = typeof(Fault).GetTypeInfo().GetMethod(nameof(New));
+
         public Fault(object message, Exception exception, Type processor, Guid processId, DateTime occuredTime)
         {
             Message = message;
@@ -35,8 +38,7 @@ namespace GridDomain.CQRS
         public static Fault NewGeneric(object msg, Exception exception, Guid processId, Type processorType)
         {
             var msgType = msg.GetType();
-            var methodOpenType = typeof(Fault).GetMethod(nameof(New));
-            var method = methodOpenType.MakeGenericMethod(msgType);
+            var method = MethodOpenType.MakeGenericMethod(msgType);
             return (Fault) method.Invoke(null, new[] {msg, exception, processId, processorType});
         }
 

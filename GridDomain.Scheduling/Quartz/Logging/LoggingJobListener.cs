@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Quartz;
 using Serilog;
 
@@ -12,21 +14,24 @@ namespace GridDomain.Scheduling.Quartz.Logging
             _log = log.ForContext<LoggingJobListener>();
         }
 
-        public string Name => GetType().Name;
-
-        public void JobToBeExecuted(IJobExecutionContext context)
+        public Task JobToBeExecuted(IJobExecutionContext context, CancellationToken cancellationToken = new CancellationToken())
         {
             _log.Debug("Job {JobKey} is about to be executed", context.JobDetail.Key);
+            return Task.CompletedTask;
         }
 
-        public void JobExecutionVetoed(IJobExecutionContext context)
+        public Task JobExecutionVetoed(IJobExecutionContext context, CancellationToken cancellationToken = new CancellationToken())
         {
             _log.Debug("Job {JobKey} execution vetoed", context.JobDetail.Key);
+            return Task.CompletedTask;
         }
 
-        public void JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException)
+        public Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = new CancellationToken())
         {
             _log.Debug("Job {JobKey} was executed", context.JobDetail.Key);
+            return Task.CompletedTask;
         }
+
+        public string Name => GetType().Name;
     }
 }

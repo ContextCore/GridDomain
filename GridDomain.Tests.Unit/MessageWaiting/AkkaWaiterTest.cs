@@ -6,7 +6,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Transports;
+using GridDomain.Transport;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.MessageWaiting
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         protected void Publish(params object[] messages)
         {
             foreach (var msg in messages)
-                _transport.Publish(msg);
+                _transport.Publish(msg, MessageMetadata.Empty);
         }
 
         protected async Task ExpectMsg<T>(T msg, Predicate<T> filter = null)

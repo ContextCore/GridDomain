@@ -4,6 +4,10 @@ namespace GridDomain.EventSourcing.VersionedTypeSerialization
 {
     public class VersionedTypeParseExeption : Exception
     {
+        public VersionedTypeParseExeption()
+        {
+            
+        }
         public VersionedTypeParseExeption(string typeName) : base(typeName)
         {
             TypeName = typeName;

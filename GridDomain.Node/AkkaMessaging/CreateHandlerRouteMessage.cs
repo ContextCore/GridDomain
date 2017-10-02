@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using GridDomain.Common;
 using GridDomain.CQRS;
 
@@ -54,7 +55,7 @@ namespace GridDomain.Node.AkkaMessaging
 
         public static Type GetTypeWithoutMetadata(Type messageType)
         {
-            if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) && messageType.IsGenericType
+            if (typeof(IMessageMetadataEnvelop).IsAssignableFrom(messageType) && messageType.IsConstructedGenericType
                 && (messageType.GetGenericTypeDefinition() == typeof(IMessageMetadataEnvelop<>)
                     || messageType.GetGenericTypeDefinition() == typeof(MessageMetadataEnvelop<>)))
                 return messageType.GetGenericArguments().First();

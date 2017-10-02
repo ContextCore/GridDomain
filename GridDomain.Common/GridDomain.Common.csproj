@@ -1,94 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AB9BB393-1874-4421-A78A-55D9977A6173}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GridDomain.Common</RootNamespace>
-    <AssemblyName>GridDomain.Common</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
+    <Authors>aleskov</Authors>
+    <Company>aleskov</Company>
+    <Description>Common classes and abstraction for griddomain</Description>
+    <Copyright>Copyright © aleskov</Copyright>
+    <PackageLicenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/solomoto-dev/GridDomain/</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/solomoto-dev/GridDomain/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>CQRS ES DDD Akka</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0</Version>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Folder Include="Properties\" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="BusinessDateTime.cs" />
-    <Compile Include="Condition.cs" />
-    <Compile Include="ICurrentDateTimeStrategy.cs" />
-    <Compile Include="DateTimeStrategyHolder.cs" />
-    <Compile Include="DefaultDateTimeStrategy.cs" />
-    <Compile Include="ExceptionExtensions.cs" />
-    <Compile Include="ICatalog.cs" />
-    <Compile Include="IHaveId.cs" />
-    <Compile Include="IMessageMetadata.cs" />
-    <Compile Include="IMessageMetadataEnvelop.cs" />
-    <Compile Include="IPublisher.cs" />
-    <Compile Include="MemberNameExtractor.cs" />
-    <Compile Include="MessageMetadata.cs" />
-    <Compile Include="MessageMetadataEnvelop.cs" />
-    <Compile Include="MessageMetadataExtensions.cs" />
-    <Compile Include="ProcessEntry.cs" />
-    <Compile Include="ProcessHistory.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TasksExtensions.cs" />
-    <Compile Include="TypeCatalog.cs" />
-    <Compile Include="TypeNameExtensions.cs" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <Target Name="_NuProjGetProjectClosure" DependsOnTargets="ResolveProjectReferences" Inputs="%(_MSBuildProjectReferenceExistent.Identity)" Outputs="fake" Returns="@(_ProjectReferenceClosure)">
-    <!-- Get closure of indirect references -->
-    <MSBuild Projects="@(_MSBuildProjectReferenceExistent)" Targets="_NuProjGetProjectClosure" Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform)" ContinueOnError="WarnAndContinue">
-      <Output TaskParameter="TargetOutputs" ItemName="_ProjectReferenceClosureWithDuplicates" />
-    </MSBuild>
-    <!-- Remove duplicates from closure -->
-    <RemoveDuplicates Inputs="@(_ProjectReferenceClosureWithDuplicates)">
-      <Output TaskParameter="Filtered" ItemName="_ProjectReferenceClosureWithoutMetadata" />
-    </RemoveDuplicates>
-    <ItemGroup>
-      <!-- Remove references that are also direct references -->
-      <_ProjectReferenceClosureWithoutMetadata Remove="%(_MSBuildProjectReferenceExistent.FullPath)" />
-      <!-- We can now mark all the closure references as indirect -->
-      <_ProjectReferenceClosure Include="@(_ProjectReferenceClosureWithoutMetadata)">
-        <DependencyKind>Indirect</DependencyKind>
-        <PackageDirectory>%(_MSBuildProjectReferenceExistent.PackageDirectory)</PackageDirectory>
-        <TargetSubdirectory>%(_MSBuildProjectReferenceExistent.TargetSubdirectory)</TargetSubdirectory>
-      </_ProjectReferenceClosure>
-      <!-- Now add the direct references, preserving metadata -->
-      <_ProjectReferenceClosure Include="@(_MSBuildProjectReferenceExistent->'%(FullPath)')">
-        <DependencyKind>Direct</DependencyKind>
-      </_ProjectReferenceClosure>
-    </ItemGroup>
-  </Target>
+
 </Project>

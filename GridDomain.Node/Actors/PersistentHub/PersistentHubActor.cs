@@ -11,7 +11,6 @@ using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.Transports.Remote;
 
 namespace GridDomain.Node.Actors.PersistentHub
 {
@@ -66,7 +65,7 @@ namespace GridDomain.Node.Actors.PersistentHub
                                                  var childId = GetChildActorId(messageWithMetadata);
                                                  var name = GetChildActorName(childId);
                                                  messageWithMetadata.Metadata.History.Add(_forwardEntry);
-                                                 SendToChild(messageWithMetadata, childId, name);
+                                                 SendToChild(messageWithMetadata, childId, name, Sender);
                                              });
         }
 
@@ -81,7 +80,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             return true;
         }
 
-        protected void SendToChild(object message, Guid childId, string name)
+        protected void SendToChild(object message, Guid childId, string name, IActorRef sender)
         {
             ChildInfo knownChild;
             //TODO: refactor this suspicious logic of child terminaition cancel
@@ -92,7 +91,7 @@ namespace GridDomain.Node.Actors.PersistentHub
                 {
                     knownChild.PendingMessages.Add(message);
                     Log.Debug(
-                        "Keeping message {msg} for child {id}. Waiting for child to terminate. Message will be resent after.",
+                        "Keeping message {@msg} for child {id}. Waiting for child to terminate. Message will be resent after.",
                         message,
                         childId);
 
@@ -103,7 +102,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             knownChild.LastTimeOfAccess = BusinessDateTime.UtcNow;
             knownChild.ExpiresAt = knownChild.LastTimeOfAccess + ChildMaxInactiveTime;
 
-            SendMessageToChild(knownChild, message);
+            SendMessageToChild(knownChild, message, sender);
             LogMessageSentToChild(message, childId, childWasCreated);
         }
 
@@ -133,7 +132,7 @@ namespace GridDomain.Node.Actors.PersistentHub
         protected abstract Guid GetChildActorId(IMessageMetadataEnvelop message);
         protected abstract Type ChildActorType { get; }
 
-        protected virtual void SendMessageToChild(ChildInfo knownChild, object message)
+        protected virtual void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
         {
             knownChild.Ref.Tell(message);
         }
@@ -194,7 +193,7 @@ namespace GridDomain.Node.Actors.PersistentHub
         protected override void PostStop()
         {
             _monitor.IncrementActorStopped();
-            Log.Debug("{ActorHub} was stopped", Self.Path);
+            Log.Debug("Stopped");
         }
 
         private sealed class ClearChildren

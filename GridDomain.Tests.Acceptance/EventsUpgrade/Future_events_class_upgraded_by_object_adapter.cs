@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             await Node.Prepare(new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), true)).
                        Expect<BalanceChangedEvent_V1>().
-                       Execute();
+                       Execute(TimeSpan.FromSeconds(10));
         }
     }
 }

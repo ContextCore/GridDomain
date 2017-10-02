@@ -18,7 +18,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                                                                               Predicate<TMsg> selector = null)
         {
             var sel = selector ?? (m => true);
-            return res.All.OfType<IMessageMetadataEnvelop<TMsg>>().FirstOrDefault(t => sel(t.Message));
+            var loosyTypedEnvelop = res.All.OfType<IMessageMetadataEnvelop>().First(t => t.Message is TMsg && sel((TMsg)t.Message));
+            return new MessageMetadataEnvelop<TMsg>((TMsg)loosyTypedEnvelop.Message, loosyTypedEnvelop.Metadata);
         }
     }
 }

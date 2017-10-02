@@ -14,9 +14,9 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         public Guid Id { get; set; }
         public string CurrentStateName { get; set; }
 
-        public object Clone()
+        public IProcessState Clone()
         {
-           return MemberwiseClone();
+           return (IProcessState)MemberwiseClone();
         }
     }
 }

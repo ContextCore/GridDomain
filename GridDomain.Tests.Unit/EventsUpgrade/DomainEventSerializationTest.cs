@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using GridDomain.EventSourcing.VersionedTypeSerialization;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.Unit.EventsUpgrade.Events;
 using Xunit;
@@ -11,24 +12,13 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     {
         private static string SerializedToString<T>(T evt)
         {
-            //XmlSerializer xmlSerializer = new XmlSerializer(evt.GetType());
-            //using (StringWriter textWriter = new StringWriter())
-            //{
-            //    xmlSerializer.Serialize(textWriter, evt);
-            //    return textWriter.ToString();
-            //}
-            var system = ActorSystem.Create("example", new AutoTestAkkaConfiguration().ToStandAloneInMemorySystemConfig());
+            var system = ActorSystem.Create("example", new AutoTestNodeConfiguration().ToStandAloneInMemorySystemConfig());
 
             // Get the Serialization Extension
             var serialization = system.Serialization;
 
             // Find the Serializer for it
             var serializer = serialization.FindSerializerFor(evt);
-
-            //var serializedString = JsonConvert.SerializeObject(evt, new JsonSerializerSettings
-            //{
-            //    TypeNameHandling = TypeNameHandling.All
-            //});
 
             return serializer.ToBinary(evt).ToString();
         }
@@ -40,7 +30,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             var serializedString = SerializedToString(evt);
 
             var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent_V1)).ToString();
-            Assert.True(serializedString.Contains(expectedTypeName));
+            Assert.Contains(expectedTypeName, serializedString);
         }
 
         //latest version of event, has version 2
@@ -53,7 +43,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             var serializedString = SerializedToString(evt);
 
             var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent), 2).ToString();
-            Assert.True(serializedString.Contains(expectedTypeName));
+            Assert.Contains(expectedTypeName, serializedString);
         }
     }
 }

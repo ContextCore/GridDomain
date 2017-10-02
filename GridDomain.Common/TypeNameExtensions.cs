@@ -13,12 +13,12 @@ namespace GridDomain.Common
         /// <returns></returns>
         public static string BeautyName(this Type type)
         {
-            if (!type.IsGenericType)
+            if (!type.IsConstructedGenericType)
                 return type.Name;
 
             var typeName = type.Name.Split('`')[0];
 
-            var parameters = string.Join("_", type.GetGenericArguments().Select(t => t.BeautyName()));
+            var parameters = string.Join("_", type.GenericTypeArguments.Select(t => t.BeautyName()));
 
             return $"{typeName}_{parameters}";
         }

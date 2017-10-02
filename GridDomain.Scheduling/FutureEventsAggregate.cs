@@ -11,9 +11,9 @@ namespace GridDomain.Scheduling
     {
         protected FutureEventsAggregate(Guid id):base(id)
         {
-            Register<FutureEventScheduledEvent>(Apply);
-            Register<FutureEventOccuredEvent>(Apply);
-            Register<FutureEventCanceledEvent>(Apply);
+            //Register<FutureEventScheduledEvent>(Apply);
+            //Register<FutureEventOccuredEvent>(Apply);
+            //Register<FutureEventCanceledEvent>(Apply);
             _schedulingSourceName = GetType().Name;
         }
 
@@ -56,17 +56,17 @@ namespace GridDomain.Scheduling
             Produce(domainEvents);
         }
 
-        private void Apply(FutureEventScheduledEvent e)
+        protected void Apply(FutureEventScheduledEvent e)
         {
             _futureEvents.Add(e);
         }
 
-        private void Apply(FutureEventOccuredEvent e)
+        protected void Apply(FutureEventOccuredEvent e)
         {
             DeleteFutureEvent(e.FutureEventId);
         }
 
-        private void Apply(FutureEventCanceledEvent e)
+        protected void Apply(FutureEventCanceledEvent e)
         {
             DeleteFutureEvent(e.FutureEventId);
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Automatonymous;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -68,7 +69,7 @@ namespace GridDomain.ProcessManagers.DomainBind
                 typeof(TProcess).GetProperties()
                              .Where(
                                     p =>
-                                        p.PropertyType.IsGenericType
+                                        p.PropertyType.IsConstructedGenericType
                                         && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
             foreach (var prop in domainBindedEvents)
             {

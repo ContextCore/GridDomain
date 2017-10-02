@@ -4,6 +4,10 @@ namespace GridDomain.Node.Actors.CommandPipe
 {
     public class CannotFindAggregateForCommandExñeption : Exception
     {
+        public CannotFindAggregateForCommandExñeption()
+        {
+            
+        }
         public CannotFindAggregateForCommandExñeption(object command, Type topic)
         {
             Command = command;

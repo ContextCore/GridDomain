@@ -1,6 +1,5 @@
 using System;
 using GridDomain.EventSourcing;
-using Microsoft.Practices.Unity;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {

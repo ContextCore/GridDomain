@@ -26,6 +26,7 @@ namespace GridDomain.CQRS
         public Guid ProcessId { get; private set; }
         public Guid AggregateId { get; }
 
+        //TODO: think how to avoid cloning just for process id set
         public Command CloneForProcess(Guid processId)
         {
             var copy = (Command) MemberwiseClone();

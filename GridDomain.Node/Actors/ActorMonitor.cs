@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Monitoring;
-using Akka.Monitoring.Impl;
 using GridDomain.Common;
 using GridDomain.CQRS;
 
@@ -26,7 +24,7 @@ namespace GridDomain.Node.Actors
 
         public void Increment(string counterName)
         {
-            _context.IncrementCounter(GetCounterName(counterName));
+           // _context.IncrementCounter(GetCounterName(counterName));
         }
         public void Increment<T>()
         {
@@ -35,22 +33,22 @@ namespace GridDomain.Node.Actors
 
         public void IncrementMessagesReceived()
         {
-            Increment(CounterNames.ReceivedMessages);
+           // Increment(CounterNames.ReceivedMessages);
         }
 
         public void IncrementActorRestarted()
         {
-            Increment(CounterNames.ActorRestarts);
+            //Increment(CounterNames.ActorRestarts);
         }
 
         public void IncrementActorStopped()
         {
-            Increment(CounterNames.ActorsStopped);
+            //Increment(CounterNames.ActorsStopped);
         }
 
         public void IncrementActorStarted()
         {
-            Increment(CounterNames.ActorsCreated);
+           // Increment(CounterNames.ActorsCreated);
         }
     }
 }

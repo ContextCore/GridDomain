@@ -5,6 +5,8 @@ using Akka.Actor;
 using Akka.Event;
 using Akka.Persistence;
 using Akka.TestKit.Xunit2;
+using GridDomain.Node.Actors.Serilog;
+using GridDomain.Tests.Common;
 using NMoneys;
 using Serilog.Events;
 using Xunit;
@@ -17,7 +19,7 @@ namespace GridDomain.Tests.Unit
         public LogTest(ITestOutputHelper output)
         {
             var props = Props
-                .Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose)));
+                .Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose).CreateLogger()));
 
             var loggerActor = ((ExtendedActorSystem) Sys).SystemActorOf(props);
             loggerActor.Ask<LoggerInitialized>(new InitializeLogger(Sys.EventStream)).Wait();

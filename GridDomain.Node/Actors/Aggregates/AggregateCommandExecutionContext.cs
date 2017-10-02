@@ -4,16 +4,19 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Configuration.Composition;
 
 namespace GridDomain.Node.Actors.Aggregates {
-    class AggregateCommandExecutionContext<TAggregate> where TAggregate : EventSourcing.Aggregate
+    class AggregateCommandExecutionContext
     {
-        public TAggregate ProducedState;
+        public Aggregate ProducedState;
         public ICommand Command;
         public IMessageMetadata CommandMetadata;
-        public readonly List<object> MessagesToProject = new List<object>();
         public IActorRef CommandSender;
+        public Exception Exception;
+        public IActorRef PersistenceWaiter;
 
         public void Clear()
         {
@@ -21,7 +24,8 @@ namespace GridDomain.Node.Actors.Aggregates {
             Command = null;
             CommandMetadata = null;
             CommandSender = null;
-            MessagesToProject.Clear();;
+            Exception = null;
+            PersistenceWaiter = null;
         }
     }
 }

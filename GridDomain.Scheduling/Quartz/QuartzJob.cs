@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -37,7 +38,7 @@ namespace GridDomain.Scheduling.Quartz
             _quartzLogger = quartzLogger.ForContext<QuartzJob>();
         }
 
-        public void Execute(IJobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             var jobDataMap = context.JobDetail.JobDataMap;
             IMessageMetadata metadata;
@@ -55,25 +56,25 @@ namespace GridDomain.Scheduling.Quartz
             if (jobDataMap.ContainsKey(CommandKey))
             {
                 var command = Get<Command>(jobDataMap, CommandKey);
-                WithErrorHandling(command, metadata, jobKey, () => ProcessCommand(command, jobDataMap, metadata, jobKey));
+                await WithErrorHandling(command, metadata, jobKey, () => ProcessCommand(command, jobDataMap, metadata, jobKey));
             }
             else
             {
                 var evt = Get<DomainEvent>(jobDataMap, EventKey);
-                WithErrorHandling(evt, metadata, jobKey, () => ProcessEvent(metadata, jobKey, evt));
+                await WithErrorHandling(evt, metadata, jobKey, () => ProcessEvent(metadata, jobKey, evt));
             }
         }
 
-        private void ProcessEvent(IMessageMetadata metadata, JobKey jobKey, DomainEvent messageToFire)
+        private Task ProcessEvent(IMessageMetadata metadata, JobKey jobKey, DomainEvent messageToFire)
         {
             throw new NotImplementedException("need refactor - pass events to command pipe instead of just publish");
         }
 
-        private void WithErrorHandling(IHaveId processingMessage, IMessageMetadata messageMetadata, JobKey key, Action act)
+        private async Task WithErrorHandling(IHaveId processingMessage, IMessageMetadata messageMetadata, JobKey key, Func<Task> act)
         {
             try
             {
-                act();
+               await act();
             }
             catch (Exception e)
             {
@@ -87,7 +88,7 @@ namespace GridDomain.Scheduling.Quartz
             }
         }
 
-        private void ProcessCommand(ICommand command, JobDataMap jobDataMap, IMessageMetadata metadata, JobKey jobKey)
+        private async Task ProcessCommand(ICommand command, JobDataMap jobDataMap, IMessageMetadata metadata, JobKey jobKey)
         {
             var options = Get<ExecutionOptions>(jobDataMap, ExecutionOptionsKey);
             if (options.SuccesEventType == null)
@@ -97,10 +98,9 @@ namespace GridDomain.Scheduling.Quartz
                                                        new ProcessEntry(nameof(QuartzJob), PassingCommandToExecutor, CommandRaiseTime));
 
             //waiting domain event by correlation id
-            _executor.Prepare(command, commandMetadata)
-                     .Expect(options.SuccesEventType)
-                     .Execute(options.Timeout, true)
-                     .Wait();
+            await _executor.Prepare(command, commandMetadata)
+                           .Expect(options.SuccesEventType)
+                           .Execute(options.Timeout, true);
 
             _quartzLogger.Information("job {key} succeed", jobKey.Name);
 

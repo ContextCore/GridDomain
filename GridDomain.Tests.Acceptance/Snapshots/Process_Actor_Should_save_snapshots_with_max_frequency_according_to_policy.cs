@@ -9,7 +9,6 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Transports.Remote;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Acceptance.EventsUpgrade;
@@ -23,6 +22,7 @@ using GridDomain.Tools.Repositories.AggregateRepositories;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
+using GridDomain.Transport.Remote;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
@@ -97,11 +97,11 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             this.Log.Info("Enforced additional snapshot save & delete");
 
-            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+            var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
                 new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //Snapshot_should_be_saved_one_time
-            Assert.Equal(1, snapshots.Length);
+            Assert.Single(snapshots);
             //Restored_process_state_should_have_correct_ids
             Assert.True(snapshots.All(s => s.Aggregate.Id == processId));
             //Snapshot_should_have_parameters_from_first_event = created event

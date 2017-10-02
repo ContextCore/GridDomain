@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 
 
@@ -26,10 +27,14 @@ namespace GridDomain.EventSourcing
 
         public IAggregate Build(Type type, Guid id)
         {
-            var constructor = type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-                                                  null,
-                                                  new[] {typeof(Guid)},
-                                                  null);
+            //TODO: add type cache to reduce search time
+            var constructor = type.GetTypeInfo()
+                                  .DeclaredConstructors.First(c =>
+                                                              {
+                                                                  var parameters = c.GetParameters();
+                                                                  return parameters.Length == 1 && parameters[0]
+                                                                             .ParameterType == typeof(Guid);
+                                                              });
 
             if (constructor == null)
                 throw new ConventionBasedConstructorNotFound();

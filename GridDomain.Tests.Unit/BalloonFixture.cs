@@ -4,6 +4,7 @@ using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
+using GridDomain.Tests.Unit.ProcessManagers;
 
 namespace GridDomain.Tests.Unit
 {
