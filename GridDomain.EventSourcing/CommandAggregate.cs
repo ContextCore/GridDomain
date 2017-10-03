@@ -12,7 +12,6 @@ namespace GridDomain.EventSourcing {
             AggregateType = GetType();
         }
 
-        protected CommandAggregate(IRouteEvents handler) : base(handler) { }
         //TODO: replace with types cache to reduce memory and increase performace
         internal readonly AggregateCommandsHandler<CommandAggregate> CommandsHandler = new AggregateCommandsHandler<CommandAggregate>();
 
