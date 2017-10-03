@@ -2,15 +2,15 @@ using System;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class PersistenceJournalConfig : INodeConfig
+    internal class PersistenceJournalConfig : IHoconConfig
     {
         private readonly INodeDbConfiguration _dbConfiguration;
-        private readonly INodeConfig _eventAdatpersConfig;
+        private readonly IHoconConfig _eventAdatpersConfig;
         private readonly Type _sqlJournalType;
         private string _assemblyQualifiedShortName;
 
         public PersistenceJournalConfig(INodeDbConfiguration dbConfiguration,
-                                        INodeConfig eventAdatpersConfig,
+                                        IHoconConfig eventAdatpersConfig,
                                         Type sqlJournalType = null)
         {
             _eventAdatpersConfig = eventAdatpersConfig;

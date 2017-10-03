@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
-            SystemConfigFactory = () => NodeConfig.ToStandAloneInMemorySystemConfig();
+            SystemConfigFactory = () => NodeConfig.ToDebugStandAloneInMemorySystemConfig();
             ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
           
         }

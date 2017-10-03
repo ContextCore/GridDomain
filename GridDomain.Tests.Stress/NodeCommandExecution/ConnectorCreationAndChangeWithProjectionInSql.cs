@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         protected override IGridDomainNode CreateNode()
         {
             base.CreateNode();
-            var connector = new GridNodeConnector(new StressTestNodeConfiguration(LogLevel.ErrorLevel).Network);
+            var connector = new GridNodeClient(new StressTestNodeConfiguration(LogLevel.ErrorLevel).Network);
             connector.Connect()
                      .Wait();
 

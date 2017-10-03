@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class PersistenceSnapshotConfig : INodeConfig
+    internal class PersistenceSnapshotConfig : IHoconConfig
     {
         private readonly NodeConfiguration _node;
 

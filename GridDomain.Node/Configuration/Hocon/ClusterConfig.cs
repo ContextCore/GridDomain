@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
-    public class ClusterConfig : RemoteActorConfig
+    public class ClusterConfig : TransportConfig
     {
         private readonly string[] _seedNodes;
 
@@ -42,11 +42,6 @@ namespace GridDomain.Node.Configuration.Hocon
         {
             string networkAddress = $"akka.tcp://{conf.SystemName}@{conf.Host}:{conf.PortNumber}";
             return networkAddress;
-        }
-
-        public override string BuildActorProvider()
-        {
-            return BuildClusterProvider(_seedNodes);
         }
     }
 }

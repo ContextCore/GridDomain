@@ -1,10 +1,10 @@
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class InMemoryJournalConfig : INodeConfig
+    internal class InMemoryJournalConfig : IHoconConfig
     {
-        private readonly INodeConfig _eventAdaptersConfig;
+        private readonly IHoconConfig _eventAdaptersConfig;
 
-        public InMemoryJournalConfig(INodeConfig eventAdaptersConfig)
+        public InMemoryJournalConfig(IHoconConfig eventAdaptersConfig)
         {
             _eventAdaptersConfig = eventAdaptersConfig;
         }

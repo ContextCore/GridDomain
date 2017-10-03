@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots {
                                                     TestDbTools.ClearData(fixture.NodeConfig.Persistence).Wait();
                                                 };
 
-            fixture.SystemConfigFactory = () => fixture.NodeConfig.ToStandAloneSystemConfig();
+            fixture.SystemConfigFactory = () => fixture.NodeConfig.ToDebugStandAloneSystemConfig();
 
             return fixture;
 

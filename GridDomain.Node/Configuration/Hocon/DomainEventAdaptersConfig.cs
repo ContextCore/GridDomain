@@ -2,7 +2,7 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class DomainEventAdaptersConfig : INodeConfig
+    internal class DomainEventAdaptersConfig : IHoconConfig
     {
         public string Build()
         {

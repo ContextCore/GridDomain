@@ -24,19 +24,24 @@ namespace GridDomain.Node.Configuration {
             return cfg.Build();
         }
 
-        public static string ToStandAloneSystemConfig(this NodeConfiguration conf)
+        public static string ToStandAloneSystemConfig(this NodeConfiguration conf, bool serializeMessagesCreators = false)
         {
             var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType, false),
-                                     new StandAloneConfig(conf.Network),
-                                     new PersistenceConfig(new PersistenceJournalConfig(conf.Persistence ?? throw new ArgumentNullException(nameof(conf.Persistence)), new DomainEventAdaptersConfig()),
+                                     new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
+                                     new ActorProviderConfig(),
+                                     new TransportConfig(conf.Network),
+                                     new PersistenceConfig(new PersistenceJournalConfig(conf.Persistence ?? throw new ArgumentNullException(nameof(conf.Persistence)), 
+                                                             new DomainEventAdaptersConfig()),
                                                            new PersistenceSnapshotConfig(conf)));
             return cfg.Build();
         }
 
-        public static string ToStandAloneInMemorySystemConfig(this NodeConfiguration conf)
+        public static string ToStandAloneInMemorySystemConfig(this NodeConfiguration conf,bool serializeMessagesCreators = false)
         {
             var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType, false),
-                                     new StandAloneConfig(conf.Network),
+                                     new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
+                                     new ActorProviderConfig(),
+                                     new TransportConfig(conf.Network),
                                      new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
                                                            new LocalFilesystemSnapshotConfig()));
 

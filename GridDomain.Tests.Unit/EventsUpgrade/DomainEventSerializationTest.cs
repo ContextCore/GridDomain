@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     {
         private static string SerializedToString<T>(T evt)
         {
-            var system = ActorSystem.Create("example", new AutoTestNodeConfiguration().ToStandAloneInMemorySystemConfig());
+            var system = ActorSystem.Create("example", new AutoTestNodeConfiguration().ToDebugStandAloneInMemorySystemConfig());
 
             // Get the Serialization Extension
             var serialization = system.Serialization;

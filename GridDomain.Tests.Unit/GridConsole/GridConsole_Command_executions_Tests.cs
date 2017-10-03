@@ -6,6 +6,7 @@ using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
@@ -17,67 +18,61 @@ namespace GridDomain.Tests.Unit.GridConsole
 {
     public class GridConsole_Command_executions_Tests : IDisposable
     {
-        private GridNodeConnector _gridNodeConnector;
-        private GridDomainNode _gridDomainNode;
+        private readonly GridNodeClient _client;
+        private readonly GridDomainNode _node;
+
+        public GridConsole_Command_executions_Tests()
+        {
+            var nodeConfiguration = new TestGridNodeConfiguration(5010);
+            var nodeAddress = nodeConfiguration.Network;
+            var settings = new NodeSettings(() => nodeConfiguration.CreateInMemorySystem());
+            settings.Add(new BalloonDomainConfiguration());
+            _node = new GridDomainNode(settings);
+            _node.Start()
+                 .Wait();
+            _client = new GridNodeClient(nodeAddress);
+        }
 
         public void Dispose()
         {
-            _gridDomainNode?.Dispose();
-            _gridNodeConnector?.Dispose();
+            _node?.Dispose();
+            _client?.Dispose();
         }
 
-        [Fact
-#if DEBUG
-            (Skip ="console system should not serialize creators, run test in release mode")
-#endif
-            ]
+        [Fact]
         public async Task Console_can_wait_for_command_produced_events()
         {
-           await CreateConsole(9003);
             //Console_commands_are_executed_by_remote_node()
+            await _client.Connect();
             var command = new InflateNewBallonCommand(42, Guid.NewGuid());
+            var evt = await _client.Prepare(command)
+                                   .Expect<BalloonCreated>()
+                                   .Execute();
 
-            var evt = await _gridNodeConnector.Prepare(command)
-                                     .Expect<BalloonCreated>()
-                                     .Execute();
-
-            Assert.Equal(command.Title.ToString(), evt.Message<BalloonCreated>().Value);
+            Assert.Equal(command.Title.ToString(),
+                         evt.Message<BalloonCreated>()
+                            .Value);
         }
 
-        [Fact
-#if DEBUG
-            (Skip = "console system should not serialize creators, run test in release mode")
-#endif
-        ]
-
+        [Fact]
         public async Task Console_can_execute_commands()
         {
-            await CreateConsole(9004);
-
-            await _gridNodeConnector.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()));
+            await _client.Connect();
+            await _client.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()));
         }
 
-        [Fact
-#if DEBUG
-            (Skip = "console system should not serialize creators, run test in release mode")
-#endif
-        ]
-        public async Task Console_can_connect()
+        [Fact]
+        public async Task Throws_exception_on_action_and_not_connected()
         {
-            await CreateConsole(9002);
-            Assert.NotNull(_gridNodeConnector);
+            await _client.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()))
+                         .ShouldThrow<NotConnectedException>();
         }
 
-        private async Task CreateConsole(int port)
+        [Fact]
+        public async Task Client_can_connect()
         {
-            var serverConfig = new TestGridNodeConfiguration(port);
-            var settings = new NodeSettings(() => serverConfig.CreateInMemorySystem());
-            settings.Add(new BalloonDomainConfiguration());
-            _gridDomainNode = new GridDomainNode(settings);
-
-            await _gridDomainNode.Start();
-            _gridNodeConnector = new GridNodeConnector(serverConfig.Network);
-            await _gridNodeConnector.Connect();
+            await _client.Connect();
+            Assert.True(_client.IsConnected);
         }
     }
 }

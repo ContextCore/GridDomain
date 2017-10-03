@@ -1,11 +1,11 @@
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class PersistenceConfig : INodeConfig
+    internal class PersistenceConfig : IHoconConfig
     {
-        private readonly INodeConfig _journalConfig;
-        private readonly INodeConfig _snapshotsConfig;
+        private readonly IHoconConfig _journalConfig;
+        private readonly IHoconConfig _snapshotsConfig;
 
-        public PersistenceConfig(INodeConfig journalConfig, INodeConfig snapshotsConfig)
+        public PersistenceConfig(IHoconConfig journalConfig, IHoconConfig snapshotsConfig)
         {
             _snapshotsConfig = snapshotsConfig;
             _journalConfig = journalConfig;
