@@ -50,8 +50,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
                 ctx.SaveChanges();
             }
 
-            TestDbTools.Truncate(readDb.ReadModelConnectionString,
-                                 "BalloonCatalog")
+            TestDbTools.Truncate(readDb.ReadModelConnectionString,"BalloonCatalog")
                        .Wait();
            
             _fixture.CreateNode().Wait();

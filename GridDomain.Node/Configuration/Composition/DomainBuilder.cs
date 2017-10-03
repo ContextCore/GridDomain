@@ -40,7 +40,7 @@ namespace GridDomain.Node.Configuration.Composition
             _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(factory.CreateCatalog,
                                                                          factory.ProcessName,
                                                                          () => factory.StateDependencyFactory.CreatePersistencePolicy(),
-                                                                         factory.StateDependencyFactory.CreateFactory(),
+                                                                         factory.StateDependencyFactory.CreateAggregateFactory(),
                                                                          factory.StateDependencyFactory.CreateRecycleConfiguration()));
             _maps.Add(factory.CreateRouteMap());
         }
@@ -49,7 +49,7 @@ namespace GridDomain.Node.Configuration.Composition
         {
             _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(factory.CreateCommandsHandler(),
                                                                                                             factory.CreatePersistencePolicy,
-                                                                                                            factory.CreateFactory(),
+                                                                                                            factory.CreateAggregateFactory(),
                                                                                                             factory.CreateRecycleConfiguration()));
             _maps.Add(factory.CreateRouteMap());
 
@@ -58,7 +58,7 @@ namespace GridDomain.Node.Configuration.Composition
         public void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage> where TMessage : class, IHaveProcessId, IHaveId
         {
             var cfg = new ContainerConfiguration(c => c.Register<THandler>(ctx => factory.Create(ctx.Resolve<IMessageProcessContext>())),
-                                                c => c.RegisterType<MessageHandleActor<TMessage, THandler>>());
+                                                 c => c.RegisterType<MessageHandleActor<TMessage, THandler>>());
             _containerConfigurations.Add(cfg);
             _maps.Add(factory.CreateRouteMap());
         }

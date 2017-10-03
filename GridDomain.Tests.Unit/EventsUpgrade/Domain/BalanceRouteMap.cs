@@ -11,8 +11,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
         {
             await router.RegisterAggregate<BalanceAggregate,BalanceAggregatesCommandHandler>();
             await router.RegisterSyncHandler<BalanceChangedEvent_V0, SampleProjectionBuilder>();
+            await router.RegisterSyncHandler<BalanceChangedEvent_V1, SampleProjectionBuilder>();
         }
-
-        public string Name { get; } = nameof(BalanceRouteMap);
     }
 }

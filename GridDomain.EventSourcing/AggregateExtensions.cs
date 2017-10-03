@@ -6,14 +6,9 @@ namespace GridDomain.EventSourcing
 {
     public static class AggregateExtensions
     {
-        public static IReadOnlyCollection<DomainEvent> GetDomainEvents(this IAggregate aggregate)
-        {
-            return aggregate.GetUncommittedEvents();
-        }
-
         public static void PersistAll(this Aggregate aggregate)
         {
-            foreach (var e in aggregate.GetDomainEvents().ToArray())
+            foreach (var e in ((IAggregate) aggregate).GetUncommittedEvents().ToArray())
                 aggregate.MarkPersisted(e);
         }
     }

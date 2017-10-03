@@ -16,12 +16,14 @@ using Xunit;
 
 namespace GridDomain.Tests.Unit.GridConsole
 {
-    public class GridConsole_Command_executions_Tests : IDisposable
+
+    [Collection("Grid node client collection")]
+    public class GridNodeClient_Tests : IDisposable
     {
         private readonly GridNodeClient _client;
         private readonly GridDomainNode _node;
 
-        public GridConsole_Command_executions_Tests()
+        public GridNodeClient_Tests()
         {
             var nodeConfiguration = new TestGridNodeConfiguration(5010);
             var nodeAddress = nodeConfiguration.Network;

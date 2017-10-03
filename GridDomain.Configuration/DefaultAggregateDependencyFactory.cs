@@ -58,7 +58,7 @@ namespace GridDomain.Configuration {
             return SnapshotPolicyCreator();
         }
 
-        public virtual IConstructAggregates CreateFactory()
+        public virtual IConstructAggregates CreateAggregateFactory()
         {
             return AggregateFactoryCreator();
         }

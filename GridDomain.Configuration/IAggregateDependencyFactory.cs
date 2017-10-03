@@ -1,3 +1,4 @@
+using System;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 
@@ -7,7 +8,7 @@ namespace GridDomain.Configuration
     {
         IAggregateCommandsHandler<TAggregate> CreateCommandsHandler();
         ISnapshotsPersistencePolicy CreatePersistencePolicy();
-        IConstructAggregates CreateFactory();
+        IConstructAggregates CreateAggregateFactory();
         IPersistentChildsRecycleConfiguration CreateRecycleConfiguration();
     }
 }

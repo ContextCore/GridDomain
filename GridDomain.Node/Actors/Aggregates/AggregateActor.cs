@@ -32,6 +32,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly IPublisher _publisher;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
+        private readonly IActorRef _self;
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
@@ -46,6 +47,14 @@ namespace GridDomain.Node.Actors.Aggregates
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.CommandRaisedAnError);
             _commandCompletedProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.ExecutedCommand);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
+            _self = Self;
+            State.SetPersistProvider(AggregatePersistence);
+        }
+
+        private Task AggregatePersistence(Aggregate agr)
+        {
+            ExecutionContext.ProducedState = agr;
+            return _self.Ask<EventsPersisted>(((IAggregate) agr).GetUncommittedEvents());
         }
 
         protected virtual void AwaitingCommandBehavior()
@@ -60,19 +69,13 @@ namespace GridDomain.Node.Actors.Aggregates
                                                 ExecutionContext.Command = cmd;
                                                 ExecutionContext.CommandMetadata = m.Metadata;
                                                 ExecutionContext.CommandSender = Sender;
-                                                var self = Self;
                                                 Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
                                             
                                                 Log.Debug("Executing command. {@m}", ExecutionContext);
                                             
                                                 _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                        cmd,
-                                                                                       agr =>
-                                                                                       {
-                                                                                           ExecutionContext.ProducedState = (TAggregate) agr;
-                                                                                           
-                                                                                           return self.Ask<EventsPersisted>(agr.GetDomainEvents());
-                                                                                       })
+                                                                                       AggregatePersistence)
                                                                          .ContinueWith(t =>
                                                                                        {
                                                                                            if (t.IsFaulted) throw t.Exception;

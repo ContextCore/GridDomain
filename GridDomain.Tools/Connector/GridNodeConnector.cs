@@ -95,20 +95,20 @@ namespace GridDomain.Tools.Connector
             IActorRef eventBusForwarder = null;
             IActorRef commandExecutionActor = null;
 
-            while (_retryConnect && (!token.HasValue || token?.IsCancellationRequested == false))
-            {
-                try
-                {
+            //while (_retryConnect && (!token.HasValue || token?.IsCancellationRequested == false))
+            //{
+              //  try
+               // {
                     eventBusForwarder = await GetActor(GetSelection("ActorTransportProxy"));
                     commandExecutionActor = await GetActor(GetSelection(nameof(AggregatesPipeActor)));
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    ConnectionRetries ++;
-                    (_logger ?? Log.Logger).Error(ex,"Could not connect to griddomain node at {@adress}",_serverAddress);
-                }
-            }
+           //         break;
+           //     }
+           //     catch (Exception ex)
+           //     {
+           //         ConnectionRetries ++;
+           //         (_logger ?? Log.Logger).Error(ex,"Could not connect to griddomain node at {@adress}",_serverAddress);
+           //     }
+           // }
             
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
                                                                       eventBusForwarder,

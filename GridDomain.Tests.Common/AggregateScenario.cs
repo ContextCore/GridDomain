@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Tests.Common
 {
@@ -71,14 +73,13 @@ namespace GridDomain.Tests.Common
             return this;
         }
 
-    
         public async Task<AggregateScenario<TAggregate>> Run()
         {
             var events = new List<DomainEvent>();
             Task Persistence(Aggregate agr)
             {
                 Aggregate = (TAggregate)agr;
-                events.AddRange(agr.GetDomainEvents());
+                events.AddRange(((IAggregate)Aggregate).GetUncommittedEvents().ToList());
                 agr.PersistAll();
                 return Task.CompletedTask;
             }

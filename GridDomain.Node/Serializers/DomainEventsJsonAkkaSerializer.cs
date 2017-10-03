@@ -13,8 +13,7 @@ namespace GridDomain.Node.Serializers
         {
             Serializer = new Lazy<DomainSerializer>(() =>
                                                     {
-                                                        var ext =
-                                                            system.GetExtension<DomainEventsJsonSerializationExtension>();
+                                                        var ext = system.GetExtension<DomainEventsJsonSerializationExtension>();
                                                         if (ext == null)
                                                             throw new ArgumentNullException(nameof(ext),
                                                                                             $"Cannot get {typeof(DomainEventsJsonSerializationExtension).Name} extension");

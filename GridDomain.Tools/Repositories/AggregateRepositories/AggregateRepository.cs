@@ -30,7 +30,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
         public async Task Save<T>(T aggr) where T : Aggregate
         {
             var persistId = AggregateActorName.New<T>(aggr.Id).ToString();
-            await _eventRepository.Save(persistId, aggr.GetDomainEvents().ToArray());
+            await _eventRepository.Save(persistId, ((IAggregate) aggr).GetUncommittedEvents().ToArray());
             aggr.PersistAll();
         }
 
