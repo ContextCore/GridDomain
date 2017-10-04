@@ -1,7 +1,7 @@
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common.Configuration;
 
-namespace GridDomain.Tests.Unit.GridConsole
+namespace GridDomain.Tests.Acceptance.GridConsole
 {
     internal class TestGridNodeConfiguration : NodeConfiguration
     {

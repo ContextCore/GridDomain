@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
-using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tools.Connector;
+using Serilog;
+using Serilog.Core;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.GridConsole
+namespace GridDomain.Tests.Acceptance.GridConsole
 {
 
     [Collection("Grid node client collection")]
@@ -23,22 +24,24 @@ namespace GridDomain.Tests.Unit.GridConsole
         private readonly GridNodeClient _client;
         private readonly GridDomainNode _node;
 
-        public GridNodeClient_Tests()
+        public GridNodeClient_Tests(ITestOutputHelper helper)
         {
             var nodeConfiguration = new TestGridNodeConfiguration(5010);
             var nodeAddress = nodeConfiguration.Network;
             var settings = new NodeSettings(() => nodeConfiguration.CreateInMemorySystem());
             settings.Add(new BalloonDomainConfiguration());
+            settings.Log = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
+            Log.Logger = settings.Log;
             _node = new GridDomainNode(settings);
-            _node.Start()
-                 .Wait();
+            _node.Start().Wait();
             _client = new GridNodeClient(nodeAddress);
+
         }
 
         public void Dispose()
         {
-            _node?.Dispose();
             _client?.Dispose();
+            _node?.Dispose();
         }
 
         [Fact]

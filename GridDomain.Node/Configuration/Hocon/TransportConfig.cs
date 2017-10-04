@@ -21,13 +21,10 @@ namespace GridDomain.Node.Configuration.Hocon {
         {
             var transportString = @"remote {
                     log-remote-lifecycle-events = DEBUG
-                    helios.tcp {
-                               transport-class = ""Akka.Remote.Transport.Helios.HeliosTcpTransport, Akka.Remote""
-                               transport-protocol = tcp
+                    dot-netty.tcp {
                                port = " + _port + @"
                                hostname =  " + _host + @"
                                public-hostname = " + _publicHost + @"
-                               enforce-ip-family = " + (_enforceIpVersion ? "true" : "false") + @"
                     }
             }";
             return transportString;

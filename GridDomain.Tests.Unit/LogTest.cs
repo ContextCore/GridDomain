@@ -19,8 +19,7 @@ namespace GridDomain.Tests.Unit
     {
         public LogTest(ITestOutputHelper output)
         {
-            var props = Props
-                .Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose).CreateLogger()));
+            var props = Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose).CreateLogger()));
 
             var loggerActor = ((ExtendedActorSystem) Sys).SystemActorOf(props);
             loggerActor.Ask<LoggerInitialized>(new InitializeLogger(Sys.EventStream)).Wait();

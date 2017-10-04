@@ -122,7 +122,6 @@ namespace GridDomain.Tests.Unit
             ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
 
             var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
-
             logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
             return System;
         }

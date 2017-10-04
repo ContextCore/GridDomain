@@ -116,9 +116,9 @@ namespace GridDomain.Node
             Container = _containerBuilder.Build();
             System.AddDependencyResolver(new AutoFacDependencyResolver(Container, System));
             domainBuilder.Configure(Pipe);
-            var nodeController = System.ActorOf(Props.Create(() => new GridNodeController()), nameof(GridNodeController));
+            var nodeController = System.ActorOf(Props.Create(() => new GridNodeController(Pipe.CommandExecutor,ActorTransportProxy)), nameof(GridNodeController));
 
-            await nodeController.Ask<GridNodeController.Started>(new GridNodeController.Start());
+            await nodeController.Ask<GridNodeController.Alive>(GridNodeController.HeartBeat.Instance);
 
             Settings.Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }

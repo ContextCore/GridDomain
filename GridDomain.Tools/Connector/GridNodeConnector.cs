@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Serializers;
 using GridDomain.Transport;
 using GridDomain.Transport.Remote;
 using Serilog;
+using Serilog.Core;
 
 namespace GridDomain.Tools.Connector
 {
@@ -31,20 +32,18 @@ namespace GridDomain.Tools.Connector
         private ICommandExecutor _commandExecutor;
         private ActorSystem _consoleSystem;
         private MessageWaiterFactory _waiterFactory;
-        private readonly bool _retryConnect;
         private readonly ILogger _logger;
 
         public GridNodeClient(INodeNetworkAddress serverAddress,
                               NodeConfiguration clientConfiguration = null,
                               TimeSpan? defaultTimeout = null,
-                              bool retryConnect = true,
                               ILogger log = null)
         {
-            _logger = log;
-            _retryConnect = retryConnect;
+            _logger = log ?? Log.Logger;
             _serverAddress = serverAddress;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
             _conf = clientConfiguration ?? new ConsoleNodeConfiguration();
+
         }
 
         public void Dispose()
@@ -71,44 +70,50 @@ namespace GridDomain.Tools.Connector
             return _commandExecutor.Prepare(cmd, metadata);
         }
 
-        private async Task<IActorRef> GetActor(ActorSelection selection)
-        {
-            return await selection.ResolveOne(_defaultTimeout);
-        }
-
         private ActorSelection GetSelection(string relativePath)
         {
             var actorPath = $"{_serverAddress.ToRootSelectionPath()}/{relativePath}";
 
             return _consoleSystem.ActorSelection(actorPath);
         }
-        public int ConnectionRetries { get; private set; }
+
         public bool IsConnected => _commandExecutor != null;
-        public async Task Connect(CancellationToken? token = null)
+        public async Task Connect()
         {
             if (_consoleSystem != null)
                 return;
 
-            _consoleSystem = _conf.CreateInMemorySystem();
-            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
+            _logger.Information("Sending warmup message to start association");
 
             IActorRef eventBusForwarder = null;
             IActorRef commandExecutionActor = null;
+            int connectionCountLeft = 5;
+            while(true)
+                try
+                {
+                    _consoleSystem = _conf.CreateInMemorySystem();
+                    DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
 
-            //while (_retryConnect && (!token.HasValue || token?.IsCancellationRequested == false))
-            //{
-              //  try
-               // {
-                    eventBusForwarder = await GetActor(GetSelection("ActorTransportProxy"));
-                    commandExecutionActor = await GetActor(GetSelection(nameof(AggregatesPipeActor)));
-           //         break;
-           //     }
-           //     catch (Exception ex)
-           //     {
-           //         ConnectionRetries ++;
-           //         (_logger ?? Log.Logger).Error(ex,"Could not connect to griddomain node at {@adress}",_serverAddress);
-           //     }
-           // }
+
+                    var data = await GetSelection(nameof(GridNodeController)).Ask<GridNodeController.Connected>(GridNodeController.Connect.Instance, TimeSpan.FromSeconds(10));
+                    eventBusForwarder = data.TransportProxy;
+                    commandExecutionActor = data.PipeRef;
+
+                    _logger.Information("Association formed");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _consoleSystem?.Dispose();
+                    _logger.Warning(ex,"could not get answer from grid node controller in time");
+                    if (--connectionCountLeft == 0)
+                        throw;
+                }
+
+
+
+          //  eventBusForwarder =  await GetSelection("ActorTransportProxy").ResolveOne(_defaultTimeout);
+          //  commandExecutionActor = await GetSelection(nameof(AggregatesPipeActor)).ResolveOne(_defaultTimeout);
             
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
                                                                       eventBusForwarder,
