@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
             _testOutputHelper = output;
         }
-        protected override void OnSetup()
+        internal override void OnSetup()
         {
             _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CreationAndChangeWithProjectionInMem)).Options;
             using(var ctx = new BalloonContext(_dbContextOptions))

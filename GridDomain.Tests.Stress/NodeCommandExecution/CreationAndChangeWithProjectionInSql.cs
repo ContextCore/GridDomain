@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
             _output = output;
         }
-        protected override void OnSetup()
+        internal override void OnSetup()
         {
             var readDb = new AutoTestLocalDbConfiguration();
             _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString).Options;
