@@ -26,7 +26,8 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
             Node = CreateNode();
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }
-        protected virtual void OnSetup() { }
+
+        internal virtual void OnSetup() { }
 
         protected abstract INodeScenario Scenario { get; }
         internal abstract IGridDomainNode CreateNode();

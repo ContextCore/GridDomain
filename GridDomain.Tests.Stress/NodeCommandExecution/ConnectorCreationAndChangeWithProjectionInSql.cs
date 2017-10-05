@@ -2,6 +2,7 @@ using Akka.Event;
 using GridDomain.Node;
 using GridDomain.Tests.Acceptance.GridConsole;
 using GridDomain.Tools.Connector;
+using NBench;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -13,12 +14,12 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
 
         }
 
-
         class Initiator
         {
             public Initiator()
             {
                 var test = new CreationAndChangeWithProjectionInSql(new TestOutputHelper());
+                test.OnSetup();
                 var node = test.CreateNode();
             }
         }

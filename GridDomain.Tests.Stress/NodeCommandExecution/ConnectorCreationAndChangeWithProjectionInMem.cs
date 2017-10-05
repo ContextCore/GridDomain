@@ -21,6 +21,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             public Initiator()
             {
                 var test = new CreationAndChangeWithProjectionInMem(new TestOutputHelper());
+                test.OnSetup();
                 var node = test.CreateNode();
             }
         }
