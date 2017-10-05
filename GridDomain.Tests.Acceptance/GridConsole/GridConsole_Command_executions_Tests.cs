@@ -18,30 +18,65 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Acceptance.GridConsole
 {
 
+    public sealed class Isolated<T> : IDisposable
+    {
+        private AppDomain _domain;
+        private T _value;
+
+        public Isolated()
+        {
+            _domain = AppDomain.CreateDomain("Isolated:" + Guid.NewGuid(),
+                                             null, AppDomain.CurrentDomain.SetupInformation);
+
+            Type type = typeof(T);
+
+            _domain.CreateInstance(type.Assembly.FullName, type.FullName);
+        }
+
+        public void Dispose()
+        {
+            if(_domain != null)
+            {
+                AppDomain.Unload(_domain);
+
+                _domain = null;
+            }
+        }
+    }
+
     [Collection("Grid node client collection")]
     public class GridNodeClient_Tests : IDisposable
     {
         private readonly GridNodeClient _client;
-        private readonly GridDomainNode _node;
 
+        class ServerLauncher
+        {
+            private readonly GridDomainNode _node;
+            public ServerLauncher()
+            {
+                var nodeConfiguration = new TestGridNodeConfiguration(5010);
+                var nodeAddress = nodeConfiguration.Network;
+                var settings = new NodeSettings(() => nodeConfiguration.CreateInMemorySystem());
+                settings.Add(new BalloonDomainConfiguration());
+                //settings.Log = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
+               
+                _node = new GridDomainNode(settings);
+                _node.Start().Wait();
+            }
+        }
+
+        private Isolated<ServerLauncher> node;
         public GridNodeClient_Tests(ITestOutputHelper helper)
         {
-            var nodeConfiguration = new TestGridNodeConfiguration(5010);
-            var nodeAddress = nodeConfiguration.Network;
-            var settings = new NodeSettings(() => nodeConfiguration.CreateInMemorySystem());
-            settings.Add(new BalloonDomainConfiguration());
-            settings.Log = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
-            Log.Logger = settings.Log;
-            _node = new GridDomainNode(settings);
-            _node.Start().Wait();
-            _client = new GridNodeClient(nodeAddress);
-
+            Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
+            _client = new GridNodeClient(new TestGridNodeConfiguration(5010).Network);
+           node = new Isolated<ServerLauncher>();
         }
 
         public void Dispose()
         {
             _client?.Dispose();
-            _node?.Dispose();
+            node.Dispose();
         }
 
         [Fact]

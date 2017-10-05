@@ -110,11 +110,6 @@ namespace GridDomain.Tools.Connector
                         throw;
                 }
 
-
-
-          //  eventBusForwarder =  await GetSelection("ActorTransportProxy").ResolveOne(_defaultTimeout);
-          //  commandExecutionActor = await GetSelection(nameof(AggregatesPipeActor)).ResolveOne(_defaultTimeout);
-            
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
                                                                       eventBusForwarder,
                                                                       _defaultTimeout);
