@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Instance_process_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
             : base(
                    output,
-                   new SoftwareProgrammingProcessManagerFixture().UseSqlPersistence().InitSnapshots(5, TimeSpan.FromMilliseconds(5), 2)
+                   new SoftwareProgrammingProcessManagerFixture().UseSqlPersistence().InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
                                                                         .IgnoreCommands()) { }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Create()
                       .SendToProcessManagers(continueEventB);
 
-            await Task.Delay(500);
+            await Task.Delay(3000);
 
             var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
                                                                   new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
