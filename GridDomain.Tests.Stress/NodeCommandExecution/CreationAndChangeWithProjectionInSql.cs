@@ -74,7 +74,6 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
                 _output.WriteLine($"Found {projectedCount} projected rows");
             }
             TestDbTools.Truncate(journalConnectionString, "Journal", "Snapshots").Wait();
-            base.Cleanup();
         }
     }
 }
