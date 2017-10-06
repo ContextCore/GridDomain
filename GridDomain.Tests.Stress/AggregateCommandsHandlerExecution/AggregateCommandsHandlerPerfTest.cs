@@ -14,6 +14,8 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution
 {
+//it is performance test, not pure xunit
+#pragma warning disable xUnit1013
     public class AggregateCommandsHandlerPerfTest
     {
 

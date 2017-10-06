@@ -6,7 +6,8 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.NodeCommandExecution
 {
-
+    //it is performance test, not pure xunit
+#pragma warning disable xUnit1013
     public abstract class ScenarionPerfTest
     {
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";

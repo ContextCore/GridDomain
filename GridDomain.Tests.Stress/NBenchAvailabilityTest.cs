@@ -7,6 +7,8 @@ using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress {
+    //it is performance test, not pure xunit
+#pragma warning disable xUnit1013
     public class NBenchAvailabilityTest
     {
         private const string TotalCommandsExecutedCounter = nameof(TotalCommandsExecutedCounter);

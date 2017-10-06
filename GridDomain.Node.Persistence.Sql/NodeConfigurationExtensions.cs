@@ -1,10 +1,10 @@
 ﻿using System;
 using Akka.Actor;
 using GridDomain.Node.Configuration;
-using GridDomain.Node.Configuration.Hocon;
 
 namespace GridDomain.Node.Persistence.Sql
 {
+
     public static class NodeConfigurationExtensions
     {
         public static ActorSystem CreateSystem(this AkkaConfiguration conf, ISqlNodeDbConfiguration cfg)
@@ -40,5 +40,7 @@ namespace GridDomain.Node.Persistence.Sql
                                      .SqlPersistence(persistence)
                                      .BuildHocon();
         }
+
+        
     }
 }
