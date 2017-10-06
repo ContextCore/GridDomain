@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Event;
 using GridDomain.Node;
+using GridDomain.Tests.Acceptance;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;

@@ -6,6 +6,6 @@ namespace GridDomain.Tests.Acceptance.GridConsole
     internal class TestGridAkkaConfiguration : AkkaConfiguration
     {
         public TestGridAkkaConfiguration(int port)
-            : base(new NodeNetworkAddress("ServerSystem", "localhost", port), new AutoTestNodeDbConfiguration()) {}
+            : base(new NodeNetworkAddress("ServerSystem", "localhost", port)) {}
     }
 }

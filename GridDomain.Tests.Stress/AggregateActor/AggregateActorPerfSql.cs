@@ -4,6 +4,7 @@ using Akka.Event;
 using GridDomain.CQRS;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Persistence.Sql;
+using GridDomain.Tests.Acceptance;
 using NBench;
 using Xunit.Abstractions;
 
@@ -11,7 +12,8 @@ namespace GridDomain.Tests.Stress.AggregateActor {
 
     public class AggregateActorPerfSql: AggregateActorPerf
     {
-        public AggregateActorPerfSql(ITestOutputHelper output):base(output,new StressTestAkkaConfiguration(LogLevel.ErrorLevel).ToStandAloneSystemConfig())
+        public AggregateActorPerfSql(ITestOutputHelper output):
+            base(output,new StressTestAkkaConfiguration(LogLevel.ErrorLevel).ToStandAloneSystemConfig(AutoTestNodeDbConfiguration.Default))
         {
             
         }

@@ -1,11 +1,13 @@
 ﻿using System;
-using GridDomain.Node.Configuration;
+using GridDomain.Node.Persistence.Sql;
 
-namespace GridDomain.Tests.Common.Configuration
+namespace GridDomain.Tests.Acceptance
 {
 
     public class AutoTestNodeDbConfiguration : DefaultNodeDbConfiguration
     {
+        public static ISqlNodeDbConfiguration Default { get; } = new AutoTestNodeDbConfiguration();
+
         public AutoTestNodeDbConfiguration():base("Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True")
         {
             

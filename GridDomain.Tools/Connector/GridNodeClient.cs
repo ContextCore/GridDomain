@@ -5,20 +5,13 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
-using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Serializers;
 using GridDomain.Transport;
 using GridDomain.Transport.Remote;
 using Serilog;
-using Serilog.Core;
 
-namespace GridDomain.Tools.Connector
-{
-
-    public class NotConnectedException : Exception
-    {
-    }
+namespace GridDomain.Tools.Connector {
     /// <summary>
     ///     GridNodeClient is used to connect to remote node and delegate commands execution
     /// </summary>
@@ -111,8 +104,8 @@ namespace GridDomain.Tools.Connector
                 }
 
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
-                                                                      eventBusForwarder,
-                                                                      _defaultTimeout);
+                                                                  eventBusForwarder,
+                                                                  _defaultTimeout);
                 
             _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem,
                                                            transportBridge,

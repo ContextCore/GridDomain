@@ -321,6 +321,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoTestNodeDbConfiguration.cs" />
+    <Compile Include="AutoTestSqlActorSystemFactory.cs" />
     <Compile Include="BalloonDomain\BalloonCatalogItem.cs" />
     <Compile Include="BalloonDomain\BalloonCatalogProjection.cs" />
     <Compile Include="BalloonDomain\BalloonCatalogProjectionFactory.cs" />
@@ -341,14 +343,15 @@
     <Compile Include="EventsUpgrade\SampleDomain\IOrder.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
-    <Compile Include="GridConsole\GridConsole_Command_executions_Tests.cs" />
-    <Compile Include="GridConsole\Isolated.cs" />
-    <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
+    <Compile Include="GridConsole\GridNodeClient_Tests.cs" />
+    <Compile Include="GridConsole\AppDomainIsolated.cs" />
+    <Compile Include="GridConsole\TestGridAkkaConfiguration.cs" />
     <Compile Include="Migrations\BalloonInitial.cs" />
     <Compile Include="Migrations\BalloonInitial.designer.cs">
       <DependentUpon>BalloonInitial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\BalloonContextModelSnapshot.cs" />
+    <Compile Include="NodeConfigurationDebugExtensions.cs" />
     <Compile Include="Projection\BalloonEventsShouldBeProjected.cs" />
     <Compile Include="Projection\ConnectionStrings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -380,7 +383,8 @@
     <Compile Include="Snapshots\Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy.cs" />
     <Compile Include="Snapshots\NodeTestFixtureExtensions.cs" />
     <Compile Include="Snapshots\SnapshotsPersistenceAfterEachMessagePolicy.cs" />
-    <Compile Include="Tools\AcceptanceAutoTestNodeConfiguration.cs" />
+    <Compile Include="Tools\AcceptanceAutoTestAkkaFactory.cs" />
+    <Compile Include="Tools\AcceptanceAutoTestAkkaConfiguration.cs" />
     <Compile Include="Tools\Aggregate_repository_tests_given_persisted_events.cs" />
     <Compile Include="DefaultConsoleLoggerConfiguration.cs" />
     <Compile Include="Tools\Given_persisted_aggreate_It_can_be_loaded_and_saved.cs" />

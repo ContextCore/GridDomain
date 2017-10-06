@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Configuration {
+namespace GridDomain.Node.Persistence.Sql {
     public class DefaultNodeDbConfiguration : ISqlNodeDbConfiguration
     {
         private readonly string _writeDbConnectionString;

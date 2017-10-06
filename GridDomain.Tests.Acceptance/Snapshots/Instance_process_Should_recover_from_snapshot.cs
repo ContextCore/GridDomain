@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             processStateAggregate.ReceiveMessage(state, new object());
             processStateAggregate.PersistAll();
 
-            var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
+            var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                        new AggregateFactory());
             await repo.Add(processStateAggregate);
 

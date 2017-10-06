@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Acceptance.Tools {
     public class AcceptanceAutoTestAkkaConfiguration : AkkaConfiguration
     {
         public AcceptanceAutoTestAkkaConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
-            : base(new AutoTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), verbosity)
+            : base(new AutoTestNodeNetworkAddress(), verbosity)
         {
             LogActorType = typeof(ConsoleSerilogLoggerActor);
         }

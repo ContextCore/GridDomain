@@ -26,13 +26,6 @@ using ICommand = GridDomain.CQRS.ICommand;
 
 namespace GridDomain.Node
 {
-
-
-    public interface IActorSystemFactory
-    {
-        ActorSystem Create();
-    }
-
     public class GridDomainNode : IGridDomainNode
     {
         private ICommandExecutor _commandExecutor;

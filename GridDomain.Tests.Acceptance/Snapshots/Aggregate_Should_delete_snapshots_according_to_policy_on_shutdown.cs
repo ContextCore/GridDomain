@@ -48,8 +48,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //sql server still need some time to commit deleted snapshots;
             await Task.Delay(500);
 
-            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
-                new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
+            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                                  new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
 
             //Only_2_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);

@@ -2,6 +2,7 @@ using Akka.Event;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Persistence.Sql;
+using GridDomain.Tests.Acceptance;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using GridDomain.Tests.Acceptance.GridConsole;
 using GridDomain.Tools.Connector;
@@ -27,7 +28,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
                 var nodeConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel);
                 var cfg = new BalloonWithProjectionDomainConfiguration(test.DbContextOptions);
 
-                var node = new GridDomainNode(new[]{cfg}, new DelegateActorSystemFactory(() => nodeConfig.CreateSystem()));
+                var node = new GridDomainNode(new[]{cfg}, new DelegateActorSystemFactory(() => nodeConfig.CreateSystem(new AutoTestNodeDbConfiguration())));
                 node.Start().Wait();
             }
         }
