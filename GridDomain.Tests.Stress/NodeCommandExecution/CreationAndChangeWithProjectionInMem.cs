@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
     public class CreationAndChangeWithProjectionInMem : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
-        private DbContextOptions<BalloonContext> _dbContextOptions;
+        internal DbContextOptions<BalloonContext> DbContextOptions;
 
         public CreationAndChangeWithProjectionInMem(ITestOutputHelper output):base(output)
         {
@@ -19,8 +19,8 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         }
         internal override void OnSetup()
         {
-            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CreationAndChangeWithProjectionInMem)).Options;
-            using(var ctx = new BalloonContext(_dbContextOptions))
+            DbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CreationAndChangeWithProjectionInMem)).Options;
+            using(var ctx = new BalloonContext(DbContextOptions))
             {
                 ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 20);
         internal override IGridDomainNode CreateNode()
         {
-            return new BalloonWithProjectionFixture(_dbContextOptions)
+            return new BalloonWithProjectionFixture(DbContextOptions)
                    {
                        Output = _testOutputHelper,
                        NodeConfig = new StressTestNodeConfiguration(LogLevel.ErrorLevel),

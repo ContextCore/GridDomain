@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
     public class CreationAndChangeWithProjectionInSql : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _output;
-        private DbContextOptions<BalloonContext> _dbContextOptions;
+        internal DbContextOptions<BalloonContext> DbContextOptions;
 
         public CreationAndChangeWithProjectionInSql(ITestOutputHelper output) : base(output)
         {
@@ -25,14 +25,14 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         internal override void OnSetup()
         {
             var readDb = new AutoTestLocalDbConfiguration();
-            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString).Options;
-            using(var ctx = new BalloonContext(_dbContextOptions))
+            DbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString).Options;
+            using(var ctx = new BalloonContext(DbContextOptions))
             {
                 ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
             }
             //warm up EF 
-            using(var ctx = new BalloonContext(_dbContextOptions))
+            using(var ctx = new BalloonContext(DbContextOptions))
             {
                 ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
                 ctx.SaveChanges();
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 20);
         internal override IGridDomainNode CreateNode()
         {
-            return new BalloonWithProjectionFixture(_dbContextOptions)
+            return new BalloonWithProjectionFixture(DbContextOptions)
                    {
                        Output = _output,
                        NodeConfig = new StressTestNodeConfiguration(LogLevel.ErrorLevel),
@@ -54,7 +54,8 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         public override void Cleanup()
         {
             var totalCommandsToIssue = Scenario.CommandPlans.Count();
-            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(new AutoTestNodeDbConfiguration().JournalConnectionString).Options;
+            var journalConnectionString = new AutoTestNodeDbConfiguration().JournalConnectionString;
+            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(journalConnectionString).Options;
 
             var rawJournalRepository = new RawJournalRepository(dbContextOptions);
             var count = rawJournalRepository.TotalCount();
@@ -66,12 +67,12 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
                 _output.WriteLine($"After 2 sec Journal contains {count} of {totalCommandsToIssue}");
             }
 
-            using(var context = new BalloonContext(_dbContextOptions))
+            using(var context = new BalloonContext(DbContextOptions))
             {
                 var projectedCount = context.BalloonCatalog.Select(x => x).Count();
                 _output.WriteLine($"Found {projectedCount} projected rows");
             }
-
+            TestDbTools.Truncate(journalConnectionString, "Journal", "Snapshots").Wait();
             base.Cleanup();
         }
     }

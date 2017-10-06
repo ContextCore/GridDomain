@@ -1,16 +1,16 @@
 ﻿using System;
+using System.Security.Policy;
 
 namespace GridDomain.Tests.Acceptance.GridConsole
 {
-    public sealed class Isolated<T> : IDisposable
+    public sealed class AppDomainIsolated<T> : IDisposable
     {
         private AppDomain _domain;
         private T _value;
 
-        public Isolated()
+        public AppDomainIsolated()
         {
-            _domain = AppDomain.CreateDomain("Isolated:" + Guid.NewGuid(),
-                                             null, AppDomain.CurrentDomain.SetupInformation);
+            _domain = AppDomain.CreateDomain("Isolated:" + Guid.NewGuid(),null, AppDomain.CurrentDomain.SetupInformation);
 
             Type type = typeof(T);
 

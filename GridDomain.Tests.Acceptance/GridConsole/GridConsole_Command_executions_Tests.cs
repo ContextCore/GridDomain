@@ -39,12 +39,12 @@ namespace GridDomain.Tests.Acceptance.GridConsole
             }
         }
 
-        private Isolated<ServerLauncher> node;
+        private AppDomainIsolated<ServerLauncher> node;
         public GridNodeClient_Tests(ITestOutputHelper helper)
         {
             Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
             _client = new GridNodeClient(new TestGridNodeConfiguration(5010).Network);
-           node = new Isolated<ServerLauncher>();
+           node = new AppDomainIsolated<ServerLauncher>();
         }
 
         public void Dispose()
