@@ -4,9 +4,9 @@ using GridDomain.Node.Configuration;
 
 namespace GridDomain.Tests.Common.Configuration
 {
-    public class AutoTestNodeConfiguration : NodeConfiguration
+    public class AutoTestAkkaConfiguration : AkkaConfiguration
     {
-        public AutoTestNodeConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
+        public AutoTestAkkaConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
             : base(new AutoTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), verbosity) {}
     }
 }

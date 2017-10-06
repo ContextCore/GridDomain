@@ -24,7 +24,7 @@ namespace GridDomain.Tools.Connector
     /// </summary>
     public class GridNodeClient : IGridDomainNode
     {
-        private readonly NodeConfiguration _conf;
+        private readonly AkkaConfiguration _conf;
 
         private readonly TimeSpan _defaultTimeout;
         private readonly INodeNetworkAddress _serverAddress;
@@ -35,14 +35,14 @@ namespace GridDomain.Tools.Connector
         private readonly ILogger _logger;
 
         public GridNodeClient(INodeNetworkAddress serverAddress,
-                              NodeConfiguration clientConfiguration = null,
+                              AkkaConfiguration clientConfiguration = null,
                               TimeSpan? defaultTimeout = null,
                               ILogger log = null)
         {
             _logger = log ?? Log.Logger;
             _serverAddress = serverAddress;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
-            _conf = clientConfiguration ?? new ConsoleNodeConfiguration();
+            _conf = clientConfiguration ?? new ConsoleAkkaConfiguration();
 
         }
 

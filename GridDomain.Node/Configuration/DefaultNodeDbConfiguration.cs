@@ -1,5 +1,5 @@
 namespace GridDomain.Node.Configuration {
-    public class DefaultNodeDbConfiguration : INodeDbConfiguration
+    public class DefaultNodeDbConfiguration : ISqlNodeDbConfiguration
     {
         private readonly string _writeDbConnectionString;
 

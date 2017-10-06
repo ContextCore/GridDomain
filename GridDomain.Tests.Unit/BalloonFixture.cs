@@ -16,14 +16,10 @@ namespace GridDomain.Tests.Unit
         {
             this.EnableScheduling(config);
             _balloonDomainConfiguration = new BalloonDomainConfiguration();
-        }
-
-        protected override NodeSettings CreateNodeSettings()
-        {
             Add(_balloonDomainConfiguration);
-            return base.CreateNodeSettings();
-        }
 
+        }
+        
         public BalloonFixture EnableSnapshots(
             int keep = 1,
             TimeSpan? maxSaveFrequency = null,

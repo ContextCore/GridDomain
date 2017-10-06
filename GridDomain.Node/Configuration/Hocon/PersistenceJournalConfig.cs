@@ -4,12 +4,12 @@ namespace GridDomain.Node.Configuration.Hocon
 {
     internal class PersistenceJournalConfig : IHoconConfig
     {
-        private readonly INodeDbConfiguration _dbConfiguration;
+        private readonly ISqlNodeDbConfiguration _dbConfiguration;
         private readonly IHoconConfig _eventAdatpersConfig;
         private readonly Type _sqlJournalType;
         private string _assemblyQualifiedShortName;
 
-        public PersistenceJournalConfig(INodeDbConfiguration dbConfiguration,
+        public PersistenceJournalConfig(ISqlNodeDbConfiguration dbConfiguration,
                                         IHoconConfig eventAdatpersConfig,
                                         Type sqlJournalType = null)
         {

@@ -16,23 +16,18 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
 
         }
-
+        //TODO: cleanup node initialization 
         class Initiator
         {
             public Initiator()
             {
-                var testOutputHelper = new TestOutputHelper();
-                var test = new CreationAndChangeWithProjectionInSql(testOutputHelper);
+                var test = new CreationAndChangeWithProjectionInSql(null);
                 test.OnSetup();
-                var nodeConfig = new StressTestNodeConfiguration(LogLevel.ErrorLevel);
+                var nodeConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel);
+                var cfg = new BalloonWithProjectionDomainConfiguration(test.DbContextOptions);
 
-                var node = new BalloonWithProjectionFixture(test.DbContextOptions)
-                           {
-                               Output = testOutputHelper,
-                               NodeConfig = nodeConfig,
-                               LogLevel = LogEventLevel.Error,
-                               SystemConfigFactory = () => nodeConfig.ToStandAloneSystemConfig()
-                           }.CreateNode().Result;
+                var node = new GridDomainNode(new[]{cfg} , () => nodeConfig.CreateSystem());
+                node.Start().Wait();
             }
         }
 
@@ -42,7 +37,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
             _isolatedServerNode = new AppDomainIsolated<Initiator>();
 
-            var connector = new GridNodeClient(new StressTestNodeConfiguration(LogLevel.ErrorLevel).Network);
+            var connector = new GridNodeClient(new StressTestAkkaConfiguration(LogLevel.ErrorLevel).Network);
             connector.Connect()
                      .Wait();
 

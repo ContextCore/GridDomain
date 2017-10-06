@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         public BalloonWriteOnlyFixture(ITestOutputHelper helper):base(new BallonWriteOnlyDomain())
         {
             Output = helper;
-            NodeConfig = new StressTestNodeConfiguration(Akka.Event.LogLevel.WarningLevel);
+            AkkaConfig = new StressTestAkkaConfiguration(Akka.Event.LogLevel.WarningLevel);
             LogLevel = LogEventLevel.Warning;
         }
     }

@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Unit
                                                                                                  node.Transport,
                                                                                                  node);
 
-                                                   node.Settings.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor));
+                                                   node.DomainConfigurations.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor));
                                                 };
             if(clearScheduledData)
                  fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.System.GetExtension<SchedulingExtension>().Scheduler.Clear();

@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Common
 {
     public static class TestDbTools
     {
-        public static async Task ClearData(INodeDbConfiguration nodeConf)
+        public static async Task ClearData(ISqlNodeDbConfiguration nodeConf)
         {
             await Truncate(nodeConf.SnapshotConnectionString.Replace("\\\\", "\\"), nodeConf.SnapshotTableName);
             await Truncate(nodeConf.JournalConnectionString.Replace("\\\\", "\\"),

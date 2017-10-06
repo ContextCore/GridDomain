@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
             _fixture = new BalloonWithProjectionFixture(new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString).Options)
                       {
                           Output = _testOutputHelper,
-                          NodeConfig = new StressTestNodeConfiguration(LogLevel.ErrorLevel),
+                          AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
                           LogLevel = LogEventLevel.Error
             }.UseSqlPersistence();
 
@@ -78,7 +78,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
         public void Cleanup()
         {
             var totalCommandsToIssue = Scenario.CommandPlans.Count();
-            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(_fixture.NodeConfig.Persistence.SnapshotConnectionString).Options;
+            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(_fixture.AkkaConfig.Persistence.SnapshotConnectionString).Options;
 
             var rawJournalRepository = new RawJournalRepository(dbContextOptions);
             var count = rawJournalRepository.TotalCount();

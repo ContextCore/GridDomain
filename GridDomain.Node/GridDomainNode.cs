@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -19,10 +20,17 @@ using GridDomain.Node.Serializers;
 using GridDomain.Transport.Remote;
 using GridDomain.Transport;
 using GridDomain.Transport.Extension;
+using Serilog;
+using Serilog.Core;
 using ICommand = GridDomain.CQRS.ICommand;
 
 namespace GridDomain.Node
 {
+    public interface IActorSystemFactory
+    {
+        ActorSystem Create();
+    }
+
     public class GridDomainNode : IGridDomainNode
     {
         private ICommandExecutor _commandExecutor;
@@ -30,12 +38,15 @@ namespace GridDomain.Node
         private bool _stopping;
         private IMessageWaiterFactory _waiterFactory;
         internal CommandPipe Pipe;
-        public GridDomainNode(NodeSettings settings)
+
+        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, Func<ActorSystem> actorSystemFactory, ILogger log = null, TimeSpan? defaultTimeout = null)
         {
-            Settings = settings;
+            DomainConfigurations = domainConfigurations.ToList();
+            DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
+            _logger = log ?? new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>(); 
+            _actorSystemFactory = actorSystemFactory;
         }
 
-        public NodeSettings Settings { get; }
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; private set; }
         public IActorTransport Transport { get; private set; }
         public ActorSystem System { get; private set; }
@@ -43,6 +54,10 @@ namespace GridDomain.Node
 
         private IContainer Container { get; set; }
         private ContainerBuilder _containerBuilder;
+        private readonly Func<ActorSystem> _actorSystemFactory;
+        private readonly ILogger _logger;
+        internal readonly List<IDomainConfiguration> DomainConfigurations;
+        public TimeSpan DefaultTimeout { get; }
 
         public Guid Id { get; } = Guid.NewGuid();
         public event EventHandler<GridDomainNode> Initializing = delegate { };
@@ -54,7 +69,7 @@ namespace GridDomain.Node
 
         public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
-            return _waiterFactory.NewExplicitWaiter(defaultTimeout ?? Settings.DefaultTimeout);
+            return _waiterFactory.NewExplicitWaiter(defaultTimeout ?? DefaultTimeout);
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
@@ -69,30 +84,29 @@ namespace GridDomain.Node
 
         private void OnSystemTermination()
         {
-            Settings.Log.Debug("grid node Actor system terminated");
+            _logger.Debug("grid node Actor system terminated");
         }
 
         public async Task Start()
         {
-            Settings.Log.Debug("Starting GridDomain node {Id}", Id);
+            _logger.Debug("Starting GridDomain node {Id}", Id);
 
             _stopping = false;
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
             _containerBuilder = new ContainerBuilder();
 
-            System = Settings.ActorSystemFactory.Invoke();
+            System = _actorSystemFactory.Invoke();
             System.RegisterOnTermination(OnSystemTermination);
 
             System.InitLocalTransportExtension();
             Transport = System.GetTransport();
 
-            _containerBuilder.Register(new GridNodeContainerConfiguration(Transport, Settings.Log));
-            _waiterFactory = new MessageWaiterFactory(System, Transport, Settings.DefaultTimeout);
+            _containerBuilder.Register(new GridNodeContainerConfiguration(Transport, _logger));
+            _waiterFactory = new MessageWaiterFactory(System, Transport, DefaultTimeout);
 
             Initializing.Invoke(this, this);
 
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
-            _containerBuilder.Register(Settings.ContainerConfiguration);
 
             ActorTransportProxy = System.ActorOf(Props.Create(() => new LocalTransportProxyActor()), nameof(ActorTransportProxy));
 
@@ -120,20 +134,20 @@ namespace GridDomain.Node
 
             await nodeController.Ask<GridNodeController.Alive>(GridNodeController.HeartBeat.Instance);
 
-            Settings.Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
+            _logger.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
 
         private async Task<ICommandExecutor> CreateCommandExecutor()
         {
             Pipe = new CommandPipe(System);
             var commandExecutorActor = await Pipe.Init(_containerBuilder);
-            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, Settings.DefaultTimeout);
+            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, DefaultTimeout);
         }
 
         private DomainBuilder CreateDomainBuilder()
         {
             var domainBuilder = new DomainBuilder();
-            Settings.DomainConfigurations.ForEach(c => domainBuilder.Register(c));
+            DomainConfigurations.ForEach(c => domainBuilder.Register(c));
             return domainBuilder;
         }
 
@@ -142,7 +156,7 @@ namespace GridDomain.Node
             if(_stopping)
                 return;
 
-            Settings.Log.Debug("GridDomain node {Id} is stopping", Id);
+            _logger.Debug("GridDomain node {Id} is stopping", Id);
             _stopping = true;
 
             if(System != null)
@@ -152,7 +166,7 @@ namespace GridDomain.Node
             }
             System = null;
             Container?.Dispose();
-            Settings.Log.Debug("GridDomain node {Id} stopped", Id);
+            _logger.Debug("GridDomain node {Id} stopped", Id);
         }
 
         public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)

@@ -6,9 +6,9 @@ using GridDomain.Tests.Common.Configuration;
 
 namespace GridDomain.Tests.Stress
 {
-    public class StressTestNodeConfiguration : NodeConfiguration
+    public class StressTestAkkaConfiguration : AkkaConfiguration
     {
-        public StressTestNodeConfiguration(LogLevel verbosity = LogLevel.WarningLevel)
+        public StressTestAkkaConfiguration(LogLevel verbosity = LogLevel.WarningLevel)
             : base(new StressTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), verbosity) {}
     }
 }

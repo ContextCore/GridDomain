@@ -7,9 +7,9 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
 
 namespace GridDomain.Tests.Acceptance.Tools {
-    public class AcceptanceAutoTestNodeConfiguration : NodeConfiguration
+    public class AcceptanceAutoTestAkkaConfiguration : AkkaConfiguration
     {
-        public AcceptanceAutoTestNodeConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
+        public AcceptanceAutoTestAkkaConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
             : base(new AutoTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), verbosity)
         {
             LogActorType = typeof(ConsoleSerilogLoggerActor);

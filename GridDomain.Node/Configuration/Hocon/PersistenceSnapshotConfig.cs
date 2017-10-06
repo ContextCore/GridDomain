@@ -2,19 +2,19 @@ namespace GridDomain.Node.Configuration.Hocon
 {
     internal class PersistenceSnapshotConfig : IHoconConfig
     {
-        private readonly NodeConfiguration _node;
+        private readonly AkkaConfiguration _akka;
 
-        public PersistenceSnapshotConfig(NodeConfiguration node)
+        public PersistenceSnapshotConfig(AkkaConfiguration akka)
         {
-            _node = node;
+            _akka = akka;
         }
 
         public string Build()
         {
-            return BuildPersistenceSnapshotConfig(_node);
+            return BuildPersistenceSnapshotConfig(_akka);
         }
 
-        public static string BuildPersistenceSnapshotConfig(NodeConfiguration nodeConf)
+        public static string BuildPersistenceSnapshotConfig(AkkaConfiguration akkaConf)
         {
             var persistenceSnapshotStorageConfig = @" 
             snapshot-store {
@@ -22,10 +22,10 @@ namespace GridDomain.Node.Configuration.Hocon
                            sql-server {
                                       class = ""Akka.Persistence.SqlServer.Snapshot.SqlServerSnapshotStore, Akka.Persistence.SqlServer""
                                       plugin-dispatcher = ""akka.actor.default-dispatcher""
-                                      connection-string = """ + nodeConf.Persistence.SnapshotConnectionString + @"""
-                                      connection-timeout = " + nodeConf.Persistence.SnapshotsConnectionTimeoutSeconds + @"s
-                                      schema-name = "+ nodeConf.Persistence.SchemaName + @"
-                                      table-name = """ + nodeConf.Persistence.SnapshotTableName + @"""
+                                      connection-string = """ + akkaConf.Persistence.SnapshotConnectionString + @"""
+                                      connection-timeout = " + akkaConf.Persistence.SnapshotsConnectionTimeoutSeconds + @"s
+                                      schema-name = "+ akkaConf.Persistence.SchemaName + @"
+                                      table-name = """ + akkaConf.Persistence.SnapshotTableName + @"""
                                       auto-initialize = on
                            }
             }";

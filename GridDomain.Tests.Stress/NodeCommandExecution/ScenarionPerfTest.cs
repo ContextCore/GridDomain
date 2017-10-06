@@ -46,9 +46,14 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
         }
 
         [PerfCleanup]
-        public virtual void Cleanup()
+        public void Cleanup()
         {
+            OnCleanup();
             Node.Dispose();
+        }
+
+        protected virtual void OnCleanup()
+        {
         }
     }
 }

@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             aggregate.WriteNewTitle(10);
             aggregate.PersistAll();
 
-            var repo = new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
+            var repo = new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                                                        new BalloonAggregateFactory());
             await repo.Add(aggregate);
 

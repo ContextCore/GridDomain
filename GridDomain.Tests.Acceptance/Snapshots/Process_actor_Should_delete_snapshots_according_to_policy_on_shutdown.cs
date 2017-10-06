@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
             //await Task.Delay(5000);
-            var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString, new AggregateFactory())
+            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString, new AggregateFactory())
                 .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //Only_two_Snapshots_should_left()

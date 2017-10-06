@@ -28,13 +28,10 @@ namespace GridDomain.Tests.Acceptance.GridConsole
             private readonly GridDomainNode _node;
             public ServerLauncher()
             {
-                var nodeConfiguration = new TestGridNodeConfiguration(5010);
+                var nodeConfiguration = new TestGridAkkaConfiguration(5010);
                 var nodeAddress = nodeConfiguration.Network;
-                var settings = new NodeSettings(() => nodeConfiguration.CreateInMemorySystem());
-                settings.Add(new BalloonDomainConfiguration());
-                //settings.Log = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
                
-                _node = new GridDomainNode(settings);
+                _node = new GridDomainNode(new []{ new BalloonDomainConfiguration() }, () => nodeConfiguration.CreateInMemorySystem());
                 _node.Start().Wait();
             }
         }
@@ -43,7 +40,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         public GridNodeClient_Tests(ITestOutputHelper helper)
         {
             Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
-            _client = new GridNodeClient(new TestGridNodeConfiguration(5010).Network);
+            _client = new GridNodeClient(new TestGridAkkaConfiguration(5010).Network);
            node = new AppDomainIsolated<ServerLauncher>();
         }
 

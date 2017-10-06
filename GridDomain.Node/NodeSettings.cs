@@ -9,13 +9,8 @@ using Serilog;
 
 namespace GridDomain.Node
 {
-    public class NodeSettings
+    public class NodeDomainConfiguration
     {
-        public NodeSettings(Func<ActorSystem> actorSystemFactory)
-        {
-            ActorSystemFactory = actorSystemFactory ?? ActorSystemFactory;
-        }
-
         public IReadOnlyCollection<IDomainConfiguration> DomainConfigurations => _domainConfigurations;
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
 
@@ -23,11 +18,5 @@ namespace GridDomain.Node
         {
             _domainConfigurations.Add(conf);
         }
-        public IContainerConfiguration ContainerConfiguration { get; set; } = new EmptyContainerConfiguration();
-        public Func<ActorSystem> ActorSystemFactory { get; }
-
-        public ILogger Log { get; set; } = new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>();
-
-        public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(10);
     }
 }

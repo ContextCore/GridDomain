@@ -57,7 +57,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
         public void Dispose() {}
 
-        public static ActorSystemEventRepository New(NodeConfiguration conf, EventsAdaptersCatalog eventsAdaptersCatalog)
+        public static ActorSystemEventRepository New(AkkaConfiguration conf, EventsAdaptersCatalog eventsAdaptersCatalog)
         {
             var actorSystem = conf.CreateSystem();
             actorSystem.InitDomainEventsSerialization(eventsAdaptersCatalog);

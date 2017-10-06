@@ -61,7 +61,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             await Task.Delay(3000);
 
-            var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
+            var snapshots = await new AggregateSnapshotRepository(AkkaConfig.Persistence.JournalConnectionString,
                                                                   new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //saving on each message, maximum on each command

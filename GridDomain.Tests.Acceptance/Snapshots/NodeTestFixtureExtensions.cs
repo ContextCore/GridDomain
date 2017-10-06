@@ -12,16 +12,16 @@ using GridDomain.Tests.Unit;
 namespace GridDomain.Tests.Acceptance.Snapshots {
     public static class NodeTestFixtureExtensions
     {
-        public static T UseSqlPersistence<T>(this T fixture, bool clearData = true, INodeDbConfiguration dbConfig = null) where T: NodeTestFixture
+        public static T UseSqlPersistence<T>(this T fixture, bool clearData = true, ISqlNodeDbConfiguration dbConfig = null) where T: NodeTestFixture
         {
-            fixture.NodeConfig.Persistence = dbConfig ?? new AutoTestNodeDbConfiguration();
+            fixture.AkkaConfig.Persistence = dbConfig ?? new AutoTestNodeDbConfiguration();
             if(clearData)
                 fixture.OnNodePreparingEvent += (s, e) =>
                                                 {
-                                                    TestDbTools.ClearData(fixture.NodeConfig.Persistence).Wait();
+                                                    TestDbTools.ClearData(fixture.AkkaConfig.Persistence).Wait();
                                                 };
 
-            fixture.SystemConfigFactory = () => fixture.NodeConfig.ToDebugStandAloneSystemConfig();
+            fixture.SystemConfigFactory = () => fixture.AkkaConfig.ToDebugStandAloneSystemConfig();
 
             return fixture;
 

@@ -15,15 +15,10 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         {
             BalanceDomainDonfiguration = new BalanceDomainDonfiguration();
             this.EnableScheduling(config ?? new InMemoryQuartzConfig(new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy())));
-
-        }
-
-        protected override NodeSettings CreateNodeSettings()
-        {
             Add(BalanceDomainDonfiguration);
-            var nodeSettings = base.CreateNodeSettings();
-            return nodeSettings;
         }
+
+      
         public BalanceFixture InitFastRecycle(
             TimeSpan? clearPeriod = null,
             TimeSpan? maxInactiveTime = null)

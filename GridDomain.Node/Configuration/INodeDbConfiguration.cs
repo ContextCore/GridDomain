@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Configuration
 {
-    public interface INodeDbConfiguration
+    public interface ISqlNodeDbConfiguration
     {
         string SnapshotConnectionString { get; }
         string JournalConnectionString { get; }

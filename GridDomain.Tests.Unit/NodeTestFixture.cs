@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit
 
     public class NodeTestFixture : IDisposable
     {
-        private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
+        private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null, TimeSpan? defaultTimeout = null, ITestOutputHelper helper = null)
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
-            SystemConfigFactory = () => NodeConfig.ToDebugStandAloneInMemorySystemConfig();
+            SystemConfigFactory = () => AkkaConfig.ToDebugStandAloneInMemorySystemConfig();
             ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
           
         }
@@ -42,13 +42,13 @@ namespace GridDomain.Tests.Unit
             foreach (var c in domainConfiguration)
                 Add(c);
         }
-        public NodeSettings NodeSettings { get; private set; }
+        public NodeDomainConfiguration NodeDomainConfiguration { get; private set; }
         public GridDomainNode Node { get; private set; }
         public ActorSystem System { get; private set; }
         public Func<string> SystemConfigFactory { get; set; }
         public ILogger Logger { get; private set; }
-        public NodeConfiguration NodeConfig { get; set; } = DefaultNodeConfig;
-        public string Name => NodeConfig.Network.SystemName;
+        public AkkaConfiguration AkkaConfig { get; set; } = DefaultAkkaConfig;
+        public string Name => AkkaConfig.Network.SystemName;
 
         private const int DefaultTimeOutSec =
 #if DEBUG
@@ -78,20 +78,14 @@ namespace GridDomain.Tests.Unit
             _domainConfigurations.Add(config);
             return this;
         }
-        public NodeTestFixture Add(IContainerConfiguration config)
-        {
-            _containerConfigurations.Add(config);
-            return this;
-        }
 
         public virtual async Task<GridDomainNode> CreateNode()
         {
             Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
 
-            NodeSettings = CreateNodeSettings();
 
             OnNodePreparingEvent.Invoke(this, this);
-            Node = new GridDomainNode(NodeSettings);
+            Node = new GridDomainNode(_domainConfigurations, CreateSystem, Logger, DefaultTimeout);
             Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
             await Node.Start();
             OnNodeStartedEvent.Invoke(this, Node);
@@ -99,14 +93,9 @@ namespace GridDomain.Tests.Unit
             return Node;
         }
 
-        protected virtual NodeSettings CreateNodeSettings()
+        protected virtual NodeDomainConfiguration CreateNodeSettings()
         {
-            var settings = new NodeSettings(CreateSystem)
-                           {
-                               DefaultTimeout = DefaultTimeout,
-                               Log = Logger,
-                               ContainerConfiguration = new ContainerConfiguration(_containerConfigurations.ToArray())
-                           };
+            var settings = new NodeDomainConfiguration();
 
             foreach(var c in _domainConfigurations)
                 settings.Add(c);

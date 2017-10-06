@@ -26,12 +26,12 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
                 var testOutputHelper = new TestOutputHelper();
                 var test = new CreationAndChangeWithProjectionInMem(testOutputHelper);
                 test.OnSetup();
-                var nodeConfig = new StressTestNodeConfiguration(LogLevel.ErrorLevel);
+                var nodeConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel);
 
                 var node = new BalloonWithProjectionFixture(test.DbContextOptions)
                     {
                         Output = testOutputHelper,
-                        NodeConfig = nodeConfig,
+                        AkkaConfig = nodeConfig,
                         LogLevel = LogEventLevel.Error,
                         SystemConfigFactory = () => nodeConfig.ToStandAloneInMemorySystemConfig()
                 }.CreateNode().Result;
@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
             _isolatedServerNode = new AppDomainIsolated<Initiator>();
 
-            var connector = new GridNodeClient(new StressTestNodeConfiguration().Network);
+            var connector = new GridNodeClient(new StressTestAkkaConfiguration().Network);
             connector.Connect()
                      .Wait();
 

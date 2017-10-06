@@ -5,17 +5,17 @@ using GridDomain.Node.Configuration.Hocon;
 namespace GridDomain.Node.Configuration {
     public static class NodeConfigurationExtensions
     {
-        public static ActorSystem CreateInMemorySystem(this NodeConfiguration conf)
+        public static ActorSystem CreateInMemorySystem(this AkkaConfiguration conf)
         {
             return ActorSystem.Create(conf.Network.SystemName, conf.ToStandAloneInMemorySystemConfig());
         }
 
-        public static ActorSystem CreateSystem(this NodeConfiguration conf)
+        public static ActorSystem CreateSystem(this AkkaConfiguration conf)
         {
             return ActorSystem.Create(conf.Network.SystemName, conf.ToStandAloneSystemConfig());
         }
 
-        public static string ToClusterSeedNodeSystemConfig(this NodeConfiguration conf,params INodeNetworkAddress[] otherSeeds)
+        public static string ToClusterSeedNodeSystemConfig(this AkkaConfiguration conf,params INodeNetworkAddress[] otherSeeds)
         {
             var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType, false),
                                      ClusterConfig.SeedNode(conf.Network, otherSeeds),
@@ -24,7 +24,7 @@ namespace GridDomain.Node.Configuration {
             return cfg.Build();
         }
 
-        public static string ToStandAloneSystemConfig(this NodeConfiguration conf, bool serializeMessagesCreators = false)
+        public static string ToStandAloneSystemConfig(this AkkaConfiguration conf, bool serializeMessagesCreators = false)
         {
             var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType, false),
                                      new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
@@ -36,7 +36,7 @@ namespace GridDomain.Node.Configuration {
             return cfg.Build();
         }
 
-        public static string ToStandAloneInMemorySystemConfig(this NodeConfiguration conf,bool serializeMessagesCreators = false)
+        public static string ToStandAloneInMemorySystemConfig(this AkkaConfiguration conf,bool serializeMessagesCreators = false)
         {
             var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType, false),
                                      new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
@@ -48,7 +48,7 @@ namespace GridDomain.Node.Configuration {
             return cfg.Build();
         }
 
-        public static string ToClusterNonSeedNodeSystemConfig(this NodeConfiguration conf, params INodeNetworkAddress[] seeds)
+        public static string ToClusterNonSeedNodeSystemConfig(this AkkaConfiguration conf, params INodeNetworkAddress[] seeds)
         {
             var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType, false),
                                      ClusterConfig.NonSeedNode(conf.Network, seeds),

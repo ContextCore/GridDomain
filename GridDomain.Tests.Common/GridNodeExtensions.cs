@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Common
         public static IMessageWaiter<AnyMessagePublisher> NewDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
         {
             var conditionBuilder = new MetadataConditionBuilder<AnyMessagePublisher>();
-            var waiter = new LocalMessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.Settings.DefaultTimeout, conditionBuilder);
+            var waiter = new LocalMessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionBuilder);
             conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
             return waiter;
         }
@@ -125,7 +125,7 @@ namespace GridDomain.Tests.Common
             {
                 inbox.Watch(aggregateActor);
                 aggregateHubActor.Tell(new ShutdownChild(id));
-                inbox.ReceiveWhere(m => m is Terminated, timeout ?? node.Settings.DefaultTimeout);
+                inbox.ReceiveWhere(m => m is Terminated, timeout ?? node.DefaultTimeout);
             }
         }
 
@@ -139,7 +139,7 @@ namespace GridDomain.Tests.Common
             {
                 inbox.Watch(processActor);
                 hub.Tell(new ShutdownChild(id));
-                inbox.ReceiveWhere(m => m is Terminated t && t.ActorRef.Path == processActor.Path, timeout ?? node.Settings.DefaultTimeout);
+                inbox.ReceiveWhere(m => m is Terminated t && t.ActorRef.Path == processActor.Path, timeout ?? node.DefaultTimeout);
             }
         }
 
@@ -162,7 +162,7 @@ namespace GridDomain.Tests.Common
             return
                 await
                     node.System.ActorSelection("akka://LocalSystem/user/" + actorPath)
-                        .ResolveOne(timeout ?? node.Settings.DefaultTimeout);
+                        .ResolveOne(timeout ?? node.DefaultTimeout);
         }
     }
 }

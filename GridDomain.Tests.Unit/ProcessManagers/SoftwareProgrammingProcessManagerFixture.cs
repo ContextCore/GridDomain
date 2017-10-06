@@ -16,14 +16,10 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         {
             ProcessConfiguration = new SoftwareProgrammingProcessDomainConfiguration(Logger);
             Add(new BalloonDomainConfiguration());
-        }
-
-        protected override NodeSettings CreateNodeSettings()
-        {
             Add(ProcessConfiguration);
-            return base.CreateNodeSettings();
-        }
 
+        }
+        
         public SoftwareProgrammingProcessManagerFixture InitSnapshots(int keep = 1,
                                                             TimeSpan? maxSaveFrequency = null,
                                                             int saveOnEach = 1)

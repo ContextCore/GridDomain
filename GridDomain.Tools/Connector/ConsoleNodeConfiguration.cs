@@ -2,9 +2,9 @@ using GridDomain.Node.Configuration;
 
 namespace GridDomain.Tools.Connector
 {
-    internal class ConsoleNodeConfiguration : NodeConfiguration
+    internal class ConsoleAkkaConfiguration : AkkaConfiguration
     {
-        public ConsoleNodeConfiguration()
+        public ConsoleAkkaConfiguration()
             : base(new NodeNetworkAddress("Connector", "localhost", 0)) {}
     }
 }
