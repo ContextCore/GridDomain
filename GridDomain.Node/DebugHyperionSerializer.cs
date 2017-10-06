@@ -25,7 +25,6 @@ namespace GridDomain.Node {
         {
             try
             {
-                //system.Log.Warning("Serializing " + obj.ToString());
                 return base.ToBinary(obj);
 
             }

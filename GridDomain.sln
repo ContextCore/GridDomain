@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Tests.Stress", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GridDomain.Transport", "GridDomain.Transport\GridDomain.Transport.csproj", "{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Node.Persistence.Sql", "GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj", "{334DBDCC-BF94-4787-93DA-8AA29956A861}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD7B439C-51DD-49D0-AEC3-CB6D1B998503}.Release|Any CPU.Build.0 = Release|Any CPU
+		{334DBDCC-BF94-4787-93DA-8AA29956A861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{334DBDCC-BF94-4787-93DA-8AA29956A861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{334DBDCC-BF94-4787-93DA-8AA29956A861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{334DBDCC-BF94-4787-93DA-8AA29956A861}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

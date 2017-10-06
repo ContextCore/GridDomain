@@ -1,5 +1,5 @@
 namespace GridDomain.Node.Configuration.Hocon {
-    internal class ActorProviderConfig : IHoconConfig
+    internal class RemoteActorProviderConfig : IHoconConfig
     {
         public string Build()
         {

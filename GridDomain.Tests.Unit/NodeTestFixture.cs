@@ -42,7 +42,6 @@ namespace GridDomain.Tests.Unit
             foreach (var c in domainConfiguration)
                 Add(c);
         }
-        public NodeDomainConfiguration NodeDomainConfiguration { get; private set; }
         public GridDomainNode Node { get; private set; }
         public ActorSystem System { get; private set; }
         public Func<string> SystemConfigFactory { get; set; }
@@ -85,7 +84,7 @@ namespace GridDomain.Tests.Unit
 
 
             OnNodePreparingEvent.Invoke(this, this);
-            Node = new GridDomainNode(_domainConfigurations, CreateSystem, Logger, DefaultTimeout);
+            Node = new GridDomainNode(_domainConfigurations, new DelegateActorSystemFactory(CreateSystem), Logger, DefaultTimeout);
             Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
             await Node.Start();
             OnNodeStartedEvent.Invoke(this, Node);
@@ -93,15 +92,7 @@ namespace GridDomain.Tests.Unit
             return Node;
         }
 
-        protected virtual NodeDomainConfiguration CreateNodeSettings()
-        {
-            var settings = new NodeDomainConfiguration();
-
-            foreach(var c in _domainConfigurations)
-                settings.Add(c);
-
-            return settings;
-        }
+       
         public Func<ActorSystem> ActorSystemCreator { get; set; }
         private ActorSystem CreateSystem()
         {

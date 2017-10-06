@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class RootConfig : IHoconConfig
+    public class RootConfig : IHoconConfig
     {
         private readonly IHoconConfig[] _parts;
 

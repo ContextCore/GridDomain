@@ -262,6 +262,10 @@
       <Project>{3ff79114-bac6-4b56-838f-cd63f0894a38}</Project>
       <Name>GridDomain.EventSourcing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj">
+      <Project>{334DBDCC-BF94-4787-93DA-8AA29956A861}</Project>
+      <Name>GridDomain.Node.Persistence.Sql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{c2709993-d05e-49a8-950f-04a1f2a8bd87}</Project>
       <Name>GridDomain.Node</Name>

@@ -29,9 +29,9 @@ namespace GridDomain.Tests.Acceptance.GridConsole
             public ServerLauncher()
             {
                 var nodeConfiguration = new TestGridAkkaConfiguration(5010);
-                var nodeAddress = nodeConfiguration.Network;
                
-                _node = new GridDomainNode(new []{ new BalloonDomainConfiguration() }, () => nodeConfiguration.CreateInMemorySystem());
+                _node = new GridDomainNode(new []{ new BalloonDomainConfiguration() },
+                                            new DelegateActorSystemFactory(() => nodeConfiguration.CreateInMemorySystem()));
                 _node.Start().Wait();
             }
         }

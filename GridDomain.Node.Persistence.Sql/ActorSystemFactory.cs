@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Akka.Actor;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Persistence.Sql;
 
 namespace GridDomain.Node
 {
@@ -13,6 +14,7 @@ namespace GridDomain.Node
             var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber)
                                             .Select(n => Copy(akkaConf, port++))
                                             .ToArray();
+
             var seedAdresses = seedNodeConfigs.Select(s => s.Network)
                                               .ToArray();
 

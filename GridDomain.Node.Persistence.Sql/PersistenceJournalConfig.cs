@@ -1,6 +1,8 @@
 using System;
+using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Hocon;
 
-namespace GridDomain.Node.Configuration.Hocon
+namespace GridDomain.Node.Persistence.Sql
 {
     internal class PersistenceJournalConfig : IHoconConfig
     {

@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj" />
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
   </ItemGroup>
 

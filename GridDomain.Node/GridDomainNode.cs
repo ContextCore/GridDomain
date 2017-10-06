@@ -26,6 +26,8 @@ using ICommand = GridDomain.CQRS.ICommand;
 
 namespace GridDomain.Node
 {
+
+
     public interface IActorSystemFactory
     {
         ActorSystem Create();
@@ -39,7 +41,7 @@ namespace GridDomain.Node
         private IMessageWaiterFactory _waiterFactory;
         internal CommandPipe Pipe;
 
-        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, Func<ActorSystem> actorSystemFactory, ILogger log = null, TimeSpan? defaultTimeout = null)
+        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log = null, TimeSpan? defaultTimeout = null)
         {
             DomainConfigurations = domainConfigurations.ToList();
             DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
@@ -54,7 +56,7 @@ namespace GridDomain.Node
 
         private IContainer Container { get; set; }
         private ContainerBuilder _containerBuilder;
-        private readonly Func<ActorSystem> _actorSystemFactory;
+        private readonly IActorSystemFactory _actorSystemFactory;
         private readonly ILogger _logger;
         internal readonly List<IDomainConfiguration> DomainConfigurations;
         public TimeSpan DefaultTimeout { get; }
@@ -95,7 +97,7 @@ namespace GridDomain.Node
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
             _containerBuilder = new ContainerBuilder();
 
-            System = _actorSystemFactory.Invoke();
+            System = _actorSystemFactory.Create();
             System.RegisterOnTermination(OnSystemTermination);
 
             System.InitLocalTransportExtension();

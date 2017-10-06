@@ -4,7 +4,7 @@ using Akka.Event;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class LogConfig : IHoconConfig
+    public class LogConfig : IHoconConfig
     {
         private readonly Dictionary<LogLevel, string> _akkaLogLevels = new Dictionary<LogLevel, string>
                                                                        {

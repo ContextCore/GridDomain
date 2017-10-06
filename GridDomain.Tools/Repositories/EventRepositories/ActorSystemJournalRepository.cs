@@ -7,6 +7,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Persistence.Sql;
 using GridDomain.Node.Serializers;
 
 namespace GridDomain.Tools.Repositories.EventRepositories

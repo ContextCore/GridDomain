@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal interface IHoconConfig
+    public interface IHoconConfig
     {
         string Build();
     }

@@ -3,6 +3,7 @@ using Akka.Actor;
 using Akka.Event;
 using GridDomain.CQRS;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Persistence.Sql;
 using NBench;
 using Xunit.Abstractions;
 
