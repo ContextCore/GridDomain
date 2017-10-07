@@ -21,7 +21,6 @@ namespace GridDomain.Tests.Acceptance.GridConsole
     [Collection("Grid node client collection")]
     public class GridNodeClient_Tests : IDisposable
     {
-        private readonly GridNodeConnector _connector;
 
         class ServerConfiguration : NodeConfiguration
         {
@@ -31,30 +30,37 @@ namespace GridDomain.Tests.Acceptance.GridConsole
             }
         }
 
-        class ServerLauncher : MarshalByRefObject
+        class ServerLauncher : MarshalByRefObject, IDisposable
         {
+            private readonly GridDomainNode _gridDomainNode;
+
             public ServerLauncher()
             {
-                var nodeConfiguration =new ServerConfiguration();
-               
-                var node = new GridDomainNode(new DelegateActorSystemFactory(() => nodeConfiguration.CreateInMemorySystem()),
-                                              new BalloonDomainConfiguration());
-                node.Start().Wait();
+                _gridDomainNode = new GridDomainNode(new DelegateActorSystemFactory(() => new ServerConfiguration().CreateInMemorySystem()),
+                    new BalloonDomainConfiguration());
+                _gridDomainNode.Start().Wait();
+            }
+
+            public void Dispose()
+            {
+                _gridDomainNode?.Dispose();
             }
         }
 
-        private readonly Isolated<ServerLauncher> node;
+        private readonly Isolated<ServerLauncher> _node;
+        private readonly GridNodeConnector _connector;
+
         public GridNodeClient_Tests(ITestOutputHelper helper)
         {
             Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
-            _connector = new GridNodeConnector(new ServerConfiguration());
-           node = new Isolated<ServerLauncher>();
+            _connector = new GridNodeConnector(new ServerConfiguration(),new NodeConfiguration("Console",new NodeNetworkAddress()));
+           _node = new Isolated<ServerLauncher>();
         }
 
         public void Dispose()
         {
             _connector?.Dispose();
-            node.Dispose();
+            _node.Dispose();
         }
 
         [Fact]

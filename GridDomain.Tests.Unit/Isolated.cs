@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit
     public sealed class Isolated<T> : IDisposable where T:MarshalByRefObject
     {
         private AppDomain _domain;
-        public T Value { get; }
+        public T Value { get; private set; }
 
         public Isolated()
         {
@@ -19,6 +19,12 @@ namespace GridDomain.Tests.Unit
 
         public void Dispose()
         {
+            if (Value is IDisposable disposable)
+            {
+                disposable.Dispose();
+                Value = null;
+            }
+
             if (_domain == null) return;
             AppDomain.Unload(_domain);
             _domain = null;

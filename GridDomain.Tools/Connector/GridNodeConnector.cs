@@ -10,6 +10,7 @@ using GridDomain.Node.Serializers;
 using GridDomain.Transport;
 using GridDomain.Transport.Remote;
 using Serilog;
+using Serilog.Events;
 
 namespace GridDomain.Tools.Connector {
     /// <summary>
@@ -35,7 +36,7 @@ namespace GridDomain.Tools.Connector {
             _logger = log ?? Log.Logger;
             _serverAddress = serverConfig;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
-            _conf = clientConfiguration ?? new NodeConfiguration("Console",new NodeNetworkAddress());
+            _conf = clientConfiguration ?? new NodeConfiguration("Console",new NodeNetworkAddress(), LogEventLevel.Warning);
 
         }
 
@@ -76,7 +77,6 @@ namespace GridDomain.Tools.Connector {
             if (_consoleSystem != null)
                 return;
 
-            _logger.Information("Sending warmup message to start association");
 
             IActorRef eventBusForwarder = null;
             IActorRef commandExecutionActor = null;
@@ -86,6 +86,7 @@ namespace GridDomain.Tools.Connector {
                 {
                     _consoleSystem = _conf.CreateInMemorySystem();
                     DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
+                    _logger.Information("Starting association");
 
                     var data = await GetSelection(nameof(GridNodeController))
                                     .Ask<GridNodeController.Connected>(GridNodeController.Connect.Instance, timeout ?? _defaultTimeout);
