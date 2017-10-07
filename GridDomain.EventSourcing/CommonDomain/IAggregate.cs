@@ -10,6 +10,7 @@ namespace GridDomain.EventSourcing.CommonDomain
         int Version { get; }
         void ApplyEvent(DomainEvent @event);
         IReadOnlyCollection<DomainEvent> GetUncommittedEvents();
+        void ClearUncommitedEvents();
         IMemento GetSnapshot();
     }
 }

@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 
-namespace GridDomain.EventSourcing
+namespace GridDomain.Tools
 {
     public static class AggregateExtensions
     {

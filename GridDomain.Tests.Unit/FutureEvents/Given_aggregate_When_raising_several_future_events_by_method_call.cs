@@ -4,6 +4,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Scheduling;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using GridDomain.Tools;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.FutureEvents

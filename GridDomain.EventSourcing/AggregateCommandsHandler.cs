@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {

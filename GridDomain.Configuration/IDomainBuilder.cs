@@ -1,6 +1,7 @@
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.ProcessManagers;
 
 namespace GridDomain.Configuration

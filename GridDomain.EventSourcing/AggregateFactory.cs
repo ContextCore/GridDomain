@@ -15,17 +15,24 @@ namespace GridDomain.EventSourcing
     public class AggregateFactory : IConstructAggregates
     {
         //default convention: Aggregate is implementing IMemento itself
-        protected virtual Aggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
+        protected virtual IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
         {
-            var aggregate = snapshot as Aggregate;
-            if (aggregate == null)
+            var snapshotVersion = snapshot.Version;
+            if (!(snapshot is IAggregate aggregate))
                 throw new InvalidDefaultMementoException(type, id, snapshot);
-            aggregate.PersistAll();
-            ((IMemento)aggregate).Version = snapshot.Version;
+
+            //aggregate can produce events in constructor, need to apply them
+            foreach (var e in aggregate.GetUncommittedEvents().ToArray())
+                aggregate.ApplyEvent(e);
+
+            aggregate.ClearUncommitedEvents();
+
+            ((IMemento)aggregate).Version = snapshotVersion;
+
             return aggregate;
         }
 
-        public IAggregate Build(Type type, Guid id)
+        private static IAggregate Build(Type type, Guid id)
         {
             //TODO: add type cache to reduce search time
             var constructor = type.GetTypeInfo()

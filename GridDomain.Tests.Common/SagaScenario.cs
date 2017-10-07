@@ -9,6 +9,7 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
+using GridDomain.Tools;
 using KellermanSoftware.CompareNetObjects;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Dsl;

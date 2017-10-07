@@ -3,6 +3,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Serializers;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
+using GridDomain.Tools;
 using Newtonsoft.Json;
 using Xunit;
 

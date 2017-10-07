@@ -8,6 +8,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tools;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;

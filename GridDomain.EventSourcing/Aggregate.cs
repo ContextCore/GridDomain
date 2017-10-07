@@ -21,6 +21,11 @@ namespace GridDomain.EventSourcing
         }
 
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
+
+        public void ClearUncommitedEvents()
+        {
+            _uncommittedEvents.Clear();
+        }
         private PersistenceDelegate _persist;
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
