@@ -11,9 +11,6 @@ namespace GridDomain.Scheduling
     {
         protected FutureEventsAggregate(Guid id):base(id)
         {
-            //Register<FutureEventScheduledEvent>(Apply);
-            //Register<FutureEventOccuredEvent>(Apply);
-            //Register<FutureEventCanceledEvent>(Apply);
             _schedulingSourceName = GetType().Name;
         }
 

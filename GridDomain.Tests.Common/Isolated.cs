@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Security.Policy;
 
-namespace GridDomain.Tests.Acceptance.GridConsole
+namespace GridDomain.Tests.Common
 {
-
     public sealed class Isolated<T> : IDisposable where T:MarshalByRefObject
     {
         private AppDomain _domain;

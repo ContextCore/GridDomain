@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
+
     public class Aggregate : IAggregate,
                              IMemento,
                              IEquatable<IAggregate>
@@ -19,7 +21,6 @@ namespace GridDomain.EventSourcing
         }
 
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
-        private IRouteEvents _registeredRoutes;
         private PersistenceDelegate _persist;
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
@@ -52,7 +53,9 @@ namespace GridDomain.EventSourcing
         }
         //TODO: think how to reduce pain from static cache 
 
-        private IRouteEvents RegisteredRoutes => _registeredRoutes ?? (_registeredRoutes = EventRouterCache.Instance.Get(this));
+        protected IRouteEvents _registeredRoutes;
+        private IRouteEvents RegisteredRoutes => _registeredRoutes ?? (_registeredRoutes = EventRouterCache.Instance.Get(this.GetType()));
+        //private IRouteCommands RegisteredCommands 
 
         public Guid Id { get; protected set; }
         public int Version { get; protected set; }

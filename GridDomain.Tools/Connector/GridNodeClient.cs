@@ -87,7 +87,6 @@ namespace GridDomain.Tools.Connector {
                     _consoleSystem = _conf.CreateInMemorySystem();
                     DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
 
-
                     var data = await GetSelection(nameof(GridNodeController)).Ask<GridNodeController.Connected>(GridNodeController.Connect.Instance, TimeSpan.FromSeconds(10));
                     eventBusForwarder = data.TransportProxy;
                     commandExecutionActor = data.PipeRef;

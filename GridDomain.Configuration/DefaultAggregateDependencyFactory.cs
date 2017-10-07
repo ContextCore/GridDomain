@@ -6,7 +6,7 @@ using GridDomain.EventSourcing.CommonDomain;
 namespace GridDomain.Configuration {
     public static class DefaultAggregateDependencyFactory
     {
-        public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler, IMessageRouteMap mapProducer=null) where TAggregate : Aggregate
+        public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler, IMessageRouteMap mapProducer=null) where TAggregate : IAggregate
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -25,7 +25,7 @@ namespace GridDomain.Configuration {
     }
 
 
-    public class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : Aggregate
+    public class DefaultAggregateDependencyFactory<TAggregate> : IAggregateDependencyFactory<TAggregate> where TAggregate : IAggregate
     {
         public Func<IMessageRouteMap> MapProducer { protected get; set; }
         public Func<IAggregateCommandsHandler<TAggregate>> HandlerCreator { protected get; set; }
@@ -44,8 +44,7 @@ namespace GridDomain.Configuration {
 
         public static DefaultAggregateDependencyFactory<TCommandAggregate> ForCommandAggregate<TCommandAggregate>(Func<IMessageRouteMap> mapProducer = null) where TCommandAggregate : CommandAggregate, TAggregate
         {
-            return new DefaultAggregateDependencyFactory<TCommandAggregate>(()=>
-                new CommandAggregateHandlerProxy<TCommandAggregate>(Aggregate.Empty<TCommandAggregate>(Guid.Empty)));
+            return new DefaultAggregateDependencyFactory<TCommandAggregate>(() => new CommandAggregateHandlerProxy<TCommandAggregate>(Aggregate.Empty<TCommandAggregate>(Guid.Empty)));
         }
 
         public virtual IAggregateCommandsHandler<TAggregate> CreateCommandsHandler()

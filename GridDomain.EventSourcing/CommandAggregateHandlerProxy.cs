@@ -6,19 +6,20 @@ using GridDomain.CQRS;
 namespace GridDomain.EventSourcing {
     public class CommandAggregateHandlerProxy<T> : IAggregateCommandsHandler<T> where T : CommandAggregate
     {
-        private readonly CommandAggregate _aggregate;
+        private readonly AggregateCommandsHandler<CommandAggregate> _aggregateCommandsHandler;
 
         public CommandAggregateHandlerProxy(CommandAggregate aggregate)
         {
-            _aggregate = aggregate;
+            _aggregateCommandsHandler = aggregate.CommandsRouter;
+            RegisteredCommands = aggregate.RegisteredCommands;
         }
 
         public Task ExecuteAsync(T aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
         {
-            return _aggregate.CommandsHandler.ExecuteAsync(aggregate, command, persistenceDelegate);
+            return _aggregateCommandsHandler.ExecuteAsync(aggregate, command, persistenceDelegate);
         }
 
-        public IReadOnlyCollection<Type> RegisteredCommands => _aggregate.RegisteredCommands;
-        public Type AggregateType => _aggregate.AggregateType;
+        public IReadOnlyCollection<Type> RegisteredCommands { get; }
+        public Type AggregateType { get; } = typeof(T);
     }
 }

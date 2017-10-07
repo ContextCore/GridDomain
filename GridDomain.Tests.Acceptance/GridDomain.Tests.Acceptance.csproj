@@ -344,7 +344,6 @@
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
     <Compile Include="GridConsole\GridNodeClient_Tests.cs" />
-    <Compile Include="GridConsole\Isolated.cs" />
     <Compile Include="GridConsole\TestGridAkkaConfiguration.cs" />
     <Compile Include="Migrations\BalloonInitial.cs" />
     <Compile Include="Migrations\BalloonInitial.designer.cs">

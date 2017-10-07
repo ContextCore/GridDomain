@@ -6,11 +6,10 @@ namespace GridDomain.EventSourcing.CommonDomain {
     {
         private readonly ConcurrentDictionary<Type, Lazy<IRouteEvents>> _applyCache = new ConcurrentDictionary<Type, Lazy<IRouteEvents>>();
 
-        public IRouteEvents Get(IAggregate aggregate)
+        public IRouteEvents Get(Type aggregateType)
         {
-            var type = aggregate.GetType();
-            var router = _applyCache.GetOrAdd(type, 
-                t => new Lazy<IRouteEvents>(() => new ConventionEventRouter(aggregate)));
+            var router = _applyCache.GetOrAdd(aggregateType, 
+                                 t => new Lazy<IRouteEvents>(() => new ConventionEventRouter(aggregateType)));
             return router.Value;
         }
 

@@ -277,6 +277,7 @@
     <Compile Include="Aggregate_actor_lifetime\PersistentHubFixture.cs" />
     <Compile Include="Aggregate_actor_lifetime\PersistentHubChildrenLifetimeTest.cs" />
     <Compile Include="Aggregate_actor_lifetime\ProcessHub_children_lifetime_tests.cs" />
+    <Compile Include="CommandsExecution\ConventionCommands\ConventionCat.cs" />
     <Compile Include="NodeConfigurationDebugExtensions.cs" />
     <Compile Include="ProcessManagers\BalloonAggregateFactory.cs" />
     <Compile Include="BalloonDomain\Configuration\BalloonDependencyFactory.cs" />

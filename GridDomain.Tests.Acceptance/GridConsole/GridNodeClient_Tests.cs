@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         {
             public ServerLauncher()
             {
-                var nodeConfiguration = new TestGridAkkaConfiguration(5010);
+                var nodeConfiguration = new TestGridAkkaConfiguration(5011);
                
                 var node = new GridDomainNode(new []{ new BalloonDomainConfiguration() },
                                             new DelegateActorSystemFactory(() => nodeConfiguration.CreateInMemorySystem()));
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         public GridNodeClient_Tests(ITestOutputHelper helper)
         {
             Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
-            _client = new GridNodeClient(new TestGridAkkaConfiguration(5010).Network);
+            _client = new GridNodeClient(new TestGridAkkaConfiguration(5011).Network);
            node = new Isolated<ServerLauncher>();
         }
 

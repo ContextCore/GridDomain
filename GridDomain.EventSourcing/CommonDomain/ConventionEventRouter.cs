@@ -10,9 +10,9 @@ namespace GridDomain.EventSourcing.CommonDomain
 {
     public class ConventionEventRouter : TypeCatalog<Action<IAggregate,DomainEvent>,DomainEvent>, IRouteEvents
     {
-        public ConventionEventRouter(IAggregate aggregate)
+        public ConventionEventRouter(Type aggregateType)
         {
-            Register(aggregate.GetType());
+            Register(aggregateType);
         }
 
         private Action<IAggregate, DomainEvent> CreateAction(Type aggregateType, MethodInfo applyMethod)
