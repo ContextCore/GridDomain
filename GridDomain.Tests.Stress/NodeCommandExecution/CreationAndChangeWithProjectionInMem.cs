@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Akka.Event;
 using GridDomain.Node;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using Microsoft.EntityFrameworkCore;
 using Pro.NBench.xUnit.XunitExtensions;
@@ -16,35 +17,29 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         public CreationAndChangeWithProjectionInMem(ITestOutputHelper output):base(output)
         {
             _testOutputHelper = output;
+            DbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CreationAndChangeWithProjectionInMem)).Options;
         }
         internal override void OnSetup()
         {
-            DbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CreationAndChangeWithProjectionInMem)).Options;
             using(var ctx = new BalloonContext(DbContextOptions))
             {
                 ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
             }
+            base.OnSetup();
         }
 
         protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 20);
         internal override IGridDomainNode CreateNode()
         {
+            var akkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel);
             return new BalloonWithProjectionFixture(DbContextOptions)
                    {
                        Output = _testOutputHelper,
-                       AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
-                       LogLevel = LogEventLevel.Error
-                   }.CreateNode().Result;
-        }
-
-        protected override void OnCleanup()
-        {
-            using(var ctx = new BalloonContext(DbContextOptions))
-            {
-                ctx.Database.EnsureDeleted();
-                ctx.Database.EnsureCreated();
-            }
+                       AkkaConfig = akkaConfig,
+                       LogLevel = LogEventLevel.Error,
+                       SystemConfigFactory = () => akkaConfig.ToStandAloneInMemorySystemConfig()
+            }.CreateNode().Result;
         }
     }
 }

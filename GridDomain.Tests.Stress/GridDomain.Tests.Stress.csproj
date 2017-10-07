@@ -234,6 +234,7 @@
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="INodeScenario.cs" />
     <Compile Include="InsertOptimazedBulkConfiguration.cs" />
+    <Compile Include="NodeCommandExecution\SerilogTestOutput.cs" />
     <Compile Include="Single_LoadAllAssembliesTest.cs" />
     <Compile Include="NBenchAvailabilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

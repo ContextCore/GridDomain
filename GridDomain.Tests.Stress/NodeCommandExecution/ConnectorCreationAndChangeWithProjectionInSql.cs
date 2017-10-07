@@ -1,12 +1,13 @@
+using System;
 using Akka.Event;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
-using GridDomain.Node.Persistence.Sql;
 using GridDomain.Tests.Acceptance;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using GridDomain.Tests.Acceptance.GridConsole;
 using GridDomain.Tools.Connector;
 using NBench;
+using Serilog.Core;
 using Serilog.Events;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -18,27 +19,28 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
 
         }
-        //TODO: cleanup node initialization 
-        class Initiator
+
+        private static Isolated<Initiator> _isolatedServerNode = new Isolated<Initiator>();
+        class Initiator : MarshalByRefObject
         {
+            private readonly CreationAndChangeWithProjectionInSql _test;
+
             public Initiator()
             {
-                var test = new CreationAndChangeWithProjectionInSql(null);
-                test.OnSetup();
-                var nodeConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel);
-                var cfg = new BalloonWithProjectionDomainConfiguration(test.DbContextOptions);
-
-                var node = new GridDomainNode(new[]{cfg}, new DelegateActorSystemFactory(() => nodeConfig.CreateSystem(new AutoTestNodeDbConfiguration())));
-                node.Start().Wait();
+                _test = new CreationAndChangeWithProjectionInSql(new SerilogTestOutput());
+            }
+            public void CleanUp()
+            {
+                _test.Cleanup();
+            }
+            public void Setup()
+            {
+                _test.OnSetup();
             }
         }
 
-        private AppDomainIsolated<Initiator> _isolatedServerNode;
-
         internal override IGridDomainNode CreateNode()
         {
-            _isolatedServerNode = new AppDomainIsolated<Initiator>();
-
             var connector = new GridNodeClient(new StressTestAkkaConfiguration(LogLevel.ErrorLevel).Network);
             connector.Connect()
                      .Wait();
@@ -46,9 +48,17 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             return connector;
         }
 
-        public void Dispose()
+        internal override void OnSetup()
         {
-            _isolatedServerNode?.Dispose();
+            _isolatedServerNode.Value.Setup();
+            base.OnSetup();
+        }
+
+        public override void Cleanup()
+        {
+            _isolatedServerNode.Value.CleanUp();
+            //_isolatedServerNode?.Dispose();
+            base.Cleanup();
         }
     }
 }

@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Event;
 using GridDomain.Node;
+using GridDomain.Node.Configuration;
+using GridDomain.Node.Persistence.Sql;
 using GridDomain.Tests.Acceptance;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using GridDomain.Tests.Acceptance.Snapshots;
@@ -23,6 +25,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
             _output = output;
         }
+
         internal override void OnSetup()
         {
             var readDb = new AutoTestLocalDbConfiguration();
@@ -31,28 +34,27 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             {
                 ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
-            }
-            //warm up EF 
-            using(var ctx = new BalloonContext(DbContextOptions))
-            {
                 ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
                 ctx.SaveChanges();
             }
-
+            base.OnSetup();
         }
 
-        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 20);
+        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 50);
         internal override IGridDomainNode CreateNode()
         {
-            return new BalloonWithProjectionFixture(DbContextOptions)
-                   {
-                       Output = _output,
-                       AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
-                       LogLevel = LogEventLevel.Error
-                   }.UseSqlPersistence().CreateNode().Result;
+            var fixture = new BalloonWithProjectionFixture(DbContextOptions)
+                                               {
+                                                   Output = _output,
+                                                   AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
+                                                   LogLevel = LogEventLevel.Error
+                                               }.UseSqlPersistence();
+
+            fixture.SystemConfigFactory = () => fixture.AkkaConfig.ToStandAloneSystemConfig(AutoTestNodeDbConfiguration.Default);
+            return fixture.CreateNode().Result;
         }
 
-        protected override void OnCleanup()
+        public override void Cleanup()
         {
             var totalCommandsToIssue = Scenario.CommandPlans.Count();
             var journalConnectionString = new AutoTestNodeDbConfiguration().JournalConnectionString;
@@ -73,7 +75,6 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
                 var projectedCount = context.BalloonCatalog.Select(x => x).Count();
                 _output.WriteLine($"Found {projectedCount} projected rows");
             }
-            TestDbTools.Truncate(journalConnectionString, "Journal", "Snapshots").Wait();
         }
     }
 }

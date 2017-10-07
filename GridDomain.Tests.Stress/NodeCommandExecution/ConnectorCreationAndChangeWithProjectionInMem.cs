@@ -1,57 +1,65 @@
 using System;
+using System.Collections.Generic;
 using Akka.Event;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using GridDomain.Tests.Acceptance.GridConsole;
 using GridDomain.Tools.Connector;
+using NBench;
+using NBench.Metrics.Counters;
+using NBench.Util;
 using Serilog.Events;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace GridDomain.Tests.Stress.NodeCommandExecution {
-    public class ConnectorCreationAndChangeWithProjectionInMem : CreationAndChangeWithProjectionInMem, IDisposable
+namespace GridDomain.Tests.Stress.NodeCommandExecution
+{
+    public class ConnectorCreationAndChangeWithProjectionInMem : CreationAndChangeWithProjectionInMem
     {
-        private AppDomainIsolated<Initiator> _isolatedServerNode;
-
         public ConnectorCreationAndChangeWithProjectionInMem(ITestOutputHelper output):base(output)
         {
-            
         }
 
-        class Initiator
+        private Isolated<Initiator> _isolatedServerNode;
+        class Initiator : MarshalByRefObject
         {
+            private readonly CreationAndChangeWithProjectionInMem _test;
+
             public Initiator()
             {
-                var testOutputHelper = new TestOutputHelper();
-                var test = new CreationAndChangeWithProjectionInMem(testOutputHelper);
-                test.OnSetup();
-                var nodeConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel);
-
-                var node = new BalloonWithProjectionFixture(test.DbContextOptions)
-                    {
-                        Output = testOutputHelper,
-                        AkkaConfig = nodeConfig,
-                        LogLevel = LogEventLevel.Error,
-                        SystemConfigFactory = () => nodeConfig.ToStandAloneInMemorySystemConfig()
-                }.CreateNode().Result;
+                _test = new CreationAndChangeWithProjectionInMem(new SerilogTestOutput());
+            }
+            public void CleanUp()
+            {
+                _test.Cleanup();
+            }
+            public void Setup()
+            {
+                _test.OnSetup();
             }
         }
 
         internal override IGridDomainNode CreateNode()
         {
-            _isolatedServerNode = new AppDomainIsolated<Initiator>();
-
             var connector = new GridNodeClient(new StressTestAkkaConfiguration().Network);
-            connector.Connect()
-                     .Wait();
-
+            connector.Connect().Wait();
             return connector;
         }
 
-        public void Dispose()
+        internal override void OnSetup()
         {
+            _isolatedServerNode = new Isolated<Initiator>();
+            _isolatedServerNode.Value.Setup();
+            base.OnSetup();
+        }
+
+        public override void Cleanup()
+        {
+            _isolatedServerNode.Value.CleanUp();
+            //TODO: think how to 
             _isolatedServerNode?.Dispose();
+            base.Cleanup();
         }
     }
 }

@@ -21,8 +21,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             if (clearData)
                 fixture.OnNodePreparingEvent += (s, e) =>
                                                 {
-                                                    ClearData(persistence)
-                                                        .Wait();
+                                                    ClearData(persistence).Wait();
                                                 };
 
             fixture.SystemConfigFactory = () => fixture.AkkaConfig.ToDebugStandAloneSystemConfig(persistence);

@@ -23,25 +23,24 @@ namespace GridDomain.Tests.Acceptance.GridConsole
     {
         private readonly GridNodeClient _client;
 
-        class ServerLauncher
+        class ServerLauncher : MarshalByRefObject
         {
-            private readonly GridDomainNode _node;
             public ServerLauncher()
             {
                 var nodeConfiguration = new TestGridAkkaConfiguration(5010);
                
-                _node = new GridDomainNode(new []{ new BalloonDomainConfiguration() },
+                var node = new GridDomainNode(new []{ new BalloonDomainConfiguration() },
                                             new DelegateActorSystemFactory(() => nodeConfiguration.CreateInMemorySystem()));
-                _node.Start().Wait();
+                node.Start().Wait();
             }
         }
 
-        private AppDomainIsolated<ServerLauncher> node;
+        private readonly Isolated<ServerLauncher> node;
         public GridNodeClient_Tests(ITestOutputHelper helper)
         {
             Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
             _client = new GridNodeClient(new TestGridAkkaConfiguration(5010).Network);
-           node = new AppDomainIsolated<ServerLauncher>();
+           node = new Isolated<ServerLauncher>();
         }
 
         public void Dispose()

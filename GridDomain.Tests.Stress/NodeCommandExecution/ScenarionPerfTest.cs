@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
 #pragma warning disable xUnit1013
     public abstract class ScenarionPerfTest
     {
-        private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
+        protected const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
         protected IGridDomainNode Node;
 
@@ -21,14 +21,16 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
         }
 
         [PerfSetup]
-        public virtual void Setup(BenchmarkContext context)
+        public void Setup(BenchmarkContext context)
         {
             OnSetup();
-            Node = CreateNode();
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }
 
-        internal virtual void OnSetup() { }
+        internal virtual void OnSetup()
+        {
+            Node = CreateNode();
+        }
 
         protected abstract INodeScenario Scenario { get; }
         internal abstract IGridDomainNode CreateNode();
@@ -47,14 +49,9 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
         }
 
         [PerfCleanup]
-        public void Cleanup()
+        public virtual void Cleanup()
         {
-            OnCleanup();
             Node.Dispose();
-        }
-
-        protected virtual void OnCleanup()
-        {
         }
     }
 }
