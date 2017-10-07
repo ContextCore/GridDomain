@@ -11,8 +11,10 @@ namespace GridDomain.EventSourcing {
         protected CommandAggregate(Guid id) : base(id)
         {
             AggregateType = GetType();
-            _registeredRoutes = _eventsRouter = new ConventionEventRouter(GetType());
+            _eventsRouter = new ConventionEventRouter(GetType());
         }
+
+        protected override IRouteEvents RegisteredRoutes => _eventsRouter;
 
         protected void Apply<T>(Action<T> act) where T : DomainEvent
         {
@@ -20,7 +22,7 @@ namespace GridDomain.EventSourcing {
         }
 
         private readonly ConventionEventRouter _eventsRouter;
-        internal readonly AggregateCommandsHandler<CommandAggregate> CommandsRouter = new AggregateCommandsHandler<CommandAggregate>();
+        public readonly AggregateCommandsHandler<CommandAggregate> CommandsRouter = new AggregateCommandsHandler<CommandAggregate>();
 
         protected void Execute<T>(Action<T> syncCommandAction) where T : ICommand
         {
@@ -34,7 +36,6 @@ namespace GridDomain.EventSourcing {
         {
             CommandsRouter.Map<T>(aggregateCreator);
         }
-
         public IReadOnlyCollection<Type> RegisteredCommands => CommandsRouter.RegisteredCommands;
         public Type AggregateType { get; }
     }

@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
     public class Given_process_When_handling_command_faults : NodeTestKit
     {
         public Given_process_When_handling_command_faults(ITestOutputHelper output) :
-            base(output, new SoftwareProgrammingProcessManagerFixture(new HomeDomainConfiguration())) {}
+            base(output, new SoftwareProgrammingProcessManagerFixture(new SoftwareDomainConfiguration())) {}
 
         [Fact]
         public async Task When_process_produce_command_and_waiting_for_it_fault()

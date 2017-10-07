@@ -58,8 +58,8 @@ namespace GridDomain.EventSourcing
         }
         //TODO: think how to reduce pain from static cache 
 
-        protected IRouteEvents _registeredRoutes;
-        private IRouteEvents RegisteredRoutes => _registeredRoutes ?? (_registeredRoutes = EventRouterCache.Instance.Get(this.GetType()));
+        private IRouteEvents _registeredRoutes;
+        protected virtual IRouteEvents RegisteredRoutes => _registeredRoutes ?? (_registeredRoutes = EventRouterCache.Instance.Get(this.GetType()));
         //private IRouteCommands RegisteredCommands 
 
         public Guid Id { get; protected set; }
@@ -86,13 +86,12 @@ namespace GridDomain.EventSourcing
             await Emit(await evtTask);
         }
 
-        public bool MarkPersisted(DomainEvent e)
+        public void MarkPersisted(DomainEvent e)
         {
-            if (!_uncommittedEvents.Contains(e))
+            if (!_uncommittedEvents.Remove(e))
                 throw new EventIsNotBelongingToAggregateException();
 
             ((IAggregate) this).ApplyEvent(e);
-            return _uncommittedEvents.Remove(e);
         }
 
         protected async Task Emit(params DomainEvent[] events)
@@ -103,10 +102,7 @@ namespace GridDomain.EventSourcing
 
         protected void Produce(params DomainEvent[] events)
         {
-            foreach(var e in events)
-            {
-                _uncommittedEvents.Add(e);
-            }
+           _uncommittedEvents.AddRange(events);
         }
         public override int GetHashCode()
         {

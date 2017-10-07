@@ -1,25 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing {
-    public class CommandAggregateHandlerProxy<T> : IAggregateCommandsHandler<T> where T : CommandAggregate
+    public class CommandAggregateHandler<T> : IAggregateCommandsHandler<T> where T : CommandAggregate
     {
-        private readonly AggregateCommandsHandler<CommandAggregate> _aggregateCommandsHandler;
 
-        public CommandAggregateHandlerProxy(CommandAggregate aggregate)
+        public CommandAggregateHandler(CommandAggregate aggregate)
         {
-            _aggregateCommandsHandler = aggregate.CommandsRouter;
             RegisteredCommands = aggregate.RegisteredCommands;
+            if (!RegisteredCommands.Any())
+                throw new MissingRegisteredCommandsException();
         }
 
         public Task ExecuteAsync(T aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
         {
-            return _aggregateCommandsHandler.ExecuteAsync(aggregate, command, persistenceDelegate);
+            return aggregate.CommandsRouter.ExecuteAsync(aggregate, command, persistenceDelegate);
         }
 
         public IReadOnlyCollection<Type> RegisteredCommands { get; }
         public Type AggregateType { get; } = typeof(T);
     }
+
+    public class MissingRegisteredCommandsException : Exception { }
 }

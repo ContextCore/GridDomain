@@ -22,6 +22,11 @@ namespace GridDomain.Configuration {
         {
             return New(new TAggregateCommandsHandler());
         }
+
+        public static DefaultAggregateDependencyFactory<TCommandAggregate> ForCommandAggregate<TCommandAggregate>() where TCommandAggregate : CommandAggregate
+        {
+            return new DefaultAggregateDependencyFactory<TCommandAggregate>(CommandAggregateHandler.New<TCommandAggregate>);
+        }
     }
 
 
@@ -42,10 +47,7 @@ namespace GridDomain.Configuration {
             RecycleConfigurationCreator = () => new DefaultPersistentChildsRecycleConfiguration();
         }
 
-        public static DefaultAggregateDependencyFactory<TCommandAggregate> ForCommandAggregate<TCommandAggregate>() where TCommandAggregate : CommandAggregate, TAggregate
-        {
-            return new DefaultAggregateDependencyFactory<TCommandAggregate>(() => new CommandAggregateHandlerProxy<TCommandAggregate>(Aggregate.Empty<TCommandAggregate>(Guid.Empty)));
-        }
+       
 
         public virtual IAggregateCommandsHandler<TAggregate> CreateCommandsHandler()
         {

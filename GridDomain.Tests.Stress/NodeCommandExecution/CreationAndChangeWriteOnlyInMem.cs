@@ -1,5 +1,4 @@
 using GridDomain.Node;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.NodeCommandExecution {
@@ -10,7 +9,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
             _testOutputHelper = output;
         }
-        protected override INodeScenario Scenario { get; } = new Stress.BalloonsCreationAndChangeScenario(20, 20);
+        protected override INodeScenario Scenario { get; } = new Stress.BalloonsCreationAndChangeScenario(1000, 100);
         internal override IGridDomainNode CreateNode()
         {
             return new BalloonWriteOnlyFixture(_testOutputHelper).CreateNode().Result;

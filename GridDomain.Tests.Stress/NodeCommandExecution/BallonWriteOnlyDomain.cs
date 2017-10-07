@@ -12,4 +12,5 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             builder.RegisterAggregate(new BalloonDependencyFactory());
         }
     }
+
 }

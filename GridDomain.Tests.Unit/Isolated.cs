@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GridDomain.Tests.Common
+namespace GridDomain.Tests.Unit
 {
     public sealed class Isolated<T> : IDisposable where T:MarshalByRefObject
     {

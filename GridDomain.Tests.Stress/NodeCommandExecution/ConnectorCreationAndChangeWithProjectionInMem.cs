@@ -6,6 +6,7 @@ using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using GridDomain.Tests.Acceptance.GridConsole;
 using GridDomain.Tests.Common;
+using GridDomain.Tests.Unit;
 using GridDomain.Tools.Connector;
 using NBench;
 using NBench.Metrics.Counters;

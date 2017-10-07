@@ -13,4 +13,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Comman
         public Guid SofaId { get; }
         public Guid PersonId => AggregateId;
     }
+
+    public class CreatePersonCommand : Command
+    {
+        public CreatePersonCommand(Guid aggregateId) : base(aggregateId) { }
+    }
 }

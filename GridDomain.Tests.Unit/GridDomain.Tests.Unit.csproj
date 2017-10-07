@@ -278,6 +278,7 @@
     <Compile Include="Aggregate_actor_lifetime\PersistentHubChildrenLifetimeTest.cs" />
     <Compile Include="Aggregate_actor_lifetime\ProcessHub_children_lifetime_tests.cs" />
     <Compile Include="CommandsExecution\ConventionCommands\ConventionCat.cs" />
+    <Compile Include="Isolated.cs" />
     <Compile Include="NodeConfigurationDebugExtensions.cs" />
     <Compile Include="ProcessManagers\BalloonAggregateFactory.cs" />
     <Compile Include="BalloonDomain\Configuration\BalloonDependencyFactory.cs" />
@@ -391,7 +392,7 @@
     <Compile Include="BalloonDomain\IncreaseTitleCommand.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessManagerDependenciesFactory.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessDomainConfiguration.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\HomeDomainConfiguration.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\SoftwareDomainConfiguration.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
@@ -445,8 +446,7 @@
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Events\CoffeMakeFailedEvent.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Events\GotTiredEvent.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Events\SleptWellEvent.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\HomeAggregate.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\HomeAggregateHandler.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\ProgrammerAggregate.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\HomeCreated.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Slept.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\SoftwareProgrammingProcess.cs" />

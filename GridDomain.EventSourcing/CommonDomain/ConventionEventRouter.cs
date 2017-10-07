@@ -33,7 +33,7 @@ namespace GridDomain.EventSourcing.CommonDomain
             // Get instance methods named Apply with one parameter returning void
             var applyMethods = aggregateType
                                         .GetRuntimeMethods()
-                                        .Where(m => m.Name == "Apply" && m.GetParameters().Length == 1 && m.ReturnParameter.ParameterType == typeof(void))
+                                        .Where(m => m.Name == "Apply" && !m.IsGenericMethodDefinition && m.GetParameters().Length == 1 && m.ReturnParameter.ParameterType == typeof(void))
                                         .Select(m => new
                                                      {
                                                          Method = CreateAction(aggregateType,m),

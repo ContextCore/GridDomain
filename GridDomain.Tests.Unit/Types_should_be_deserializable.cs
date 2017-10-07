@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit
         public Types_should_be_deserializable()
         {
 
-           Fixture.Customizations.Add(new TypeRelay(typeof(IMemento), typeof(HomeAggregate)));
+           Fixture.Customizations.Add(new TypeRelay(typeof(IMemento), typeof(ProgrammerAggregate)));
            Fixture.Customizations.Add(new TypeRelay(typeof(ICommand), typeof(FakeCommand)));
            Fixture.Customizations.Add(new TypeRelay(typeof(Command), typeof(FakeCommand)));
            Fixture.Customizations.Add(new TypeRelay(typeof(DomainEvent), typeof(BalloonCreated)));

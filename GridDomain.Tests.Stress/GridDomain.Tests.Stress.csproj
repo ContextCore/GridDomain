@@ -224,8 +224,10 @@
     <Compile Include="NodeCommandExecution\ConnectorCreationAndChangeWithProjectionInMem.cs" />
     <Compile Include="NodeCommandExecution\ConnectorCreationAndChangeWithProjectionInSql.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInMem.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnly_CommandAggregate_InMem.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInSql.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInSql.cs" />
+    <Compile Include="NodeCommandExecution\HomeCreationAndChangeScenario.cs" />
     <Compile Include="NodeCommandExecution\ScenarionPerfTest.cs" />
     <Compile Include="NodeCommandExecution\BallonWriteOnlyDomain.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInMem.cs" />
