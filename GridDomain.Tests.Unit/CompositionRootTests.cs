@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit
             {
                 {
                     TransportMode.Standalone,
-                    () => new AutoTestAkkaConfiguration().CreateInMemorySystem()
+                    () => new AutoTestNodeConfiguration().CreateInMemorySystem()
                 }
             };
 

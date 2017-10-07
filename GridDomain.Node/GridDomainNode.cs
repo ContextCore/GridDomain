@@ -34,6 +34,16 @@ namespace GridDomain.Node
         private IMessageWaiterFactory _waiterFactory;
         internal CommandPipe Pipe;
 
+        public GridDomainNode(IActorSystemFactory actorSystemFactory, params IDomainConfiguration[] domainConfigurations)
+            :this(domainConfigurations,actorSystemFactory)
+        { }
+        public GridDomainNode(IActorSystemFactory actorSystemFactory, ILogger log, params IDomainConfiguration[] domainConfigurations)
+            : this(domainConfigurations, actorSystemFactory, log)
+        { }
+        public GridDomainNode(IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan timeout, params IDomainConfiguration[] domainConfigurations)
+            : this(domainConfigurations, actorSystemFactory, log, timeout)
+        { }
+
         public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log = null, TimeSpan? defaultTimeout = null)
         {
             DomainConfigurations = domainConfigurations.ToList();

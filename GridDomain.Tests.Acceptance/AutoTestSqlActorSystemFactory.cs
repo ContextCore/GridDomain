@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Acceptance {
     {
         public ActorSystem Create()
         {
-            return AutoTestAkkaConfiguration.Default.CreateSystem(AutoTestNodeDbConfiguration.Default);
+            return AutoTestNodeConfiguration.Default.CreateSystem(AutoTestNodeDbConfiguration.Default);
         }
     }
 }

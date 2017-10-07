@@ -2,19 +2,20 @@ using Akka.Actor;
 using Akka.Event;
 using GridDomain.Node;
 using GridDomain.Node.Persistence.Sql;
+using Serilog.Events;
 
 namespace GridDomain.Tests.Acceptance.Tools {
     public class AcceptanceAutoTestAkkaFactory : IActorSystemFactory
     {
-        private readonly LogLevel _verbosity;
+        private readonly LogEventLevel _verbosity;
 
-        public AcceptanceAutoTestAkkaFactory(LogLevel verbosity = LogLevel.DebugLevel)
+        public AcceptanceAutoTestAkkaFactory(LogEventLevel verbosity = LogEventLevel.Debug)
         {
             _verbosity = verbosity;
         }
         public ActorSystem Create()
         {
-            return new AcceptanceAutoTestAkkaConfiguration(_verbosity).CreateSystem(AutoTestNodeDbConfiguration.Default);
+            return new AcceptanceAutoTestNodeConfiguration(_verbosity).CreateSystem(AutoTestNodeDbConfiguration.Default);
         }
 
 

@@ -15,27 +15,27 @@ namespace GridDomain.Tools.Connector {
     /// <summary>
     ///     GridNodeClient is used to connect to remote node and delegate commands execution
     /// </summary>
-    public class GridNodeClient : IGridDomainNode
+    public class GridNodeConnector : IGridDomainNode
     {
-        private readonly AkkaConfiguration _conf;
+        private readonly NodeConfiguration _conf;
 
         private readonly TimeSpan _defaultTimeout;
-        private readonly INodeNetworkAddress _serverAddress;
+        private readonly NodeConfiguration _serverAddress;
 
         private ICommandExecutor _commandExecutor;
         private ActorSystem _consoleSystem;
         private MessageWaiterFactory _waiterFactory;
         private readonly ILogger _logger;
 
-        public GridNodeClient(INodeNetworkAddress serverAddress,
-                              AkkaConfiguration clientConfiguration = null,
-                              TimeSpan? defaultTimeout = null,
-                              ILogger log = null)
+        public GridNodeConnector(NodeConfiguration serverConfig,
+                                 NodeConfiguration clientConfiguration = null,
+                                 TimeSpan? defaultTimeout = null,
+                                 ILogger log = null)
         {
             _logger = log ?? Log.Logger;
-            _serverAddress = serverAddress;
+            _serverAddress = serverConfig;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
-            _conf = clientConfiguration ?? new ConsoleAkkaConfiguration();
+            _conf = clientConfiguration ?? new NodeConfiguration("Console",new NodeNetworkAddress());
 
         }
 
@@ -71,7 +71,7 @@ namespace GridDomain.Tools.Connector {
         }
 
         public bool IsConnected => _commandExecutor != null;
-        public async Task Connect()
+        public async Task Connect(int maxRetries = 5, TimeSpan? timeout=null)
         {
             if (_consoleSystem != null)
                 return;
@@ -80,14 +80,16 @@ namespace GridDomain.Tools.Connector {
 
             IActorRef eventBusForwarder = null;
             IActorRef commandExecutionActor = null;
-            int connectionCountLeft = 5;
+            int connectionCountLeft = maxRetries;
             while(true)
                 try
                 {
                     _consoleSystem = _conf.CreateInMemorySystem();
                     DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
 
-                    var data = await GetSelection(nameof(GridNodeController)).Ask<GridNodeController.Connected>(GridNodeController.Connect.Instance, TimeSpan.FromSeconds(10));
+                    var data = await GetSelection(nameof(GridNodeController))
+                                    .Ask<GridNodeController.Connected>(GridNodeController.Connect.Instance, timeout ?? _defaultTimeout);
+
                     eventBusForwarder = data.TransportProxy;
                     commandExecutionActor = data.PipeRef;
 

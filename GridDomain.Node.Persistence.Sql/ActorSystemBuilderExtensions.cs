@@ -14,14 +14,14 @@ namespace GridDomain.Node.Persistence.Sql
             return builder;
         }
 
-        public static IActorSystemFactory Build(this ActorSystemBuilder builder, AkkaConfiguration conf, ISqlNodeDbConfiguration persistence)
+        public static IActorSystemFactory Build(this ActorSystemBuilder builder, NodeConfiguration conf, ISqlNodeDbConfiguration persistence)
         {
-            return builder.Log(conf.LogLevel, conf.LogActorType, false)
+            return builder.Log(conf.LogLevel, conf.LogActorType)
                           .DomainSerialization(false)
                           .RemoteActorProvider()
-                          .Remote(conf.Network)
+                          .Remote(conf.Address)
                           .SqlPersistence(persistence)
-                          .BuildActorSystemFactory(conf.Network.SystemName);
+                          .BuildActorSystemFactory(conf.Name);
         }
     }
 }

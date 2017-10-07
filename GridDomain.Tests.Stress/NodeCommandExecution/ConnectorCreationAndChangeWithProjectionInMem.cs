@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
 
         internal override IGridDomainNode CreateNode()
         {
-            var connector = new GridNodeClient(new StressTestAkkaConfiguration().Network);
+            var connector = new GridNodeConnector(new StressTestNodeConfiguration());
             connector.Connect().Wait();
             return connector;
         }

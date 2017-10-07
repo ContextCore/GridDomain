@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit
 
     public class NodeTestFixture : IDisposable
     {
-        private static readonly AkkaConfiguration DefaultAkkaConfig = new AutoTestAkkaConfiguration();
+        private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null, TimeSpan? defaultTimeout = null, ITestOutputHelper helper = null)
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit
 
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
-            SystemConfigFactory = () => AkkaConfig.ToDebugStandAloneInMemorySystemConfig();
+            SystemConfigFactory = () => NodeConfig.ToDebugStandAloneInMemorySystemConfig();
             ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
           
         }
@@ -46,8 +46,8 @@ namespace GridDomain.Tests.Unit
         public ActorSystem System { get; private set; }
         public Func<string> SystemConfigFactory { get; set; }
         public ILogger Logger { get; private set; }
-        public AkkaConfiguration AkkaConfig { get; set; } = DefaultAkkaConfig;
-        public string Name => AkkaConfig.Network.SystemName;
+        public NodeConfiguration NodeConfig { get; set; } = DefaultNodeConfig;
+        public string Name => NodeConfig.Name;
 
         private const int DefaultTimeOutSec =
 #if DEBUG

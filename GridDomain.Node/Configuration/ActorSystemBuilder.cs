@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Akka.Event;
 using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.Configuration.Hocon;
+using Serilog.Events;
 
 namespace GridDomain.Node.Configuration {
     public class ActorSystemBuilder
@@ -18,9 +19,9 @@ namespace GridDomain.Node.Configuration {
             Configs.Add(cfg);
         }
 
-        public ActorSystemBuilder Log(LogLevel verbosity, Type logActorType = null, bool includeConfig = true)
+        public ActorSystemBuilder Log(LogEventLevel verbosity, Type logActorType = null)
         {
-            Add(new LogConfig(verbosity, logActorType ?? typeof(SerilogLoggerActor), includeConfig));
+            Add(new LogConfig(verbosity, logActorType ?? typeof(SerilogLoggerActor)));
             return this;
         }
 
@@ -59,13 +60,13 @@ namespace GridDomain.Node.Configuration {
             return this;
         }
 
-        public ActorSystemBuilder ClusterSeed(INodeNetworkAddress thisSeed, params INodeNetworkAddress[] otherSeeds)
+        public ActorSystemBuilder ClusterSeed(NodeConfiguration thisSeed, params INodeNetworkAddress[] otherSeeds)
         {
             Add(ClusterConfig.SeedNode(thisSeed, otherSeeds));
             return this;
         }
 
-        public ActorSystemBuilder ClusterNonSeed(INodeNetworkAddress thisSeed, params INodeNetworkAddress[] otherSeeds)
+        public ActorSystemBuilder ClusterNonSeed(NodeConfiguration thisSeed, params INodeNetworkAddress[] otherSeeds)
         {
             Add(ClusterConfig.NonSeedNode(thisSeed, otherSeeds));
             return this;

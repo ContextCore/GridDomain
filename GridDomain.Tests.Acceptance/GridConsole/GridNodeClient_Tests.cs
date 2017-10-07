@@ -21,16 +21,24 @@ namespace GridDomain.Tests.Acceptance.GridConsole
     [Collection("Grid node client collection")]
     public class GridNodeClient_Tests : IDisposable
     {
-        private readonly GridNodeClient _client;
+        private readonly GridNodeConnector _connector;
+
+        class ServerConfiguration : NodeConfiguration
+        {
+            public ServerConfiguration():base("Server", new NodeNetworkAddress("localhost", 10012))
+            {
+                
+            }
+        }
 
         class ServerLauncher : MarshalByRefObject
         {
             public ServerLauncher()
             {
-                var nodeConfiguration = new TestGridAkkaConfiguration(5011);
+                var nodeConfiguration =new ServerConfiguration();
                
-                var node = new GridDomainNode(new []{ new BalloonDomainConfiguration() },
-                                            new DelegateActorSystemFactory(() => nodeConfiguration.CreateInMemorySystem()));
+                var node = new GridDomainNode(new DelegateActorSystemFactory(() => nodeConfiguration.CreateInMemorySystem()),
+                                              new BalloonDomainConfiguration());
                 node.Start().Wait();
             }
         }
@@ -39,13 +47,13 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         public GridNodeClient_Tests(ITestOutputHelper helper)
         {
             Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
-            _client = new GridNodeClient(new TestGridAkkaConfiguration(5011).Network);
+            _connector = new GridNodeConnector(new ServerConfiguration());
            node = new Isolated<ServerLauncher>();
         }
 
         public void Dispose()
         {
-            _client?.Dispose();
+            _connector?.Dispose();
             node.Dispose();
         }
 
@@ -53,9 +61,9 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         public async Task Console_can_wait_for_command_produced_events()
         {
             //Console_commands_are_executed_by_remote_node()
-            await _client.Connect();
+            await _connector.Connect();
             var command = new InflateNewBallonCommand(42, Guid.NewGuid());
-            var evt = await _client.Prepare(command)
+            var evt = await _connector.Prepare(command)
                                    .Expect<BalloonCreated>()
                                    .Execute();
 
@@ -67,22 +75,22 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         [Fact]
         public async Task Console_can_execute_commands()
         {
-            await _client.Connect();
-            await _client.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()));
+            await _connector.Connect();
+            await _connector.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()));
         }
 
         [Fact]
         public async Task Throws_exception_on_action_and_not_connected()
         {
-            await _client.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()))
+            await _connector.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()))
                          .ShouldThrow<NotConnectedException>();
         }
 
         [Fact]
         public async Task Client_can_connect()
         {
-            await _client.Connect();
-            Assert.True(_client.IsConnected);
+            await _connector.Connect();
+            Assert.True(_connector.IsConnected);
         }
     }
 }

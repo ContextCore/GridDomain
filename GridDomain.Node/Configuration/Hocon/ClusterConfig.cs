@@ -6,9 +6,17 @@ namespace GridDomain.Node.Configuration.Hocon
     public class ClusterConfig : TransportConfig
     {
         private readonly string[] _seedNodes;
+        private readonly NodeConfiguration _nodeConfiguration;
+        private readonly string _name;
 
-        public ClusterConfig(INodeNetworkAddress config, params string[] seedNodes) : base(config)
+        public ClusterConfig(NodeConfiguration conf, params string[] seedNodes) : this(conf.Name, conf.Address, seedNodes)
         {
+            
+        }
+
+        public ClusterConfig(string name, INodeNetworkAddress address, params string[] seedNodes) : base(address)
+        {
+            _name = name;
             _seedNodes = seedNodes;
         }
 
@@ -25,22 +33,22 @@ namespace GridDomain.Node.Configuration.Hocon
             return clusterConfigString;
         }
 
-        public static ClusterConfig SeedNode(INodeNetworkAddress address, params INodeNetworkAddress[] otherSeeds)
+        public static ClusterConfig SeedNode(NodeConfiguration address, params INodeNetworkAddress[] otherSeeds)
         {
-            var allSeeds = otherSeeds.Union(new[] {address});
-            var seedNodes = allSeeds.Select(GetSeedNetworkAddress).ToArray();
+            var allSeeds = otherSeeds.Union(new[] {address.Address});
+            var seedNodes = allSeeds.Select(s => GetSeedNetworkAddress(address.Name,s)).ToArray();
             return new ClusterConfig(address, seedNodes);
         }
 
-        public static ClusterConfig NonSeedNode(INodeNetworkAddress address, INodeNetworkAddress[] seedNodesAddresses)
+        public static ClusterConfig NonSeedNode(NodeConfiguration address, INodeNetworkAddress[] seedNodesAddresses)
         {
-            var seedNodes = seedNodesAddresses.Select(GetSeedNetworkAddress).ToArray();
-            return new ClusterConfig(new NodeNetworkAddress(address.SystemName, address.Host, 0), seedNodes);
+            var seedNodes = seedNodesAddresses.Select(s => GetSeedNetworkAddress(address.Name,s)).ToArray();
+            return new ClusterConfig(address.Name, new NodeNetworkAddress(address.Address.Host, 0), seedNodes);
         }
 
-        private static string GetSeedNetworkAddress(INodeNetworkAddress conf)
+        private static string GetSeedNetworkAddress(string name, INodeNetworkAddress conf)
         {
-            string networkAddress = $"akka.tcp://{conf.SystemName}@{conf.Host}:{conf.PortNumber}";
+            string networkAddress = $"akka.tcp://{name}@{conf.Host}:{conf.PortNumber}";
             return networkAddress;
         }
     }

@@ -3,7 +3,7 @@ using GridDomain.Node.Configuration;
 namespace GridDomain.Tests.Unit {
     public static class NodeConfigurationDebugExtensions
     {
-        public static string ToDebugStandAloneInMemorySystemConfig(this AkkaConfiguration conf)
+        public static string ToDebugStandAloneInMemorySystemConfig(this NodeConfiguration conf)
         {
 #if DEBUG
             return conf.ToStandAloneInMemorySystemConfig(true);

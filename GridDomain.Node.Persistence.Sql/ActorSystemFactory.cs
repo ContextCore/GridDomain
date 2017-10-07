@@ -6,14 +6,14 @@ namespace GridDomain.Node.Persistence.Sql
 {
     public class ActorSystemFactory
     {
-        public static AkkaCluster CreateCluster(AkkaConfiguration akkaConf, int seedNodeNumber = 2, int childNodeNumber = 3)
+        public static AkkaCluster CreateCluster(NodeConfiguration nodeConf, int seedNodeNumber = 2, int childNodeNumber = 3)
         {
-            var port = akkaConf.Network.PortNumber;
+            var port = nodeConf.Address.PortNumber;
             var seedNodeConfigs = Enumerable.Range(0, seedNodeNumber)
-                                            .Select(n => Copy(akkaConf, port++))
+                                            .Select(n => Copy(nodeConf, port++))
                                             .ToArray();
 
-            var seedAdresses = seedNodeConfigs.Select(s => s.Network)
+            var seedAdresses = seedNodeConfigs.Select(s => s.Address)
                                               .ToArray();
 
            //var seedSystems =
@@ -32,9 +32,9 @@ namespace GridDomain.Node.Persistence.Sql
             return null;
         }
 
-        private static AkkaConfiguration Copy(AkkaConfiguration cfg, int newPort)
+        private static NodeConfiguration Copy(NodeConfiguration cfg, int newPort)
         {
-            return new AkkaConfiguration(new NodeNetworkAddress(cfg.Network.SystemName, cfg.Network.Host, newPort),
+            return new NodeConfiguration(cfg.Name, new NodeNetworkAddress(cfg.Address.Host, newPort),
                                          cfg.LogLevel){LogActorType = cfg.LogActorType };
         }
     }

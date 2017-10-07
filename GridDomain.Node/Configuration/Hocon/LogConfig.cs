@@ -1,44 +1,31 @@
 using System;
 using System.Collections.Generic;
 using Akka.Event;
+using Serilog.Events;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
     public class LogConfig : IHoconConfig
     {
-        private readonly Dictionary<LogLevel, string> _akkaLogLevels = new Dictionary<LogLevel, string>
+        private readonly Dictionary<LogEventLevel, string> _akkaLogLevels = new Dictionary<LogEventLevel, string>
                                                                        {
-                                                                           {
-                                                                               LogLevel
-                                                                                   .InfoLevel,
-                                                                               "INFO"
-                                                                           },
-                                                                           {
-                                                                               LogLevel
-                                                                                   .ErrorLevel,
-                                                                               "ERROR"
-                                                                           },
-                                                                           {
-                                                                               LogLevel
-                                                                                   .DebugLevel,
-                                                                               "DEBUG"
-                                                                           },
-                                                                           {
-                                                                               LogLevel
-                                                                                   .WarningLevel,
-                                                                               "WARNING"
-                                                                           }
+                                                                           {LogEventLevel.Information,"INFO"},
+                                                                           {LogEventLevel.Error,"ERROR"},
+                                                                           {LogEventLevel.Fatal,"ERROR"},
+                                                                           {LogEventLevel.Verbose, "DEBUG"},
+                                                                           {LogEventLevel.Debug, "DEBUG"},
+                                                                           {LogEventLevel.Warning,"WARNING"}
                                                                        };
 
         private readonly bool _includeConfig;
         private readonly Type _logActorType;
 
-        private readonly LogLevel _verbosity;
+        private readonly LogEventLevel _verbosity;
 
-        public LogConfig(LogLevel verbosity, Type logActorType, bool includeConfig = true)
+        public LogConfig(LogEventLevel verbosity, Type logActorType)
         {
             _verbosity = verbosity;
-            _includeConfig = includeConfig;
+            _includeConfig = verbosity == LogEventLevel.Verbose || verbosity == LogEventLevel.Debug;
             _logActorType = logActorType;
         }
 
@@ -62,13 +49,14 @@ namespace GridDomain.Node.Configuration.Hocon
             return logConfig;
         }
 
-        private object AdditionalLogs(LogLevel verbosity)
+        private object AdditionalLogs(LogEventLevel verbosity)
         {
-            return verbosity == LogLevel.DebugLevel ? @"#autoreceive = on
-                    #lifecycle = on
-                    #receive = on
-                    #router-misconfiguration = on
-                    #event-stream = on" : "";
+            return verbosity == LogEventLevel.Verbose ? 
+                  @"autoreceive = on
+                    lifecycle = on
+                    receive = on
+                    router-misconfiguration = on
+                    event-stream = on" : "";
         }
     }
 }

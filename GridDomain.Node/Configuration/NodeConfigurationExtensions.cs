@@ -4,17 +4,17 @@ using GridDomain.Node.Configuration.Hocon;
 namespace GridDomain.Node.Configuration {
     public static class NodeConfigurationExtensions
     {
-        public static ActorSystem CreateInMemorySystem(this AkkaConfiguration conf)
+        public static ActorSystem CreateInMemorySystem(this NodeConfiguration conf)
         {
-            return ActorSystem.Create(conf.Network.SystemName, conf.ToStandAloneInMemorySystemConfig());
+            return ActorSystem.Create(conf.Name, conf.ToStandAloneInMemorySystemConfig());
         }
 
-        public static string ToStandAloneInMemorySystemConfig(this AkkaConfiguration conf,bool serializeMessagesCreators = false)
+        public static string ToStandAloneInMemorySystemConfig(this NodeConfiguration conf,bool serializeMessagesCreators = false)
         {
-            var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType, false),
+            var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType),
                                      new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
                                      new RemoteActorProviderConfig(),
-                                     new TransportConfig(conf.Network),
+                                     new TransportConfig(conf.Address),
                                      new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
                                                            new LocalFilesystemSnapshotConfig()));
 

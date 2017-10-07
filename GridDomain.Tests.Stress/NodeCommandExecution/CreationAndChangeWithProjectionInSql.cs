@@ -46,11 +46,11 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             var fixture = new BalloonWithProjectionFixture(DbContextOptions)
                                                {
                                                    Output = _output,
-                                                   AkkaConfig = new StressTestAkkaConfiguration(LogLevel.ErrorLevel),
+                                                   NodeConfig = new StressTestNodeConfiguration(),
                                                    LogLevel = LogEventLevel.Error
                                                }.UseSqlPersistence();
 
-            fixture.SystemConfigFactory = () => fixture.AkkaConfig.ToStandAloneSystemConfig(AutoTestNodeDbConfiguration.Default);
+            fixture.SystemConfigFactory = () => fixture.NodeConfig.ToStandAloneSystemConfig(AutoTestNodeDbConfiguration.Default);
             return fixture.CreateNode().Result;
         }
 
