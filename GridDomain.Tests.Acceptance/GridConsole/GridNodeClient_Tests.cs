@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Akka.TestKit.Xunit2;
 using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.AkkaMessaging.Waiting;
@@ -48,55 +49,101 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         }
 
         private readonly Isolated<ServerLauncher> _node;
-        private readonly GridNodeConnector _connector;
 
         public GridNodeClient_Tests(ITestOutputHelper helper)
         {
-            Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
-            _connector = new GridNodeConnector(new ServerConfiguration(),new NodeConfiguration("Console",new NodeNetworkAddress()));
+            Serilog.Log.Logger = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
            _node = new Isolated<ServerLauncher>();
         }
 
         public void Dispose()
         {
-            _connector?.Dispose();
             _node.Dispose();
         }
+
+        class ClientLaunch_wait_for_command_produced_events : MarshalByRefObject
+        {
+            public ClientLaunch_wait_for_command_produced_events()
+            {
+                var connector = new GridNodeConnector(new ServerConfiguration(),
+                                                       new NodeConfiguration("Console",new NodeNetworkAddress()));
+
+                connector.Connect().Wait();
+                var command = new InflateNewBallonCommand(42, Guid.NewGuid());
+                connector.Prepare(command)
+                         .Expect<BalloonCreated>()
+                         .Execute().Wait();
+
+                Success = true;
+            }
+
+            public bool Success { get; private set; }
+        }
+
 
         [Fact]
         public async Task Console_can_wait_for_command_produced_events()
         {
-            //Console_commands_are_executed_by_remote_node()
-            await _connector.Connect();
-            var command = new InflateNewBallonCommand(42, Guid.NewGuid());
-            var evt = await _connector.Prepare(command)
-                                   .Expect<BalloonCreated>()
-                                   .Execute();
-
-            Assert.Equal(command.Title.ToString(),
-                         evt.Message<BalloonCreated>()
-                            .Value);
+            var isolatedClient = new Isolated<ClientLaunch_wait_for_command_produced_events>();
+            Assert.True(isolatedClient.Value.Success);
+            isolatedClient.Dispose();
         }
+
+        class Isolated_Console_can_execute_commands : MarshalByRefObject
+        {
+            public Isolated_Console_can_execute_commands()
+            {
+                var connector = new GridNodeConnector(new ServerConfiguration(),
+                    new NodeConfiguration("Console", new NodeNetworkAddress()));
+
+                connector.Connect().Wait();
+                var command = new InflateNewBallonCommand(42, Guid.NewGuid());
+                connector.Execute(command).Wait();
+
+                Success = true;
+            }
+
+            public bool Success { get; private set; }
+        }
+
 
         [Fact]
         public async Task Console_can_execute_commands()
         {
-            await _connector.Connect();
-            await _connector.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()));
+            var isolatedClient = new Isolated<Isolated_Console_can_execute_commands>();
+            Assert.True(isolatedClient.Value.Success);
+            isolatedClient.Dispose();
+
         }
 
         [Fact]
         public async Task Throws_exception_on_action_and_not_connected()
         {
-            await _connector.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()))
-                         .ShouldThrow<NotConnectedException>();
+            var connector = new GridNodeConnector(new ServerConfiguration(), new NodeConfiguration("Console", new NodeNetworkAddress()));
+            await connector.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()))
+                            .ShouldThrow<NotConnectedException>();
         }
 
+
+        class Isolated_Client_can_connect : MarshalByRefObject
+        {
+            public Isolated_Client_can_connect()
+            {
+                var connector = new GridNodeConnector(new ServerConfiguration(),
+                    new NodeConfiguration("Console", new NodeNetworkAddress()));
+
+                connector.Connect().Wait();
+                Success = true;
+            }
+
+            public bool Success { get; private set; }
+        }
         [Fact]
         public async Task Client_can_connect()
         {
-            await _connector.Connect();
-            Assert.True(_connector.IsConnected);
+            var isolatedClient = new Isolated<Isolated_Client_can_connect>();
+            Assert.True(isolatedClient.Value.Success);
+            isolatedClient.Dispose();
         }
     }
 }
