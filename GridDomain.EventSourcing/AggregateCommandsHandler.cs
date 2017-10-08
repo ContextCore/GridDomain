@@ -17,11 +17,11 @@ namespace GridDomain.EventSourcing
         public IReadOnlyCollection<Type> RegisteredCommands => Catalog.Keys.ToArray();
         public Type AggregateType { get; } = typeof(TAggregate);
 
-        public async Task ExecuteAsync(TAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
+        public Task<TAggregate> ExecuteAsync(TAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
         {
             try
             {
-                await Get(command).Invoke(aggregate, command, persistenceDelegate);
+                return Get(command).Invoke(aggregate, command, persistenceDelegate);
             }
             catch (Exception ex)
             {

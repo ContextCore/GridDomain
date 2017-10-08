@@ -14,11 +14,6 @@ namespace GridDomain.EventSourcing
                              IMemento,
                              IEquatable<IAggregate>
     {
-        private static readonly AggregateFactory Factory = new AggregateFactory();
-        public static T Empty<T>(Guid? id = null) where T : IAggregate
-        {
-            return Factory.Build<T>(id ?? Guid.NewGuid());
-        }
 
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
 
@@ -26,15 +21,11 @@ namespace GridDomain.EventSourcing
         {
             _uncommittedEvents.Clear();
         }
-        private PersistenceDelegate _persist;
+
+        protected PersistenceDelegate PersistenceProvider;
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
-
-        public void SetPersistProvider(PersistenceDelegate caller)
-        {
-            _persist = caller;
-        }
-
+       
         protected Aggregate(Guid id)
         {
             Id = id;
@@ -58,16 +49,16 @@ namespace GridDomain.EventSourcing
         }
         //TODO: think how to reduce pain from static cache 
 
-        private IRouteEvents _registeredRoutes;
-        protected virtual IRouteEvents RegisteredRoutes => _registeredRoutes ?? (_registeredRoutes = EventRouterCache.Instance.Get(this.GetType()));
-        //private IRouteCommands RegisteredCommands 
-
         public Guid Id { get; protected set; }
         public int Version { get; protected set; }
 
+        public void SetPersistProvider(PersistenceDelegate caller)
+        {
+            PersistenceProvider = caller;
+        }
+
         public virtual void ApplyEvent(DomainEvent @event)
         {
-            RegisteredRoutes.Dispatch(this,@event);
             Version++;
         }
 
@@ -98,7 +89,7 @@ namespace GridDomain.EventSourcing
         protected async Task Emit(params DomainEvent[] events)
         {
             Produce(events);
-            await _persist(this);
+            await PersistenceProvider(this);
         }
 
         protected void Produce(params DomainEvent[] events)

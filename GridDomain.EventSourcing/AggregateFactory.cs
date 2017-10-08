@@ -57,5 +57,12 @@ namespace GridDomain.EventSourcing
         {
             return snapshot == null ? Build(type, id) : BuildFromSnapshot(type, id, snapshot);
         }
+
+        private static readonly AggregateFactory Factory = new AggregateFactory();
+
+        public static T BuildEmpty<T>(Guid? id = null) where T : IAggregate
+        {
+            return Factory.Build<T>(id ?? Guid.NewGuid());
+        }
     }
 }

@@ -209,7 +209,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateActor\AggregateActorPerf.cs" />
-    <Compile Include="AggregateCommandsHandlerExecution\AggregateCommandsHandlerPerfTest.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BenchmarkBalloonAggregateCommandsHandler.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BallonCommandsExecutionBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BaseAggregateWithDefaultHandlerBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BenchmarkBallonCommandAggregate.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BenchmarkBallonConventionAggregate.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BenchmarkBalloonAggregate.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\CommandAggregateBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\ConventionAggregateBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\CustomAggregateWithCustomHandlerBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\CustomBenchmarkBalloonAggregateCommandsHandler.cs" />
     <Compile Include="AnemicEF\AnemicModelEFCOntextInMem.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
     <Compile Include="AggregateActor\AggregateActorPerfInMem.cs" />

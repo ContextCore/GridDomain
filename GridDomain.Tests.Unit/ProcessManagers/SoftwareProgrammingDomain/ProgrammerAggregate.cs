@@ -4,11 +4,15 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
-    public class ProgrammerAggregate : CommandAggregate
+    public class ProgrammerAggregate : ConventionAggregate
     {
         private ProgrammerAggregate(Guid id) : base(id)
         {
-            Apply<HomeCreated>(e => PersonId = e.PersonId);
+            Apply<PersonCreated>(e =>
+                                 {
+                                     Id = e.Id;
+                                     PersonId = e.PersonId;
+                                 });
             Apply<Slept>(e => SleepTimes++);
             Execute<GoSleepCommand>(c =>
                                     {
@@ -23,7 +27,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 
         public ProgrammerAggregate(Guid id, Guid personId) : this(id)
         {
-            Produce(new HomeCreated(id, personId));
+            Produce(new PersonCreated(id, personId));
         }
 
         public Guid PersonId { get; private set; }

@@ -7,7 +7,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.CommonDomain {
-    public class ConventionCommandRouter : TypeCatalog<Func<IAggregate, ICommand, Task>, ICommand>, IRouteCommands
+    public class ConventionCommandRouter : TypeCatalog<Func<IAggregate, ICommand, Task>, ICommand>
     {
         public ConventionCommandRouter(IAggregate aggregate)
         {

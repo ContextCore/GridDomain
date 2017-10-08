@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Common
         internal ProcessScenario(IProcessManagerCreatorCatalog<TState> ÒreatorCatalog)
         {
             ProcessManager—reatorCatalog = ÒreatorCatalog;
-            StateAggregate = Aggregate.Empty<ProcessStateAggregate<TState>>(Guid.NewGuid());
+            StateAggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<TState>>(Guid.NewGuid());
         }
 
         protected IProcessManagerCreatorCatalog<TState> ProcessManager—reatorCatalog { get; }
@@ -56,7 +56,7 @@ namespace GridDomain.Tests.Common
         public ProcessScenario<TProcess, TState> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
-            StateAggregate = Aggregate.Empty<ProcessStateAggregate<TState>>(Guid.NewGuid());
+            StateAggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<TState>>(Guid.NewGuid());
             StateAggregate.ApplyEvents(events);
             StateAggregate.MarkAllPesisted();
             InitialState = StateAggregate.State;
@@ -67,7 +67,7 @@ namespace GridDomain.Tests.Common
         {
             Condition.NotNull(()=>state);
             InitialState = state;
-            StateAggregate = Aggregate.Empty<ProcessStateAggregate<TState>>(state.Id);
+            StateAggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<TState>>(state.Id);
             StateAggregate.ApplyEvents(new ProcessManagerCreated<TState>(state, state.Id));
             return this;
         }

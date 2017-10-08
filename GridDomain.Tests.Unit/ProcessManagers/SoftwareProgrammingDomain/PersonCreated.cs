@@ -3,9 +3,9 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
-    public class HomeCreated : DomainEvent
+    public class PersonCreated : DomainEvent
     {
-        public HomeCreated(Guid sourceId, Guid personId) : base(sourceId)
+        public PersonCreated(Guid sourceId, Guid personId) : base(sourceId)
         {
             PersonId = personId;
         }

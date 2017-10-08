@@ -5,38 +5,20 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing {
-
-    public class CommandAggregate : Aggregate, IAggregateCommandsHandlerDescriptor
+    public abstract class CommandAggregate : Aggregate, IAggregateCommandsHandler<CommandAggregate>
     {
         protected CommandAggregate(Guid id) : base(id)
         {
             AggregateType = GetType();
-            _eventsRouter = new ConventionEventRouter(GetType());
         }
-
-        protected override IRouteEvents RegisteredRoutes => _eventsRouter;
-
-        protected void Apply<T>(Action<T> act) where T : DomainEvent
-        {
-            _eventsRouter.Add<T>((a,e) => act((T)e));
-        }
-
-        private readonly ConventionEventRouter _eventsRouter;
-        public readonly AggregateCommandsHandler<CommandAggregate> CommandsRouter = new AggregateCommandsHandler<CommandAggregate>();
-
-        protected void Execute<T>(Action<T> syncCommandAction) where T : ICommand
-        {
-            CommandsRouter.Map<T>(((c, a) => syncCommandAction(c)));
-        }
-        protected void Execute<T>(Func<T,Task> asyncCommandAction) where T : ICommand
-        {
-            CommandsRouter.Map<T>(((c, a) => asyncCommandAction(c)));
-        }
-        protected void Execute<T>(Func<T, CommandAggregate> aggregateCreator) where T : ICommand
-        {
-            CommandsRouter.Map<T>(aggregateCreator);
-        }
-        public IReadOnlyCollection<Type> RegisteredCommands => CommandsRouter.RegisteredCommands;
         public Type AggregateType { get; }
+        public abstract IReadOnlyCollection<Type> RegisteredCommands { get; }
+
+        protected abstract Task<IAggregate> Execute(ICommand cmd);
+
+        public async Task<CommandAggregate> ExecuteAsync(CommandAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
+        {
+            return (CommandAggregate) await Execute(command);
+        }
     }
 }

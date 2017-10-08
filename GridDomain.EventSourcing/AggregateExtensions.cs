@@ -10,7 +10,6 @@ namespace GridDomain.EventSourcing
                 aggregate.ApplyEvent(e);
 
             aggregate.ClearUncommitedEvents();
-            
         }
     }
 }

@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Common
             return (TAggregate)new AggregateFactory().Build(typeof(TAggregate), Guid.NewGuid(), null);
         }
 
-        private static IAggregateCommandsHandler<TAggregate> CreateCommandsHandler<TAggregate,THandler>() where THandler : IAggregateCommandsHandler<TAggregate>
+        private static IAggregateCommandsHandler<TAggregate> CreateCommandsHandler<TAggregate,THandler>() where THandler : IAggregateCommandsHandler<TAggregate> where TAggregate : IAggregate
         {
             var constructorInfo = typeof(THandler).GetConstructor(Type.EmptyTypes);
             if (constructorInfo == null)

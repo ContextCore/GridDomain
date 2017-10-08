@@ -8,7 +8,7 @@ using GridDomain.Common;
 
 namespace GridDomain.EventSourcing.CommonDomain
 {
-    public class ConventionEventRouter : TypeCatalog<Action<IAggregate,DomainEvent>,DomainEvent>, IRouteEvents
+    public sealed class ConventionEventRouter : TypeCatalog<Action<IAggregate,DomainEvent>,DomainEvent>
     {
         public ConventionEventRouter(Type aggregateType)
         {
@@ -57,7 +57,7 @@ namespace GridDomain.EventSourcing.CommonDomain
             }
         }
 
-        public virtual void Dispatch(IAggregate aggregate, DomainEvent eventMessage)
+        public void Dispatch(IAggregate aggregate, DomainEvent eventMessage)
         {
             if (eventMessage == null)
                 throw new ArgumentNullException(nameof(eventMessage));
