@@ -9,15 +9,11 @@ namespace GridDomain.Tests.Unit
 {
     public class NodeTestKit : TestKit
     {
-        protected readonly NodeConfiguration NodeConfig;
-
         protected NodeTestKit(ITestOutputHelper output, NodeTestFixture fixture) : base(fixture.SystemConfigFactory(), fixture.Name)
         {
             Fixture = fixture;
             Fixture.ActorSystemCreator = () => Sys;
             Fixture.Output = output;
-            NodeConfig = fixture.NodeConfig;
-
             Node = fixture.CreateNode().Result;
         }
 

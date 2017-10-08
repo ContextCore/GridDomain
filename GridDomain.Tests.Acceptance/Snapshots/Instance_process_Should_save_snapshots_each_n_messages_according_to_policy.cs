@@ -14,6 +14,7 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,9 +24,12 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     {
         public Instance_process_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
             : base(output,
-                   new SoftwareProgrammingProcessManagerFixture().UseSqlPersistence()
-                                                                 .InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
-                                                                 .IgnoreCommands()) { }
+                new SoftwareProgrammingProcessManagerFixture().UseSqlPersistence()
+                                                              .InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
+                                                              .IgnoreCommands())
+        {
+            Fixture.LogLevel = LogEventLevel.Verbose;
+        }
 
         [Fact]
         public async Task Given_default_policy()
@@ -59,7 +63,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Create()
                       .SendToProcessManagers(continueEventB);
 
-            await Task.Delay(3000);
+            await Node.KillProcessManager<SoftwareProgrammingProcess,SoftwareProgrammingState>(continueEventB.ProcessId);
 
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                   new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);

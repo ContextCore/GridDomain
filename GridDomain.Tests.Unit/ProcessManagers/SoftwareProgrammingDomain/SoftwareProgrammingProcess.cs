@@ -22,7 +22,6 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                                            var state = context.Instance;
                                            var domainEvent = context.Data;
                                            state.PersonId = domainEvent.SourceId;
-                                           Log.Verbose("Hello trace string");
                                            Dispatch(new MakeCoffeCommand(domainEvent.SourceId, state.CoffeeMachineId));
                                        })
                                  .TransitionTo(MakingCoffee),

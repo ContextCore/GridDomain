@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             await Node.KillAggregate<Balloon>(aggregateId);
 
             //sql server still need some time to commit deleted snapshots;
-            await Task.Delay(500);
+            await Task.Delay(3000);
 
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                   new BalloonAggregateFactory()).Load<Balloon>(aggregateId);

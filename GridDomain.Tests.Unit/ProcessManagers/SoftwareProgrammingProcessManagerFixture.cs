@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         protected readonly SoftwareProgrammingProcessDomainConfiguration ProcessConfiguration;
 
         public SoftwareProgrammingProcessManagerFixture(IDomainConfiguration config = null,
-                                              TimeSpan? timeout = default(TimeSpan?)) : base(config, timeout)
+                                                        TimeSpan? timeout = default(TimeSpan?)) : base(config, timeout)
         {
             ProcessConfiguration = new SoftwareProgrammingProcessDomainConfiguration(Logger);
             Add(new BalloonDomainConfiguration());

@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit
     {
         private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
-        private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
+
         public NodeTestFixture(IDomainConfiguration domainConfiguration = null, TimeSpan? defaultTimeout = null, ITestOutputHelper helper = null)
         {
             if (domainConfiguration != null)
@@ -98,11 +98,11 @@ namespace GridDomain.Tests.Unit
         {
             if (System == null)
                 System = ActorSystemCreator();
-
-            ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
-
-            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
-            logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
+            Log.Logger = Logger;
+            //ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
+            //
+            //var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
+            //logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
             return System;
         }
 
