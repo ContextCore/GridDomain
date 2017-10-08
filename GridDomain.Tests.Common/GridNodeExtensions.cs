@@ -92,7 +92,7 @@ namespace GridDomain.Tests.Common
 
             await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);
 
-            aggregate.PersistAll();
+            aggregate.MarkAllPesisted();
         }
 
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages)
@@ -160,10 +160,7 @@ namespace GridDomain.Tests.Common
 
         public static async Task<IActorRef> ResolveActor(this GridDomainNode node, string actorPath, TimeSpan? timeout = null)
         {
-            return
-                await
-                    node.System.ActorSelection("akka://LocalSystem/user/" + actorPath)
-                        .ResolveOne(timeout ?? node.DefaultTimeout);
+            return await node.System.ActorSelection("user/" + actorPath).ResolveOne(timeout ?? node.DefaultTimeout);
         }
     }
 }

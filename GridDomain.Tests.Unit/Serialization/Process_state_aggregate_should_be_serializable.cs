@@ -18,11 +18,11 @@ namespace GridDomain.Tests.Unit.Serialization
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
             processStateAggregate.ReceiveMessage(state, typeof(Object));
-            processStateAggregate.PersistAll();
+            processStateAggregate.MarkAllPesisted();
 
             var json = JsonConvert.SerializeObject(processStateAggregate);
             var restoredState = JsonConvert.DeserializeObject<ProcessStateAggregate<SoftwareProgrammingState>>(json);
-            restoredState.PersistAll();
+            restoredState.MarkAllPesisted();
 
             //CoffeMachineId_should_be_equal()
             Assert.Equal(processStateAggregate.State.CoffeeMachineId, restoredState.State.CoffeeMachineId);

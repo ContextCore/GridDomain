@@ -54,7 +54,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution
         {
             _balloonCommandHandler.ExecuteAsync(_aggregate,_writeTitleCommand,a =>
                                                                               {
-                                                                                  a.PersistAll();
+                                                                                  a.MarkAllPesisted();
                                                                                   return Task.CompletedTask;
                                                                               }).Wait();
             _counter.Increment();
@@ -70,7 +70,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution
         public void AggregateDirectThroughput()
         {
              _aggregate.WriteNewTitle(234);
-             _aggregate.PersistAll();
+             _aggregate.MarkAllPesisted();
              _counter.Increment();
         }
     }

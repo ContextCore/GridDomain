@@ -31,7 +31,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
         {
             var persistId = AggregateActorName.New<T>(aggr.Id).ToString();
             await _eventRepository.Save(persistId, ((IAggregate) aggr).GetUncommittedEvents().ToArray());
-            aggr.PersistAll();
+            aggr.MarkAllPesisted();
         }
 
         public async Task<T> LoadAggregate<T>(Guid id) where T : IAggregate

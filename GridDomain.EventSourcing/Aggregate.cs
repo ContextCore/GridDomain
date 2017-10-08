@@ -94,6 +94,7 @@ namespace GridDomain.EventSourcing
             ((IAggregate) this).ApplyEvent(e);
         }
 
+       
         protected async Task Emit(params DomainEvent[] events)
         {
             Produce(events);

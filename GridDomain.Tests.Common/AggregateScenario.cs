@@ -81,7 +81,7 @@ namespace GridDomain.Tests.Common
             {
                 Aggregate = (TAggregate)agr;
                 events.AddRange(((IAggregate)Aggregate).GetUncommittedEvents().ToList());
-                agr.PersistAll();
+                agr.MarkAllPesisted();
                 return Task.CompletedTask;
             }
 

@@ -139,7 +139,7 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         private void Clear()
         {
-            Log.Warning("Starting children clear");
+            Log.Debug("Starting children clear");
 
             var now = BusinessDateTime.UtcNow;
             var childsToTerminate =
@@ -150,7 +150,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             foreach (var childId in childsToTerminate)
                 ShutdownChild(childId);
 
-            Log.Warning("Removed {childsToTerminate} of {total} children",
+            Log.Debug("Removed {childsToTerminate} of {total} children",
                       childsToTerminate.Length,
                       Children.Count);
         }

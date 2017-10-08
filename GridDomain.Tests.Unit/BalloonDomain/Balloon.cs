@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                                                     + typeof(BalloonSnapshot).Name);
 
             var aggregate = new Balloon(snapshot.Id, snapshot.Value);
-            aggregate.ClearUncommitedEvents();
+            aggregate.MarkAllPesisted();
             aggregate.Version = snapshot.Version;
             return aggregate;
         }

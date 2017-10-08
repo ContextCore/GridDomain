@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.Serialization
         {
             _aggregate = new Balloon(Guid.NewGuid(), "test");
             _aggregate.WriteNewTitle(10);
-            _aggregate.PersistAll();
+            _aggregate.MarkAllPesisted();
 
             var jsonString = JsonConvert.SerializeObject(_aggregate, DomainSerializer.GetDefaultSettings());
             _restoredAggregate = JsonConvert.DeserializeObject<Balloon>(jsonString,
