@@ -7,7 +7,10 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
 {
     public class AkkaSqlPersistenceContext : DbContext
     {
-        public AkkaSqlPersistenceContext(DbContextOptions options) : base(options) {}
+        public AkkaSqlPersistenceContext(DbContextOptions options) : base(options)
+        {
+            Database.EnsureCreated();
+        }
 
         public DbSet<JournalItem> Journal { get; set; } // JournalEntry
         public DbSet<Metadata> Metadatas { get; set; } // Metadata
