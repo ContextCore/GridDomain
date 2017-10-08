@@ -64,7 +64,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .SendToProcessManagers(continueEventB);
 
             await Node.KillProcessManager<SoftwareProgrammingProcess,SoftwareProgrammingState>(continueEventB.ProcessId);
-
+            await Task.Delay(1000);
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                   new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
