@@ -18,7 +18,9 @@ namespace GridDomain.Common
                 //for cases when inner exceptions were lost due to hyperion serializer
                 return aggregateException.InnerException ?? aggregateException;
             }
-
+            //for cases when inner exceptions were lost due to hyperion serializer
+            if (aggregateException.InnerException != null)
+                return aggregateException.InnerException;
 
             return aggregateException.InnerExceptions.First().UnwrapSingle();
         }

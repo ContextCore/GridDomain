@@ -54,6 +54,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private Task AggregatePersistence(Aggregate agr)
         {
             ExecutionContext.ProducedState = agr;
+            if (!agr.HasUncommitedEvents) return Task.CompletedTask;
             return _self.Ask<EventsPersisted>(((IAggregate) agr).GetUncommittedEvents());
         }
 
@@ -78,7 +79,8 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                                        AggregatePersistence)
                                                                          .ContinueWith(t =>
                                                                                        {
-                                                                                           if (t.IsFaulted) throw t.Exception;
+                                                                                           if (t.IsFaulted)
+                                                                                               throw new CommandExecutionFailedException(ExecutionContext.Command,t.Exception.UnwrapSingle());
                                                                                            return CommandExecuted.Instance;
                                                                                        })
                                                                          .PipeTo(Self);

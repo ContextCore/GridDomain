@@ -78,7 +78,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         private IActorRef CreateEventsPersistActor(string id)
         {
             var props = Props.Create(() => new EventsRepositoryActor(id));
-            var persistActor = _system.ActorOf(props, "Test_events_persist_actor_" + Guid.NewGuid());
+            var persistActor = _system.ActorOf(props, "Events_persist_actor_" + Guid.NewGuid());
             return persistActor;
         }
     }

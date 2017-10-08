@@ -18,7 +18,10 @@ namespace GridDomain.EventSourcing {
 
         public async Task<CommandAggregate> ExecuteAsync(CommandAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
         {
-            return (CommandAggregate) await Execute(command);
+            aggregate = (CommandAggregate) await Execute(command);
+            if (aggregate.HasUncommitedEvents)
+                await persistenceDelegate(aggregate);
+            return aggregate;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Config
         public void Register(IDomainBuilder builder)
         {
             builder.RegisterProcessManager(SoftwareProgrammingProcessManagerDependenciesFactory);
+            new SoftwareDomainConfiguration().Register(builder);
         }
     }
 }

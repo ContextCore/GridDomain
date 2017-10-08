@@ -1,16 +1,27 @@
 using System;
 using System.Reflection;
+using Common.Logging;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Serializers;
+using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tools;
 using Newtonsoft.Json;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Serialization
 {
     public class Process_state_aggregate_should_be_serializable
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public Process_state_aggregate_should_be_serializable(ITestOutputHelper helper)
+        {
+            _testOutputHelper = helper;
+        }
+
         [Fact]
         public void Test()
         {
@@ -20,8 +31,14 @@ namespace GridDomain.Tests.Unit.Serialization
             processStateAggregate.ReceiveMessage(state, typeof(Object));
             processStateAggregate.MarkAllPesisted();
 
-            var json = JsonConvert.SerializeObject(processStateAggregate);
-            var restoredState = JsonConvert.DeserializeObject<ProcessStateAggregate<SoftwareProgrammingState>>(json);
+
+            var jsonSerializerSettings = DomainSerializer.GetDefaultSettings();
+            jsonSerializerSettings.TraceWriter = new XUnitTraceWriter(_testOutputHelper);
+
+            var json = JsonConvert.SerializeObject(processStateAggregate, jsonSerializerSettings);
+
+            var restoredState = JsonConvert.DeserializeObject<ProcessStateAggregate<SoftwareProgrammingState>>(json,jsonSerializerSettings);
+
             restoredState.MarkAllPesisted();
 
             //CoffeMachineId_should_be_equal()

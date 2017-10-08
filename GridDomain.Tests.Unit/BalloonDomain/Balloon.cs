@@ -11,9 +11,9 @@ namespace GridDomain.Tests.Unit.BalloonDomain
     {
         private Balloon(Guid id) : base(id) {}
 
-        public Balloon(Guid id, string value) : this(id)
+        public Balloon(Guid id, string title) : this(id)
         {
-            Produce(new BalloonCreated(value, id));
+            Produce(new BalloonCreated(title, id));
         }
 
         public string Title { get; private set; }
@@ -35,6 +35,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         {
             return new BalloonSnapshot(Id, Version, Title);
         }
+
+       
 
         public void WriteNewTitle(int number)
         {
@@ -83,9 +85,9 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                                     }));
         }
 
-       public override void ApplyEvent(DomainEvent @event)
-       {
-           switch (@event){
+        protected override void OnAppyEvent(DomainEvent evt)
+        {
+           switch (evt){
                case BalloonCreated c:
                {
                    Id = c.SourceId;

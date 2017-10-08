@@ -10,7 +10,7 @@ using GridDomain.EventSourcing.CommonDomain;
 namespace GridDomain.EventSourcing
 {
 
-    public class Aggregate : IAggregate,
+    public abstract class Aggregate : IAggregate,
                              IMemento,
                              IEquatable<IAggregate>
     {
@@ -47,7 +47,6 @@ namespace GridDomain.EventSourcing
         {
             return this;
         }
-        //TODO: think how to reduce pain from static cache 
 
         public Guid Id { get; protected set; }
         public int Version { get; protected set; }
@@ -57,10 +56,13 @@ namespace GridDomain.EventSourcing
             PersistenceProvider = caller;
         }
 
-        public virtual void ApplyEvent(DomainEvent @event)
+        public void ApplyEvent(DomainEvent @event)
         {
+            OnAppyEvent(@event);
             Version++;
         }
+
+        protected abstract void OnAppyEvent(DomainEvent evt);
 
         IReadOnlyCollection<DomainEvent> IAggregate.GetUncommittedEvents()
         {

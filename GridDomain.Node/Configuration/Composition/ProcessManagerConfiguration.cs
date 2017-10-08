@@ -51,7 +51,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         private void RegisterStateAggregate<TStateActorType>(ContainerBuilder container)
         {
-            container.Register(new AggregateConfiguration<TStateActorType, ProcessStateAggregate<TState>>(new ProcessStateCommandHandler<TState>(),
+            container.Register(new AggregateConfiguration<TStateActorType, ProcessStateAggregate<TState>>(CommandAggregateHandler.New<ProcessStateAggregate<TState>>(),
                                                                                                               _snapShotsPolicy,
                                                                                                               _aggregateFactory,
                                                                                                               _persistentChildsRecycleConfiguration));

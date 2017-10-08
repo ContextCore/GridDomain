@@ -19,15 +19,7 @@ namespace GridDomain.EventSourcing
 
         public Task<TAggregate> ExecuteAsync(TAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
         {
-            try
-            {
-                return Get(command).Invoke(aggregate, command, persistenceDelegate);
-            }
-            catch (Exception ex)
-            {
-               throw new CommandExecutionFailedException(command, ex);
-            }
-
+            return Get(command).Invoke(aggregate, command, persistenceDelegate);
         }
 
         public override CommandExecutionDelegate<TAggregate> Get(ICommand command)

@@ -13,6 +13,12 @@ namespace GridDomain.Configuration {
             foreach(var m in maps)
                 m.Register(builder);
         }
+
+        public static void RegisterAggregate<TCommandAggregate>(this IDomainBuilder builder) where TCommandAggregate:CommandAggregate
+        {
+            builder.RegisterAggregate(DefaultAggregateDependencyFactory.ForCommandAggregate<TCommandAggregate>());
+        }
+
         public static void Register(this IDomainBuilder builder, IEnumerable<IDomainConfiguration> maps)
         {
             Register(builder, maps.ToArray());

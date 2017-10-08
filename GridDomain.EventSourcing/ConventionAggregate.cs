@@ -20,10 +20,9 @@ namespace GridDomain.EventSourcing {
             return await _commandsRouter.ExecuteAsync(this, cmd, PersistenceProvider);
         }
         
-        public override void ApplyEvent(DomainEvent evt)
+        protected override void OnAppyEvent(DomainEvent evt)
         {
             _eventsRouter.Dispatch(this, evt);
-            base.ApplyEvent(evt);
         }
 
         private readonly ConventionEventRouter _eventsRouter;
@@ -46,5 +45,6 @@ namespace GridDomain.EventSourcing {
         {
             _eventsRouter.Add<T>((a, e) => act((T)e));
         }
+
     }
 }

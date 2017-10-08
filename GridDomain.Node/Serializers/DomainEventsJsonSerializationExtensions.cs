@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Serializers
 {
@@ -13,6 +14,7 @@ namespace GridDomain.Node.Serializers
                 throw new ArgumentNullException(nameof(system));
 
             var ext =(DomainEventsJsonSerializationExtension)system.RegisterExtension(DomainEventsJsonSerializationExtensionProvider.Provider);
+
             ext.Converters = eventAdapters.JsonConverters;
             ext.EventsAdapterCatalog = eventAdapters;
             return ext;

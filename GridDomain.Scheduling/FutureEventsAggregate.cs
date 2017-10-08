@@ -7,7 +7,7 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Scheduling
 {
-    public class FutureEventsAggregate : Aggregate
+    public class FutureEventsAggregate : ConventionAggregate
     {
         protected FutureEventsAggregate(Guid id):base(id)
         {

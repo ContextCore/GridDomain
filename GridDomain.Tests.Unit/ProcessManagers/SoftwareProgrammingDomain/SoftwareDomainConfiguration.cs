@@ -6,7 +6,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain {
     {
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(DefaultAggregateDependencyFactory.ForCommandAggregate<ProgrammerAggregate>());
+            builder.RegisterAggregate<ProgrammerAggregate>();
+            builder.RegisterAggregate<CoffeMachineAggregate>();
         }
     }
 }

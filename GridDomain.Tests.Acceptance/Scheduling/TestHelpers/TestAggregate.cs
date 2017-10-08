@@ -5,7 +5,7 @@ using GridDomain.Scheduling.Akka.Messages;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class TestAggregate : Aggregate
+    public class TestAggregate : ConventionAggregate
     {
 
         private TestAggregate(Guid id) : base(id) {}

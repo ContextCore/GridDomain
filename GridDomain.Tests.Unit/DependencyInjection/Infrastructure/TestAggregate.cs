@@ -3,7 +3,7 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
-    public class TestAggregate : Aggregate
+    public class TestAggregate : ConventionAggregate
     {
         public string Value;
 

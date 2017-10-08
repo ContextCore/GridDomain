@@ -1,14 +1,14 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace GridDomain.EventSourcing
 {
+
+
     public class DomainSerializer
     {
         public DomainSerializer(JsonSerializerSettings settings = null)
@@ -27,7 +27,7 @@ namespace GridDomain.EventSourcing
                        TypeNameHandling = TypeNameHandling.All,
                        TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                        CheckAdditionalContent = false,
-                       ContractResolver = new PrivateSetterContractResolver(),
+                       ContractResolver = new DomainContractResolver(),
                        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
                    };
         }
@@ -65,28 +65,6 @@ namespace GridDomain.EventSourcing
                     throw new SerializationException("json string: " + jsonString);
 
                 return deserializeObject;
-            }
-        }
-
-        //taken from https://github.com/danielwertheim/jsonnet-privatesetterscontractresolvers
-        public class PrivateSetterContractResolver : DefaultContractResolver
-        {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-            {
-                var jProperty = base.CreateProperty(member, memberSerialization);
-                if (jProperty.Writable)
-                    return jProperty;
-
-                jProperty.Writable = IsPropertyWithSetter(member);
-
-                return jProperty;
-            }
-
-            private static bool IsPropertyWithSetter(MemberInfo member)
-            {
-                var property = member as PropertyInfo;
-
-                return property?.GetSetMethod(true) != null;
             }
         }
     }

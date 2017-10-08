@@ -87,7 +87,6 @@ namespace GridDomain.Tests.Common
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, TAggregate aggregate) where TAggregate : Aggregate
         {
             var domainEvents = ((IAggregate) aggregate).GetUncommittedEvents()
-                                                       .Cast<DomainEvent>()
                                                        .ToArray();
 
             await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);

@@ -20,9 +20,9 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
             Produce(new BalloonTitleChanged(newTitle, Id));
         }
 
-        public override void ApplyEvent(DomainEvent @event)
+        protected override void OnAppyEvent(DomainEvent evt)
         {
-            switch (@event)
+            switch(evt)
             {
                 case BalloonTitleChanged e:
                     Title = e.Value;
@@ -32,7 +32,6 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
                     Title = e.Value;
                     break;
             }
-            base.ApplyEvent(@event);
         }
     }
 }
