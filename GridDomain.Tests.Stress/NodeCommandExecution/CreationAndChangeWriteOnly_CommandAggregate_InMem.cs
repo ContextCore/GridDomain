@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
             _testOutputHelper = output;
         }
-        protected override INodeScenario Scenario { get; } = new HomeCreationAndChangeScenario(1000, 100);
+        protected override INodeScenario Scenario { get; } = new HomeCreationAndChangeScenario(100, 100);
         internal override IGridDomainNode CreateNode()
         {
             var nodeTestFixture = new NodeTestFixture(new SoftwareDomainConfiguration(), null, _testOutputHelper) {LogLevel = LogEventLevel.Warning};

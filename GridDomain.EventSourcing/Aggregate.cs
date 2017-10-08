@@ -65,7 +65,7 @@ namespace GridDomain.EventSourcing
         public Guid Id { get; protected set; }
         public int Version { get; protected set; }
 
-        void IAggregate.ApplyEvent(DomainEvent @event)
+        public virtual void ApplyEvent(DomainEvent @event)
         {
             RegisteredRoutes.Dispatch(this,@event);
             Version++;

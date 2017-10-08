@@ -83,16 +83,23 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                                     }));
         }
 
-        private void Apply(BalloonCreated e)
-        {
-            Id = e.SourceId;
-            Title = e.Value;
-        }
-
-        private void Apply(BalloonTitleChanged e)
-        {
-            Title = e.Value;
-        }
+       public override void ApplyEvent(DomainEvent @event)
+       {
+           switch (@event){
+               case BalloonCreated c:
+               {
+                   Id = c.SourceId;
+                   Title = c.Value;
+               }
+               break;
+               case BalloonTitleChanged c:
+               {
+                   Title = c.Value;
+               }
+               break;
+           }
+           Version++;
+       }
 
         public void Blow()
         {
