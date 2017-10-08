@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
@@ -38,7 +39,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ConventionCommands
         {
             var person = AggregateFactory.BuildEmpty<ProgrammerAggregate>();
             var personCreated = new PersonCreated(Guid.NewGuid(), Guid.NewGuid());
-            person.ApplyEvent(personCreated);
+            ((IAggregate)person).ApplyEvent(personCreated);
 
             Assert.Equal(personCreated.PersonId,person.PersonId);
         }

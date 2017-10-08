@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -54,7 +53,7 @@ namespace GridDomain.Tests.Common
         public DomainEvent[] ProducedEvents { get; private set; } = {};
         public DomainEvent[] GivenEvents { get; private set; } = {};
         public Command[] GivenCommands { get; private set; } = {};
-
+        private readonly InMemoryEventStore _eventStore = new InMemoryEventStore();
         public AggregateScenario<TAggregate> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
@@ -76,23 +75,15 @@ namespace GridDomain.Tests.Common
 
         public async Task<AggregateScenario<TAggregate>> Run()
         {
-            var events = new List<DomainEvent>();
-            Task Persistence(Aggregate agr)
-            {
-                Aggregate = (TAggregate)agr;
-                events.AddRange(((IAggregate)Aggregate).GetUncommittedEvents().ToList());
-                agr.MarkAllPesisted();
-                return Task.CompletedTask;
-            }
-
             //When
             foreach (var cmd in GivenCommands)
             {
-               await CommandsHandler.ExecuteAsync(Aggregate, cmd, Persistence);
+               await CommandsHandler.ExecuteAsync(Aggregate, cmd, _eventStore);
             }
 
             //Then
-            ProducedEvents = events.ToArray();
+            ProducedEvents = _eventStore.Events.ToArray();
+            _eventStore.Clear();
 
             return this;
         }

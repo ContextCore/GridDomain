@@ -11,8 +11,8 @@ namespace GridDomain.EventSourcing
 {
 
     public abstract class Aggregate : IAggregate,
-                             IMemento,
-                             IEquatable<IAggregate>
+                                      IMemento,
+                                      IEquatable<IAggregate>
     {
 
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
@@ -22,7 +22,7 @@ namespace GridDomain.EventSourcing
             _uncommittedEvents.Clear();
         }
 
-        protected PersistenceDelegate PersistenceProvider;
+        protected IEventStore PersistenceProvider;
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
        
@@ -51,12 +51,12 @@ namespace GridDomain.EventSourcing
         public Guid Id { get; protected set; }
         public int Version { get; protected set; }
 
-        public void SetPersistProvider(PersistenceDelegate caller)
+        public void InitEventStore(IEventStore store)
         {
-            PersistenceProvider = caller;
+            PersistenceProvider = store;
         }
 
-        public void ApplyEvent(DomainEvent @event)
+        void IAggregate.ApplyEvent(DomainEvent @event)
         {
             OnAppyEvent(@event);
             Version++;
@@ -79,7 +79,7 @@ namespace GridDomain.EventSourcing
             await Emit(await evtTask);
         }
 
-        public void MarkPersisted(DomainEvent e)
+        public void Commit(DomainEvent e)
         {
             if (!_uncommittedEvents.Remove(e))
                 throw new EventIsNotBelongingToAggregateException();
@@ -91,7 +91,9 @@ namespace GridDomain.EventSourcing
         protected async Task Emit(params DomainEvent[] events)
         {
             Produce(events);
-            await PersistenceProvider(this);
+            await PersistenceProvider.Persist(this);
+            foreach(var e in events)
+                ((IAggregate)this).ApplyEvent(e);
         }
 
         protected void Produce(params DomainEvent[] events)

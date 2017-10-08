@@ -219,6 +219,7 @@
     <Compile Include="AggregateCommandsHandlerExecution\ConventionAggregateBench.cs" />
     <Compile Include="AggregateCommandsHandlerExecution\CustomAggregateWithCustomHandlerBench.cs" />
     <Compile Include="AggregateCommandsHandlerExecution\CustomBenchmarkBalloonAggregateCommandsHandler.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\FakeEventStore.cs" />
     <Compile Include="AnemicEF\AnemicModelEFCOntextInMem.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
     <Compile Include="AggregateActor\AggregateActorPerfInMem.cs" />

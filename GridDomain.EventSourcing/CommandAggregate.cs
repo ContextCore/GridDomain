@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
@@ -16,11 +17,10 @@ namespace GridDomain.EventSourcing {
 
         protected abstract Task<IAggregate> Execute(ICommand cmd);
 
-        public async Task<CommandAggregate> ExecuteAsync(CommandAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
+        public async Task<CommandAggregate> ExecuteAsync(CommandAggregate aggregate, ICommand command, IEventStore eventStore)
         {
             aggregate = (CommandAggregate) await Execute(command);
-            if (aggregate.HasUncommitedEvents)
-                await persistenceDelegate(aggregate);
+            await eventStore.Persist(aggregate);
             return aggregate;
         }
     }

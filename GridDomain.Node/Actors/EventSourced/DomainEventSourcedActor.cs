@@ -16,7 +16,7 @@ using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
-    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : Aggregate
+    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : IAggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
@@ -39,7 +39,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
             DefaultBehavior();
 
-            Recover<DomainEvent>(e => { ((IAggregate) State).ApplyEvent(e); });
+            Recover<DomainEvent>(e => { State.ApplyEvent(e); });
 
             Recover<SnapshotOffer>(offer =>
                                    {

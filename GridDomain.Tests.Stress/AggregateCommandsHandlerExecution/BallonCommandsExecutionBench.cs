@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
@@ -32,6 +30,8 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         }
 
         private ICommand[] _commndsToExecute;
+        private FakeEventStore _fakeEventStore;
+
         protected BallonCommandsExecutionBench(ITestOutputHelper output)
         {
             Trace.Listeners.Clear();
@@ -43,6 +43,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
             _commndsToExecute = CreateCommandPlan(1000, 1000).ToArray();
+            _fakeEventStore = new FakeEventStore();
         }
 
         [NBenchFact]
@@ -56,20 +57,16 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         {
             T aggregate = AggregateFactory.BuildEmpty<T>();
 
-            Task PersistenceDelegate(Aggregate a)
-            {
-                a.MarkAllPesisted();
-                return Task.CompletedTask;
-            }
-            aggregate.SetPersistProvider(PersistenceDelegate);
+            
+            aggregate.InitEventStore(_fakeEventStore);
 
             foreach (var cmd in _commndsToExecute)
             {
                
 
                 aggregate = CommandsHandler.ExecuteAsync(aggregate,
-                                               cmd,
-                                               PersistenceDelegate)
+                                                         cmd,
+                                                         _fakeEventStore)
                                            .Result;
                 _counter.Increment();
             }

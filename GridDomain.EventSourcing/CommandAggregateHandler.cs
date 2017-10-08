@@ -5,7 +5,7 @@ namespace GridDomain.EventSourcing {
     {
         public static IAggregateCommandsHandler<T> New<T>() where T : CommandAggregate
         {
-            return new ConventionAggregateHandler<T>(AggregateFactory.BuildEmpty<T>((Guid?) Guid.Empty));
+            return new ConventionAggregateHandler<T>(AggregateFactory.BuildEmpty<T>(Guid.Empty));
         }
     }
 }

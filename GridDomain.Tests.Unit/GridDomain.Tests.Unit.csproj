@@ -390,6 +390,8 @@
     <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
     <Compile Include="BalloonDomain\IncreaseTitleCommand.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\CoffeMachineAggregate.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\CoffeMachineCreated.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Commands\CreatePersonCommand.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessManagerDependenciesFactory.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessDomainConfiguration.cs" />

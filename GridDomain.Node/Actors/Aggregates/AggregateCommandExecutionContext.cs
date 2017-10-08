@@ -11,7 +11,7 @@ using GridDomain.Node.Configuration.Composition;
 namespace GridDomain.Node.Actors.Aggregates {
     class AggregateCommandExecutionContext
     {
-        public Aggregate ProducedState;
+        public IAggregate ProducedState;
         public ICommand Command;
         public IMessageMetadata CommandMetadata;
         public IActorRef CommandSender;

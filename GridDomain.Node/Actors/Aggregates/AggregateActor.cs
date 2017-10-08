@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
+using System.Threading;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.Aggregates
     ///     Name should be parse by AggregateActorName
     /// </summary>
     /// <typeparam name="TAggregate"></typeparam>
-    public class AggregateActor<TAggregate> : DomainEventSourcedActor<TAggregate> where TAggregate : EventSourcing.Aggregate
+    public class AggregateActor<TAggregate> : DomainEventSourcedActor<TAggregate> where TAggregate : class,IAggregate
     {
         private readonly IActorRef _customHandlersActor;
         private readonly ProcessEntry _domainEventProcessEntry;
@@ -32,7 +32,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly IPublisher _publisher;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
-        private readonly IActorRef _self;
+        private PersistenceActorEventStore<EventsPersisted> EventStore;
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
@@ -47,16 +47,9 @@ namespace GridDomain.Node.Actors.Aggregates
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.CommandRaisedAnError);
             _commandCompletedProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.ExecutedCommand);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
-            _self = Self;
-            State.SetPersistProvider(AggregatePersistence);
+            EventStore = new PersistenceActorEventStore<EventsPersisted>(Self,ExecutionContext); 
         }
-
-        private Task AggregatePersistence(Aggregate agr)
-        {
-            ExecutionContext.ProducedState = agr;
-            if (!agr.HasUncommitedEvents) return Task.CompletedTask;
-            return _self.Ask<EventsPersisted>(((IAggregate) agr).GetUncommittedEvents());
-        }
+        
 
         protected virtual void AwaitingCommandBehavior()
         {
@@ -76,11 +69,11 @@ namespace GridDomain.Node.Actors.Aggregates
                                             
                                                 _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                        cmd,
-                                                                                       AggregatePersistence)
+                                                                                       EventStore)
                                                                          .ContinueWith(t =>
                                                                                        {
                                                                                            if (t.IsFaulted)
-                                                                                               throw new CommandExecutionFailedException(ExecutionContext.Command,t.Exception.UnwrapSingle());
+                                                                                               throw new CommandExecutionFailedException(ExecutionContext.Command, t.Exception.UnwrapSingle());
                                                                                            return CommandExecuted.Instance;
                                                                                        })
                                                                          .PipeTo(Self);
@@ -112,7 +105,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                   {
                                                       try
                                                       {
-                                                          ExecutionContext.ProducedState.MarkPersisted(persistedEvent);
+                                                          ExecutionContext.ProducedState.Commit(persistedEvent);
                                                       }
                                                       catch (Exception ex)
                                                       {

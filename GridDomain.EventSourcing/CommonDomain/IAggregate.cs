@@ -8,8 +8,11 @@ namespace GridDomain.EventSourcing.CommonDomain
     {
         Guid Id { get; }
         void ApplyEvent(DomainEvent @event);
-        IReadOnlyCollection<DomainEvent> GetUncommittedEvents();
+        void Commit(DomainEvent e);
+        bool HasUncommitedEvents { get; }
         void ClearUncommitedEvents();
+        IReadOnlyCollection<DomainEvent> GetUncommittedEvents();
+        void InitEventStore(IEventStore store);
         IMemento GetSnapshot();
     }
 }

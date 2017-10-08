@@ -23,19 +23,19 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
 
             var futureEventA = aggregate.GetEvent<FutureEventScheduledEvent>();
-            aggregate.MarkPersisted(futureEventA);
+            aggregate.Commit(futureEventA);
 
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "test value E");
 
             var futureEventOutOfCriteria = aggregate.GetEvent<FutureEventScheduledEvent>();
-            aggregate.MarkPersisted(futureEventOutOfCriteria);
+            aggregate.Commit(futureEventOutOfCriteria);
 
             aggregate.CancelFutureEvents(testValue);
 
             // Cancelation_event_is_produced()
             var cancelEvent = aggregate.GetEvent<FutureEventCanceledEvent>();
             Assert.Equal(futureEventA.Id, cancelEvent.FutureEventId);
-            aggregate.MarkPersisted(cancelEvent);
+            aggregate.Commit(cancelEvent);
             //Only_predicate_satisfying_events_are_canceled()`
             var cancelEvents = aggregate.GetEvents<FutureEventCanceledEvent>();
             Assert.True(cancelEvents.All(e => e.FutureEventId != futureEventOutOfCriteria.Id));
