@@ -98,11 +98,11 @@ namespace GridDomain.Tests.Unit
         {
             if (System == null)
                 System = ActorSystemCreator();
-            Log.Logger = Logger;
-            //ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
-            //
-            //var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
-            //logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
+           // Log.Logger = Logger;
+
+            ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
+            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
+            logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
             return System;
         }
 

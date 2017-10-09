@@ -51,13 +51,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == _command.Id;
         }
 
-        ICommandConditionBuilder ICommandConditionBuilder.And<TMsg>(Predicate<TMsg> filter = null)
+        ICommandConditionBuilder ICommandConditionBuilder.And<TMsg>(Predicate<TMsg> filter)
         {
             base.And(filter);
             return this;
         }
 
-        ICommandConditionBuilder ICommandConditionBuilder.Or<TMsg>(Predicate<TMsg> filter = null)
+        ICommandConditionBuilder ICommandConditionBuilder.Or<TMsg>(Predicate<TMsg> filter)
         {
             base.Or(filter);
             return this;

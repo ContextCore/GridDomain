@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                                         TimeSpan? timeout = default(TimeSpan?)) : base(config, timeout)
         {
             ProcessConfiguration = new SoftwareProgrammingProcessDomainConfiguration(Logger);
-            Add(new BalloonDomainConfiguration());
+        //    Add(new BalloonDomainConfiguration());
             Add(ProcessConfiguration);
 
         }

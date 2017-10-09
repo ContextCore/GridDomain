@@ -82,7 +82,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
 
 
         [Fact]
-        public async Task Console_can_wait_for_command_produced_events()
+        public void Console_can_wait_for_command_produced_events()
         {
             var isolatedClient = new Isolated<ClientLaunch_wait_for_command_produced_events>();
             Assert.True(isolatedClient.Value.Success);
@@ -108,12 +108,11 @@ namespace GridDomain.Tests.Acceptance.GridConsole
 
 
         [Fact]
-        public async Task Console_can_execute_commands()
+        public void Console_can_execute_commands()
         {
             var isolatedClient = new Isolated<Isolated_Console_can_execute_commands>();
             Assert.True(isolatedClient.Value.Success);
             isolatedClient.Dispose();
-
         }
 
         [Fact]
@@ -136,10 +135,10 @@ namespace GridDomain.Tests.Acceptance.GridConsole
                 Success = true;
             }
 
-            public bool Success { get; private set; }
+            public bool Success { get; }
         }
         [Fact]
-        public async Task Client_can_connect()
+        public void Client_can_connect()
         {
             var isolatedClient = new Isolated<Isolated_Client_can_connect>();
             Assert.True(isolatedClient.Value.Success);

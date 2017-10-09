@@ -29,6 +29,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                               .IgnoreCommands())
         {
             Fixture.LogLevel = LogEventLevel.Verbose;
+            
         }
 
         [Fact]
