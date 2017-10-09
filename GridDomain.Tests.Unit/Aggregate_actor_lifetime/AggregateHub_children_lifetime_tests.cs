@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
     public class AggregateHub_children_lifetime_tests : PersistentHubChildrenLifetimeTest
     {
         public AggregateHub_children_lifetime_tests(ITestOutputHelper output)
-            : base(output, new PersistentHubFixture(new AggregatePersistedHubInfrastructure())) {}
+            : base(new PersistentHubFixture(output,new AggregatePersistedHubInfrastructure())) {}
 
         private class AggregatePersistedHubInfrastructure : IPersistentActorTestsInfrastructure
         {

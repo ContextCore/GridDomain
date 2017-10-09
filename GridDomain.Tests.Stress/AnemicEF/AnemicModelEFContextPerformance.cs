@@ -27,9 +27,10 @@ namespace GridDomain.Tests.Stress.AnemicEF {
                                     .SelectMany(n => CreateAggregatePlan(20))
                                     .ToArray();
         }
-
         [PerfSetup]
+#pragma warning disable xUnit1013 // // It is nbench test
         public virtual void Setup(BenchmarkContext context)
+#pragma warning restore xUnit1013 // Public method should be marked as test
         {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }

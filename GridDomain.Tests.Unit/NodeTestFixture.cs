@@ -7,7 +7,7 @@ using Akka.Event;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Node;
-using GridDomain.Node.Actors.Serilog;
+using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling.Quartz;
@@ -26,20 +26,23 @@ namespace GridDomain.Tests.Unit
         private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
 
-        public NodeTestFixture(IDomainConfiguration domainConfiguration = null, TimeSpan? defaultTimeout = null, ITestOutputHelper helper = null)
+        public NodeTestFixture(ITestOutputHelper helper, IDomainConfiguration domainConfiguration) : this(helper, new[] {domainConfiguration})
         {
-            if (domainConfiguration != null)
-                Add(domainConfiguration);
+            
+        }
 
+        public NodeTestFixture(ITestOutputHelper helper, IDomainConfiguration[] domainConfiguration = null, TimeSpan? defaultTimeout = null)
+        {
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             Output = helper;
             SystemConfigFactory = () => NodeConfig.ToDebugStandAloneInMemorySystemConfig();
             ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
-          
-        }
-        public NodeTestFixture(params IDomainConfiguration[] domainConfiguration)
-        {
-            foreach (var c in domainConfiguration)
+            Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
+            Serilog.Log.Logger = Logger;
+            if (domainConfiguration == null)
+                return;
+
+            foreach(var c in domainConfiguration)
                 Add(c);
         }
         public GridDomainNode Node { get; private set; }
@@ -58,7 +61,7 @@ namespace GridDomain.Tests.Unit
 #endif      
         internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
 
-        public ITestOutputHelper Output { get; set; }
+        public ITestOutputHelper Output { get; }
         public LogEventLevel LogLevel { get; set; } =
 #if DEBUG 
             LogEventLevel.Verbose;
@@ -80,7 +83,7 @@ namespace GridDomain.Tests.Unit
 
         public virtual async Task<GridDomainNode> CreateNode()
         {
-            Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
+        
 
 
             OnNodePreparingEvent.Invoke(this, this);
@@ -96,14 +99,13 @@ namespace GridDomain.Tests.Unit
         public Func<ActorSystem> ActorSystemCreator { get; set; }
         private ActorSystem CreateSystem()
         {
-            if (System == null)
-                System = ActorSystemCreator();
-           // Log.Logger = Logger;
+            return System ?? (System = ActorSystemCreator());
+            // Log.Logger = Logger;
 
-            ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
-            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
-            logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
-            return System;
+            //ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
+
+           // var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
+           // logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
         }
 
         public event EventHandler<GridDomainNode>  OnNodeStartedEvent   = delegate { };

@@ -18,11 +18,18 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Transport;
 using GridDomain.Transport.Extension;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 {
     public class Actors_should_fill_process_id_for_produced_faults : TestKit
     {
+
+        public Actors_should_fill_process_id_for_produced_faults(ITestOutputHelper output):base("",output)
+        {
+            
+        }
+
         [Theory]
         [InlineData("test")] //, Description = "unplanned exception from message processor")]
         [InlineData("10")] //, Description = "planned exception from message processor")]

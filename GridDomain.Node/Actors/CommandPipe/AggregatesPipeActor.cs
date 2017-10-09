@@ -6,7 +6,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
-using GridDomain.Node.Actors.Serilog;
+using GridDomain.Node.Actors.Logging;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {

@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Acceptance.Projection
     public class BalloonEventsShouldBeProjected : NodeTestKit
     {
         public BalloonEventsShouldBeProjected(ITestOutputHelper output) :
-            base(output, new BalloonWithProjectionFixture(new DbContextOptionsBuilder<BalloonContext>()
+            base(new BalloonWithProjectionFixture(output,new DbContextOptionsBuilder<BalloonContext>()
                                                                 .UseSqlServer(ConnectionStrings.AutoTestDb)
                                                                 .Options).UseSqlPersistence()) {}
 

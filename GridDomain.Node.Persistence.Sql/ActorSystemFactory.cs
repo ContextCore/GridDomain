@@ -35,7 +35,7 @@ namespace GridDomain.Node.Persistence.Sql
         private static NodeConfiguration Copy(NodeConfiguration cfg, int newPort)
         {
             return new NodeConfiguration(cfg.Name, new NodeNetworkAddress(cfg.Address.Host, newPort),
-                                         cfg.LogLevel){LogActorType = cfg.LogActorType };
+                                         cfg.LogLevel);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Instance_process_Should_recover_from_snapshot : NodeTestKit
     {
         public Instance_process_Should_recover_from_snapshot(ITestOutputHelper helper)
-            : base(helper, new SoftwareProgrammingProcessManagerFixture().UseSqlPersistence()) {}
+            : base(new SoftwareProgrammingProcessManagerFixture(helper).UseSqlPersistence()) {}
 
         [Fact]
         public async Task Test()

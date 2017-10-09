@@ -11,7 +11,7 @@ namespace GridDomain.Node.Configuration {
 
         public static string ToStandAloneInMemorySystemConfig(this NodeConfiguration conf,bool serializeMessagesCreators = false)
         {
-            var cfg = new RootConfig(new LogConfig(conf.LogLevel, conf.LogActorType),
+            var cfg = new RootConfig(new LogConfig(conf.LogLevel),
                                      new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
                                      new RemoteActorProviderConfig(),
                                      new TransportConfig(conf.Address),

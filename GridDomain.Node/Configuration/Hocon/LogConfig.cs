@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Akka.Event;
+using Akka.Logger.Serilog;
 using Serilog.Events;
 
 namespace GridDomain.Node.Configuration.Hocon
@@ -22,19 +23,19 @@ namespace GridDomain.Node.Configuration.Hocon
 
         private readonly LogEventLevel _verbosity;
 
-        public LogConfig(LogEventLevel verbosity, Type logActorType)
+        public LogConfig(LogEventLevel verbosity, Type logActorType=null)
         {
             _verbosity = verbosity;
             _includeConfig = verbosity == LogEventLevel.Verbose || verbosity == LogEventLevel.Debug;
-            _logActorType = logActorType;
+            _logActorType = logActorType ?? typeof(SerilogLogger);
         }
 
         public string Build()
         {
             var logLevel = _akkaLogLevels[_verbosity];
             var logConfig = @"
-                stdout-loglevel = " + logLevel + @"
-                loglevel=" + logLevel;
+                #stdout-loglevel = ERROR
+                #loglevel=" + logLevel;
             logConfig += @"
                 loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
 

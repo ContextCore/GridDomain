@@ -43,9 +43,8 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 50);
         internal override IGridDomainNode CreateNode()
         {
-            var fixture = new BalloonWithProjectionFixture(DbContextOptions)
+            var fixture = new BalloonWithProjectionFixture(_output,DbContextOptions)
                                                {
-                                                   Output = _output,
                                                    NodeConfig = new StressTestNodeConfiguration(),
                                                    LogLevel = LogEventLevel.Error
                                                }.UseSqlPersistence();

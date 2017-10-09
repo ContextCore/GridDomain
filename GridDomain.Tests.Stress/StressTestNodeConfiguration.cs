@@ -1,5 +1,4 @@
 using Akka.Event;
-using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance;
 using GridDomain.Tests.Common;

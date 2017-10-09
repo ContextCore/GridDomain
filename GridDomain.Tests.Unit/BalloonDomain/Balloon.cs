@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         public void InflateNewBaloon(string value)
         {
             Produce(new BalloonCreated(value, Id),
-                 new BalloonTitleChanged(value, Id));
+                    new BalloonTitleChanged(value, Id));
         }
 
         public void IncreaseTitle(int value)

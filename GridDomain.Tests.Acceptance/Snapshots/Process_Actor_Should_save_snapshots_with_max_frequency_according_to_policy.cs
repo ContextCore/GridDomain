@@ -31,8 +31,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private static readonly Guid ProcessFixedId = Guid.NewGuid();
 
         public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
-            : base(output,
-                new KnownProcessIdFixture(ProcessFixedId).UseSqlPersistence()
+            : base(new KnownProcessIdFixture(output,ProcessFixedId).UseSqlPersistence()
                                                          .InitSnapshots(2, TimeSpan.FromSeconds(10))
                                                          .IgnoreCommands()) { }
 
@@ -58,7 +57,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                 public FixedIdProcessDependencyFactory(ILogger log, Guid staticId) : base(new FixedProcessIdFactory(log, staticId), SoftwareProgrammingProcess.Descriptor) { }
             }
 
-            public KnownProcessIdFixture(Guid fixedId)
+            public KnownProcessIdFixture(ITestOutputHelper output, Guid fixedId):base(output)
             {
                 ProcessConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory =
                     new FixedIdProcessDependencyFactory(Logger, fixedId);

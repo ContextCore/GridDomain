@@ -152,6 +152,8 @@ namespace GridDomain.Node
         private DomainBuilder CreateDomainBuilder()
         {
             var domainBuilder = new DomainBuilder();
+            if (!DomainConfigurations.Any())
+                throw new NoDomainConfigurationException();
             DomainConfigurations.ForEach(c => domainBuilder.Register(c));
             return domainBuilder;
         }
@@ -179,4 +181,6 @@ namespace GridDomain.Node
             return _waiterFactory.NewWaiter(defaultTimeout);
         }
     }
+
+    internal class NoDomainConfigurationException : Exception { }
 }

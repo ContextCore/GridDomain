@@ -89,12 +89,14 @@ namespace GridDomain.Node.Actors.Aggregates
                                    {
 
                                        Monitor.Increment(nameof(PersistEventPack));
-                                       ExecutionContext.PersistenceWaiter = Sender;
+                                     
                                        if (!domainEvents.Any())
                                        {
                                            Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);
                                            return;
                                        }
+                                       ExecutionContext.PersistenceWaiter = Sender;
+                                       ExecutionContext.MessagesToProject += domainEvents.Count;
 
                                        //dirty hack, but we know nobody will modify domain events before us 
                                        foreach (var evt in domainEvents)
@@ -128,8 +130,11 @@ namespace GridDomain.Node.Actors.Aggregates
                                           {
                                               if (ExecutionContext.Exception == null)
                                               {
-                                                  if (ExecutionContext.ProducedState.HasUncommitedEvents)
+                                                  ExecutionContext.MessagesToProject--;
+
+                                                  if (ExecutionContext.ProducedState.HasUncommitedEvents || ExecutionContext.MessagesToProject > 0)
                                                       return;
+
                                                   ExecutionContext.PersistenceWaiter.Tell(EventsPersisted.Instance);
                                               }
                                               else

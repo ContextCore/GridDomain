@@ -33,9 +33,8 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         internal override IGridDomainNode CreateNode()
         {
             var akkaConfig = new StressTestNodeConfiguration();
-            return new BalloonWithProjectionFixture(DbContextOptions)
+            return new BalloonWithProjectionFixture(_testOutputHelper,DbContextOptions)
                    {
-                       Output = _testOutputHelper,
                        NodeConfig = akkaConfig,
                        LogLevel = LogEventLevel.Error,
                        SystemConfigFactory = () => akkaConfig.ToStandAloneInMemorySystemConfig()

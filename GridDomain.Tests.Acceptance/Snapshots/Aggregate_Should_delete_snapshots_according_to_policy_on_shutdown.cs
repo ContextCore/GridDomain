@@ -19,9 +19,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
         public Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(output,
-                new BalloonFixture().UseSqlPersistence().
-                                     EnableSnapshots(2)) { }
+            : base(
+                   new BalloonFixture(output).UseSqlPersistence()
+                                             .EnableSnapshots(2)) { }
 
         private readonly int[] _parameters = new int[5];
 
@@ -56,12 +56,12 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //Restored_aggregates_should_have_same_ids()
             Assert.True(snapshots.All(s => s.Aggregate.Id == aggregateId));
             //Snapshots_should_have_parameters_from_last_command()
-            Assert.Equal(_parameters.Skip(3).
-                                     Take(2).
-                                     Select(p => p.ToString()).
-                                     ToArray(),
-                snapshots.Select(s => s.Aggregate.Title).
-                          ToArray());
+            Assert.Equal(_parameters.Skip(3)
+                                    .Take(2)
+                                    .Select(p => p.ToString())
+                                    .ToArray(),
+                         snapshots.Select(s => s.Aggregate.Title)
+                                  .ToArray());
             //All_snapshots_should_not_have_uncommited_events()
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

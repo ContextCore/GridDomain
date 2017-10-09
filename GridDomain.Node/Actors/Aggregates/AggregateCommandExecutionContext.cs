@@ -17,6 +17,7 @@ namespace GridDomain.Node.Actors.Aggregates {
         public IActorRef CommandSender;
         public Exception Exception;
         public IActorRef PersistenceWaiter;
+        public int MessagesToProject;
 
         public void Clear()
         {
@@ -26,6 +27,7 @@ namespace GridDomain.Node.Actors.Aggregates {
             CommandSender = null;
             Exception = null;
             PersistenceWaiter = null;
+            MessagesToProject = 0;
         }
     }
 }

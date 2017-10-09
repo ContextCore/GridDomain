@@ -9,13 +9,13 @@ namespace GridDomain.Tests.Unit.Serialization
 {
     public class JsonSerializationSettings_can_be_overriden_by_user : NodeTestKit
     {
-        public JsonSerializationSettings_can_be_overriden_by_user(ITestOutputHelper output) : base(output, new JsonFixture()) {}
+        public JsonSerializationSettings_can_be_overriden_by_user(ITestOutputHelper output) : base(new JsonFixture(output)) {}
 
         private class MyJsonSettings : JsonSerializerSettings {}
 
         private class JsonFixture : BalloonFixture
         {
-            public JsonFixture()
+            public JsonFixture(ITestOutputHelper output):base(output)
             {
                 OnNodeStartedEvent += (sender, args) =>
                                       {

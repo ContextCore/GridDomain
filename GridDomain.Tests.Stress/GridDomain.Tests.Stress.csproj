@@ -242,7 +242,6 @@
     <Compile Include="NodeCommandExecution\BallonWriteOnlyDomain.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInMem.cs" />
     <Compile Include="CommandPlan.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="INodeScenario.cs" />
     <Compile Include="InsertOptimazedBulkConfiguration.cs" />

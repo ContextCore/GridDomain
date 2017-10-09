@@ -20,8 +20,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
         public Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(output,
-                new SoftwareProgrammingProcessManagerFixture().UseSqlPersistence()
+            : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
                                                               .InitSnapshots(2)
                                                               .IgnoreCommands()) { }
 

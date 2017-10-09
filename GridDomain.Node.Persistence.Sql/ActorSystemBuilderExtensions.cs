@@ -16,7 +16,7 @@ namespace GridDomain.Node.Persistence.Sql
 
         public static IActorSystemFactory Build(this ActorSystemBuilder builder, NodeConfiguration conf, ISqlNodeDbConfiguration persistence)
         {
-            return builder.Log(conf.LogLevel, conf.LogActorType)
+            return builder.Log(conf.LogLevel)
                           .DomainSerialization(false)
                           .RemoteActorProvider()
                           .Remote(conf.Address)

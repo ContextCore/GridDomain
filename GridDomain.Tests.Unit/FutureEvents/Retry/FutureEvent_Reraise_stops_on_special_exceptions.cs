@@ -19,48 +19,48 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
     public class FutureEvent_Reraise_stops_on_special_exceptions : NodeTestKit
     {
         public FutureEvent_Reraise_stops_on_special_exceptions(ITestOutputHelper output)
-            : base(output, new FutureEventsFixture(output,new InMemoryRetrySettings(2,
-                TimeSpan.FromMilliseconds(10),
-                new StopOnTestExceptionPolicy(
-                    new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Information)
-                        .CreateLogger())))) {}
+            : base(new FutureEventsFixture(output,
+                                           new InMemoryRetrySettings(2,
+                                                                     TimeSpan.FromMilliseconds(10),
+                                                                     new StopOnTestExceptionPolicy(
+                                                                                                   new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Information)
+                                                                                                       .CreateLogger())))) { }
 
         private static readonly TaskCompletionSource<int> _policyCallNumberChanged = new TaskCompletionSource<int>();
         private static int _policyCallNumber;
 
+        private class StopOnTestExceptionPolicy : IExceptionPolicy
+        {
+            private readonly ILogger _log;
 
-            private class StopOnTestExceptionPolicy : IExceptionPolicy
+            public StopOnTestExceptionPolicy(ILogger log)
             {
-                private readonly ILogger _log;
-
-                public StopOnTestExceptionPolicy(ILogger log)
-                {
-                    _log = log;
-                }
-
-                public bool ShouldContinue(Exception ex)
-                {
-                    _log.Information("Should continue {code} called from Thread {thread} with stack trace {trace}",
-                                     GetHashCode(),
-                                     Thread.CurrentThread.ManagedThreadId,
-                                     Environment.CurrentManagedThreadId);
-
-                    _policyCallNumber++;
-                    _policyCallNumberChanged.SetResult(1);
-
-                    var businessException = ex.UnwrapSingle();
-                    if(businessException is CommandExecutionFailedException && businessException.InnerException is ScheduledEventNotFoundException)
-                        return false;
-
-                    return true;
-                }
+                _log = log;
             }
+
+            public bool ShouldContinue(Exception ex)
+            {
+                _log.Information("Should continue {code} called from Thread {thread} with stack trace {trace}",
+                                 GetHashCode(),
+                                 Thread.CurrentThread.ManagedThreadId,
+                                 Environment.CurrentManagedThreadId);
+
+                _policyCallNumber++;
+                _policyCallNumberChanged.SetResult(1);
+
+                var businessException = ex.UnwrapSingle();
+                if (businessException is CommandExecutionFailedException && businessException.InnerException is ScheduledEventNotFoundException)
+                    return false;
+
+                return true;
+            }
+        }
 
         [Fact]
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
-            var command = new PlanBoomCommand(Guid.NewGuid(),DateTime.Now.AddSeconds(0.2));
+            var command = new PlanBoomCommand(Guid.NewGuid(), DateTime.Now.AddSeconds(0.2));
 
             await Node.Prepare(command)
                       .Expect<JobFailed>()

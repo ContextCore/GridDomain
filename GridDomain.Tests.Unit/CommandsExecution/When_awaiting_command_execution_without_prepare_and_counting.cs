@@ -63,7 +63,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         }
 
         public When_awaiting_command_execution_without_prepare_and_counting(ITestOutputHelper output) :
-            base(output, new NodeTestFixture(new BalloonCountingDomainConfiguration())){ }
+            base(new NodeTestFixture(output, new BalloonCountingDomainConfiguration())){ }
 
         [Fact]
         public async Task Then_command_executed_sync_and_parralel_message_processor_are_executed()

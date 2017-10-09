@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_Not_save_snapshots_on_message_process_by_default : NodeTestKit
     {
         public Aggregate_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper output)
-            : base(output, new BalloonFixture().UseSqlPersistence()) {}
+            : base(new BalloonFixture(output).UseSqlPersistence()) {}
 
         [Fact]
         public async Task Given_timeout_only_default_policy()

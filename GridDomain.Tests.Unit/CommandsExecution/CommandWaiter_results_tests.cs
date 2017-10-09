@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     public class CommandWaiter_results_tests : NodeTestKit
     {
         public CommandWaiter_results_tests(ITestOutputHelper output)
-            : base(output, new NodeTestFixture(new BalloonDomainConfiguration())) {}
+            : base(new NodeTestFixture(output,new BalloonDomainConfiguration())) {}
 
         private IWaitResult _result;
 
@@ -28,6 +28,8 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                                 .Expect<BalloonTitleChanged>(e => e.SourceId == cmd.AggregateId)
                                 .And<BalloonCreated>(e => e.SourceId == cmd.AggregateId)
                                 .Execute();
+
+            await Task.Delay(1000); //waiting for logs
             //Then_recieve_something()
             Assert.NotNull(_result);
             //Then_recieve_non_empty_collection()

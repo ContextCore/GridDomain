@@ -13,7 +13,6 @@ namespace GridDomain.Tests.Acceptance.Tools {
         public AcceptanceAutoTestNodeConfiguration(LogEventLevel verbosity = LogEventLevel.Verbose)
             : base("TestSystem",new AutoTestNodeNetworkAddress(), verbosity)
         {
-            LogActorType = typeof(ConsoleSerilogLoggerActor);
         }
     }
 }

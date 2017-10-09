@@ -22,14 +22,14 @@ namespace GridDomain.Tests.Acceptance.Scheduling
     {
         public class SchedulerFixture : NodeTestFixture
         {
-            public SchedulerFixture()
+            public SchedulerFixture(ITestOutputHelper output):base(output)
             {
                 Add(new TestSchedulingAggregateDomainConfiguration());
                 this.EnableScheduling(new InMemoryRetrySettings(4, TimeSpan.Zero));
             }
         }
 
-        public NodeSchedulerTests(ITestOutputHelper output) : base(output, new SchedulerFixture())
+        public NodeSchedulerTests(ITestOutputHelper output) : base(new SchedulerFixture(output))
         {
             ResultHolder.Clear();
             _schedulerActor = new Lazy<IActorRef>(() => Node.ResolveActor(nameof(SchedulingActor)).Result);

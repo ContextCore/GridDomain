@@ -10,7 +10,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
-using GridDomain.Node.Actors.Serilog;
+using GridDomain.Node.Actors.Logging;
 using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.CommandPipe

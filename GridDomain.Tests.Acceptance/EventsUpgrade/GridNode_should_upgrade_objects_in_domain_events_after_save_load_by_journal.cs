@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal : NodeTestKit
     {
         public GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal(ITestOutputHelper output)
-            : base(output, new NodeTestFixture().UseSqlPersistence().UseAdaper(new BookOrderAdapter())) {}
+            : base(new NodeTestFixture(output).UseSqlPersistence().UseAdaper(new BookOrderAdapter())) {}
 
 
         [Fact]

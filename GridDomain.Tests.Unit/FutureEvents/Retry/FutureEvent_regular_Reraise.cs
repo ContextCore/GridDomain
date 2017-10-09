@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 {
     public class FutureEvent_regular_Reraise : NodeTestKit
     {
-        public FutureEvent_regular_Reraise(ITestOutputHelper output) : base(output, 
+        public FutureEvent_regular_Reraise(ITestOutputHelper output) : base( 
             new FutureEventsFixture(output,new InMemoryRetrySettings(2,
                                                              TimeSpan.FromMilliseconds(10),
                                                              new AlwaysRetryExceptionPolicy()))) { }

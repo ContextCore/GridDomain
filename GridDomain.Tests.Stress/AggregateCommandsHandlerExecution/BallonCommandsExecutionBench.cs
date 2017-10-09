@@ -39,7 +39,9 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         }
 
         [PerfSetup]
+#pragma warning disable xUnit1013 // It is nbench test
         public void Setup(BenchmarkContext context)
+#pragma warning restore xUnit1013 // Public method should be marked as test
         {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
             _commndsToExecute = CreateCommandPlan(1000, 1000).ToArray();

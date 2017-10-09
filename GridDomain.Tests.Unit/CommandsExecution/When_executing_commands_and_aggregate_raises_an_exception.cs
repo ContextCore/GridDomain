@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     public class When_executing_commands_and_aggregate_raises_an_exception : NodeTestKit
     {
         public When_executing_commands_and_aggregate_raises_an_exception(ITestOutputHelper helper)
-            : base(helper, new BalloonFixture()) { }
+            : base(new BalloonFixture(helper)) { }
 
         [Fact]
         public async Task When_aggregate_throws_fault_it_is_handled_without_implicit_registration()
