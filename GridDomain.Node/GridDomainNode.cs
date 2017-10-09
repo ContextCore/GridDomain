@@ -47,6 +47,9 @@ namespace GridDomain.Node
         public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log = null, TimeSpan? defaultTimeout = null)
         {
             DomainConfigurations = domainConfigurations.ToList();
+            if(!DomainConfigurations.Any())
+                throw new NoDomainConfigurationException();
+
             DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
             _logger = log ?? new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>(); 
             _actorSystemFactory = actorSystemFactory;
@@ -152,8 +155,7 @@ namespace GridDomain.Node
         private DomainBuilder CreateDomainBuilder()
         {
             var domainBuilder = new DomainBuilder();
-            if (!DomainConfigurations.Any())
-                throw new NoDomainConfigurationException();
+          
             DomainConfigurations.ForEach(c => domainBuilder.Register(c));
             return domainBuilder;
         }

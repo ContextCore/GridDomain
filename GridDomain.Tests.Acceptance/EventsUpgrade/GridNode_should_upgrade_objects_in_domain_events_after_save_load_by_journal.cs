@@ -5,6 +5,7 @@ using GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,7 +14,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal : NodeTestKit
     {
         public GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal(ITestOutputHelper output)
-            : base(new NodeTestFixture(output).UseSqlPersistence().UseAdaper(new BookOrderAdapter())) {}
+            : base(new NodeTestFixture(output, new BalloonDomainConfiguration()).UseSqlPersistence().UseAdaper(new BookOrderAdapter())) {}
 
 
         [Fact]
