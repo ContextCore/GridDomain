@@ -23,7 +23,17 @@ namespace GridDomain.Tests.Unit
 
     public class NodeTestFixture : IDisposable
     {
-        private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
+        private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration(
+#if DEBUG
+             LogEventLevel.Debug
+#endif
+#if !DEBUG
+            LogEventLevel.Warning
+#endif
+            );
+
+
+
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
 
         public NodeTestFixture(ITestOutputHelper helper, IDomainConfiguration domainConfiguration) : this(helper, new[] {domainConfiguration})
@@ -37,8 +47,7 @@ namespace GridDomain.Tests.Unit
             Output = helper;
             SystemConfigFactory = () => NodeConfig.ToDebugStandAloneInMemorySystemConfig();
             ActorSystemCreator = () => ActorSystem.Create(Name, SystemConfigFactory());
-            Logger = new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger();
-            Serilog.Log.Logger = Logger;
+            Logger = new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger();
             if (domainConfiguration == null)
                 return;
 
@@ -62,13 +71,7 @@ namespace GridDomain.Tests.Unit
         internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
 
         public ITestOutputHelper Output { get; }
-        public LogEventLevel LogLevel { get; set; } =
-#if DEBUG 
-            LogEventLevel.Verbose;
-#endif
-#if !DEBUG
-            LogEventLevel.Warning;
-#endif
+
 
         public void Dispose()
         {
@@ -83,9 +86,6 @@ namespace GridDomain.Tests.Unit
 
         public virtual async Task<GridDomainNode> CreateNode()
         {
-        
-
-
             OnNodePreparingEvent.Invoke(this, this);
             Node = new GridDomainNode(_domainConfigurations, new DelegateActorSystemFactory(CreateSystem), Logger, DefaultTimeout);
             Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
@@ -99,17 +99,25 @@ namespace GridDomain.Tests.Unit
         public Func<ActorSystem> ActorSystemCreator { get; set; }
         private ActorSystem CreateSystem()
         {
-            return System ?? (System = ActorSystemCreator());
-            // Log.Logger = Logger;
+            if (System != null) return System;
 
-            //ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
-
-           // var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(new XUnitAutoTestLoggerConfiguration(Output, LogLevel).CreateLogger())), "node-log-test");
-           // logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
+            System = ActorSystemCreator();
+            System.AttachSerilogLogging(Logger);
+            return System;
         }
 
         public event EventHandler<GridDomainNode>  OnNodeStartedEvent   = delegate { };
         public event EventHandler<NodeTestFixture> OnNodePreparingEvent = delegate { };
         public event EventHandler<GridDomainNode>  OnNodeCreatedEvent   = delegate { };
+    }
+
+    public static class ActorSystemExtensions
+    {
+        public static void AttachSerilogLogging(this ActorSystem System, ILogger log)
+        {
+            ExtendedActorSystem actorSystem = (ExtendedActorSystem)System;
+            var logActor = actorSystem.SystemActorOf(Props.Create(() => new SerilogLoggerActor(log)), "node-log-test");
+            logActor.Ask<LoggerInitialized>(new InitializeLogger(actorSystem.EventStream)).Wait();
+        }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Akka.Event;
-using Akka.Logger.Serilog;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Configuration.Hocon;
 using Serilog.Events;
@@ -20,9 +19,9 @@ namespace GridDomain.Node.Configuration {
             Configs.Add(cfg);
         }
 
-        public ActorSystemBuilder Log(LogEventLevel verbosity, Type logActorType = null)
+        public ActorSystemBuilder Log(LogEventLevel verbosity, Type logActorType = null, bool writeConfig=false)
         {
-            Add(new LogConfig(verbosity, logActorType ?? typeof(SerilogLogger)));
+            Add(new LogConfig(verbosity, logActorType ?? typeof(SerilogLoggerActor), writeConfig));
             return this;
         }
 

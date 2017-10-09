@@ -44,9 +44,6 @@
     <Reference Include="Akka.DI.Core, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.DI.Core.1.3.1\lib\net45\Akka.DI.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Akka.Logger.Serilog, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Logger.Serilog.1.3.0\lib\net45\Akka.Logger.Serilog.dll</HintPath>
-    </Reference>
     <Reference Include="Akka.Persistence, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.1.3.1\lib\net45\Akka.Persistence.dll</HintPath>
     </Reference>
@@ -279,6 +276,12 @@
     <Compile Include="Aggregate_actor_lifetime\ProcessHub_children_lifetime_tests.cs" />
     <Compile Include="CommandsExecution\ConventionCommands\ConventionAggregateTests.cs" />
     <Compile Include="Isolated.cs" />
+    <Compile Include="Logging\LogForCustomizedSystemTests.cs" />
+    <Compile Include="Logging\LogForAutoTestKitTests.cs" />
+    <Compile Include="Logging\LogForStandaloneActorSystemTest.cs" />
+    <Compile Include="Logging\LogForTestKitTests.cs" />
+    <Compile Include="Logging\TestLogActor.cs" />
+    <Compile Include="Logging\TestMessage.cs" />
     <Compile Include="NodeConfigurationDebugExtensions.cs" />
     <Compile Include="ProcessManagers\BalloonAggregateFactory.cs" />
     <Compile Include="BalloonDomain\Configuration\BalloonDependencyFactory.cs" />
@@ -396,7 +399,6 @@
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessManagerDependenciesFactory.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessDomainConfiguration.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\SoftwareDomainConfiguration.cs" />
-    <Compile Include="LogTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B_or_C.cs" />

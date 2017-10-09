@@ -8,18 +8,18 @@ using LogEvent = Akka.Event.LogEvent;
 
 namespace GridDomain.Node.Actors.Logging
 {
-    public class SerilogLoggerActorA : ReceiveActor,
+    public class SerilogLoggerActor : ReceiveActor,
                                       IRequiresMessageQueue<ILoggerMessageQueueSemantics>
     {
         private readonly ILogger _logger;
         public static ILogger Log { get; set; }
 
-        public SerilogLoggerActorA() : this(Log ?? Serilog.Log.Logger) { }
+        public SerilogLoggerActor() : this(Log ?? Serilog.Log.Logger) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SerilogLogger" /> class.
         /// </summary>
-        public SerilogLoggerActorA(ILogger log)
+        public SerilogLoggerActor(ILogger log)
         {
             _logger = log;
 
@@ -29,8 +29,7 @@ namespace GridDomain.Node.Actors.Logging
             Receive<Debug>(m => Handle(m));
             Receive<InitializeLogger>(m =>
                                       {
-                                          Context.GetLogger()
-                                                 .Info("SerilogLogger started");
+                                          Context.GetLogger().Info("SerilogLoggerActor started");
                                           m.LoggingBus.Subscribe(Self, typeof(LogEvent));
                                           Sender.Tell(new LoggerInitialized());
                                       });
@@ -60,26 +59,22 @@ namespace GridDomain.Node.Actors.Logging
 
         private void Handle(Error logEvent)
         {
-            GetLogger(logEvent)
-                .Error(logEvent.Cause, GetFormat(logEvent.Message), GetArgs(logEvent.Message));
+            GetLogger(logEvent).Error(logEvent.Cause, GetFormat(logEvent.Message), GetArgs(logEvent.Message));
         }
 
         private void Handle(Warning logEvent)
         {
-            GetLogger(logEvent)
-                .Warning(GetFormat(logEvent.Message), GetArgs(logEvent.Message));
+            GetLogger(logEvent).Warning(GetFormat(logEvent.Message), GetArgs(logEvent.Message));
         }
 
         private void Handle(Info logEvent)
         {
-            GetLogger(logEvent)
-                .Information(GetFormat(logEvent.Message), GetArgs(logEvent.Message));
+            GetLogger(logEvent).Information(GetFormat(logEvent.Message), GetArgs(logEvent.Message));
         }
 
         private void Handle(Debug logEvent)
         {
-            GetLogger(logEvent)
-                .Debug(GetFormat(logEvent.Message), GetArgs(logEvent.Message));
+            GetLogger(logEvent).Debug(GetFormat(logEvent.Message), GetArgs(logEvent.Message));
         }
     }
 }

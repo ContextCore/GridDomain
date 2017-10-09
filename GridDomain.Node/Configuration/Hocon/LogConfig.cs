@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Akka.Event;
-using Akka.Logger.Serilog;
+using GridDomain.Node.Actors.Logging;
 using Serilog.Events;
 
 namespace GridDomain.Node.Configuration.Hocon
@@ -14,7 +14,7 @@ namespace GridDomain.Node.Configuration.Hocon
                                                                            {LogEventLevel.Error,"ERROR"},
                                                                            {LogEventLevel.Fatal,"ERROR"},
                                                                            {LogEventLevel.Verbose, "DEBUG"},
-                                                                           {LogEventLevel.Debug, "DEBUG"},
+                                                                           {LogEventLevel.Debug,   "DEBUG"},
                                                                            {LogEventLevel.Warning,"WARNING"}
                                                                        };
 
@@ -23,11 +23,11 @@ namespace GridDomain.Node.Configuration.Hocon
 
         private readonly LogEventLevel _verbosity;
 
-        public LogConfig(LogEventLevel verbosity, Type logActorType=null)
+        public LogConfig(LogEventLevel verbosity, Type logActorType=null, bool writeConfig = false)
         {
             _verbosity = verbosity;
-            _includeConfig = verbosity == LogEventLevel.Verbose || verbosity == LogEventLevel.Debug;
-            _logActorType = logActorType ?? typeof(SerilogLogger);
+            _includeConfig = writeConfig || verbosity == LogEventLevel.Verbose || verbosity == LogEventLevel.Debug;
+            _logActorType = logActorType ?? typeof(SerilogLoggerActor);
         }
 
         public string Build()
@@ -35,7 +35,7 @@ namespace GridDomain.Node.Configuration.Hocon
             var logLevel = _akkaLogLevels[_verbosity];
             var logConfig = @"
                 #stdout-loglevel = ERROR
-                #loglevel=" + logLevel;
+                loglevel=" + logLevel;
             logConfig += @"
                 loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
 

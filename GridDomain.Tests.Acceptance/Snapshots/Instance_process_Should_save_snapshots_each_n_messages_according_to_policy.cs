@@ -27,8 +27,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                               .InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
                                                               .IgnoreCommands())
         {
-            Fixture.LogLevel = LogEventLevel.Verbose;
-            
+            Fixture.NodeConfig.LogLevel = LogEventLevel.Verbose;
         }
 
         [Fact]

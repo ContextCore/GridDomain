@@ -11,14 +11,23 @@ namespace GridDomain.Node.Configuration {
 
         public static string ToStandAloneInMemorySystemConfig(this NodeConfiguration conf,bool serializeMessagesCreators = false)
         {
-            var cfg = new RootConfig(new LogConfig(conf.LogLevel),
-                                     new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
-                                     new RemoteActorProviderConfig(),
-                                     new TransportConfig(conf.Address),
-                                     new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
-                                                           new LocalFilesystemSnapshotConfig()));
 
-            return cfg.Build();
+            return ActorSystemBuilder.New()
+                                     .Log(conf.LogLevel)
+                                     .DomainSerialization(serializeMessagesCreators)
+                                     .RemoteActorProvider()
+                                     .Remote(conf.Address)
+                                     .InMemoryPersistence()
+                                     .BuildHocon();
+
+            //var cfg = new RootConfig(new LogConfig(conf.LogLevel),
+            //                         new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
+            //                         new RemoteActorProviderConfig(),
+            //                         new TransportConfig(conf.Address),
+            //                         new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
+            //                                               new LocalFilesystemSnapshotConfig()));
+
+            //return cfg.Build();
         }
 
     }

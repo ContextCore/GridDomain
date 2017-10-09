@@ -36,7 +36,6 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             return new BalloonWithProjectionFixture(_testOutputHelper,DbContextOptions)
                    {
                        NodeConfig = akkaConfig,
-                       LogLevel = LogEventLevel.Error,
                        SystemConfigFactory = () => akkaConfig.ToStandAloneInMemorySystemConfig()
             }.CreateNode().Result;
         }

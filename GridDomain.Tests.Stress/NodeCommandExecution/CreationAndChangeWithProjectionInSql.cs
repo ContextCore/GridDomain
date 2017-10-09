@@ -46,7 +46,6 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             var fixture = new BalloonWithProjectionFixture(_output,DbContextOptions)
                                                {
                                                    NodeConfig = new StressTestNodeConfiguration(),
-                                                   LogLevel = LogEventLevel.Error
                                                }.UseSqlPersistence();
 
             fixture.SystemConfigFactory = () => fixture.NodeConfig.ToStandAloneSystemConfig(AutoTestNodeDbConfiguration.Default);
