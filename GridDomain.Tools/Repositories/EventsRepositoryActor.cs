@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using Akka;
 using Akka.Actor;
-using Akka.Event;
 using Akka.Persistence;
 
 namespace GridDomain.Tools.Repositories
@@ -10,7 +8,6 @@ namespace GridDomain.Tools.Repositories
     public class EventsRepositoryActor : ReceivePersistentActor
     {
         private readonly List<object> _events = new List<object>();
-        private ILoggingAdapter logger = Context.GetLogger();
 
         public EventsRepositoryActor(string id)
         {
@@ -34,21 +31,6 @@ namespace GridDomain.Tools.Repositories
         }
 
         public override string PersistenceId { get; }
-
-        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistFailure(cause, @event, sequenceNr);
-        }
-
-        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistRejected(cause, @event, sequenceNr);
-        }
-
-        protected override void OnRecoveryFailure(Exception reason, object message = null)
-        {
-            base.OnRecoveryFailure(reason, message);
-        }
 
         public class Load {}
 

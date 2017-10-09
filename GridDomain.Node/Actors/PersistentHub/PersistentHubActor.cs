@@ -24,7 +24,7 @@ namespace GridDomain.Node.Actors.PersistentHub
         private readonly ActorMonitor _monitor;
         private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
         internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
-        private readonly ILoggingAdapter Log = Context.GetLogger();
+        private readonly ILoggingAdapter Log = Context.GetSeriLogger();
 
         protected PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
         {

@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class HandlersPipeActor : ReceiveActor
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
-        private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
+        private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
         public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef processManagerPipeActor)
         {
             var publisher = Context.System.GetTransport();

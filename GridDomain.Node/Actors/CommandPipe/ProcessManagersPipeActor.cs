@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.CommandPipe
         public const string ProcessManagersPipeActorRegistrationName = nameof(ProcessManagersPipeActorRegistrationName);
         private readonly IProcessorListCatalog<IProcessCompleted> _catalog;
         private IActorRef _commandExecutionActor;
-        private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
+        private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
         public ProcessManagersPipeActor(IProcessorListCatalog<IProcessCompleted> catalog)
         {
             _catalog = catalog;

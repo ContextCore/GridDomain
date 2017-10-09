@@ -41,8 +41,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             transport.Subscribe<IMessageMetadataEnvelop>(TestActor);
 
             var actor =
-                Sys.ActorOf(
-                            Props.Create(
+                Sys.ActorOf(Props.Create(
                                          () =>
                                              new MessageHandleActor<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>(
                                                                                                                    new BalloonTitleChangedOddFaultyMessageHandler(transport),

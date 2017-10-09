@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 {
     public class Process_actor_should_execute_async_processes_with_block : TestKit
     {
-        public Process_actor_should_execute_async_processes_with_block(ITestOutputHelper output) : base("", output)
+        public Process_actor_should_execute_async_processes_with_block(ITestOutputHelper output)
         {
             var logger =  new XUnitAutoTestLoggerConfiguration(output).CreateLogger(); 
             var creator = new AsyncLongRunningProcessManagerFactory(logger);

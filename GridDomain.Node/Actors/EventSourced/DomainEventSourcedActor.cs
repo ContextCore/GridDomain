@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.EventSourced
         protected readonly ActorMonitor Monitor;
 
         protected readonly BehaviorStack Behavior;
-        protected override ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
+        protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
         public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {

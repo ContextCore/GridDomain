@@ -61,7 +61,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             _publisher = Context.System.GetTransport();
             _сreatorCatalog = сreatorCatalog;
-            _log = Context.GetLogger(new SerilogLogMessageFormatter());
+            _log = Context.GetSeriLogger();
 
             _exceptionOnTransit = ProcessManagerActorConstants.ExceptionOnTransit(Self.Path.Name);
             _producedCommand = ProcessManagerActorConstants.ProcessProduceCommands(Self.Path.Name);

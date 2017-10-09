@@ -6,6 +6,8 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Node.Configuration;
+using GridDomain.Tests.Common.Configuration;
 using GridDomain.Transport;
 using Xunit;
 
@@ -16,7 +18,8 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         //Given_waiter_subscribed_for_message_When_publishing_message()
         public AkkaWaiter_One_Message_Test()
         {
-            var actorSystem = ActorSystem.Create("test");
+            var actorSystem = ActorSystem.Create("test", @"akka.suppress-json-serializer-warning = on
+                                                           akka.suppress-json-serializer-warning");
             var transport = new LocalAkkaEventBusTransport(actorSystem);
             var waiter = new LocalMessagesWaiter(actorSystem, transport, TimeSpan.FromSeconds(10));
             waiter.Expect<string>();

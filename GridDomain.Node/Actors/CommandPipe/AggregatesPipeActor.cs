@@ -12,7 +12,7 @@ namespace GridDomain.Node.Actors.CommandPipe
 {
     public class AggregatesPipeActor : ReceiveActor
     {
-        private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
+        private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
         public AggregatesPipeActor(ICatalog<IActorRef,object> aggregateCatalog)
         {
             Receive<IMessageMetadataEnvelop>(c =>
