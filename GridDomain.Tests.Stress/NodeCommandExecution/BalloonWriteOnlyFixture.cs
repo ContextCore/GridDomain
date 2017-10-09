@@ -7,8 +7,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
     {
         public BalloonWriteOnlyFixture(ITestOutputHelper helper):base(helper,new BallonWriteOnlyDomain())
         {
-            NodeConfig = new StressTestNodeConfiguration();
-            NodeConfig.LogLevel = LogEventLevel.Warning;
+            NodeConfig = new StressTestNodeConfiguration {LogLevel = LogEventLevel.Warning};
         }
     }
 }

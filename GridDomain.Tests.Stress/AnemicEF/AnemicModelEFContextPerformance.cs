@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Stress.AnemicEF {
 #pragma warning disable xUnit1013 //It is nbench test
     public abstract class AnemicModelEFContextPerformance
     {
-        private Func<BalloonContext> _contextCreator;
+        private readonly Func<BalloonContext> _contextCreator;
         private readonly IEFCommand[] _efCommands;
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;

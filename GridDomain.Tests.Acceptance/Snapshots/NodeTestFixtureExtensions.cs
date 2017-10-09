@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                     ClearData(persistence).Wait();
                                                 };
 
-            fixture.SystemConfigFactory = () => fixture.NodeConfig.ToDebugStandAloneSystemConfig(persistence);
+            fixture.SystemConfigFactory = () => fixture.NodeConfig.ToStandAloneSystemConfig(persistence);
 
             return fixture;
         }

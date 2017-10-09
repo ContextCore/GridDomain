@@ -348,7 +348,6 @@
       <DependentUpon>BalloonInitial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\BalloonContextModelSnapshot.cs" />
-    <Compile Include="NodeConfigurationDebugExtensions.cs" />
     <Compile Include="Projection\BalloonEventsShouldBeProjected.cs" />
     <Compile Include="Projection\ConnectionStrings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

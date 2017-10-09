@@ -26,9 +26,8 @@ namespace GridDomain.Tests.Unit
         private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration(
 #if DEBUG
              LogEventLevel.Debug
-#endif
-#if !DEBUG
-            LogEventLevel.Warning
+#else
+             LogEventLevel.Warning
 #endif
             );
 
@@ -40,7 +39,7 @@ namespace GridDomain.Tests.Unit
         {
             
         }
-
+       
         public NodeTestFixture(ITestOutputHelper helper, IDomainConfiguration[] domainConfiguration = null, TimeSpan? defaultTimeout = null)
         {
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
@@ -57,18 +56,19 @@ namespace GridDomain.Tests.Unit
         public GridDomainNode Node { get; private set; }
         public ActorSystem System { get; private set; }
         public Func<string> SystemConfigFactory { get; set; }
-        public ILogger Logger { get; private set; }
+        public ILogger Logger { get; set; }
         public NodeConfiguration NodeConfig { get; set; } = DefaultNodeConfig;
         public string Name => NodeConfig.Name;
-
+        public LogEventLevel LogLevel { get => NodeConfig.LogLevel;
+                                        set => NodeConfig.LogLevel = value;}
         private const int DefaultTimeOutSec =
 #if DEBUG
             10; //in debug mode all messages serialization is enabled, and it slows down all tests greatly
 #endif
 #if !DEBUG
             3;
-#endif      
-        internal TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
+#endif
+        private TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
 
         public ITestOutputHelper Output { get; }
 

@@ -23,11 +23,11 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Instance_process_Should_save_snapshots_each_n_messages_according_to_policy : NodeTestKit
     {
         public Instance_process_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
-            : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
+            : base(new SoftwareProgrammingProcessManagerFixture(output){LogLevel = LogEventLevel.Verbose}
+                                                              .UseSqlPersistence()
                                                               .InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
                                                               .IgnoreCommands())
         {
-            Fixture.NodeConfig.LogLevel = LogEventLevel.Verbose;
         }
 
         [Fact]

@@ -4,6 +4,7 @@ using GridDomain.Node;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Configuration;
+using Serilog.Events;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
@@ -15,7 +16,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         public SoftwareProgrammingProcessManagerFixture(ITestOutputHelper output) : base(output)
         {
             ProcessConfiguration = new SoftwareProgrammingProcessDomainConfiguration(Logger);
-        //    Add(new BalloonDomainConfiguration());
+            Add(new BalloonDomainConfiguration());
             Add(ProcessConfiguration);
 
         }
