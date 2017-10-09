@@ -10,7 +10,7 @@ using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.AnemicEF {
-
+#pragma warning disable xUnit1013 //It is nbench test
     public abstract class AnemicModelEFContextPerformance
     {
         private Func<BalloonContext> _contextCreator;
@@ -28,9 +28,9 @@ namespace GridDomain.Tests.Stress.AnemicEF {
                                     .ToArray();
         }
         [PerfSetup]
-#pragma warning disable xUnit1013 // // It is nbench test
+
         public virtual void Setup(BenchmarkContext context)
-#pragma warning restore xUnit1013 // Public method should be marked as test
+
         {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }

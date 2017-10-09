@@ -6,7 +6,7 @@ namespace GridDomain.Node.Configuration.Hocon
     public class ClusterConfig : TransportConfig
     {
         private readonly string[] _seedNodes;
-        private readonly NodeConfiguration _nodeConfiguration;
+     //   private readonly NodeConfiguration _nodeConfiguration;
         private readonly string _name;
 
         public ClusterConfig(NodeConfiguration conf, params string[] seedNodes) : this(conf.Name, conf.Address, seedNodes)
