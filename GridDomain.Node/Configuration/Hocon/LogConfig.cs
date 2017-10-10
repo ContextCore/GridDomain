@@ -32,7 +32,7 @@ namespace GridDomain.Node.Configuration.Hocon
 
         public string Build()
         {
-            var logLevel = _akkaLogLevels[_verbosity];
+            var logLevel = _akkaLogLevels[_verbosity]; 
             var logConfig = @"
                 stdout-loglevel = " + logLevel +@"
                 loglevel=" + logLevel + @"

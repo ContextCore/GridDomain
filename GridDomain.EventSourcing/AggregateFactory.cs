@@ -22,9 +22,7 @@ namespace GridDomain.EventSourcing
                 throw new InvalidDefaultMementoException(type, id, snapshot);
 
             //aggregate can produce events in constructor, need to apply them
-            foreach (var e in aggregate.GetUncommittedEvents().ToArray())
-                aggregate.ApplyEvent(e);
-            aggregate.ClearUncommitedEvents();
+            aggregate.CommitAll();
 
             ((IMemento)aggregate).Version = snapshotVersion;
 

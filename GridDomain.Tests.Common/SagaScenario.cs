@@ -58,7 +58,7 @@ namespace GridDomain.Tests.Common
             GivenEvents = events;
             StateAggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<TState>>(Guid.NewGuid());
             StateAggregate.ApplyEvents(events);
-            StateAggregate.MarkAllPesisted();
+            StateAggregate.CommitAll();
             InitialState = StateAggregate.State;
             return this;
         }

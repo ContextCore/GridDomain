@@ -28,6 +28,11 @@ namespace GridDomain.Tools.Connector {
         private MessageWaiterFactory _waiterFactory;
         private readonly ILogger _logger;
 
+        public GridNodeConnector New(string nodeName, string host, int port)
+        {
+            return new GridNodeConnector(new NodeConfiguration(nodeName,new NodeNetworkAddress(host,port)));
+        }
+
         public GridNodeConnector(NodeConfiguration serverConfig,
                                  NodeConfiguration clientConfiguration = null,
                                  TimeSpan? defaultTimeout = null,
@@ -36,7 +41,7 @@ namespace GridDomain.Tools.Connector {
             _logger = log ?? Log.Logger;
             _serverAddress = serverConfig;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
-            _conf = clientConfiguration ?? new NodeConfiguration("Console",new NodeNetworkAddress(), LogEventLevel.Warning);
+            _conf = clientConfiguration ?? new NodeConfiguration("Connector",new NodeNetworkAddress(), LogEventLevel.Warning);
 
         }
 

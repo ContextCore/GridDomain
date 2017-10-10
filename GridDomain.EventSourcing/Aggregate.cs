@@ -17,12 +17,14 @@ namespace GridDomain.EventSourcing
 
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
 
-        public void ClearUncommitedEvents()
+        public void CommitAll()
         {
+            foreach(var e in _uncommittedEvents)
+                ((IAggregate)this).ApplyEvent(e);
+
             _uncommittedEvents.Clear();
         }
-
-        protected IEventStore PersistenceProvider;
+        protected IEventStore EventStore;
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
        
@@ -53,7 +55,7 @@ namespace GridDomain.EventSourcing
 
         public void InitEventStore(IEventStore store)
         {
-            PersistenceProvider = store;
+            EventStore = store;
         }
 
         void IAggregate.ApplyEvent(DomainEvent @event)
@@ -91,7 +93,7 @@ namespace GridDomain.EventSourcing
         protected async Task Emit(params DomainEvent[] events)
         {
             Produce(events);
-            await PersistenceProvider.Persist(this);
+            await EventStore.Persist(this);
             foreach(var e in events)
                 ((IAggregate)this).ApplyEvent(e);
         }

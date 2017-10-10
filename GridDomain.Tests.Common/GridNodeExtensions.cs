@@ -91,7 +91,7 @@ namespace GridDomain.Tests.Common
 
             await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);
 
-            aggregate.MarkAllPesisted();
+            aggregate.CommitAll();
         }
 
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages)

@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.Serialization
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
             processStateAggregate.ReceiveMessage(state, typeof(Object));
-            processStateAggregate.MarkAllPesisted();
+            processStateAggregate.CommitAll();
 
 
             var jsonSerializerSettings = DomainSerializer.GetDefaultSettings();
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.Serialization
 
             var restoredState = JsonConvert.DeserializeObject<ProcessStateAggregate<SoftwareProgrammingState>>(json,jsonSerializerSettings);
 
-            restoredState.MarkAllPesisted();
+            restoredState.CommitAll();
 
             //CoffeMachineId_should_be_equal()
             Assert.Equal(processStateAggregate.State.CoffeeMachineId, restoredState.State.CoffeeMachineId);

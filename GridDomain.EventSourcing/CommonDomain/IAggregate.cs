@@ -9,8 +9,9 @@ namespace GridDomain.EventSourcing.CommonDomain
         Guid Id { get; }
         void ApplyEvent(DomainEvent @event);
         void Commit(DomainEvent e);
+        void CommitAll();
         bool HasUncommitedEvents { get; }
-        void ClearUncommitedEvents();
+        
         IReadOnlyCollection<DomainEvent> GetUncommittedEvents();
         void InitEventStore(IEventStore store);
         IMemento GetSnapshot();

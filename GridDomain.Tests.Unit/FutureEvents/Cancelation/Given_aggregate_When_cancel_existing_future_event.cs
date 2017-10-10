@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
         public async Task Then_it_occures_and_applies_to_aggregate()
         {
             var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
-            aggregate.MarkAllPesisted();
+            aggregate.CommitAll();
 
             var testValue = "value D";
 
