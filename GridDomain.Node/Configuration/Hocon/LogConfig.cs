@@ -34,9 +34,8 @@ namespace GridDomain.Node.Configuration.Hocon
         {
             var logLevel = _akkaLogLevels[_verbosity];
             var logConfig = @"
-                #stdout-loglevel = ERROR
-                loglevel=" + logLevel;
-            logConfig += @"
+                stdout-loglevel = " + logLevel +@"
+                loglevel=" + logLevel + @"
                 loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
 
                 actor.debug {" + AdditionalLogs(_verbosity) + @" 
