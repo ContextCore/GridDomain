@@ -183,6 +183,4 @@ namespace GridDomain.Node
             return _waiterFactory.NewWaiter(defaultTimeout);
         }
     }
-
-    internal class NoDomainConfigurationException : Exception { }
 }

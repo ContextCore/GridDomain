@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Unit {
+namespace GridDomain.Tests.Unit.Logging {
     class TestMessage
     {
         public string Payload { get; }

@@ -269,6 +269,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActorSystemExtensions.cs" />
     <Compile Include="Aggregate_actor_lifetime\AggregateHub_children_lifetime_tests.cs" />
     <Compile Include="Aggregate_actor_lifetime\IPersistentActorTestsInfrastructure.cs" />
     <Compile Include="Aggregate_actor_lifetime\PersistentHubFixture.cs" />
@@ -282,6 +283,7 @@
     <Compile Include="Logging\LogForTestKitTests.cs" />
     <Compile Include="Logging\TestLogActor.cs" />
     <Compile Include="Logging\TestMessage.cs" />
+    <Compile Include="TestActorSystem.cs" />
     <Compile Include="NodeConfigurationDebugExtensions.cs" />
     <Compile Include="ProcessManagers\BalloonAggregateFactory.cs" />
     <Compile Include="BalloonDomain\Configuration\BalloonDependencyFactory.cs" />
@@ -525,6 +527,10 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{3ff79114-bac6-4b56-838f-cd63f0894a38}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj">
+      <Project>{334DBDCC-BF94-4787-93DA-8AA29956A861}</Project>
+      <Name>GridDomain.Node.Persistence.Sql</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>

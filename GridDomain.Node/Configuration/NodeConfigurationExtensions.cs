@@ -19,15 +19,6 @@ namespace GridDomain.Node.Configuration {
                                      .Remote(conf.Address)
                                      .InMemoryPersistence()
                                      .BuildHocon();
-
-            //var cfg = new RootConfig(new LogConfig(conf.LogLevel),
-            //                         new SerializersConfig(serializeMessagesCreators, serializeMessagesCreators),
-            //                         new RemoteActorProviderConfig(),
-            //                         new TransportConfig(conf.Address),
-            //                         new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
-            //                                               new LocalFilesystemSnapshotConfig()));
-
-            //return cfg.Build();
         }
 
     }

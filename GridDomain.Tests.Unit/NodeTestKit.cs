@@ -11,18 +11,10 @@ namespace GridDomain.Tests.Unit
     {
         protected NodeTestKit(NodeTestFixture fixture) : base(fixture.SystemConfigFactory(), fixture.Name)
         {
-            Fixture = fixture;
-            Fixture.ActorSystemCreator = () => Sys;
-            Node = fixture.CreateNode().Result;
+            Sys.AttachSerilogLogging(fixture.Logger);
+            Node = fixture.CreateNode(() => Sys).Result;
         }
 
         protected GridDomainNode Node { get; }
-        protected NodeTestFixture Fixture { get; }
-
-        protected override void AfterAll()
-        {
-            Fixture.Dispose();
-        }
-        
     }
 }

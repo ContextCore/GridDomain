@@ -23,6 +23,7 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.CommandPipe;
+using GridDomain.Tests.Unit.MessageWaiting;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using KellermanSoftware.CompareNetObjects;
 using Ploeh.AutoFixture;
@@ -46,7 +47,7 @@ namespace GridDomain.Tests.Unit
            Fixture.Customizations.Add(new TypeRelay(typeof(IProcessState), typeof(SoftwareProgrammingState)));
 
 
-            _system = (ExtendedActorSystem)ActorSystem.Create("test");
+            _system = (ExtendedActorSystem)TestActorSystem.Create();
             var testActor = _system.ActorOf<BlackHoleActor>();
             _system.InitDomainEventsSerialization(new EventsAdaptersCatalog());
             Fixture.Register<IActorRef>(() => testActor);

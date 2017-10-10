@@ -1,10 +1,8 @@
-using System;
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.Node;
-using Xunit;
 
-namespace GridDomain.Tests.Unit {
+namespace GridDomain.Tests.Unit.Logging {
     class TestLogActor : ReceiveActor
     {
         private readonly ILoggingAdapter _log = Context.GetSeriLogger();

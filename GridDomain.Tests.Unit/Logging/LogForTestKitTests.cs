@@ -4,7 +4,7 @@ using Akka.TestKit.Xunit2;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit {
+namespace GridDomain.Tests.Unit.Logging {
     public class LogForTestKitTests : TestKit
     {
         public LogForTestKitTests(ITestOutputHelper output)

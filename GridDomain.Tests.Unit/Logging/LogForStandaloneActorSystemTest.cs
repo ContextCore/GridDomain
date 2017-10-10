@@ -8,7 +8,7 @@ using Serilog.Core;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit {
+namespace GridDomain.Tests.Unit.Logging {
     public class LogForStandaloneActorSystemTest : IDisposable
     {
         private Logger _logger;

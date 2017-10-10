@@ -6,7 +6,7 @@ using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit {
+namespace GridDomain.Tests.Unit.Logging {
     /// <summary>
     /// 
     /// </summary>
