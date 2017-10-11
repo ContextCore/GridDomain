@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
         private class KnownProcessIdFixture : SoftwareProgrammingProcessManagerFixture
         {
-            class FixedProcessIdFactory : SoftwareProgrammingProcessManagerFactory
+            class FixedProcessIdFactory : SoftwareProgrammingProcessStateFactory
             {
                 private readonly Guid _staticId;
 
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                     _staticId = staticId;
                 }
 
-                public override IProcessManager<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? processId = null)
+                public override IProcessInstance<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? processId = null)
                 {
                     return base.CreateNew(message, _staticId);
                 }

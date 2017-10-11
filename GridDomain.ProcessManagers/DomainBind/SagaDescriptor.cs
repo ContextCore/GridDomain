@@ -8,20 +8,20 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.ProcessManagers.DomainBind
 {
-    public class ProcessManagerDescriptor : IProcessManagerDescriptor
+
+    public class ProcessDescriptor : IProcessDescriptor
     {
         private readonly List<MessageBind> _acceptedMessages = new List<MessageBind>();
         private readonly List<Type> _producedMessages = new List<Type>();
         private readonly List<Type> _startMessages = new List<Type>();
 
-        public ProcessManagerDescriptor(Type state, Type stateMachine)
+        public ProcessDescriptor(Type state, Type stateMachine)
         {
             StateType = state;
             ProcessType = stateMachine;
         }
 
         public IReadOnlyCollection<MessageBind> AcceptMessages => _acceptedMessages;
-        public IReadOnlyCollection<Type> ProduceCommands => _producedMessages;
         public IReadOnlyCollection<Type> StartMessages => _startMessages;
 
         public Type StateType { get; }
@@ -35,7 +35,7 @@ namespace GridDomain.ProcessManagers.DomainBind
 
         public void AddAcceptedMessage<TMessage>() where TMessage : IHaveProcessId
         {
-            AddAcceptedMessage(typeof(TMessage), nameof(IHaveProcessId.ProcessId));
+            AddAcceptedMessage(typeof(TMessage));
         }
 
         public void AddProduceCommandMessage(Type messageType)
@@ -60,20 +60,41 @@ namespace GridDomain.ProcessManagers.DomainBind
             AddStartMessage(typeof(T));
         }
 
-        public static ProcessManagerDescriptor<TProcess, TState> CreateDescriptor<TProcess, TState>()
-            where TState : class, IProcessState where TProcess : Process<TState>
+        //type must be child of ProcessManager<TState>
+        public static IProcessDescriptor ScanByConvention(Type processManagerType)
         {
-            var descriptor = new ProcessManagerDescriptor<TProcess, TState>();
+            var stateType = processManagerType.GenericTypeArguments.First(t => typeof(IProcessState).IsAssignableFrom(t));
+            var descriptor = new ProcessDescriptor(stateType, processManagerType);
 
-            var domainBindedEvents =
-                typeof(TProcess).GetProperties()
-                             .Where(
-                                    p =>
-                                        p.PropertyType.IsConstructedGenericType
-                                        && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
+            var domainBindedEvents = processManagerType.GetProperties()
+                                                       .Where(p => p.PropertyType.IsConstructedGenericType
+                                                                   && (p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>) ||
+                                                                       p.PropertyType.GetGenericTypeDefinition() == typeof(StartEvent<>)));
             foreach (var prop in domainBindedEvents)
             {
                 var domainEventType = prop.PropertyType.GetGenericArguments().First();
+                descriptor.AddAcceptedMessage(domainEventType);
+                if(prop.PropertyType.GetGenericTypeDefinition() == typeof(StartEvent<>))
+                    descriptor.AddStartMessage(domainEventType);
+            }
+
+            return descriptor;
+        }
+
+        public static ProcessDescriptor<TProcess, TState> CreateDescriptor<TProcess, TState>()
+            where TState : class, IProcessState
+            where TProcess : Process<TState>
+        {
+            var descriptor = new ProcessDescriptor<TProcess, TState>();
+
+            var domainBindedEvents =
+                typeof(TProcess).GetProperties()
+                                .Where(p => p.PropertyType.IsConstructedGenericType
+                                            && p.PropertyType.GetGenericTypeDefinition() == typeof(Event<>));
+            foreach (var prop in domainBindedEvents)
+            {
+                var domainEventType = prop.PropertyType.GetGenericArguments()
+                                          .First();
                 descriptor.AddAcceptedMessage(domainEventType);
             }
 

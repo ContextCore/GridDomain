@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Automatonymous;
 using GridDomain.CQRS;
 using GridDomain.ProcessManagers;
@@ -9,6 +10,9 @@ using Serilog;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
+   
+
+  
     public class SoftwareProgrammingProcess : Process<SoftwareProgrammingState>
     {
         public static readonly IProcessManagerDescriptor Descriptor = CreateDescriptor();

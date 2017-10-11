@@ -16,12 +16,12 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             _log = log;
         }
 
-        public IProcessManager<TestState> Create(TestState message)
+        public IProcessInstance<TestState> Create(TestState message)
         {
             return new ProcessManager<TestState>(new AsyncLongRunningProcess(), message, _log);
         }
 
-        public IProcessManager<TestState> CreateNew(BalloonCreated message, Guid? processId = null)
+        public IProcessInstance<TestState> CreateNew(BalloonCreated message, Guid? processId = null)
         {
             return Create(new TestState(processId ?? message.ProcessId, nameof(AsyncLongRunningProcess.Initial)));
         }

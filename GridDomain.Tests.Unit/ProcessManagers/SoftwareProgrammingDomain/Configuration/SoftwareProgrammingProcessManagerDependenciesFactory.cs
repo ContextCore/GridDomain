@@ -6,7 +6,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Config
 {
     public class SoftwareProgrammingProcessManagerDependenciesFactory: DefaultProcessManagerDependencyFactory<SoftwareProgrammingState>
     {
-        public SoftwareProgrammingProcessManagerDependenciesFactory(ILogger log):base(new SoftwareProgrammingProcessManagerFactory(log), SoftwareProgrammingProcess.Descriptor)
+        public SoftwareProgrammingProcessManagerDependenciesFactory(ILogger log):base(new SoftwareProgrammingProcessStateFactory(log), SoftwareProgrammingProcess.Descriptor)
         {
             
         }

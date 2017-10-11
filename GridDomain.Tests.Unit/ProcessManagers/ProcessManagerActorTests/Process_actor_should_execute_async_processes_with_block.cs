@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             Sys.AddDependencyResolver(new AutoFacDependencyResolver(container.Build(), Sys));
 
             var name = AggregateActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
-            _processActor = ActorOfAsTestActorRef(() => new ProcessManagerActor<TestState>(producer),
+            _processActor = ActorOfAsTestActorRef(() => new ProcessActor<TestState>(producer),
                                                   name);
         }
 

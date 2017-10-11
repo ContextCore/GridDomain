@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
@@ -6,43 +7,19 @@ using Serilog;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingProcessManagerFactory : IProcessManagerCreator<SoftwareProgrammingState>,
-                                                  IProcessManagerCreator<SoftwareProgrammingState, GotTiredEvent>,
-                                                  IProcessManagerCreator<SoftwareProgrammingState, SleptWellEvent>
+    public class SoftwareProgrammingProcessStateFactory : IProcessStateFactory<SoftwareProgrammingState>
     {
-        private readonly ILogger _log;
-
-        public SoftwareProgrammingProcessManagerFactory(ILogger log)
+        public SoftwareProgrammingState Create(object message, SoftwareProgrammingState state)
         {
-            _log = log;
-        }
+            switch (message)
+            {
+                //creating new process instance from a start message
+                case SleptWellEvent e: return new SoftwareProgrammingState(Guid.NewGuid(), nameof(SoftwareProgrammingProcess.Coding));
+                //creating new process instance from a start message
+                case GotTiredEvent e: return new SoftwareProgrammingState(Guid.NewGuid(), nameof(SoftwareProgrammingProcess.Coding));
+            }
+            return state;
 
-        /// <summary>
-        /// Creates new process from start message
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="processId">id of creating process</param>
-        /// <returns></returns>
-        public virtual IProcessManager<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? processId = null)
-        {
-            return Create(new SoftwareProgrammingState(processId ?? Guid.NewGuid(),
-                                                           nameof(SoftwareProgrammingProcess.Coding)));
-        }
-
-        public virtual IProcessManager<SoftwareProgrammingState> Create(SoftwareProgrammingState message)
-        {
-            return new ProcessManager<SoftwareProgrammingState>(new SoftwareProgrammingProcess(), message, _log);
-        }
-
-        /// <summary>
-        /// Creates new process from start message
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public virtual IProcessManager<SoftwareProgrammingState> CreateNew(SleptWellEvent message, Guid? processId = null)
-        {
-            return Create(new SoftwareProgrammingState(processId ?? Guid.NewGuid(),
-                                                           nameof(SoftwareProgrammingProcess.Coding)));
         }
     }
 }

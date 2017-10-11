@@ -35,13 +35,14 @@ namespace GridDomain.Node.Configuration.Composition
                  .Wait();
         }
 
-        public void RegisterProcessManager<TState>(IProcessManagerDependencyFactory<TState> factory) where TState : class, IProcessState
+        public void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> factory) where TState : class, IProcessState
         {
-            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(factory.CreateCatalog,
-                                                                         factory.ProcessName,
-                                                                         () => factory.StateDependencyFactory.CreatePersistencePolicy(),
-                                                                         factory.StateDependencyFactory.CreateAggregateFactory(),
-                                                                         factory.StateDependencyFactory.CreateRecycleConfiguration()));
+            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(factory.CreateStateFactory,
+                                                                                 factory.CreateProcess,
+                                                                                 factory.ProcessName,
+                                                                                 () => factory.StateDependencyFactory.CreatePersistencePolicy(),
+                                                                                 factory.StateDependencyFactory.CreateAggregateFactory(),
+                                                                                 factory.StateDependencyFactory.CreateRecycleConfiguration()));
             _maps.Add(factory.CreateRouteMap());
         }
 

@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
             var given = new Given_Automatonymous_Process(m => m.Coding, _log);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var newState = await ((IProcessManager<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(subscriptionExpiredEvent);
+            var newState = await ((IProcessInstance<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(subscriptionExpiredEvent);
 
             Assert.NotEmpty(newState.ProducedCommands);
         }
@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
             var given = new Given_Automatonymous_Process(m => m.Coding, _log);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var newState = await ((IProcessManager<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(subscriptionExpiredEvent);
+            var newState = await ((IProcessInstance<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(subscriptionExpiredEvent);
 
             Assert.Equal(subscriptionExpiredEvent.SourceId, newState.State.PersonId);
         }
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         public async Task State_in_transition_result_is_changed()
         {
             var given = new Given_Automatonymous_Process(m => m.MakingCoffee, _log);
-            var newState = await ((IProcessManager<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
+            var newState = await ((IProcessInstance<SoftwareProgrammingState>) given.ProcessManagerInstance).Transit(new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), newState.State.CurrentStateName);
         }
 

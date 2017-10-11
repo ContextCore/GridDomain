@@ -20,14 +20,6 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         }
 
         [Fact]
-        public void Descriptor_contains_all_command_types_from_process()
-        {
-            var expectedCommands = new[] {typeof(MakeCoffeCommand), typeof(GoSleepCommand)};
-
-            Assert.Equal(expectedCommands, _descriptor.ProduceCommands.ToArray());
-        }
-
-        [Fact]
         public void Descriptor_contains_all_domain_event_types_from_process()
         {
             var expectedEvents = new[]

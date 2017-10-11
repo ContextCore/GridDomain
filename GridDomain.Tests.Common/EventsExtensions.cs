@@ -107,7 +107,7 @@ namespace GridDomain.Tests.Common
                 sb.AppendLine("Received events:");
                 sb.AppendLine(string.Join(";", published.Select(e => e.ToString())));
 
-                Assert.True(false, sb.ToString());
+                throw new ProducedEventsCountMismatchException(sb.ToString());
             }
 
             var eventPairs = expected.Zip(published, (e, p) => new {Expected = e, Produced = p});
@@ -119,7 +119,7 @@ namespace GridDomain.Tests.Common
                 var comparisonResult = compareLogic.Compare(events.Expected, events.Produced);
 
                 if (!comparisonResult.AreEqual)
-                    Assert.True(false, comparisonResult.DifferencesString);
+                    throw new ProducedEventsDifferException(comparisonResult.DifferencesString);
             }
         }
     }

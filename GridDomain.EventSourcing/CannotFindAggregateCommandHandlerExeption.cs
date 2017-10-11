@@ -2,7 +2,7 @@ using System;
 
 namespace GridDomain.EventSourcing
 {
-    internal class CannotFindAggregateCommandHandlerExeption : Exception
+    public class CannotFindAggregateCommandHandlerExeption : Exception
     {
         public CannotFindAggregateCommandHandlerExeption()
         {

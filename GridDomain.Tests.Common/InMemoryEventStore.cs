@@ -6,18 +6,13 @@ using GridDomain.EventSourcing.CommonDomain;
 namespace GridDomain.Tests.Common {
     class InMemoryEventStore : IEventStore
     {
-        public Task Persist(IReadOnlyCollection<DomainEvent> events)
+        public Task Persist(IAggregate aggregate)
         {
-            _events.AddRange(events);
+            _events.AddRange(aggregate.GetUncommittedEvents());
             return Task.CompletedTask;
         }
 
-        public Task Persist(IAggregate aggregate)
-        {
-            return Persist(aggregate.GetUncommittedEvents());
-        }
-
-        private List<DomainEvent> _events = new List<DomainEvent>();
+        private readonly List<DomainEvent> _events = new List<DomainEvent>();
         public IReadOnlyCollection<DomainEvent> Events => _events;
 
         public void Clear()

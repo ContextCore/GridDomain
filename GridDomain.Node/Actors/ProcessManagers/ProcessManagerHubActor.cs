@@ -48,7 +48,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             return childActorId;
         }
 
-        protected override Type ChildActorType { get; } = typeof(ProcessManagerActor<TState>);
+        protected override Type ChildActorType { get; } = typeof(ProcessActor<TState>);
 
         protected override void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
         {

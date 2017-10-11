@@ -6,6 +6,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
@@ -17,17 +18,19 @@ using Xunit;
 
 namespace GridDomain.Tests.Common
 {
-    public class ProcessScenario<TProcess, TState> where TProcess : Process<TState>
-                                             where TState : class, IProcessState
+    public class ProcessScenario<TState> where TState : class, IProcessState
     {
-        internal ProcessScenario(IProcessManagerCreatorCatalog<TState> ÒreatorCatalog)
+        private IProcessStateFactory<TState> StateFactory { get; }
+
+        internal ProcessScenario(IProcess<TState> process, IProcessStateFactory<TState> factory)
         {
-            ProcessManager—reatorCatalog = ÒreatorCatalog;
+            StateFactory = factory;
+            Process = process;
             StateAggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<TState>>(Guid.NewGuid());
         }
 
-        protected IProcessManagerCreatorCatalog<TState> ProcessManager—reatorCatalog { get; }
-        public IProcessManager<TState> ProcessManager { get; private set; }
+        protected IProcess<TState> Process { get; }
+        public TState State { get; private set; }
         protected ProcessStateAggregate<TState> StateAggregate { get; private set; }
 
         public ICommand[] ExpectedCommands { get; private set; } = { };
@@ -47,13 +50,13 @@ namespace GridDomain.Tests.Common
 
             return state;
         }
-        public ProcessScenario<TProcess, TState> Given(string stateName,
+        public ProcessScenario<TState> Given(string stateName,
                                                  Func<ICustomizationComposer<TState>, IPostprocessComposer<TState>> fixtureConfig = null)
         {
             return Given(NewState(stateName,fixtureConfig));
         }
 
-        public ProcessScenario<TProcess, TState> Given(params DomainEvent[] events)
+        public ProcessScenario<TState> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
             StateAggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<TState>>(Guid.NewGuid());
@@ -63,7 +66,7 @@ namespace GridDomain.Tests.Common
             return this;
         }
 
-        public ProcessScenario<TProcess, TState> Given(TState state)
+        public ProcessScenario<TState> Given(TState state)
         {
             Condition.NotNull(()=>state);
             InitialState = state;
@@ -72,35 +75,30 @@ namespace GridDomain.Tests.Common
             return this;
         }
 
-        public ProcessScenario<TProcess, TState> When(params DomainEvent[] events)
+        public ProcessScenario<TState> When(params DomainEvent[] events)
         {
             ReceivedEvents = events.Select(e => e.CloneForProcess(StateAggregate.Id)).ToArray();
             return this;
         }
 
-        public ProcessScenario<TProcess, TState> Then(params Command[] expectedCommands)
+        public ProcessScenario<TState> Then(params Command[] expectedCommands)
         {
             ExpectedCommands = expectedCommands.Select(c => c.CloneForProcess(StateAggregate.Id)).ToArray();
             return this;
         }
 
-        public async Task<ProcessScenario<TProcess, TState>> Run()
+        public async Task<ProcessScenario<TState>> Run()
         {
-            if (StateAggregate?.State != null)
-                ProcessManager = ProcessManager—reatorCatalog.Create(StateAggregate.State);
-
-            foreach (var evt in ReceivedEvents.Where(e => ProcessManager—reatorCatalog.CanCreateFrom(e)))
-                ProcessManager = ProcessManager—reatorCatalog.CreateNew(evt);
-
+            State = StateAggregate?.State;
+            
             //When
             var producedCommands = new List<Command>();
             foreach (var evt in ReceivedEvents)
-                //cast to allow dynamic to locate Transit method
+                
             {
-                Task<ProcessResult<TState>> newStateFromEventTask = ProcessManager.Transit((dynamic) evt);
-                var newState = await newStateFromEventTask;
+                var newState = await Process.Transit(evt,State);
                 producedCommands.AddRange(newState.ProducedCommands);
-                ProcessManager.State = newState.State;
+                State = newState.State;
             }
 
             //Then
@@ -109,9 +107,9 @@ namespace GridDomain.Tests.Common
             return this;
         }
 
-        public ProcessScenario<TProcess, TState> CheckProducedStateIsNotChanged()
+        public ProcessScenario<TState> CheckProducedStateIsNotChanged()
         {
-            EventsExtensions.CompareState(InitialState, ProcessManager.State);
+            EventsExtensions.CompareState(InitialState, State);
             return this;
         }
     }

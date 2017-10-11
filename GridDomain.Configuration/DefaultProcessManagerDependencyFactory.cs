@@ -7,38 +7,34 @@ using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Configuration {
-    public class DefaultProcessManagerDependencyFactory<TState> : IProcessManagerDependencyFactory<TState>
+    public class DefaultProcessDependencyFactory<TState> : IProcessDependencyFactory<TState>
         where TState : class, IProcessState
     {
-        private readonly IProcessManagerCreatorCatalog<TState> _processManager—reatorCatalog;
         public Func<IMessageRouteMap> RouteMapCreator { get; set; }
-       
-        public DefaultProcessManagerDependencyFactory(IProcessManagerCreatorCatalog<TState> catalog, string processName)
+        public Func<IProcessStateFactory<TState>> ProcessStateFactory { get; set; }
+        public Func<IProcess<TState>> ProcessFactory { get; set; }
+        public IProcessStateFactory<TState> CreateStateFactory()
         {
-            _processManager—reatorCatalog = catalog;
-            ProcessName = processName;
+            return ProcessStateFactory();
         }
-        public DefaultProcessManagerDependencyFactory(IProcessManagerCreator<TState> creator, IProcessManagerDescriptor descriptor):this(BuildCatalog(creator,descriptor),descriptor.ProcessType.BeautyName())
+
+        public IProcess<TState> CreateProcess()
+        {
+            return ProcessFactory();
+        }
+
+        public virtual ProcessStateDependencyFactory<TState> StateDependencyFactory { get; } = new ProcessStateDependencyFactory<TState>();
+
+
+        public DefaultProcessDependencyFactory(IProcessDescriptor descriptor)
         {
             RouteMapCreator = () => MessageRouteMap.New(descriptor);
+            ProcessName = descriptor.ProcessType.BeautyName();
         }
 
-        public IProcessManagerCreatorCatalog<TState> CreateCatalog()
-        {
-            return _processManager—reatorCatalog;
-        }
-
-        private static ProcessManager—reatorsCatalog<TState> BuildCatalog(IProcessManagerCreator<TState> factoryCreator, IProcessManagerDescriptor descriptor)
-        {
-            var producer = new ProcessManager—reatorsCatalog<TState>(descriptor, factoryCreator);
-            producer.RegisterAll(factoryCreator);
-            return producer;
-        }
-     
-        public virtual ProcessStateDependencyFactory<TState> StateDependencyFactory { get; } = new ProcessStateDependencyFactory<TState>();
         public string ProcessName { get; }
 
-        IAggregateDependencyFactory<ProcessStateAggregate<TState>> IProcessManagerDependencyFactory<TState>.StateDependencyFactory => StateDependencyFactory;
+        IAggregateDependencyFactory<ProcessStateAggregate<TState>> IProcessDependencyFactory<TState>.StateDependencyFactory => StateDependencyFactory;
         public virtual IMessageRouteMap CreateRouteMap()
         {
             return RouteMapCreator();

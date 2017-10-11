@@ -1,46 +1,44 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Automatonymous;
 using Automatonymous.Events;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.ProcessManagers
 {
-    public class Process<TState> : AutomatonymousStateMachine<TState> where TState : class, IProcessState
+    public abstract class Process<TState> : AutomatonymousStateMachine<TState>, IProcess<TState> where TState : class, IProcessState
     {
-        private readonly IDictionary<Type, Event> _messagesToEventsMap = new Dictionary<Type, Event>();
-        public Action<Command> DispatchCallback { get; set; }
-
-        protected Process(Action<Command> dispatchCallback = null)
+        protected Action<Command> Dispatch { get; private set; }
+        protected Process()
         {
-            DispatchCallback = dispatchCallback ?? (c => {});
             InstanceState(d => d.CurrentStateName);
-            foreach (var machineEvent in Events.Where(e =>
-                                                      {
-                                                          var type = e.GetType();
-                                                          return type.IsConstructedGenericType
-                                                                 && typeof(DataEvent<>).IsAssignableFrom(type.GetGenericTypeDefinition());
-                                                      }))
-            {
-                var domainEventType = machineEvent.GetType().GetGenericArguments().First();
-                _messagesToEventsMap[domainEventType] = machineEvent;
-            }
         }
-
-
-        protected void Dispatch(Command cmd)
+       
+        protected Task<ProcessResult<TState>> TransitMessage<TMessage>(Event<TMessage> evt, TMessage message, IProcessState state)
         {
-            DispatchCallback(cmd);
+            //TODO: find more performant variant
+            var newState = (TState)state.Clone();
+            var commandsToDispatch = new List<Command>();
+            Dispatch = c =>
+                               {
+                                   c.ProcessId = state.Id;
+                                   commandsToDispatch.Add(c);
+                               };
+
+            return this.RaiseEvent(newState, evt, message)
+                                    .ContinueWith(t =>
+                                                  {
+                                                      if(t.IsFaulted)
+                                                          throw new ProcessTransitionException(message, t.Exception);
+
+                                                      return new ProcessResult<TState>(newState, commandsToDispatch);
+                                                  });
         }
 
-        public Event<TMessage> GetMachineEvent<TMessage>(TMessage message)
-        {
-            Event ev;
-            if (!_messagesToEventsMap.TryGetValue(typeof(TMessage), out ev))
-                throw new UnbindedMessageReceivedException(message, typeof(TMessage));
-            return (Event<TMessage>) ev;
-        }
+        public abstract Task<ProcessResult<TState>> Transit(object message, TState state);
     }
 }

@@ -52,14 +52,14 @@ namespace GridDomain.Node
             return Task.CompletedTask;
         }
 
-        public Task RegisterProcess(IProcessManagerDescriptor processManagerDescriptor, string name = null)
+        public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
         {
-            var processActorType = typeof(ProcessManagerHubActor<>).MakeGenericType(processManagerDescriptor.StateType);
+            var processActorType = typeof(ProcessManagerHubActor<>).MakeGenericType(processDescriptor.StateType);
 
-            var processManagerActor = CreateDIActor(processActorType, name ?? processManagerDescriptor.ProcessType.BeautyName() + "_Hub");
+            var processManagerActor = CreateDIActor(processActorType, name ?? processDescriptor.ProcessType.BeautyName() + "_Hub");
             var processor = new SynchronousMessageProcessor<IProcessCompleted>(processManagerActor);
 
-            foreach (var acceptMsg in processManagerDescriptor.AcceptMessages)
+            foreach (var acceptMsg in processDescriptor.AcceptMessages)
                 _processCatalog.Add(acceptMsg.MessageType, processor);
 
             return Task.CompletedTask;

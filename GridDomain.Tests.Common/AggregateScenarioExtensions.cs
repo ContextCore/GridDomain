@@ -11,9 +11,14 @@ namespace GridDomain.Tests.Common {
         public static async Task<AggregateScenario<TAggregate>> Check<TAggregate>(this Task<AggregateScenario<TAggregate>> scenario) where TAggregate : Aggregate
         {
             var sc = await scenario;
-            Console.WriteLine(CollectDebugInfo(sc));
-            EventsExtensions.CompareEvents(sc.ExpectedEvents, sc.ProducedEvents);
-            return sc;
+            return sc.Check();
+        }
+
+        public static AggregateScenario<TAggregate> Check<TAggregate>(this AggregateScenario<TAggregate> scenario) where TAggregate : Aggregate
+        {
+            Console.WriteLine(CollectDebugInfo(scenario));
+            EventsExtensions.CompareEvents(scenario.ExpectedEvents, scenario.ProducedEvents);
+            return scenario;
         }
 
         private static string CollectDebugInfo<TAggregate>(AggregateScenario<TAggregate> sc) where TAggregate : Aggregate

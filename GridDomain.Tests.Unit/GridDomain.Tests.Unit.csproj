@@ -248,6 +248,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
@@ -283,6 +284,8 @@
     <Compile Include="Logging\LogForTestKitTests.cs" />
     <Compile Include="Logging\TestLogActor.cs" />
     <Compile Include="Logging\TestMessage.cs" />
+    <Compile Include="Scenario\ProcessScenarioTests.cs" />
+    <Compile Include="Scenario\AggregateScenarioTests.cs" />
     <Compile Include="TestActorSystem.cs" />
     <Compile Include="NodeConfigurationDebugExtensions.cs" />
     <Compile Include="ProcessManagers\BalloonAggregateFactory.cs" />

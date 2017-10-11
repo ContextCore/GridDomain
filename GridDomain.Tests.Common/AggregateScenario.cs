@@ -18,6 +18,11 @@ namespace GridDomain.Tests.Common
             return new AggregateScenario<TAggregate>(CreateAggregate<TAggregate>(), CreateCommandsHandler<TAggregate,TAggregateCommandsHandler>());
         }
 
+        public static AggregateScenario<TAggregate> New<TAggregate>() where TAggregate : CommandAggregate
+        {
+            return new AggregateScenario<TAggregate>(CreateAggregate<TAggregate>(), CommandAggregateHandler.New<TAggregate>());
+        }
+
         public static AggregateScenario<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler) where TAggregate : Aggregate
         {
             return new AggregateScenario<TAggregate>(CreateAggregate<TAggregate>(), handler);
@@ -44,6 +49,7 @@ namespace GridDomain.Tests.Common
         {
             CommandsHandler = handler ?? throw new ArgumentNullException(nameof(handler));
             Aggregate = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
+            Aggregate.InitEventStore(_eventStore);
         }
 
         private IAggregateCommandsHandler<TAggregate> CommandsHandler { get; }
@@ -78,7 +84,8 @@ namespace GridDomain.Tests.Common
             //When
             foreach (var cmd in GivenCommands)
             {
-               await CommandsHandler.ExecuteAsync(Aggregate, cmd, _eventStore);
+               Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd, _eventStore);
+               Aggregate.CommitAll();
             }
 
             //Then
