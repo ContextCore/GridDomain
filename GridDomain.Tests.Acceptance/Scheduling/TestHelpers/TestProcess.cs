@@ -10,7 +10,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         static TestProcess()
         {
             var descriptor = ProcessDescriptor.CreateDescriptor<TestProcess, TestProcessState>();
-            descriptor.AddStartMessage<TestProcessStartMessage>();
             descriptor.AddAcceptedMessage(typeof(TestEvent));
             Descriptor = descriptor;
         }

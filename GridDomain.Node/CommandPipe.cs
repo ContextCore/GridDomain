@@ -18,6 +18,7 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers.DomainBind;
+using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node
 {
@@ -43,7 +44,6 @@ namespace GridDomain.Node
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
         {
             var aggregateHubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);
-
             var aggregateActor = CreateDIActor(aggregateHubType, descriptor.AggregateType.BeautyName() + "_Hub");
 
             foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
@@ -54,10 +54,15 @@ namespace GridDomain.Node
 
         public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
         {
-            var processActorType = typeof(ProcessManagerHubActor<>).MakeGenericType(processDescriptor.StateType);
-
+            var processActorType = typeof(ProcessHubActor<>).MakeGenericType(processDescriptor.StateType);
             var processManagerActor = CreateDIActor(processActorType, name ?? processDescriptor.ProcessType.BeautyName() + "_Hub");
+
+            var processStateHubType = typeof(ProcessStateHubActor<>).MakeGenericType(processDescriptor.StateType);
+            //will be consumed in ProcessActor
+            var processStateHubActor = CreateDIActor(processStateHubType, processDescriptor.StateType.BeautyName() + "_Hub");
+
             var processor = new SynchronousMessageProcessor<IProcessCompleted>(processManagerActor);
+
 
             foreach (var acceptMsg in processDescriptor.AcceptMessages)
                 _processCatalog.Add(acceptMsg.MessageType, processor);

@@ -8,7 +8,7 @@ namespace GridDomain.Configuration
 {
     public interface IDomainBuilder
     {
-        void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> factory)where TState : class, IProcessState;
+        void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory)where TState : class, IProcessState;
         void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate;
         void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage>
                                                                                                      where TMessage : class, IHaveProcessId, IHaveId;

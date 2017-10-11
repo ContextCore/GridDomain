@@ -3,9 +3,7 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
-using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.PersistentHub;
-using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Actors.Aggregates

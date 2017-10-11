@@ -48,7 +48,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         [Fact]
         public async Task Null_message_Exception_occurs()
         {
-            await Assert.ThrowsAsync<UnbindedMessageReceivedException>(() => _given.Process
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _given.Process
                                                                              .Transit(_given.State, null));
         }
 

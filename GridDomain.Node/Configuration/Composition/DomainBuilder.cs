@@ -11,10 +11,24 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.Hadlers;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Configuration.Composition
 {
+    class ProcessStateAggregateConfiguration<TState> : AggregateConfiguration<ProcessStateActor<TState>, ProcessStateAggregate<TState>> where TState : IProcessState
+    {
+        internal ProcessStateAggregateConfiguration(IAggregateDependencyFactory<ProcessStateAggregate<TState>> factory) : base(factory)
+        {
+        }
+
+        protected override void RegisterHub(ContainerBuilder container)
+        {
+            container.Register<ProcessStateHubActor<TState>>(c => new ProcessStateHubActor<TState>(AggregateDependencyFactory.CreateRecycleConfiguration()));
+        }
+    }
+
     public class DomainBuilder : IDomainBuilder
     {
         private readonly List<IMessageRouteMap> _maps = new List<IMessageRouteMap>();
@@ -30,28 +44,35 @@ namespace GridDomain.Node.Configuration.Composition
 
         public void Configure(IMessagesRouter router)
         {
-            foreach (var m in (IReadOnlyCollection<IMessageRouteMap>) _maps)
+            foreach (var m in _maps)
                 m.Register(router)
                  .Wait();
         }
 
-        public void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> factory) where TState : class, IProcessState
+        public void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory) where TState : class, IProcessState
         {
-            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(factory.CreateStateFactory,
-                                                                                 factory.CreateProcess,
-                                                                                 factory.ProcessName,
-                                                                                 () => factory.StateDependencyFactory.CreatePersistencePolicy(),
-                                                                                 factory.StateDependencyFactory.CreateAggregateFactory(),
-                                                                                 factory.StateDependencyFactory.CreateRecycleConfiguration()));
-            _maps.Add(factory.CreateRouteMap());
+            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(processDependenciesfactory));
+            _maps.Add(processDependenciesfactory.CreateRouteMap());
+
+
+            //   RegisterStateAggregate<ProcessStateActor<TState>>(container);
+            //    container.Register<ProcessStateActor<TState>>(c => new ProcessStateActor<TState>(persistentChildsRecycleConfiguration, process.GetType().BeautyName()));
+            //var persistentChildsRecycleConfiguration = _processDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration();
+            //container.Register<ProcessManagerHubActor<TState>>(c => new ProcessManagerHubActor<TState>(persistentChildsRecycleConfiguration, process.GetType().BeautyName()));
+            //for direct access to process state from repositories and for generalization
+            //RegisterAggregate<ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencyFactory);
+
+            var stateConfig = new ProcessStateAggregateConfiguration<TState>(processDependenciesfactory.StateDependencyFactory);
+            _containerConfigurations.Add(stateConfig);
+            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<ProcessStateAggregate<TState>>, ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencyFactory));
+
+            _maps.Add(processDependenciesfactory.StateDependencyFactory.CreateRouteMap());
         }
 
+      
         public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
         {
-            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(factory.CreateCommandsHandler(),
-                                                                                                            factory.CreatePersistencePolicy,
-                                                                                                            factory.CreateAggregateFactory(),
-                                                                                                            factory.CreateRecycleConfiguration()));
+            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(factory));
             _maps.Add(factory.CreateRouteMap());
 
         }

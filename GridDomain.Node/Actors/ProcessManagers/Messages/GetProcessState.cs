@@ -1,9 +1,17 @@
+using System;
+using GridDomain.Common;
+using GridDomain.ProcessManagers;
+
 namespace GridDomain.Node.Actors.ProcessManagers.Messages
 {
     class GetProcessState
     {
-        private GetProcessState() {}
+        public Guid Id { get; }
 
-        public static readonly GetProcessState Instance = new GetProcessState();
+        public GetProcessState(Guid id)
+        {
+            Id = id;
+        }
+
     }
 }

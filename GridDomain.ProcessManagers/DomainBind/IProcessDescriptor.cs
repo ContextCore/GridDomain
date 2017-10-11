@@ -7,7 +7,6 @@ namespace GridDomain.ProcessManagers.DomainBind
     {
         //TODO: enforce check all messages are DomainEvents
         IReadOnlyCollection<MessageBind> AcceptMessages { get; }
-        IReadOnlyCollection<Type> StartMessages { get; }
         Type StateType { get; }
         Type ProcessType { get; }
     }

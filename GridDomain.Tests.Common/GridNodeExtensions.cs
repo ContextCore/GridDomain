@@ -144,10 +144,10 @@ namespace GridDomain.Tests.Common
         }
 
         public static async Task<IActorRef> LookupProcessActor<TProcess, TData>(this GridDomainNode node,
-                                                                          Guid id,
-                                                                          TimeSpan? timeout = null) where TData : IProcessState
+                                                                               Guid id,
+                                                                               TimeSpan? timeout = null) where TData : IProcessState
         {
-            var name = AggregateActorName.New<TData>(id).Name;
+            var name = AggregateActorName.New<TProcess>(id).Name;
             var type = typeof(TProcess).BeautyName();
             return await node.ResolveActor($"{type}_Hub/{name}", timeout);
         }

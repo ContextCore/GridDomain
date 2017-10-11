@@ -22,8 +22,6 @@ namespace GridDomain.ProcessManagers {
 
         public IReadOnlyCollection<MessageBind> AcceptMessages => _descriptor.AcceptMessages;
 
-        public IReadOnlyCollection<Type> StartMessages => _descriptor.StartMessages;
-
         public Type StateType => _descriptor.StateType;
 
         public Type ProcessType => _descriptor.ProcessType;

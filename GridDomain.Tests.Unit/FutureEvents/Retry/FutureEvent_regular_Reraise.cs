@@ -37,8 +37,8 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
             Node.Transport.Subscribe<MessageMetadataEnvelop>(TestActor);
 
             //job will be retried one time, but aggregate will fail permanently due to error on apply method
-            FishForMessage<MessageMetadataEnvelop>(m => m.Message is JobFailed);
-            FishForMessage<MessageMetadataEnvelop>(m => m.Message is JobFailed);
+            FishForMessage<MessageMetadataEnvelop>(m => m.Message is JobFailed, TimeSpan.FromSeconds(10));
+            FishForMessage<MessageMetadataEnvelop>(m => m.Message is JobFailed, TimeSpan.FromSeconds(10));
         }
     }
 }

@@ -11,12 +11,12 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 {
     public class Given_process_When_extracting_descriptor
     {
-        private readonly IProcessDescriptor _descriptor = ProcessDescriptor.ScanByConvention(typeof(SoftwareProgrammingProcess));
+        private IProcessDescriptor Descriptor { get; } =  ProcessDescriptor.ScanByConvention(typeof(SoftwareProgrammingProcess));
 
         [Fact]
         public void Descriptor_can_be_created_from_process()
         {
-            Assert.NotNull(_descriptor);
+            Assert.NotNull(Descriptor);
         }
 
         [Fact]
@@ -31,13 +31,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                      typeof(CoffeMakeFailedEvent)
                                  };
 
-            Assert.Equal(expectedEvents, _descriptor.AcceptMessages.Select(m => m.MessageType).ToArray());
-        }
-
-        [Fact]
-        public void Descriptor_contains_message_start_process()
-        {
-            Assert.Equal(new[] {typeof(GotTiredEvent), typeof(SleptWellEvent)}, _descriptor.StartMessages.ToArray());
+            Assert.Equal(expectedEvents, Descriptor.AcceptMessages.Select(m => m.MessageType).ToArray());
         }
 
         [Fact]
@@ -52,19 +46,19 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                      nameof(Fault.ProcessId)
                                  };
 
-            Assert.Equal(expectedEvents, _descriptor.AcceptMessages.Select(m => m.CorrelationField));
+            Assert.Equal(expectedEvents, Descriptor.AcceptMessages.Select(m => m.CorrelationField));
         }
 
         [Fact]
         public void Descriptor_contains_process_data_type()
         {
-            Assert.Equal(typeof(SoftwareProgrammingState), _descriptor.StateType);
+            Assert.Equal(typeof(SoftwareProgrammingState), Descriptor.StateType);
         }
 
         [Fact]
         public void Descriptor_contains_process_machine_type()
         {
-            Assert.Equal(typeof(SoftwareProgrammingProcess), _descriptor.ProcessType);
+            Assert.Equal(typeof(SoftwareProgrammingProcess), Descriptor.ProcessType);
         }
     }
 }

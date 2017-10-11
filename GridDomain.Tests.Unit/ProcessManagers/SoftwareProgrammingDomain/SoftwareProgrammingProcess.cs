@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                    When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding));
         }
 
-        public StartEvent<GotTiredEvent> GotTired { get; private set; }
+        public Event<GotTiredEvent> GotTired { get; private set; }
         public Event<CoffeMadeEvent> CoffeReady { get; private set; }
         public Event<SleptWellEvent> SleptWell { get; private set; }
         public Event<Fault<GoSleepCommand>> SleptBad { get; private set; }

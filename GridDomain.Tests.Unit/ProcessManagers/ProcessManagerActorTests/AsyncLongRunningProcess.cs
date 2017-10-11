@@ -28,7 +28,6 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             get
             {
                 var descriptor = ProcessDescriptor.CreateDescriptor<AsyncLongRunningProcess, TestState>();
-                descriptor.AddStartMessage<BalloonCreated>();
                 descriptor.AddAcceptedMessage<BalloonTitleChanged>();
                 return descriptor;
             }

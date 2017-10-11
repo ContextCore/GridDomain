@@ -13,17 +13,15 @@ using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {
-    public class ProcessManagerHubActor<TState> : PersistentHubActor where TState : class, IProcessState
+    public class ProcessHubActor<TState> : PersistentHubActor where TState : class, IProcessState
     {
-        private readonly ProcessEntry _redirectEntry;
-
-        public ProcessManagerHubActor(IPersistentChildsRecycleConfiguration recycleConf): base(recycleConf, typeof(TState).Name)
+        public ProcessHubActor(IPersistentChildsRecycleConfiguration recycleConf, string processName): base(recycleConf, processName)
         {
-            _redirectEntry = new ProcessEntry(Self.Path.Name, "Forwarding to new child", "New process was created");
+            var redirectEntry = new ProcessEntry(Self.Path.Name, "Forwarding to new child", "New process was created");
 
             Receive<ProcessRedirect>(redirect =>
                                        {
-                                           redirect.MessageToRedirect.Metadata.History.Add(_redirectEntry);
+                                           redirect.MessageToRedirect.Metadata.History.Add(redirectEntry);
                                            var name = GetChildActorName(redirect.ProcessId);
                                            SendToChild(redirect, redirect.ProcessId, name, Sender);
                                        });
@@ -59,8 +57,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
                       .ContinueWith(t =>
                                     {
                                         t.Result.Match()
-                                         .With<ProcessRedirect>(r => self.Tell(r, msgSender))
-                                         .Default(r => msgSender.Tell(r, msgSender));
+                                                .With<ProcessRedirect>(r => self.Tell(r, msgSender))
+                                                .Default(r => msgSender.Tell(r));
                                     });
         }
     }

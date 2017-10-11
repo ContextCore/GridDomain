@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
             {
                 return
-                    system.DI().Props<ProcessManagerHubActor<SoftwareProgrammingState>>();
+                    system.DI().Props<ProcessHubActor<SoftwareProgrammingState>>();
             }
 
             public object ChildCreateMessage { get; }
