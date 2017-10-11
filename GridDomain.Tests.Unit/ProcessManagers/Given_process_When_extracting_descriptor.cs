@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 {
     public class Given_process_When_extracting_descriptor
     {
-        private readonly IProcessManagerDescriptor _descriptor = SoftwareProgrammingProcess.Descriptor;
+        private readonly IProcessDescriptor _descriptor = ProcessDescriptor.ScanByConvention(typeof(SoftwareProgrammingProcess));
 
         [Fact]
         public void Descriptor_can_be_created_from_process()

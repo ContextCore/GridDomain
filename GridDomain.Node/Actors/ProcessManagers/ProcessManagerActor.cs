@@ -59,8 +59,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             Monitor = new ActorMonitor(Context, "Process" + typeof(TState).Name);
             Behavior = new BehaviorQueue(Become);
 
-            Guid id;
-            if(!AggregateActorName.TryParseId(Self.Path.Name, out id))
+            if(!AggregateActorName.TryParseId(Self.Path.Name, out var id))
                 throw new BadNameFormatException();
             Id = id;
 
@@ -231,7 +230,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 processingEnvelop = messageEnvelop;
                 processingMessageSender = Sender;
 
-                Process.Transit(messageEnvelop.Message, State).PipeTo(Self);
+                Process.Transit(State, messageEnvelop.Message).PipeTo(Self);
             });
 
             ReceiveAsync<ProcessResult<TState>>(transitionResult =>
@@ -304,11 +303,11 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
     internal class CannotGetProcessIdFromMessageException : Exception
     {
-        public object Message { get; }
+        public object Msg { get; }
 
         public CannotGetProcessIdFromMessageException(object msg)
         {
-            Message = msg;
+            Msg = msg;
         }
     }
 }

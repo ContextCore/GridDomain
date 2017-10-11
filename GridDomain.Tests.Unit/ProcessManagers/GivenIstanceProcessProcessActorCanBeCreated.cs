@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         [Fact]
         public void Instance_process_actor_can_be_created()
         {
-            var actorType = typeof(ProcessManagerActor<SoftwareProgrammingState>);
+            var actorType = typeof(ProcessActor<SoftwareProgrammingState>);
             var props = Node.System.DI().Props(actorType);
             var name = new AggregateActorName(typeof(ProcessStateAggregate<SoftwareProgrammingState>), Guid.NewGuid()).ToString();
             var actor = Node.System.ActorOf(props, name);

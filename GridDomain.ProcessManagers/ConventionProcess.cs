@@ -15,7 +15,7 @@ namespace GridDomain.ProcessManagers {
             _descriptor = ProcessDescriptor.ScanByConvention(processType);
         }
 
-        public override Task<ProcessResult<TState>> Transit(object message, TState state)
+        public override Task<ProcessResult<TState>> Transit(TState state, object message)
         {
             return _transitionRouter.Dispatch(this, state, message);
         }

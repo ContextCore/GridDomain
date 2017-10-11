@@ -4,11 +4,12 @@ using Serilog;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Configuration
 {
-    public class SoftwareProgrammingProcessManagerDependenciesFactory: DefaultProcessManagerDependencyFactory<SoftwareProgrammingState>
+    public class SoftwareProgrammingProcessManagerDependenciesFactory: DefaultProcessDependencyFactory<SoftwareProgrammingState>
     {
-        public SoftwareProgrammingProcessManagerDependenciesFactory(ILogger log):base(new SoftwareProgrammingProcessStateFactory(log), SoftwareProgrammingProcess.Descriptor)
+        public SoftwareProgrammingProcessManagerDependenciesFactory():base(new SoftwareProgrammingProcess())
         {
-            
+            ProcessFactory = () => new SoftwareProgrammingProcess();
+            ProcessStateFactory = () => new SoftwareProgrammingProcessStateFactory();
         }
     }
 }

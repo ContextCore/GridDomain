@@ -19,7 +19,6 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Configuration;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
-using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 using GridDomain.Transport.Remote;
@@ -31,36 +30,45 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         private static readonly Guid ProcessFixedId = Guid.NewGuid();
 
         public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
-            : base(new KnownProcessIdFixture(output,ProcessFixedId).UseSqlPersistence()
-                                                         .InitSnapshots(2, TimeSpan.FromSeconds(10))
-                                                         .IgnoreCommands()) { }
+            : base(new KnownProcessIdFixture(output, ProcessFixedId).UseSqlPersistence()
+                                                                    .InitSnapshots(2, TimeSpan.FromSeconds(10))
+                                                                    .IgnoreCommands()) { }
 
         private class KnownProcessIdFixture : SoftwareProgrammingProcessManagerFixture
         {
-            class FixedProcessIdFactory : SoftwareProgrammingProcessStateFactory
+            class FixedProcessIdFactory : IProcessStateFactory<SoftwareProgrammingState>
             {
                 private readonly Guid _staticId;
 
-                public FixedProcessIdFactory(ILogger log, Guid staticId) : base(log)
+                public FixedProcessIdFactory(Guid staticId)
                 {
                     _staticId = staticId;
                 }
 
-                public override IProcessInstance<SoftwareProgrammingState> CreateNew(GotTiredEvent message, Guid? processId = null)
+                public SoftwareProgrammingState Create(object message, SoftwareProgrammingState state)
                 {
-                    return base.CreateNew(message, _staticId);
+                    switch (message)
+                    {
+                        //creating new process instance from a start message
+                        case SleptWellEvent e: return new SoftwareProgrammingState(_staticId, nameof(SoftwareProgrammingProcess.Coding));
+                        //creating new process instance from a start message
+                        case GotTiredEvent e: return new SoftwareProgrammingState(_staticId, nameof(SoftwareProgrammingProcess.Coding));
+                    }
+                    return state;
                 }
             }
 
-            class FixedIdProcessDependencyFactory : DefaultProcessManagerDependencyFactory<SoftwareProgrammingState>
+            class FixedIdProcessDependencyFactory : DefaultProcessDependencyFactory<SoftwareProgrammingState>
             {
-                public FixedIdProcessDependencyFactory(ILogger log, Guid staticId) : base(new FixedProcessIdFactory(log, staticId), SoftwareProgrammingProcess.Descriptor) { }
+                public FixedIdProcessDependencyFactory(Guid staticId) : base(new SoftwareProgrammingProcess())
+                {
+                    ProcessStateFactory = () => new FixedProcessIdFactory(staticId);
+                }
             }
 
-            public KnownProcessIdFixture(ITestOutputHelper output, Guid fixedId):base(output)
+            public KnownProcessIdFixture(ITestOutputHelper output, Guid fixedId) : base(output)
             {
-                ProcessConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory =
-                    new FixedIdProcessDependencyFactory(Logger, fixedId);
+                ProcessConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory = new FixedIdProcessDependencyFactory(fixedId);
             }
         }
 
@@ -86,18 +94,18 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             //to avoid racy state receiving expected message from processing GotTiredEvent 
             await Node.NewDebugWaiter()
-                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e 
-                      => (e.Message as IMessageMetadataEnvelop)?.Message is CoffeMakeFailedEvent)
+                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e
+                                                                                    => (e.Message as IMessageMetadataEnvelop)?.Message is CoffeMakeFailedEvent)
                       .Create()
                       .SendToProcessManagers(continueEvent, processId);
 
-          
+
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(ProcessFixedId);
 
             this.Log.Info("Enforced additional snapshot save & delete");
 
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
+                                                                  new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Single(snapshots);
@@ -105,8 +113,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Assert.True(snapshots.All(s => s.Aggregate.Id == processId));
             //Snapshot_should_have_parameters_from_first_event = created event
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
-                snapshots.First()
-                         .Aggregate.State.CurrentStateName);
+                         snapshots.First()
+                                  .Aggregate.State.CurrentStateName);
             //All_snapshots_should_not_have_uncommited_events
             Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
         }

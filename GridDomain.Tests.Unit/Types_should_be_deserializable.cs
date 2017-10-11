@@ -70,7 +70,7 @@ namespace GridDomain.Tests.Unit
                                                                    Assembly.GetAssembly(typeof(SchedulingConfiguration)),
                                                                    Assembly.GetAssembly(typeof(ProcessReceivedMessage<>)),
                                                                    Assembly.GetAssembly(typeof(Balloon)),
-                                                                   Assembly.GetAssembly(typeof(IProcessManagerCreatorCatalog<>)),
+                                                                   Assembly.GetAssembly(typeof(IProcessStateFactory<>)),
                                                                    Assembly.GetAssembly(typeof(DomainEvent)),
                                                                    Assembly.GetAssembly(typeof(ExecutionOptions))
                                                                };

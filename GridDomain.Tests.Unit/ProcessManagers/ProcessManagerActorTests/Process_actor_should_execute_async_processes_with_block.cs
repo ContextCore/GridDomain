@@ -31,9 +31,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         public Process_actor_should_execute_async_processes_with_block(ITestOutputHelper output)
         {
             var logger =  new XUnitAutoTestLoggerConfiguration(output).CreateLogger(); 
-            var creator = new AsyncLongRunningProcessManagerFactory(logger);
-            var producer = new ProcessManager—reatorsCatalog<TestState>(AsyncLongRunningProcess.Descriptor, creator);
-            producer.RegisterAll(creator);
+            var creator = new AsyncLongRunningProcessManagerFactory();
 
             _localAkkaEventBusTransport = Sys.InitLocalTransportExtension().Transport;
             var blackHole = Sys.ActorOf(BlackHoleActor.Props);
@@ -50,11 +48,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             Sys.AddDependencyResolver(new AutoFacDependencyResolver(container.Build(), Sys));
 
             var name = AggregateActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
-            _processActor = ActorOfAsTestActorRef(() => new ProcessActor<TestState>(producer),
+            _processActor = ActorOfAsTestActorRef(() => new ProcessActor<TestState>(new AsyncLongRunningProcess(), creator),
                                                   name);
         }
 
-        private readonly TestActorRef<ProcessManagerActor<TestState>> _processActor;
+        private readonly TestActorRef<ProcessActor<TestState>> _processActor;
         private readonly Guid _processId;
         private readonly IActorTransport _localAkkaEventBusTransport;
 

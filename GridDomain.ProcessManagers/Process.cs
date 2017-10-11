@@ -39,6 +39,6 @@ namespace GridDomain.ProcessManagers
                                                   });
         }
 
-        public abstract Task<ProcessResult<TState>> Transit(object message, TState state);
+        public abstract Task<ProcessResult<TState>> Transit(TState state, object message);
     }
 }

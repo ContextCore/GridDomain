@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingProcessStateFactory : IProcessStateFactory<SoftwareProgrammingState>
     {
-        public SoftwareProgrammingState Create(object message, SoftwareProgrammingState state)
+        public virtual SoftwareProgrammingState Create(object message, SoftwareProgrammingState state)
         {
             switch (message)
             {
@@ -19,7 +19,6 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                 case GotTiredEvent e: return new SoftwareProgrammingState(Guid.NewGuid(), nameof(SoftwareProgrammingProcess.Coding));
             }
             return state;
-
         }
     }
 }

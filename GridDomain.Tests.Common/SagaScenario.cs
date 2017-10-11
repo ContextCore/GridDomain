@@ -96,7 +96,7 @@ namespace GridDomain.Tests.Common
             foreach (var evt in ReceivedEvents)
                 
             {
-                var newState = await Process.Transit(evt,State);
+                var newState = await Process.Transit(State, evt);
                 producedCommands.AddRange(newState.ProducedCommands);
                 State = newState.State;
             }

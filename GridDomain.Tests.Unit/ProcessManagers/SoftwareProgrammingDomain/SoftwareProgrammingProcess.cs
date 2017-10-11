@@ -10,14 +10,8 @@ using Serilog;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
-   
-
-  
-    public class SoftwareProgrammingProcess : Process<SoftwareProgrammingState>
+    public class SoftwareProgrammingProcess : ConventionProcess<SoftwareProgrammingState>
     {
-        public static readonly IProcessManagerDescriptor Descriptor = CreateDescriptor();
-        private readonly ILogger Log = Serilog.Log.ForContext<SoftwareProgrammingProcess>();
-
         public SoftwareProgrammingProcess()
         {
             During(Coding,
@@ -48,7 +42,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                    When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding));
         }
 
-        public Event<GotTiredEvent> GotTired { get; private set; }
+        public StartEvent<GotTiredEvent> GotTired { get; private set; }
         public Event<CoffeMadeEvent> CoffeReady { get; private set; }
         public Event<SleptWellEvent> SleptWell { get; private set; }
         public Event<Fault<GoSleepCommand>> SleptBad { get; private set; }
@@ -57,18 +51,5 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         public State Coding { get; private set; }
         public State MakingCoffee { get; private set; }
         public State Sleeping { get; private set; }
-
-        private static IProcessManagerDescriptor CreateDescriptor()
-        {
-            var descriptor = ProcessManagerDescriptor.CreateDescriptor<SoftwareProgrammingProcess, SoftwareProgrammingState>();
-
-            descriptor.AddStartMessage<GotTiredEvent>();
-            descriptor.AddStartMessage<SleptWellEvent>();
-
-            descriptor.AddCommand<MakeCoffeCommand>();
-            descriptor.AddCommand<GoSleepCommand>();
-
-            return descriptor;
-        }
     }
 }

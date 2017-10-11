@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Automatonymous;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.DomainBind;
@@ -8,7 +9,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
     {
         static TestProcess()
         {
-            var descriptor = ProcessManagerDescriptor.CreateDescriptor<TestProcess, TestProcessState>();
+            var descriptor = ProcessDescriptor.CreateDescriptor<TestProcess, TestProcessState>();
             descriptor.AddStartMessage<TestProcessStartMessage>();
             descriptor.AddAcceptedMessage(typeof(TestEvent));
             Descriptor = descriptor;
@@ -25,6 +26,15 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         public Event<TestEvent> Process { get; private set; }
 
         public State Started { get; set; }
-        public static IProcessManagerDescriptor Descriptor { get; }
+        public static IProcessDescriptor Descriptor { get; }
+        public override Task<ProcessResult<TestProcessState>> Transit(TestProcessState state, object message)
+        {
+            switch (message)
+            {
+                case TestProcessStartMessage e: return TransitMessage(Start, e, state);   
+                case TestEvent e: return TransitMessage(Process, e, state);   
+            }
+            throw new UnbindedMessageReceivedException(message);
+        }
     }
 }
