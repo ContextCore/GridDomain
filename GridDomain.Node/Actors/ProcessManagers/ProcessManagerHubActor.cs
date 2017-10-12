@@ -15,9 +15,12 @@ namespace GridDomain.Node.Actors.ProcessManagers
 {
     public class ProcessHubActor<TState> : PersistentHubActor where TState : class, IProcessState
     {
+        private readonly string _processName;
+
         public ProcessHubActor(IPersistentChildsRecycleConfiguration recycleConf, string processName): base(recycleConf, processName)
         {
-           // var redirectEntry = new ProcessEntry(Self.Path.Name, "Forwarding to new child", "New process was created");
+            _processName = processName;
+            // var redirectEntry = new ProcessEntry(Self.Path.Name, "Forwarding to new child", "New process was created");
 
             //Receive<ProcessRedirect>(redirect =>
             //                           {
@@ -29,7 +32,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         protected override string GetChildActorName(Guid childId)
         {
-            return AggregateActorName.New<TState>(childId).ToString();
+            return new EntityActorName(_processName,childId).ToString();
         }
 
        protected override Guid GetChildActorId(IMessageMetadataEnvelop env)

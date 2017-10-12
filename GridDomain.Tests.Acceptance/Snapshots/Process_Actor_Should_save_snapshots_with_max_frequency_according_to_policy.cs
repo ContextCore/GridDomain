@@ -60,9 +60,11 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             class FixedIdProcessDependencyFactory : DefaultProcessDependencyFactory<SoftwareProgrammingState>
             {
-                public FixedIdProcessDependencyFactory(Guid staticId) : base(new SoftwareProgrammingProcess())
+                public FixedIdProcessDependencyFactory(Guid staticId) : 
+                    base(new SoftwareProgrammingProcess(),
+                         () => new SoftwareProgrammingProcess(),
+                         () => new FixedProcessIdFactory(staticId))
                 {
-                    ProcessStateFactory = () => new FixedProcessIdFactory(staticId);
                 }
             }
 

@@ -34,7 +34,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             var serializer = new DomainSerializer();
             using (var repo = new RawSnapshotsRepository(option))
             {
-                return (await repo.Load(AggregateActorName.New<T>(id).
+                return (await repo.Load(EntityActorName.New<T>(id).
                                                            Name)).Select(s =>
                                                                          {
                                                                              var memento = (IMemento) serializer.FromBinary(s.Snapshot, typeof(IMemento));
@@ -53,7 +53,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
                 var item = new SnapshotItem
                            {
                                Manifest = snapshot.GetType().AssemblyQualifiedShortName(),
-                               PersistenceId = AggregateActorName.New<T>(aggregate.Id).Name,
+                               PersistenceId = EntityActorName.New<T>(aggregate.Id).Name,
                                Snapshot = new DomainSerializer().ToBinary(snapshot),
                                Timestamp = BusinessDateTime.UtcNow
                            };

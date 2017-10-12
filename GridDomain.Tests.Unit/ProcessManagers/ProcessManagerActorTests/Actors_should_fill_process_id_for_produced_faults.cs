@@ -68,7 +68,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
                                                                                          new SnapshotsPersistencePolicy(1, 5, null, null),
                                                                                          new AggregateFactory(),
                                                                                          handlersActor)),
-                            AggregateActorName.New<ProgrammerAggregate>(command.Id).Name);
+                            EntityActorName.New<ProgrammerAggregate>(command.Id).Name);
 
             actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 

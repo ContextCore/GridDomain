@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
         private IDomainConfiguration CreateDomainConfiguration()
         {
             var balloonDependencyFactory = new BalloonDependencyFactory() {RecycleConfigurationCreator = () => new TestPersistentChildsRecycleConfiguration()};
-            var processManagerDependenciesFactory = new SoftwareProgrammingProcessManagerDependenciesFactory();
+            var processManagerDependenciesFactory = new SoftwareProgrammingProcessDependenciesFactory();
             processManagerDependenciesFactory.StateDependencyFactory.RecycleConfigurationCreator = () => new TestPersistentChildsRecycleConfiguration();
 
             return new DomainConfiguration(b => b.RegisterAggregate(balloonDependencyFactory),

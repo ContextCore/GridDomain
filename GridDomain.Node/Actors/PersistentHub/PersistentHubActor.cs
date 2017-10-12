@@ -34,7 +34,7 @@ namespace GridDomain.Node.Actors.PersistentHub
 
             Receive<Terminated>(t =>
                                 {
-                                    if (!AggregateActorName.TryParseId(t.ActorRef.Path.Name, out var id))
+                                    if (!EntityActorName.TryParseId(t.ActorRef.Path.Name, out var id))
                                         return;
                                     if (Children.TryGetValue(id, out ChildInfo info) && info.PendingMessages.Any())
                                     {

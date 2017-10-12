@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         {
             var actorType = typeof(ProcessActor<SoftwareProgrammingState>);
             var props = Node.System.DI().Props(actorType);
-            var name = new AggregateActorName(typeof(ProcessStateAggregate<SoftwareProgrammingState>), Guid.NewGuid()).ToString();
+            var name = EntityActorName.New<ProcessStateAggregate<SoftwareProgrammingState>>(Guid.NewGuid()).ToString();
             var actor = Node.System.ActorOf(props, name);
             actor.Tell(new CheckHealth());
             ExpectMsg<HealthStatus>();

@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit
     {
         public static async Task<T> LoadAggregateByActor<T>(this TestKit kit, Guid id) where T : Aggregate
         {
-            var name = AggregateActorName.New<T>(id).ToString();
+            var name = EntityActorName.New<T>(id).ToString();
             var actor = await kit.LoadActor<AggregateActor<T>>(name);
             return actor.State;
         }

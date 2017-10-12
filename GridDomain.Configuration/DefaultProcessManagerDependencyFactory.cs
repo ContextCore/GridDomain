@@ -10,9 +10,9 @@ namespace GridDomain.Configuration {
     public class DefaultProcessDependencyFactory<TState> : IProcessDependencyFactory<TState>
         where TState : class, IProcessState
     {
-        public Func<IMessageRouteMap> RouteMapCreator { get; set; }
-        public Func<IProcessStateFactory<TState>> ProcessStateFactory { get; set; }
-        public Func<IProcess<TState>> ProcessFactory { get; set; }
+        private Func<IMessageRouteMap> RouteMapCreator { get; set; }
+        private Func<IProcessStateFactory<TState>> ProcessStateFactory { get; set; }
+        private Func<IProcess<TState>> ProcessFactory { get; set; }
         public IProcessStateFactory<TState> CreateStateFactory()
         {
             return ProcessStateFactory();
@@ -23,13 +23,16 @@ namespace GridDomain.Configuration {
             return ProcessFactory();
         }
 
-        public virtual ProcessStateDependencyFactory<TState> StateDependencyFactory { get; } = new ProcessStateDependencyFactory<TState>();
+        public ProcessStateDependencyFactory<TState> StateDependencyFactory { get; } = new ProcessStateDependencyFactory<TState>();
 
-
-        public DefaultProcessDependencyFactory(IProcessDescriptor descriptor)
+        public DefaultProcessDependencyFactory(IProcessDescriptor descriptor, 
+                                               Func<IProcess<TState>> processFactory,
+                                               Func<IProcessStateFactory<TState>> processStateFactory)
         {
             RouteMapCreator = () => MessageRouteMap.New(descriptor);
             ProcessName = descriptor.ProcessType.BeautyName();
+            ProcessFactory = processFactory;
+            ProcessStateFactory = processStateFactory;
         }
 
         public string ProcessName { get; }

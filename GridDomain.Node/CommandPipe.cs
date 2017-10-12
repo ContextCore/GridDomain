@@ -54,14 +54,14 @@ namespace GridDomain.Node
 
         public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
         {
-            var processActorType = typeof(ProcessHubActor<>).MakeGenericType(processDescriptor.StateType);
-            var processManagerActor = CreateDIActor(processActorType, name ?? processDescriptor.ProcessType.BeautyName() + "_Hub");
+            var processHubActorType = typeof(ProcessHubActor<>).MakeGenericType(processDescriptor.StateType);
+            var processHubActor = CreateDIActor(processHubActorType, name ?? processDescriptor.ProcessType.BeautyName() + "_Hub");
 
             var processStateHubType = typeof(ProcessStateHubActor<>).MakeGenericType(processDescriptor.StateType);
             //will be consumed in ProcessActor
             var processStateHubActor = CreateDIActor(processStateHubType, processDescriptor.StateType.BeautyName() + "_Hub");
 
-            var processor = new SynchronousMessageProcessor<IProcessCompleted>(processManagerActor);
+            var processor = new SynchronousMessageProcessor<IProcessCompleted>(processHubActor);
 
 
             foreach (var acceptMsg in processDescriptor.AcceptMessages)

@@ -20,13 +20,11 @@ namespace GridDomain.Node.Configuration.Composition
 {
     internal class ProcessManagerConfiguration<TState> : IContainerConfiguration where TState : class, IProcessState
     {
-        private readonly string _registrationName;
         private readonly IProcessDependencyFactory<TState> _processDependencyFactory;
 
         internal ProcessManagerConfiguration(IProcessDependencyFactory<TState> factory)
         {
             _processDependencyFactory = factory;
-            _registrationName = _processDependencyFactory.ProcessName;
         }
 
         //private void RegisterStateAggregate<TStateActorType>(ContainerBuilder container)
@@ -53,7 +51,7 @@ namespace GridDomain.Node.Configuration.Composition
                                                      });
 
             var persistentChildsRecycleConfiguration = _processDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration();
-            container.Register<ProcessHubActor<TState>>(c => new ProcessHubActor<TState>(persistentChildsRecycleConfiguration, process.GetType().BeautyName()));
+            container.Register<ProcessHubActor<TState>>(c => new ProcessHubActor<TState>(persistentChildsRecycleConfiguration, _processDependencyFactory.ProcessName));
 
 
             //for direct access to process state from repositories and for generalization

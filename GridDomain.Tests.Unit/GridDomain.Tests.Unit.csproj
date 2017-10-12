@@ -401,7 +401,7 @@
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\CoffeMachineAggregate.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\CoffeMachineCreated.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Commands\CreatePersonCommand.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessManagerDependenciesFactory.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessDependenciesFactory.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessDomainConfiguration.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\SoftwareDomainConfiguration.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />

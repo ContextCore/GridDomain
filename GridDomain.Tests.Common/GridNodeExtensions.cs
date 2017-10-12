@@ -97,7 +97,7 @@ namespace GridDomain.Tests.Common
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages)
             where TAggregate : Aggregate
         {
-            var name = AggregateActorName.New<TAggregate>(id).Name;
+            var name = EntityActorName.New<TAggregate>(id).Name;
             await node.SaveToJournal(name, messages);
         }
 
@@ -105,7 +105,7 @@ namespace GridDomain.Tests.Common
                                                                     Guid id,
                                                                     TimeSpan? timeout = null) where T : IAggregate
         {
-            var name = AggregateActorName.New<T>(id).Name;
+            var name = EntityActorName.New<T>(id).Name;
             return await node.ResolveActor($"{typeof(T).Name}_Hub/{name}", timeout);
         }
 
@@ -147,7 +147,7 @@ namespace GridDomain.Tests.Common
                                                                                Guid id,
                                                                                TimeSpan? timeout = null) where TData : IProcessState
         {
-            var name = AggregateActorName.New<TProcess>(id).Name;
+            var name = EntityActorName.New<TProcess>(id).Name;
             var type = typeof(TProcess).BeautyName();
             return await node.ResolveActor($"{type}_Hub/{name}", timeout);
         }

@@ -65,7 +65,7 @@ namespace GridDomain.Tests.Acceptance.Tools
                 _created = new BalloonCreated("initial value", _sourceId);
                 _changed = new BalloonTitleChanged("changed value", _sourceId);
 
-                var persistenceId = AggregateActorName.New<Balloon>(_sourceId).ToString();
+                var persistenceId = EntityActorName.New<Balloon>(_sourceId).ToString();
                 await eventRepo.Save(persistenceId, _created, _changed);
                 _aggregate = await aggrRepo.LoadAggregate<Balloon>(_sourceId);
 

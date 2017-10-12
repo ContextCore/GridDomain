@@ -49,7 +49,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             _aggregateId = Guid.NewGuid();
             _aggregateActor = sys.ActorOf(Props.Create(
                                                        () => new AggregateActor<Balloon>(new BalloonCommandHandler(), new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(), dummy)),
-                                          AggregateActorName.New<Balloon>(_aggregateId).ToString());
+                                          EntityActorName.New<Balloon>(_aggregateId).ToString());
         }
 
         class CustomHandlersActorDummy : ReceiveActor

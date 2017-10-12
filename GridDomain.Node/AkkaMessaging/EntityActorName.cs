@@ -3,33 +3,36 @@ using GridDomain.Common;
 
 namespace GridDomain.Node.AkkaMessaging
 {
-    public class AggregateActorName
+    public class EntityActorName
     {
         private static readonly string Separator = ":";
 
-        internal AggregateActorName(Type aggregateType, Guid id)
+        internal EntityActorName(string entityName, Guid id)
         {
             Id = id;
-            AggregateType = aggregateType;
-            Name = aggregateType.BeautyName() + Separator + id;
+            Name = entityName + Separator + id;
         }
 
-        public Type AggregateType { get; }
         public Guid Id { get; }
 
         public string Name { get; }
 
-        public static AggregateActorName New<T>(Guid id)
+        public static EntityActorName New<T>(Guid id)
         {
-            return new AggregateActorName(typeof(T), id);
+            return New(typeof(T), id);
         }
 
-        public static AggregateActorName Parse<T>(string value)
+        public static EntityActorName New(Type entityType, Guid id)
         {
-            var aggregateType = typeof(T);
-            var beautyName = aggregateType.BeautyName();
+            return new EntityActorName(entityType.BeautyName(), id);
+        }
+
+        public static EntityActorName Parse<T>(string value)
+        {
+            var entityType = typeof(T);
+            var beautyName = entityType.BeautyName();
             var id = Guid.Parse(value.Replace(beautyName + Separator, ""));
-            return new AggregateActorName(aggregateType, id);
+            return New(entityType, id);
         }
 
         public static bool TryParseId(string value, out Guid id)

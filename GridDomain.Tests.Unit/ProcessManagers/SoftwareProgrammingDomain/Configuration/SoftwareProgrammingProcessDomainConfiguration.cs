@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Config
 
         public SoftwareProgrammingProcessDomainConfiguration(ILogger log)
         {
-            SoftwareProgrammingProcessManagerDependenciesFactory = new SoftwareProgrammingProcessManagerDependenciesFactory();
+            SoftwareProgrammingProcessManagerDependenciesFactory = new SoftwareProgrammingProcessDependenciesFactory();
         }
         public void Register(IDomainBuilder builder)
         {

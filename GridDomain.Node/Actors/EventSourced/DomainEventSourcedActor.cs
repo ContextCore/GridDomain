@@ -30,7 +30,7 @@ namespace GridDomain.Node.Actors.EventSourced
             _snapshotsPolicy = policy;
           
             PersistenceId = Self.Path.Name;
-            Id = AggregateActorName.Parse<T>(Self.Path.Name)
+            Id = EntityActorName.Parse<T>(Self.Path.Name)
                                    .Id;
             State = (T) aggregateConstructor.Build(typeof(T), Id, null);
 
