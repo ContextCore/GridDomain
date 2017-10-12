@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             catalog.Add<BalloonTitleChanged>(new SyncProcessManagerProcessor(testProcessActorB));
             catalog.Add<BalloonTitleChanged>(new SyncProcessManagerProcessor(testProcessActorC));
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
             processPipeActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new BalloonCreated("1", Guid.NewGuid())));
@@ -72,7 +72,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var catalog = new ProcessorListCatalog<IProcessCompleted>();
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActor));
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
             var msg = MessageMetadataEnvelop.New<DomainEvent>(new Inherited());
@@ -91,7 +91,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var catalog = new ProcessorListCatalog<IProcessCompleted>();
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActor));
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
 

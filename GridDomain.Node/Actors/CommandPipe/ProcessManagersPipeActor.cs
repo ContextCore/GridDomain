@@ -18,13 +18,13 @@ namespace GridDomain.Node.Actors.CommandPipe
     ///     If message process policy is set to synchronized, will process such events one after one
     ///     Will process all other messages in parallel
     /// </summary>
-    public class ProcessManagersPipeActor : ReceiveActor
+    public class ProcessesPipeActor : ReceiveActor
     {
         public const string ProcessManagersPipeActorRegistrationName = nameof(ProcessManagersPipeActorRegistrationName);
         private readonly IProcessorListCatalog<IProcessCompleted> _catalog;
         private IActorRef _commandExecutionActor;
         private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
-        public ProcessManagersPipeActor(IProcessorListCatalog<IProcessCompleted> catalog)
+        public ProcessesPipeActor(IProcessorListCatalog<IProcessCompleted> catalog)
         {
             _catalog = catalog;
 
@@ -34,10 +34,10 @@ namespace GridDomain.Node.Actors.CommandPipe
                                     Sender.Tell(Initialized.Instance);
                                 });
             //part of events or fault from command execution
-            ReceiveAsync<IMessageMetadataEnvelop>(env =>
+            Receive<IMessageMetadataEnvelop>(env =>
                                                   {
                                                       Log.Debug("Start process managers for message {@env}", env);
-                                                      return Process(env).PipeTo(Self);
+                                                      Process(env).PipeTo(Self);
                                                   });
 
             Receive<ProcessTransitComplete>(m =>

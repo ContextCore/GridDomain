@@ -73,7 +73,6 @@ namespace GridDomain.Tests.Unit.Scenario
 
             var scenario = await AggregateScenario.New<ProgrammerAggregate>()
                                                   .Given(new PersonCreated(aggregateId, aggregateId))
-                                                  .Then(new PersonCreated(aggregateId, aggregateId))
                                                   .Run();
             //aggregate is changed 
             Assert.Equal(aggregateId, scenario.Aggregate.PersonId);

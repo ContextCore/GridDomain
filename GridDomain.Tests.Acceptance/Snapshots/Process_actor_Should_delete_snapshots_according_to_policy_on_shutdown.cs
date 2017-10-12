@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
             : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
                                                               .InitSnapshots(2)
-                                                              .IgnoreCommands()) { }
+                                                              .IgnorePipeCommands()) { }
 
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()

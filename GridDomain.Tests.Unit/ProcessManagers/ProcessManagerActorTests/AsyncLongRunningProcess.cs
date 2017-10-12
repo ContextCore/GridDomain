@@ -37,7 +37,12 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         public Event<BalloonTitleChanged> Progress { get; private set; }
         public override Task<ProcessResult<TestState>> Transit(TestState state, object message)
         {
-            throw new System.NotImplementedException();
+            switch (message)
+            {
+                case BalloonCreated m: return TransitMessage(Start, m, state);
+                case BalloonTitleChanged m: return TransitMessage(Progress, m, state);
+            }
+            throw new UnbindedMessageReceivedException(message);
         }
     }
 }

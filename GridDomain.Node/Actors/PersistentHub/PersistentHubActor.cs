@@ -34,8 +34,7 @@ namespace GridDomain.Node.Actors.PersistentHub
 
             Receive<Terminated>(t =>
                                 {
-                                    Guid id;
-                                    if (!AggregateActorName.TryParseId(t.ActorRef.Path.Name, out id))
+                                    if (!AggregateActorName.TryParseId(t.ActorRef.Path.Name, out var id))
                                         return;
                                     if (Children.TryGetValue(id, out ChildInfo info) && info.PendingMessages.Any())
                                     {
@@ -53,8 +52,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
             Receive<WarmUpChild>(m =>
                                  {
-                                     ChildInfo info;
-                                     var created = InitChild(m.Id, GetChildActorName(m.Id), out info);
+                                     var created = InitChild(m.Id, GetChildActorName(m.Id), out var info);
                                      var sender = Sender;
                                      sender.Tell(new WarmUpResult(info, created));
                                  });
@@ -82,10 +80,9 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         protected void SendToChild(object message, Guid childId, string name, IActorRef sender)
         {
-            ChildInfo knownChild;
             //TODO: refactor this suspicious logic of child terminaition cancel
             bool childWasCreated;
-            if (!(childWasCreated = InitChild(childId, name, out knownChild)))
+            if (!(childWasCreated = InitChild(childId, name, out var knownChild)))
             {
                 if (knownChild.Terminating)
                 {
@@ -134,7 +131,7 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         protected virtual void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
         {
-            knownChild.Ref.Tell(message);
+            knownChild.Ref.Tell(message, sender);
         }
 
         private void Clear()
@@ -157,8 +154,7 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         private void ShutdownChild(Guid childId)
         {
-            ChildInfo childInfo;
-            if (!Children.TryGetValue(childId, out childInfo))
+            if (!Children.TryGetValue(childId, out var childInfo))
                 return;
 
             childInfo.Ref.Tell(GracefullShutdownRequest.Instance);

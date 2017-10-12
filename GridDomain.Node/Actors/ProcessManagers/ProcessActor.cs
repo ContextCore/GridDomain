@@ -25,6 +25,37 @@ using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {
+
+
+    class ProcessCreationContext<TState>
+    {
+        public TState pendingState;
+        public IMessageMetadataEnvelop processingMessage;
+        public IActorRef processingMessageSender;
+
+        public void Clear()
+        {
+           pendingState = default(TState);
+           processingMessage = null;
+           processingMessageSender = null;
+        }
+    }
+
+    class ProcessTransitionContext<TState>
+    {
+        public IMessageMetadataEnvelop processingEnvelop;
+        public TState pendingState;
+        public IReadOnlyCollection<ICommand> producedCommands = new ICommand[] { };
+        public IActorRef processingMessageSender;
+
+        public void Clear()
+        {
+             processingEnvelop = null;
+             pendingState = default(TState);
+             producedCommands = new ICommand[] { };
+             processingMessageSender = null;
+        }
+    }
     //TODO: add status info, e.g. was any errors during execution or recover
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -48,7 +79,6 @@ namespace GridDomain.Node.Actors.ProcessManagers
         public IStash Stash { get; set; }
 
         private Guid Id { get; }
-
         public ProcessActor(IProcess<TState> process, IProcessStateFactory<TState> processStateFactory)
 
         {
@@ -116,6 +146,15 @@ namespace GridDomain.Node.Actors.ProcessManagers
         {
             Receive<IMessageMetadataEnvelop>(env =>
                                              {
+
+                                                 if (env.Message is ProcessRedirect redirect)
+                                                 {
+                                                     _log.Debug("Received redirected message");
+                                                     Self.Tell(redirect.MessageToRedirect, Sender);
+                                                     Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
+                                                     return;
+                                                 }
+
                                                  if (State == null)
                                                  {
                                                      Self.Tell(new CreateNewProcess(env), Sender);
@@ -137,14 +176,23 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                      Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
                                                  }
                                              });
-            //gor first message after new process creation
-            Receive<ProcessRedirect>(r =>
-                                     {
-                                         _log.Debug("Received redirected message");
-                                         Self.Tell(r.MessageToRedirect, Sender);
-                                         Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
-                                     });
-  
+            Receive<GracefullShutdownRequest>(shutdown =>
+                                              {
+                                                  var remangingMessages = Stash.ClearStash()
+                                                                               .ToArray();
+                                                  foreach (var message in remangingMessages)
+                                                      Self.Tell(message);
+                                                  if (!remangingMessages.Any())
+                                                  {
+                                                      _log.Debug("Terminating process");
+                                                      Context.Stop(Self);
+                                                  }
+                                                  else
+                                                  {
+                                                      _log.Debug("Process termination is requested, but got {count} messages to process, will process them first and terminate after", remangingMessages.Length);
+                                                      Stash.Stash();
+                                                  }
+                                              });
             ProxifyingCommandsBehavior();
         }
 
@@ -191,11 +239,12 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                          if (Id != pendingState.Id)
                                          {
                                              _log.Debug("Redirecting message to newly created process state instance, {id}", pendingState.Id);
+                                             var redirect = new MessageMetadataEnvelop(new ProcessRedirect(pendingState.Id, processingMessage), processingMessage.Metadata);
                                              //requesting redirect from parent - persistence hub 
-                                             FinishProcessTransition(new ProcessRedirect(pendingState.Id, processingMessage), Context.Parent, processingMessageSender);
+                                             FinishProcessTransition(redirect, Context.Parent, processingMessageSender);
+                                             Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
                                              return;
                                          }
-
                                          State = pendingState;
                                          Self.Tell(processingMessage, processingMessageSender);
                                          Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
@@ -210,7 +259,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
         {
             IMessageMetadataEnvelop processingEnvelop = null;
             TState pendingState = null;
-            IReadOnlyCollection<ICommand> producedCommands = new ICommand[] { };
+            IReadOnlyCollection<ICommand> producedCommands = null;
             IActorRef processingMessageSender = null;
 
             Receive<IMessageMetadataEnvelop>(messageEnvelop =>
@@ -275,9 +324,9 @@ namespace GridDomain.Node.Actors.ProcessManagers
             Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
         }
 
-        private void FinishProcessTransition(IProcessCompleted message, IActorRef recepient, IActorRef orginalMessageSender = null)
+        private void FinishProcessTransition(object message, IActorRef recepient, IActorRef orginalMessageSender = null)
         {
-            recepient.Tell(message, orginalMessageSender ?? Sender);
+            recepient.Tell(message, orginalMessageSender ?? Self);
             Stash.Unstash();
         }
 

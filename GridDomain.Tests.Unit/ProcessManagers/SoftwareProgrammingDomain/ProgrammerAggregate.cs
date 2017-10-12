@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         {
             Apply<PersonCreated>(e =>
                                  {
-                                     Id = e.Id;
+                                     Id = e.SourceId;
                                      PersonId = e.PersonId;
                                  });
             Apply<Slept>(e => SleepTimes++);

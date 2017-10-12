@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
             : base(new KnownProcessIdFixture(output, ProcessFixedId).UseSqlPersistence()
                                                                     .InitSnapshots(2, TimeSpan.FromSeconds(10))
-                                                                    .IgnoreCommands()) { }
+                                                                    .IgnorePipeCommands()) { }
 
         private class KnownProcessIdFixture : SoftwareProgrammingProcessManagerFixture
         {

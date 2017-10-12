@@ -7,8 +7,9 @@ using Akka.TestKit.TestActors;
 using Akka.TestKit.Xunit2;
 using Autofac;
 using GridDomain.Common;
-
+using GridDomain.Configuration;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
@@ -46,7 +47,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
                                                                                               new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
                                                                                               messageProcessActor));
             Sys.AddDependencyResolver(new AutoFacDependencyResolver(container.Build(), Sys));
-
+            Sys.AttachSerilogLogging(logger);
+            //for process state retrival
+            var processStateActor = Sys.ActorOf(Props.Create(() => new ProcessStateHubActor<TestState>(new DefaultPersistentChildsRecycleConfiguration())), typeof(TestState).BeautyName() + "_Hub");
             var name = AggregateActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
             _processActor = ActorOfAsTestActorRef(() => new ProcessActor<TestState>(new AsyncLongRunningProcess(), creator),
                                                   name);

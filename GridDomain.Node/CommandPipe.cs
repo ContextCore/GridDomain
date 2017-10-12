@@ -93,7 +93,7 @@ namespace GridDomain.Node
         {
             _log.Debug("Command pipe is starting");
 
-            ProcessesPipeActor = _system.ActorOf(Props.Create(() => new ProcessManagersPipeActor(_processCatalog)), nameof(ProcessManagersPipeActor));
+            ProcessesPipeActor = _system.ActorOf(Props.Create(() => new ProcessesPipeActor(_processCatalog)), nameof(Actors.CommandPipe.ProcessesPipeActor));
 
             HandlersPipeActor = _system.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, ProcessesPipeActor)),
                                                 nameof(Actors.CommandPipe.HandlersPipeActor));
@@ -102,7 +102,7 @@ namespace GridDomain.Node
                                               nameof(AggregatesPipeActor));
 
             container.RegisterInstance(HandlersPipeActor).Named<IActorRef>(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName);
-            container.RegisterInstance(ProcessesPipeActor).Named<IActorRef>(ProcessManagersPipeActor.ProcessManagersPipeActorRegistrationName);
+            container.RegisterInstance(ProcessesPipeActor).Named<IActorRef>(Actors.CommandPipe.ProcessesPipeActor.ProcessManagersPipeActorRegistrationName);
 
             await ProcessesPipeActor.Ask<Initialized>(new Initialize(CommandExecutor));
             return CommandExecutor;

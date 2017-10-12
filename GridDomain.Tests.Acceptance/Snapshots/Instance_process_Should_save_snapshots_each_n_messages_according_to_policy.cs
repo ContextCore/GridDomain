@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             : base(new SoftwareProgrammingProcessManagerFixture(output){LogLevel = LogEventLevel.Verbose}
                                                               .UseSqlPersistence()
                                                               .InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
-                                                              .IgnoreCommands())
+                                                              .IgnorePipeCommands())
         {
         }
 

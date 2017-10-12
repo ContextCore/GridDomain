@@ -4,7 +4,9 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using Akka.Actor;
+using GridDomain.Common;
 using GridDomain.Node;
+using GridDomain.ProcessManagers.State;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz.Configuration;
@@ -54,17 +56,32 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
-        public static NodeTestFixture IgnoreCommands(this NodeTestFixture fixture)
+        public static NodeTestFixture IgnorePipeCommands(this NodeTestFixture fixture)
         {
             fixture.OnNodeStartedEvent += (sender, e) =>
                                           {
                                               //supress errors raised by commands not reaching aggregates
                                               var nullActor = fixture.Node.System.ActorOf(BlackHoleActor.Props);
-                                              fixture.Node.Pipe.ProcessesPipeActor.Ask<Initialized>(new Initialize(nullActor))
-                                                     .Wait();
+                                              //var filterActor = fixture.Node.System.ActorOf(Props.Create(() => new FilterActor(fixture.Node.Pipe.CommandExecutor)));
+                                              fixture.Node.Pipe.ProcessesPipeActor.Ask<Initialized>(new Initialize(nullActor)).Wait();
                                           };
 
             return fixture;
+        }
+
+        class FilterActor:ReceiveActor
+        {
+            public FilterActor(IActorRef recepient)
+            {
+                Receive<IMessageMetadataEnvelop>(m =>
+                                                 {
+                                                     // switch (m.Message)
+                                                     // {
+                                                     //         case CreateNewStateCommand<>
+                                                     // }
+                                                     recepient.Forward(m);
+                                                 });
+            }    
         }
     }
 }
