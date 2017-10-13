@@ -84,8 +84,15 @@ namespace GridDomain.Tests.Common
             //When
             foreach (var cmd in GivenCommands)
             {
-               Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd, _eventStore);
-               Aggregate.CommitAll();
+                try
+                {
+                    Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd, _eventStore);
+                }
+                catch (Exception ex)
+                {
+                    throw new CommandExecutionFailedException(cmd,ex);
+                }
+                Aggregate.CommitAll();
             }
 
             //Then
