@@ -276,7 +276,6 @@
     <Compile Include="Aggregate_actor_lifetime\PersistentHubFixture.cs" />
     <Compile Include="Aggregate_actor_lifetime\PersistentHubChildrenLifetimeTest.cs" />
     <Compile Include="Aggregate_actor_lifetime\ProcessHub_children_lifetime_tests.cs" />
-    <Compile Include="Cluster\ClusterCreationTest.cs" />
     <Compile Include="CommandsExecution\ConventionCommands\ConventionAggregateTests.cs" />
     <Compile Include="Isolated.cs" />
     <Compile Include="Logging\LogForCustomizedSystemTests.cs" />
@@ -574,6 +573,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.7.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cluster\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
