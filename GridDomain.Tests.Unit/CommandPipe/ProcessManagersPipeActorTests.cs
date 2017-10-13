@@ -23,10 +23,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
 
             var testProcessActorB =
-                Sys.ActorOf(
-                            Props.Create(
-                                         () =>
-                                             new TestProcessActor(TestActor,
+                Sys.ActorOf(Props.Create(() =>new TestProcessActor(TestActor,
                                                                e => new ICommand[] {new TestCommand(e.SourceId), new TestCommand(e.SourceId)},
                                                                TimeSpan.FromMilliseconds(50))));
 
@@ -52,12 +49,12 @@ namespace GridDomain.Tests.Unit.CommandPipe
             ExpectMsg<ProcessTransited>();
 
             //after all process managers complets, process pipe actor should notify sender (TestActor) of initial messages that work is done
-
+            
             //process managers pipe actor should send all produced commands to execution actor
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
+            FishForMessage<IMessageMetadataEnvelop<ICommand>>(t => true);
+            FishForMessage<IMessageMetadataEnvelop<ICommand>>(t => true);
+            FishForMessage<IMessageMetadataEnvelop<ICommand>>(t => true);
+            FishForMessage<IMessageMetadataEnvelop<ICommand>>(t => true);
         }
 
         class Inherited : BalloonCreated
@@ -78,7 +75,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var msg = MessageMetadataEnvelop.New<DomainEvent>(new Inherited());
 
             processPipeActor.Tell(msg);
-
+            ExpectMsg<ProcessesTransitComplete>();
             //process processor did not run due to error, but we received processing complete message
             ExpectNoMsg(TimeSpan.FromSeconds(1));
         }

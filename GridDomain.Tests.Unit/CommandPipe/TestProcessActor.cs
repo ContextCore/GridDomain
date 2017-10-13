@@ -12,8 +12,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
     internal class TestProcessActor : ReceiveActor
     {
         public TestProcessActor(IActorRef watcher,
-                             Func<DomainEvent, ICommand[]> commandFactory = null,
-                             TimeSpan? sleepTime = null)
+                                Func<DomainEvent, ICommand[]> commandFactory = null,
+                                TimeSpan? sleepTime = null)
         {
             var sleep = sleepTime ?? TimeSpan.FromMilliseconds(10);
             commandFactory = commandFactory ?? (e => new ICommand[] {new TestCommand(e.SourceId)});
