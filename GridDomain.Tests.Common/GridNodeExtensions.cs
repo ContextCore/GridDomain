@@ -8,7 +8,9 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.PersistentHub;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.ProcessManagers;
@@ -26,6 +28,12 @@ namespace GridDomain.Tests.Common
         {
             var processHub = await node.LookupProcessHubActor<TProcess>(timeout);
             return await processHub.Ask<WarmUpResult>(new WarmUpChild(id));
+        }
+
+
+        public static Task SendToProcessManagers(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null)
+        {
+            return node.Pipe.ProcessesPipeActor.Ask<ProcessesTransitComplete>(new MessageMetadataEnvelop(msg), timeout);
         }
 
         public static async Task<TExpect> SendToProcessManager<TExpect>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
@@ -140,6 +148,13 @@ namespace GridDomain.Tests.Common
                 inbox.Watch(processActor);
                 hub.Tell(new ShutdownChild(id));
                 inbox.ReceiveWhere(m => m is Terminated t && t.ActorRef.Path == processActor.Path, timeout ?? node.DefaultTimeout);
+
+                var processStateHubActor =  await node.ResolveActor($"{typeof(TState).Name}_Hub", timeout);
+                var processStateActor = await node.ResolveActor($"{typeof(TState).Name}_Hub/" + EntityActorName.New<ProcessStateAggregate<TState>>(id), timeout);
+
+                inbox.Watch(processStateActor);
+                processStateHubActor.Tell(new ShutdownChild(id));
+                inbox.ReceiveWhere(m => m is Terminated, timeout ?? node.DefaultTimeout);
             }
         }
 

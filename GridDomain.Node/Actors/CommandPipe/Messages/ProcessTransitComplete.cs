@@ -3,9 +3,9 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.Actors.CommandPipe.Messages
 {
-    public class ProcessTransitComplete
+    public class ProcessesTransitComplete
     {
-        public ProcessTransitComplete(IMessageMetadataEnvelop initialMessage, IMessageMetadataEnvelop<ICommand>[] producedCommands)
+        public ProcessesTransitComplete(IMessageMetadataEnvelop initialMessage, IMessageMetadataEnvelop<ICommand>[] producedCommands)
         {
             InitialMessage = initialMessage;
             ProducedCommands = producedCommands;
@@ -14,6 +14,6 @@ namespace GridDomain.Node.Actors.CommandPipe.Messages
         public IMessageMetadataEnvelop InitialMessage { get; }
         public IMessageMetadataEnvelop<ICommand>[] ProducedCommands { get; }
 
-        public static ProcessTransitComplete NoResults { get; } = new ProcessTransitComplete(null,new IMessageMetadataEnvelop<ICommand>[] { });
+        public static ProcessesTransitComplete NoResults { get; } = new ProcessesTransitComplete(null,new IMessageMetadataEnvelop<ICommand>[] { });
     }
 }

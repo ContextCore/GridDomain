@@ -34,27 +34,19 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 .Create()
                                 .SendToProcessManagers(startEvent);
 
-            var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
-                               .SourceId;
+            var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>().SourceId;
 
             var continueEventA = new CoffeMakeFailedEvent(Guid.NewGuid(),
-                startEvent.PersonId,
-                BusinessDateTime.UtcNow,
-                processId);
+                                                         startEvent.PersonId,
+                                                         BusinessDateTime.UtcNow,
+                                                         processId);
 
-            //can catch received message from saga cretion
-            await Node.NewDebugWaiter()
-                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(m =>
-                                                  
-                      ((m.Message as IMessageMetadataEnvelop)?.Message as DomainEvent)?.Id == continueEventA.Id)
-                      .Create()
-                      .SendToProcessManagers(continueEventA);
+            await Node.SendToProcessManagers(continueEventA);
 
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
-            //await Task.Delay(5000);
-            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString, new AggregateFactory())
-                .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
+            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString, new AggregateFactory())
+                                                                .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
             //Only_two_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);
             // Restored_aggregates_should_have_same_ids()

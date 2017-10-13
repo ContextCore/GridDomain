@@ -48,7 +48,9 @@ namespace GridDomain.Node.Actors.PersistentHub
                                     }
                                     Children.Remove(id);
                                 });
+
             Receive<ClearChildren>(m => Clear());
+            Receive<NotifyOnPersistenceEvents>(m => SendToChild(m,m.Id,GetChildActorName(m.Id),Sender));
             Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
             Receive<WarmUpChild>(m =>
                                  {

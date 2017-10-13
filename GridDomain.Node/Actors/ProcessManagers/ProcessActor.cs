@@ -180,7 +180,6 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                   var remangingMessages = Stash.ClearStash()
                                                                                .ToArray();
                                                  
-
                                                   if(!remangingMessages.Any())
                                                   {
                                                       _log.Debug("Terminating process");
@@ -285,8 +284,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                          {
                                              State = pendingState;
                                              processingMessageSender.Tell(new ProcessTransited(producedCommands,processingEnvelop.Metadata,
-                                                                         _producedCommand,
-                                                                         State));
+                                                                          _producedCommand,
+                                                                          State));
                                              _log.Debug("Process dispatched {count} commands {@commands}", producedCommands?.Count ?? 0, producedCommands);
 
                                              Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));

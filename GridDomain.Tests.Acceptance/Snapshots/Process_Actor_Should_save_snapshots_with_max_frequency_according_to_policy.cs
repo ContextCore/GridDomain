@@ -27,84 +27,36 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy : NodeTestKit
     {
-        private static readonly Guid ProcessFixedId = Guid.NewGuid();
-
         public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
-            : base(new KnownProcessIdFixture(output, ProcessFixedId).UseSqlPersistence()
-                                                                    .InitSnapshots(2, TimeSpan.FromSeconds(10))
-                                                                    .IgnorePipeCommands()) { }
+            : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
+                                                                       .InitSnapshots(2, TimeSpan.FromSeconds(10))
+                                                                       .IgnorePipeCommands()) { }
 
-        private class KnownProcessIdFixture : SoftwareProgrammingProcessManagerFixture
-        {
-            class FixedProcessIdFactory : IProcessStateFactory<SoftwareProgrammingState>
-            {
-                private readonly Guid _staticId;
-
-                public FixedProcessIdFactory(Guid staticId)
-                {
-                    _staticId = staticId;
-                }
-
-                public SoftwareProgrammingState Create(object message, SoftwareProgrammingState state)
-                {
-                    switch (message)
-                    {
-                        //creating new process instance from a start message
-                        case SleptWellEvent e: return new SoftwareProgrammingState(_staticId, nameof(SoftwareProgrammingProcess.Coding));
-                        //creating new process instance from a start message
-                        case GotTiredEvent e: return new SoftwareProgrammingState(_staticId, nameof(SoftwareProgrammingProcess.Coding));
-                    }
-                    return state;
-                }
-            }
-
-            class FixedIdProcessDependencyFactory : DefaultProcessDependencyFactory<SoftwareProgrammingState>
-            {
-                public FixedIdProcessDependencyFactory(Guid staticId) : 
-                    base(new SoftwareProgrammingProcess(),
-                         () => new SoftwareProgrammingProcess(),
-                         () => new FixedProcessIdFactory(staticId))
-                {
-                }
-            }
-
-            public KnownProcessIdFixture(ITestOutputHelper output, Guid fixedId) : base(output)
-            {
-                ProcessConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory = new FixedIdProcessDependencyFactory(fixedId);
-            }
-        }
-
+       
         [Fact]
         public async Task Given_default_policy()
         {
             var startEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-
-            var fixedProcess = await Node.WarmUpProcessManager<SoftwareProgrammingProcess>(ProcessFixedId);
-            await fixedProcess.Info.Ref.Ask<SubscribeAck>(new NotifyOnPersistenceEvents(TestActor));
 
             var resTask = Node.NewDebugWaiter()
                               .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                               .Create()
                               .SendToProcessManagers(startEvent);
 
-            FishForMessage<SaveSnapshotSuccess>(t => true);
-
-            var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                                           .SourceId;
+            var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>().SourceId;
 
             var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
             //to avoid racy state receiving expected message from processing GotTiredEvent 
             await Node.NewDebugWaiter()
-                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e
-                                                                                    => (e.Message as IMessageMetadataEnvelop)?.Message is CoffeMakeFailedEvent)
+                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(
+                                        e => (e.Message as IMessageMetadataEnvelop)?.Message is CoffeMakeFailedEvent)
                       .Create()
                       .SendToProcessManagers(continueEvent, processId);
 
-
-            await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(ProcessFixedId);
-
             this.Log.Info("Enforced additional snapshot save & delete");
+            await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
+
 
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                   new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);

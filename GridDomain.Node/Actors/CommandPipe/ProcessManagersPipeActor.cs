@@ -37,26 +37,28 @@ namespace GridDomain.Node.Actors.CommandPipe
             Receive<IMessageMetadataEnvelop>(env =>
                                                   {
                                                       Log.Debug("Start process managers for message {@env}", env);
-                                                      Process(env).PipeTo(Self);
+                                                      Process(env).PipeTo(Self,Sender);
                                                   });
 
-            Receive<ProcessTransitComplete>(m =>
+            Receive<ProcessesTransitComplete>(m =>
                                           {
                                               Log.Debug("Process managers transited. {@res}", m );
 
                                               foreach(var envelop in m.ProducedCommands)
                                                   _commandExecutionActor.Tell(envelop);
+
+                                              Sender.Tell(m);
                                           });
         }
         
-        private async Task<ProcessTransitComplete> Process(IMessageMetadataEnvelop messageMetadataEnvelop)
+        private async Task<ProcessesTransitComplete> Process(IMessageMetadataEnvelop messageMetadataEnvelop)
         {
            var res = await _catalog.ProcessMessage(messageMetadataEnvelop);
            var processTransited = res.OfType<ProcessTransited>().ToArray();
            if(!processTransited.Any())
-               return ProcessTransitComplete.NoResults;
+               return ProcessesTransitComplete.NoResults;
 
-           return new ProcessTransitComplete(messageMetadataEnvelop,CreateCommandEnvelops(processTransited).ToArray());
+           return new ProcessesTransitComplete(messageMetadataEnvelop,CreateCommandEnvelops(processTransited).ToArray());
         }
 
         private static IEnumerable<IMessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<ProcessTransited> messages)

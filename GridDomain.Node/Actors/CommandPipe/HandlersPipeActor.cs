@@ -40,6 +40,8 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                         })
                                                                                        .PipeTo(Sender);
                                                            });
+            Receive<ProcessesTransitComplete>(t => {//just ignore 
+            });
         }
     }
 }

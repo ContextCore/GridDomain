@@ -18,7 +18,7 @@ using Xunit.Sdk;
 namespace GridDomain.Tests.Stress.NodeCommandExecution
 {
     //ignore until akka connection problems investigation on appveyor
-    public abstract class ConnectorCreationAndChangeWithProjectionInMem : CreationAndChangeWithProjectionInMem
+    class ConnectorCreationAndChangeWithProjectionInMem : CreationAndChangeWithProjectionInMem
     {
         public ConnectorCreationAndChangeWithProjectionInMem(ITestOutputHelper output):base(output)
         {
