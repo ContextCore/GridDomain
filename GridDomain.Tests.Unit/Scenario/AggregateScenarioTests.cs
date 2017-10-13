@@ -97,7 +97,19 @@ namespace GridDomain.Tests.Unit.Scenario
                                          new BalloonTitleChanged("42", aggregateId))
                                    .Run()
                                    .Check()
-                                   .ShouldThrow<CannotFindAggregateCommandHandlerExeption>();
+                                   .CommandShouldThrow<CannotFindAggregateCommandHandlerExeption>();
+        }
+
+        [Fact]
+        public async Task When_defined_scenario_executes_command_with_excpetion_it_throws_command_exception()
+        {
+            var aggregateId = Guid.NewGuid();
+
+            await AggregateScenario.New<Balloon, BalloonCommandHandler>()
+                                   .When(new PlanTitleWriteAndBlowCommand(43, aggregateId, TimeSpan.FromMilliseconds(50)))
+                                   .Run()
+                                   .Check()
+                                   .CommandShouldThrow<BalloonException>();
         }
     }
 }
