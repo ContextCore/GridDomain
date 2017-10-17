@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Automatonymous;
 using GridDomain.CQRS;
 using GridDomain.ProcessManagers;
@@ -9,11 +10,8 @@ using Serilog;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
-    public class SoftwareProgrammingProcess : Process<SoftwareProgrammingState>
+    public class SoftwareProgrammingProcess : ConventionProcess<SoftwareProgrammingState>
     {
-        public static readonly IProcessManagerDescriptor Descriptor = CreateDescriptor();
-        private readonly ILogger Log = Serilog.Log.ForContext<SoftwareProgrammingProcess>();
-
         public SoftwareProgrammingProcess()
         {
             During(Coding,
@@ -22,7 +20,6 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                                            var state = context.Instance;
                                            var domainEvent = context.Data;
                                            state.PersonId = domainEvent.SourceId;
-                                           Log.Verbose("Hello trace string");
                                            Dispatch(new MakeCoffeCommand(domainEvent.SourceId, state.CoffeeMachineId));
                                        })
                                  .TransitionTo(MakingCoffee),
@@ -54,18 +51,5 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         public State Coding { get; private set; }
         public State MakingCoffee { get; private set; }
         public State Sleeping { get; private set; }
-
-        private static IProcessManagerDescriptor CreateDescriptor()
-        {
-            var descriptor = ProcessManagerDescriptor.CreateDescriptor<SoftwareProgrammingProcess, SoftwareProgrammingState>();
-
-            descriptor.AddStartMessage<GotTiredEvent>();
-            descriptor.AddStartMessage<SleptWellEvent>();
-
-            descriptor.AddCommand<MakeCoffeCommand>();
-            descriptor.AddCommand<GoSleepCommand>();
-
-            return descriptor;
-        }
     }
 }

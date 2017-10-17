@@ -10,10 +10,10 @@ using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.AnemicEF {
-
+#pragma warning disable xUnit1013 //It is nbench test
     public abstract class AnemicModelEFContextPerformance
     {
-        private Func<BalloonContext> _contextCreator;
+        private readonly Func<BalloonContext> _contextCreator;
         private readonly IEFCommand[] _efCommands;
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
@@ -27,9 +27,10 @@ namespace GridDomain.Tests.Stress.AnemicEF {
                                     .SelectMany(n => CreateAggregatePlan(20))
                                     .ToArray();
         }
-
         [PerfSetup]
+
         public virtual void Setup(BenchmarkContext context)
+
         {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
         }

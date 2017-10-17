@@ -2,6 +2,7 @@ using System;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using GridDomain.Tools;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
@@ -16,7 +17,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
 
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);
 
-            aggregate.PersistAll();
+            aggregate.CommitAll();
 
             aggregate.CancelFutureEvents("will not be found in any future event");
            //No_events_were_produced()

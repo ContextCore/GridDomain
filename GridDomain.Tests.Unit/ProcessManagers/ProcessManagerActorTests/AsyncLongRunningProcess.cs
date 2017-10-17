@@ -23,12 +23,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
                                        }).TransitionTo(Final));
         }
 
-        public static IProcessManagerDescriptor Descriptor
+        public static IProcessDescriptor Descriptor
         {
             get
             {
-                var descriptor = ProcessManagerDescriptor.CreateDescriptor<AsyncLongRunningProcess, TestState>();
-                descriptor.AddStartMessage<BalloonCreated>();
+                var descriptor = ProcessDescriptor.CreateDescriptor<AsyncLongRunningProcess, TestState>();
                 descriptor.AddAcceptedMessage<BalloonTitleChanged>();
                 return descriptor;
             }
@@ -36,5 +35,14 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 
         public Event<BalloonCreated> Start { get; private set; }
         public Event<BalloonTitleChanged> Progress { get; private set; }
+        public override Task<ProcessResult<TestState>> Transit(TestState state, object message)
+        {
+            switch (message)
+            {
+                case BalloonCreated m: return TransitMessage(Start, m, state);
+                case BalloonTitleChanged m: return TransitMessage(Progress, m, state);
+            }
+            throw new UnbindedMessageReceivedException(message);
+        }
     }
 }

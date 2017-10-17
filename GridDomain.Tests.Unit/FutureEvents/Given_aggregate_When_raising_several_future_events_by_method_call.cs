@@ -4,6 +4,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Scheduling;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using GridDomain.Tools;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.FutureEvents
@@ -15,7 +16,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         {
             var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "value D");
-            aggregate.PersistAll();
+            aggregate.CommitAll();
 
             //Then_raising_event_with_wrong_id_throws_an_error()
             await aggregate.RaiseScheduledEvent(Guid.NewGuid(), Guid.NewGuid())

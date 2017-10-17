@@ -17,18 +17,19 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Serializers;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
-using GridDomain.Transport.Extension;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Xunit;
 using Xunit.Abstractions;
+using GridDomain.Transport.Extension;
 
 namespace GridDomain.Tests.Stress.AggregateActor {
+    //it is performance test, not pure xunit
+#pragma warning disable xUnit1013
     public abstract class AggregateActorPerf
     {
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
-        private readonly ITestOutputHelper _testOutputHelper;
         private readonly IActorRef _aggregateActor;
         private readonly ICommand[] _commands;
         private readonly Guid _aggregateId;
@@ -48,7 +49,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             _aggregateId = Guid.NewGuid();
             _aggregateActor = sys.ActorOf(Props.Create(
                                                        () => new AggregateActor<Balloon>(new BalloonCommandHandler(), new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(), dummy)),
-                                          AggregateActorName.New<Balloon>(_aggregateId).ToString());
+                                          EntityActorName.New<Balloon>(_aggregateId).ToString());
         }
 
         class CustomHandlersActorDummy : ReceiveActor

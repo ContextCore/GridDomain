@@ -18,14 +18,14 @@ namespace GridDomain.Tests.Acceptance.Tools
             var agregateValue = "initial";
             var aggregate = new Balloon(aggregateId, agregateValue);
 
-            using (var repo = new AggregateRepository(ActorSystemJournalRepository.New(new AcceptanceAutoTestNodeConfiguration(),
-                                                                             new EventsAdaptersCatalog())))
+            using (var repo = new AggregateRepository(ActorSystemJournalRepository.New(new AutoTestSqlActorSystemFactory(),
+                                                                                       new EventsAdaptersCatalog())))
             {
                 await repo.Save(aggregate);
             }
 
-            using (var repo = new AggregateRepository(ActorSystemJournalRepository.New(new AcceptanceAutoTestNodeConfiguration(),
-                                                                             new EventsAdaptersCatalog())))
+            using (var repo = new AggregateRepository(ActorSystemJournalRepository.New(new AutoTestSqlActorSystemFactory(),
+                                                                                       new EventsAdaptersCatalog())))
             {
                 aggregate = await repo.LoadAggregate<Balloon>(aggregate.Id);
             }

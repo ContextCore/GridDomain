@@ -7,13 +7,10 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Scheduling
 {
-    public class FutureEventsAggregate : Aggregate
+    public class FutureEventsAggregate : ConventionAggregate
     {
         protected FutureEventsAggregate(Guid id):base(id)
         {
-            //Register<FutureEventScheduledEvent>(Apply);
-            //Register<FutureEventOccuredEvent>(Apply);
-            //Register<FutureEventCanceledEvent>(Apply);
             _schedulingSourceName = GetType().Name;
         }
 

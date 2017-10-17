@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
     public class ProcessHub_children_lifetime_tests : PersistentHubChildrenLifetimeTest
     {
         public ProcessHub_children_lifetime_tests(ITestOutputHelper output)
-            : base(output, new PersistentHubFixture(new ProcessHubInfrastructure())) {}
+            : base(new PersistentHubFixture(output,new ProcessHubInfrastructure())) {}
 
         internal class ProcessHubInfrastructure : IPersistentActorTestsInfrastructure
         {
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
             {
                 return
-                    system.DI().Props<ProcessManagerHubActor<SoftwareProgrammingState>>();
+                    system.DI().Props<ProcessHubActor<SoftwareProgrammingState>>();
             }
 
             public object ChildCreateMessage { get; }

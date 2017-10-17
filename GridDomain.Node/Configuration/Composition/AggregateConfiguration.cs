@@ -19,37 +19,33 @@ namespace GridDomain.Node.Configuration.Composition
     internal class AggregateConfiguration<TAggregateActor, TAggregate> : IContainerConfiguration
         where TAggregate : Aggregate
     {
-        private readonly IConstructAggregates _factory;
-        private readonly Func<ISnapshotsPersistencePolicy> _snapshotsPolicyFactory;
-        private readonly  IAggregateCommandsHandler<TAggregate> _commandsHandler;
-        private readonly IPersistentChildsRecycleConfiguration _persistencChildsRecycleConfiguration;
+        protected readonly IAggregateDependencyFactory<TAggregate> AggregateDependencyFactory;
 
-        internal AggregateConfiguration(IAggregateCommandsHandler<TAggregate> commandsHandler,
-                                        Func<ISnapshotsPersistencePolicy> snapshotsPolicy,
-                                        IConstructAggregates snapshotsFactory,
-                                        IPersistentChildsRecycleConfiguration persistencChildsRecycleConfiguration)
+        internal AggregateConfiguration(IAggregateDependencyFactory<TAggregate> factory)
         {
-            _persistencChildsRecycleConfiguration = persistencChildsRecycleConfiguration;
-            _factory = snapshotsFactory;
-            _snapshotsPolicyFactory = snapshotsPolicy;
-            _commandsHandler = commandsHandler;
+            AggregateDependencyFactory = factory;
         }
-
+       
         public void Register(ContainerBuilder container)
         {
-            container.Register<AggregateHubActor<TAggregate>>(c => new AggregateHubActor<TAggregate>(_persistencChildsRecycleConfiguration));
+            RegisterHub(container);
 
             container.RegisterType<TAggregateActor>()
                      .WithParameters(new Parameter[] { 
-                                     new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), _commandsHandler),
+                                     new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), AggregateDependencyFactory.CreateCommandsHandler()),
                                      new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IPublisher),
                                          (pi, ctx) => ctx.Resolve<IPublisher>()),
                                      new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
-                                         (pi, ctx) => _snapshotsPolicyFactory()),
-                                     new TypedParameter(typeof(IConstructAggregates), _factory),
+                                         (pi, ctx) => ((Func<ISnapshotsPersistencePolicy>) AggregateDependencyFactory.CreatePersistencePolicy)()),
+                                     new TypedParameter(typeof(IConstructAggregates), AggregateDependencyFactory.CreateAggregateFactory()),
                                      new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
                                          (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))
                                 });
-    }
+        }
+
+        protected virtual void RegisterHub(ContainerBuilder container)
+        {
+            container.Register<AggregateHubActor<TAggregate>>(c => new AggregateHubActor<TAggregate>(AggregateDependencyFactory.CreateRecycleConfiguration()));
+        }
     }
 }

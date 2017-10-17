@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.ProcessManagers.State
 {
-    public class ProcessStateAggregate<TState> : Aggregate where TState : IProcessState
+    public class ProcessStateAggregate<TState> : CommandAggregate where TState : IProcessState
     {
         public ProcessStateAggregate(TState state): this(state.Id)
         {
@@ -23,15 +27,33 @@ namespace GridDomain.ProcessManagers.State
             Produce(new ProcessReceivedMessage<TState>(Id, state, message));
         }
 
-        public void Apply(ProcessManagerCreated<TState> e)
+        protected override void OnAppyEvent(DomainEvent evt)
         {
-            State = e.State;
-            Id = e.SourceId;
+            switch(evt)
+            {
+                case ProcessReceivedMessage<TState> e:
+                    State = e.State;
+                    break;
+                case ProcessManagerCreated<TState> e:
+                    State = e.State;
+                    Id = e.SourceId;
+                    break;
+            }
         }
 
-        public void Apply(ProcessReceivedMessage<TState> e)
+        private static readonly Type[] KnownCommands = {typeof(SaveStateCommand<TState>), typeof(CreateNewStateCommand<TState>)};
+        public override IReadOnlyCollection<Type> RegisteredCommands => KnownCommands;
+        protected override Task<IAggregate> Execute(ICommand cmd)
         {
-            State = e.State;
+            switch (cmd)
+            {
+                case SaveStateCommand<TState> c:
+                    ReceiveMessage(c.State, c.Message);
+                    break;
+                case CreateNewStateCommand<TState> c:
+                    return Task.FromResult<IAggregate>(new ProcessStateAggregate<TState>(c.State));
+            }
+            return Task.FromResult<IAggregate>(this);
         }
     }
 }

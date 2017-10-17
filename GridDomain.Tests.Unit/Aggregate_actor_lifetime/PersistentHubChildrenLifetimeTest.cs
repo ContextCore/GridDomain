@@ -11,8 +11,7 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
 {
     public abstract class PersistentHubChildrenLifetimeTest : NodeTestKit
     {
-        public PersistentHubChildrenLifetimeTest(ITestOutputHelper output, PersistentHubFixture fixture)
-            : base(output, fixture)
+        public PersistentHubChildrenLifetimeTest(PersistentHubFixture fixture): base(fixture)
         {
             Infrastructure = fixture.Infrastructure;
             var actorOfAsTestActorRef = ActorOfAsTestActorRef<PersistentHubActor>(Infrastructure.CreateHubProps(Node.System),

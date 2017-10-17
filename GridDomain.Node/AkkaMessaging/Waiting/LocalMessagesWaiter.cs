@@ -30,7 +30,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             ConditionBuilder = conditionBuilder;
         }
 
-        IConditionBuilder<T> IMessageWaiterBase<T, IConditionBuilder<T>>.Expect<TMsg>(Predicate<TMsg> filter = null)
+        IConditionBuilder<T> IMessageWaiterBase<T, IConditionBuilder<T>>.Expect<TMsg>(Predicate<TMsg> filter)
         {
             return Expect(filter);
         }

@@ -1,25 +1,21 @@
 using System;
 using Akka.Event;
-using GridDomain.Node.Actors.Serilog;
+using GridDomain.Node.Actors.Logging;
+using Serilog.Events;
 
-namespace GridDomain.Node.Configuration
-{
+namespace GridDomain.Node.Configuration {
     public class NodeConfiguration
     {
-        public Type LogActorType { get; set; } = typeof(SerilogLoggerActor);
-        public LogLevel LogLevel { get; set; }
+        public LogEventLevel LogLevel { get; set; }
+        public INodeNetworkAddress Address { get; }
+        public string Name { get; }
 
-        public NodeConfiguration(INodeNetworkAddress networkConf, INodeDbConfiguration dbConf, LogLevel logLevel = LogLevel.DebugLevel)
+        public NodeConfiguration(string name, INodeNetworkAddress addressConf, LogEventLevel logLevel = LogEventLevel.Verbose)
         {
-            Network = networkConf;
-            Persistence = dbConf;
+            Address = addressConf;
             LogLevel = logLevel;
-        }
-        public NodeConfiguration(INodeNetworkAddress networkConf, LogLevel logLevel = LogLevel.DebugLevel):this(networkConf,null,logLevel)
-        {
+            Name = name;
         }
 
-        public INodeNetworkAddress Network { get; set; }
-        public INodeDbConfiguration Persistence { get; set; }
     }
 }

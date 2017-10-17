@@ -10,13 +10,15 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class Given_process_When_publishing_several_start_messages : SoftwareProgrammingProcessTest
+    public class Given_process_When_publishing_several_start_messages : NodeTestKit
     {
-        public Given_process_When_publishing_several_start_messages(ITestOutputHelper helper) : base(helper) {}
+        public Given_process_When_publishing_several_start_messages(ITestOutputHelper helper): 
+            base(new SoftwareProgrammingProcessManagerFixture(helper).IgnorePipeCommands()) {}
 
         [Fact]
         public async Task Then_separate_process_startes_on_each_message()
         {
+            
             var startMessageA = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
             var resA = await Node.NewDebugWaiter()
@@ -26,8 +28,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 
             var stateA = resA.Message<ProcessReceivedMessage<SoftwareProgrammingState>>().State;
 
-            //will reach same process as already created and will produce a new one
-            var secondStartMessageB = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), stateA.Id);
+            var secondStartMessageB = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid());
 
             var resB = await Node.NewDebugWaiter()
                                  .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()

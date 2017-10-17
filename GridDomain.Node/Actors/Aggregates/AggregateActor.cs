@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
+using System.Threading;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.Aggregates
     ///     Name should be parse by AggregateActorName
     /// </summary>
     /// <typeparam name="TAggregate"></typeparam>
-    public class AggregateActor<TAggregate> : DomainEventSourcedActor<TAggregate> where TAggregate : EventSourcing.Aggregate
+    public class AggregateActor<TAggregate> : DomainEventSourcedActor<TAggregate> where TAggregate : class,IAggregate
     {
         private readonly IActorRef _customHandlersActor;
         private readonly ProcessEntry _domainEventProcessEntry;
@@ -32,6 +32,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly IPublisher _publisher;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
+        private PersistenceActorEventStore<EventsPersisted> EventStore;
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
@@ -46,7 +47,9 @@ namespace GridDomain.Node.Actors.Aggregates
             _domainEventProcessFailEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.CommandRaisedAnError);
             _commandCompletedProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.ExecutedCommand);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
+            EventStore = new PersistenceActorEventStore<EventsPersisted>(Self,ExecutionContext); 
         }
+        
 
         protected virtual void AwaitingCommandBehavior()
         {
@@ -60,22 +63,17 @@ namespace GridDomain.Node.Actors.Aggregates
                                                 ExecutionContext.Command = cmd;
                                                 ExecutionContext.CommandMetadata = m.Metadata;
                                                 ExecutionContext.CommandSender = Sender;
-                                                var self = Self;
                                                 Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
                                             
                                                 Log.Debug("Executing command. {@m}", ExecutionContext);
                                             
                                                 _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                        cmd,
-                                                                                       agr =>
-                                                                                       {
-                                                                                           ExecutionContext.ProducedState = (TAggregate) agr;
-                                                                                           
-                                                                                           return self.Ask<EventsPersisted>(agr.GetDomainEvents());
-                                                                                       })
+                                                                                       EventStore)
                                                                          .ContinueWith(t =>
                                                                                        {
-                                                                                           if (t.IsFaulted) throw t.Exception;
+                                                                                           if (t.IsFaulted)
+                                                                                               throw new CommandExecutionFailedException(ExecutionContext.Command, t.Exception.UnwrapSingle());
                                                                                            return CommandExecuted.Instance;
                                                                                        })
                                                                          .PipeTo(Self);
@@ -91,12 +89,14 @@ namespace GridDomain.Node.Actors.Aggregates
                                    {
 
                                        Monitor.Increment(nameof(PersistEventPack));
-                                       ExecutionContext.PersistenceWaiter = Sender;
+                                     
                                        if (!domainEvents.Any())
                                        {
                                            Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);
                                            return;
                                        }
+                                       ExecutionContext.PersistenceWaiter = Sender;
+                                       ExecutionContext.MessagesToProject += domainEvents.Count;
 
                                        //dirty hack, but we know nobody will modify domain events before us 
                                        foreach (var evt in domainEvents)
@@ -107,7 +107,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                   {
                                                       try
                                                       {
-                                                          ExecutionContext.ProducedState.MarkPersisted(persistedEvent);
+                                                          ExecutionContext.ProducedState.Commit(persistedEvent);
                                                       }
                                                       catch (Exception ex)
                                                       {
@@ -130,8 +130,11 @@ namespace GridDomain.Node.Actors.Aggregates
                                           {
                                               if (ExecutionContext.Exception == null)
                                               {
-                                                  if (ExecutionContext.ProducedState.HasUncommitedEvents)
+                                                  ExecutionContext.MessagesToProject--;
+
+                                                  if (ExecutionContext.ProducedState.HasUncommitedEvents || ExecutionContext.MessagesToProject > 0)
                                                       return;
+
                                                   ExecutionContext.PersistenceWaiter.Tell(EventsPersisted.Instance);
                                               }
                                               else

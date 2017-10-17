@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
@@ -13,8 +14,9 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 {
     public class AsyncExecute_without_timeout_using_node_defaults : NodeTestKit
     {
-        public AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output) : base(output,
-            new NodeTestFixture(new BalloonDomainConfiguration(),
+        public AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output) : base(
+            new NodeTestFixture(output,
+                                new [] { new BalloonDomainConfiguration() },
                                 TimeSpan.FromMilliseconds(100))) {}
 
         [Fact]

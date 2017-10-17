@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
@@ -10,54 +11,105 @@ using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandPipe
 {
     public class ProcessManagersPipeActorTests : TestKit
     {
-        [Fact]
-        public async Task All_Processes_performs_in_parralel_and_results_from_all_processes_are_gathered()
-        {
-            var testProcessActorA =
-                Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
+        private readonly ITestOutputHelper _output;
 
+        public ProcessManagersPipeActorTests(ITestOutputHelper output)
+        {
+            _output = output;
+            Sys.AttachSerilogLogging(new XUnitAutoTestLoggerConfiguration(output).CreateLogger());
+        }
+        [Fact]
+        public async Task All_Processes_performs_linear_and_results_from_all_processes_are_gathered()
+        {
+            var processAId = Guid.NewGuid();
+            _output.WriteLine("Process A:" + processAId);
+            var testProcessActorA =
+                Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, processAId, TimeSpan.FromMilliseconds(1000))));
+
+            var processBId = Guid.NewGuid();
+            _output.WriteLine("Process B:" + processBId);
 
             var testProcessActorB =
-                Sys.ActorOf(
-                            Props.Create(
-                                         () =>
-                                             new TestProcessActor(TestActor,
-                                                               e => new ICommand[] {new TestCommand(e.SourceId), new TestCommand(e.SourceId)},
-                                                               TimeSpan.FromMilliseconds(50))));
+                Sys.ActorOf(Props.Create(() =>new TestProcessActor(TestActor,
+                                                                   processBId,
+                                                                   TimeSpan.FromMilliseconds(50))));
+            var processCId = Guid.NewGuid();
+            _output.WriteLine("Process C:" + processCId);
 
             var testProcessActorC =
-                Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, null, TimeSpan.FromMilliseconds(50))));
+                Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, processCId, TimeSpan.FromMilliseconds(50))));
 
-            var catalog = new ProcessorListCatalog<IProcessCompleted>();
+            var catalog = new ProcessesDefaultProcessor();
 
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActorA));
-            //two commands per one event will be produced
             catalog.Add<BalloonTitleChanged>(new SyncProcessManagerProcessor(testProcessActorB));
             catalog.Add<BalloonTitleChanged>(new SyncProcessManagerProcessor(testProcessActorC));
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
+
+            var balloonCreated = new BalloonCreated("1", Guid.NewGuid());
+            var balloonTitleChanged = new BalloonTitleChanged("2", Guid.NewGuid());
+
+
+            //var resultA = await catalog.Process(MessageMetadataEnvelop.New<DomainEvent>(balloonCreated));
+            //var resultB = await catalog.Process(MessageMetadataEnvelop.New<DomainEvent>(balloonTitleChanged));
+
+
+
+
+
+
+
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
-            processPipeActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new BalloonCreated("1", Guid.NewGuid())));
-            processPipeActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(new BalloonTitleChanged("2", Guid.NewGuid())));
+            processPipeActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(balloonCreated));
+            processPipeActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(balloonTitleChanged));
 
-            //first we received complete message from all process actors in undetermined sequence
-            ExpectMsg<ProcessTransited>();
-            ExpectMsg<ProcessTransited>();
-            ExpectMsg<ProcessTransited>();
+            //process pipe will process domain event linear on each message
+            //but for don't wait for each message execution end, so first will complete process of second message - balloonTitleChanged
 
-            //after all process managers complets, process pipe actor should notify sender (TestActor) of initial messages that work is done
+            //after process pipe will proceed with balloonTitleChanged event, pass it linear to two left process managers
 
-            //process managers pipe actor should send all produced commands to execution actor
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
-            ExpectMsg<IMessageMetadataEnvelop<ICommand>>();
+            var transited = ExpectMsg<ProcessTransited>(TimeSpan.FromSeconds(600));
+            var testCommand = transited.ProducedCommands.OfType<TestCommand>().First();
+            Assert.Equal(processBId, testCommand.ProcessId);
+
+
+            transited = ExpectMsg<ProcessTransited>();
+            testCommand = transited.ProducedCommands.OfType<TestCommand>().First();
+            Assert.Equal(processCId, testCommand.ProcessId);
+            
+            //after it process pipe is finished with ballon created message processing, gathering results
+            //and sending it to commandPipe (testActor)
+            var cmdB = ExpectMsg<MessageMetadataEnvelop<ICommand>>();
+            Assert.Equal(processBId, cmdB.Message.ProcessId);
+
+            var cmdC = ExpectMsg<MessageMetadataEnvelop<ICommand>>();
+            Assert.Equal(processCId, cmdC.Message.ProcessId);
+
+            //than it will report end of domain event processing
+            ExpectMsg<ProcessesTransitComplete>();
+
+            //than slow processing of first message will finish 
+
+            //test process actors sends to us messages on complete
+            //wait for test process actor transit on first event
+
+            transited = ExpectMsg<ProcessTransited>();
+            testCommand = transited.ProducedCommands.OfType<TestCommand>().First();
+            Assert.Equal(processAId, testCommand.ProcessId);
+          
+            var cmdA = ExpectMsg<MessageMetadataEnvelop<ICommand>>();
+            Assert.Equal(processAId, cmdA.Message.ProcessId);
+            //process pipe has only one handler for balloonCreated, so it will finish processing
+            //and send us a message 
+            ExpectMsg<ProcessesTransitComplete>();
         }
 
         class Inherited : BalloonCreated
@@ -68,17 +120,17 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public async Task ProcessManagerPipeActor_does_not_support_domain_event_inheritance()
         {
-            var testProcessActor = Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, null, null)));
-            var catalog = new ProcessorListCatalog<IProcessCompleted>();
+            var testProcessActor = Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, Guid.NewGuid(),null)));
+            var catalog = new ProcessesDefaultProcessor();
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActor));
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
             var msg = MessageMetadataEnvelop.New<DomainEvent>(new Inherited());
 
             processPipeActor.Tell(msg);
-
+            ExpectMsg<ProcessesTransitComplete>();
             //process processor did not run due to error, but we received processing complete message
             ExpectNoMsg(TimeSpan.FromSeconds(1));
         }
@@ -86,12 +138,12 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public async Task ProcessPipeActor_routes_events_by_type()
         {
-            var testProcessActor = Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, null, null)));
+            var testProcessActor = Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, Guid.NewGuid(), null)));
 
-            var catalog = new ProcessorListCatalog<IProcessCompleted>();
+            var catalog = new ProcessesDefaultProcessor();
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActor));
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessManagersPipeActor(catalog)));
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
 

@@ -82,16 +82,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         protected virtual bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter) where TMsg : class
         {
-            var msg = receivedMessage as TMsg;
-            return msg != null && domainMessageFilter(msg);
+            return receivedMessage is TMsg msg && domainMessageFilter(msg);
         }
 
         protected virtual void AddFilter(Type type, Func<object, bool> filter)
         {
             Condition.NotNull(() => filter);
 
-            List<Func<object, bool>> list;
-            if (!MessageFilters.TryGetValue(type, out list))
+            if (!MessageFilters.TryGetValue(type, out var list))
                 list = MessageFilters[type] = new List<Func<object, bool>>();
 
             list.Add(filter);

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tools;
 
 namespace GridDomain.Tests.Unit.BalloonDomain
 {
@@ -10,9 +11,9 @@ namespace GridDomain.Tests.Unit.BalloonDomain
     {
         private Balloon(Guid id) : base(id) {}
 
-        public Balloon(Guid id, string value) : this(id)
+        public Balloon(Guid id, string title) : this(id)
         {
-            Produce(new BalloonCreated(value, id));
+            Produce(new BalloonCreated(title, id));
         }
 
         public string Title { get; private set; }
@@ -25,7 +26,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                                                     + typeof(BalloonSnapshot).Name);
 
             var aggregate = new Balloon(snapshot.Id, snapshot.Value);
-            aggregate.PersistAll();
+            aggregate.CommitAll();
             aggregate.Version = snapshot.Version;
             return aggregate;
         }
@@ -35,6 +36,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain
             return new BalloonSnapshot(Id, Version, Title);
         }
 
+       
+
         public void WriteNewTitle(int number)
         {
             Produce(new BalloonTitleChanged(number.ToString(), Id));
@@ -43,7 +46,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         public void InflateNewBaloon(string value)
         {
             Produce(new BalloonCreated(value, Id),
-                 new BalloonTitleChanged(value, Id));
+                    new BalloonTitleChanged(value, Id));
         }
 
         public void IncreaseTitle(int value)
@@ -82,16 +85,23 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                                     }));
         }
 
-        private void Apply(BalloonCreated e)
+        protected override void OnAppyEvent(DomainEvent evt)
         {
-            Id = e.SourceId;
-            Title = e.Value;
-        }
-
-        private void Apply(BalloonTitleChanged e)
-        {
-            Title = e.Value;
-        }
+           switch (evt){
+               case BalloonCreated c:
+               {
+                   Id = c.SourceId;
+                   Title = c.Value;
+               }
+               break;
+               case BalloonTitleChanged c:
+               {
+                   Title = c.Value;
+               }
+               break;
+           }
+           Version++;
+       }
 
         public void Blow()
         {

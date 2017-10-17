@@ -23,6 +23,7 @@ namespace GridDomain.Tools.Persistence.SqlPersistence
             builder.Property(x => x.Timestamp).HasColumnName(@"Timestamp").IsRequired().HasColumnType("datetime2");
             builder.Property(x => x.Manifest).HasColumnName(@"Manifest").IsRequired().HasColumnType("nvarchar(500)");
             builder.Property(x => x.Snapshot).HasColumnName(@"Snapshot").IsRequired().HasColumnType("varbinary(max)");
+            builder.Property(x => x.SerializerId).HasColumnName(@"SerializerId").IsRequired(false).HasColumnType("int, null");
         }
     }
 }

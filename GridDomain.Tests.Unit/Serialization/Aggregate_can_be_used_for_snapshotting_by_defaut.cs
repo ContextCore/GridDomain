@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.Serialization
         private TestAggregate _restoredAggregate;
         private TestAggregate _aggregate;
 
-        private class TestAggregate : Aggregate
+        private class TestAggregate : ConventionAggregate
         {
             public TestAggregate(int value, Guid id) : base(id)
             {

@@ -5,10 +5,7 @@ namespace GridDomain.EventSourcing
 {
     public class CommandExecutionFailedException : Exception
     {
-        public CommandExecutionFailedException()
-        {
-            
-        }
+      
         public CommandExecutionFailedException(ICommand command, Exception innerException)
             : base("Command execution failed", innerException)
         {

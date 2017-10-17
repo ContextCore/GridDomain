@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
             public void Register(IDomainBuilder builder)
             {
                 builder.RegisterAggregate(new BalloonDependencyFactory());
-                builder.RegisterHandler<BalloonCreated, CountingMessageHandler>().AsParallel();
+                builder.RegisterHandler<BalloonCreated, CountingMessageHandler>().AsSync();
                 builder.RegisterHandler<BalloonCreated, SlowCountingMessageHandler>(c => new SlowCountingMessageHandler(c.Publisher)).AsFireAndForget();
                 builder.RegisterHandler<BalloonTitleChanged, CountingMessageHandler>().AsSync();
             }
@@ -63,7 +63,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         }
 
         public When_awaiting_command_execution_without_prepare_and_counting(ITestOutputHelper output) :
-            base(output, new NodeTestFixture(new BalloonCountingDomainConfiguration())){ }
+            base(new NodeTestFixture(output, new BalloonCountingDomainConfiguration())){ }
 
         [Fact]
         public async Task Then_command_executed_sync_and_parralel_message_processor_are_executed()

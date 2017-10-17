@@ -29,15 +29,15 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
 
         public async Task Save<T>(T aggr) where T : Aggregate
         {
-            var persistId = AggregateActorName.New<T>(aggr.Id).ToString();
-            await _eventRepository.Save(persistId, aggr.GetDomainEvents().ToArray());
-            aggr.PersistAll();
+            var persistId = EntityActorName.New<T>(aggr.Id).ToString();
+            await _eventRepository.Save(persistId, ((IAggregate) aggr).GetUncommittedEvents().ToArray());
+            aggr.CommitAll();
         }
 
         public async Task<T> LoadAggregate<T>(Guid id) where T : IAggregate
         {
-            var agr = Aggregate.Empty<T>(id);
-            var persistId = AggregateActorName.New<T>(id).ToString();
+            var agr = AggregateFactory.BuildEmpty<T>(id);
+            var persistId = EntityActorName.New<T>(id).ToString();
             var events = await _eventRepository.Load(persistId);
             foreach (var e in events.SelectMany(e => _eventsAdaptersCatalog.Update(e).Cast<DomainEvent>()))
                         agr.ApplyEvent(e);

@@ -18,11 +18,18 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Transport;
 using GridDomain.Transport.Extension;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 {
     public class Actors_should_fill_process_id_for_produced_faults : TestKit
     {
+
+        public Actors_should_fill_process_id_for_produced_faults(ITestOutputHelper output):base("",output)
+        {
+            
+        }
+
         [Theory]
         [InlineData("test")] //, Description = "unplanned exception from message processor")]
         [InlineData("10")] //, Description = "planned exception from message processor")]
@@ -34,8 +41,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             transport.Subscribe<IMessageMetadataEnvelop>(TestActor);
 
             var actor =
-                Sys.ActorOf(
-                            Props.Create(
+                Sys.ActorOf(Props.Create(
                                          () =>
                                              new MessageHandleActor<BalloonTitleChanged, BalloonTitleChangedOddFaultyMessageHandler>(
                                                                                                                    new BalloonTitleChangedOddFaultyMessageHandler(transport),
@@ -56,13 +62,13 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 
             var transport = Sys.InitLocalTransportExtension().Transport;
             transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
-            var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), TestActor)));
+            var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new HandlersDefaultProcessor(), TestActor)));
 
-            var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<HomeAggregate>(new HomeAggregateHandler(),
+            var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<ProgrammerAggregate>(CommandAggregateHandler.New<ProgrammerAggregate>(),
                                                                                          new SnapshotsPersistencePolicy(1, 5, null, null),
                                                                                          new AggregateFactory(),
                                                                                          handlersActor)),
-                            AggregateActorName.New<HomeAggregate>(command.Id).Name);
+                            EntityActorName.New<ProgrammerAggregate>(command.Id).Name);
 
             actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
 

@@ -1,9 +1,11 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
+using GridDomain.Tools;
 
 namespace GridDomain.Tests.Common
 {
@@ -16,6 +18,11 @@ namespace GridDomain.Tests.Common
             return new AggregateScenario<TAggregate>(CreateAggregate<TAggregate>(), CreateCommandsHandler<TAggregate,TAggregateCommandsHandler>());
         }
 
+        public static AggregateScenario<TAggregate> New<TAggregate>() where TAggregate : CommandAggregate
+        {
+            return new AggregateScenario<TAggregate>(CreateAggregate<TAggregate>(), CommandAggregateHandler.New<TAggregate>());
+        }
+
         public static AggregateScenario<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler) where TAggregate : Aggregate
         {
             return new AggregateScenario<TAggregate>(CreateAggregate<TAggregate>(), handler);
@@ -25,7 +32,7 @@ namespace GridDomain.Tests.Common
             return (TAggregate)new AggregateFactory().Build(typeof(TAggregate), Guid.NewGuid(), null);
         }
 
-        private static IAggregateCommandsHandler<TAggregate> CreateCommandsHandler<TAggregate,THandler>() where THandler : IAggregateCommandsHandler<TAggregate>
+        private static IAggregateCommandsHandler<TAggregate> CreateCommandsHandler<TAggregate,THandler>() where THandler : IAggregateCommandsHandler<TAggregate> where TAggregate : IAggregate
         {
             var constructorInfo = typeof(THandler).GetConstructor(Type.EmptyTypes);
             if (constructorInfo == null)
@@ -42,6 +49,7 @@ namespace GridDomain.Tests.Common
         {
             CommandsHandler = handler ?? throw new ArgumentNullException(nameof(handler));
             Aggregate = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
+            Aggregate.InitEventStore(_eventStore);
         }
 
         private IAggregateCommandsHandler<TAggregate> CommandsHandler { get; }
@@ -51,7 +59,7 @@ namespace GridDomain.Tests.Common
         public DomainEvent[] ProducedEvents { get; private set; } = {};
         public DomainEvent[] GivenEvents { get; private set; } = {};
         public Command[] GivenCommands { get; private set; } = {};
-
+        private readonly InMemoryEventStore _eventStore = new InMemoryEventStore();
         public AggregateScenario<TAggregate> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
@@ -71,26 +79,25 @@ namespace GridDomain.Tests.Common
             return this;
         }
 
-    
         public async Task<AggregateScenario<TAggregate>> Run()
         {
-            var events = new List<DomainEvent>();
-            Task Persistence(Aggregate agr)
-            {
-                Aggregate = (TAggregate)agr;
-                events.AddRange(agr.GetDomainEvents());
-                agr.PersistAll();
-                return Task.CompletedTask;
-            }
-
             //When
             foreach (var cmd in GivenCommands)
             {
-               await CommandsHandler.ExecuteAsync(Aggregate, cmd, Persistence);
+                try
+                {
+                    Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd, _eventStore);
+                }
+                catch (Exception ex)
+                {
+                    throw new CommandExecutionFailedException(cmd,ex);
+                }
+                Aggregate.CommitAll();
             }
 
             //Then
-            ProducedEvents = events.ToArray();
+            ProducedEvents = _eventStore.Events.ToArray();
+            _eventStore.Clear();
 
             return this;
         }

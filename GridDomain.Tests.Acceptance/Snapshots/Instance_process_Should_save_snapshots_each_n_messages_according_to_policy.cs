@@ -14,6 +14,7 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,10 +23,12 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Instance_process_Should_save_snapshots_each_n_messages_according_to_policy : NodeTestKit
     {
         public Instance_process_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
-            : base(
-                   output,
-                   new SoftwareProgrammingProcessManagerFixture().UseSqlPersistence().InitSnapshots(5, TimeSpan.FromMilliseconds(5), 2)
-                                                                        .IgnoreCommands()) { }
+            : base(new SoftwareProgrammingProcessManagerFixture(output){LogLevel = LogEventLevel.Debug}
+                                                              .UseSqlPersistence()
+                                                              .InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
+                                                              .IgnorePipeCommands())
+        {
+        }
 
         [Fact]
         public async Task Given_default_policy()
@@ -38,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                 .SendToProcessManagers(startEvent);
 
             var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
-                            .SourceId;
+                               .SourceId;
 
             var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
@@ -59,9 +62,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Create()
                       .SendToProcessManagers(continueEventB);
 
-            await Task.Delay(500);
-
-            var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
+            await Node.KillProcessManager<SoftwareProgrammingProcess,SoftwareProgrammingState>(continueEventB.ProcessId);
+            await Task.Delay(1000);
+            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                   new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //saving on each message, maximum on each command

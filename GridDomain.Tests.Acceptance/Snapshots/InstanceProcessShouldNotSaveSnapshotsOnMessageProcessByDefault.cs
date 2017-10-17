@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var snapshots =
                 await
-                    new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
+                    new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                     new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(
                                                                                                                                               startEvent.ProcessId);
             //Snapshot_should_be_saved_one_time()

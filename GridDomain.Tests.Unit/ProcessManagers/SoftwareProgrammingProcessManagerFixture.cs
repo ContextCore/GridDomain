@@ -4,6 +4,8 @@ using GridDomain.Node;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Configuration;
+using Serilog.Events;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
@@ -11,19 +13,14 @@ namespace GridDomain.Tests.Unit.ProcessManagers
     {
         protected readonly SoftwareProgrammingProcessDomainConfiguration ProcessConfiguration;
 
-        public SoftwareProgrammingProcessManagerFixture(IDomainConfiguration config = null,
-                                              TimeSpan? timeout = default(TimeSpan?)) : base(config, timeout)
+        public SoftwareProgrammingProcessManagerFixture(ITestOutputHelper output) : base(output)
         {
             ProcessConfiguration = new SoftwareProgrammingProcessDomainConfiguration(Logger);
             Add(new BalloonDomainConfiguration());
-        }
-
-        protected override NodeSettings CreateNodeSettings()
-        {
             Add(ProcessConfiguration);
-            return base.CreateNodeSettings();
-        }
 
+        }
+        
         public SoftwareProgrammingProcessManagerFixture InitSnapshots(int keep = 1,
                                                             TimeSpan? maxSaveFrequency = null,
                                                             int saveOnEach = 1)

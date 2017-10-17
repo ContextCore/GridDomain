@@ -26,14 +26,11 @@ namespace GridDomain.EventSourcing
             _creators.Add(type, producer);
         }
 
-        protected override Aggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
+        protected override IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
         {
-            Func<IMemento, Aggregate> factory;
-
-            if (_creators.TryGetValue(type, out factory))
-                return factory.Invoke(snapshot);
-
-            return base.BuildFromSnapshot(type, id, snapshot);
+            return _creators.TryGetValue(type, out var factory) ? 
+                factory.Invoke(snapshot) : 
+                base.BuildFromSnapshot(type, id, snapshot);
         }
     }
 }

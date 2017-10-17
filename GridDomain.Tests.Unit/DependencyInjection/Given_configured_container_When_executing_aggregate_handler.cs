@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
     public class Given_configured_container_When_executing_aggregate_handler : NodeTestKit
     {
         public Given_configured_container_When_executing_aggregate_handler(ITestOutputHelper helper) 
-            : base(helper, new NodeTestFixture().Add(new TestAggregateDomainConfiguration())) {}
+            : base(new NodeTestFixture(helper).Add(new TestAggregateDomainConfiguration())) {}
 
         [Fact]
         public async Task

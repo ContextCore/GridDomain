@@ -11,8 +11,8 @@ namespace GridDomain.Tests.Unit.FutureEvents
 {
     public class Raising_future_events_too_late : NodeTestKit
     {
-        public Raising_future_events_too_late(ITestOutputHelper output) : base(output, new FutureEventsFixture(output)) {}
-        protected Raising_future_events_too_late(ITestOutputHelper output, NodeTestFixture fixture) : base(output, fixture) {}
+        public Raising_future_events_too_late(ITestOutputHelper output) : base(new FutureEventsFixture(output)) {}
+        protected Raising_future_events_too_late(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public async Task Given_aggregate_When_raising_future_event_in_past_Then_it_fires_immediatly()

@@ -7,12 +7,14 @@ using Akka.TestKit.TestActors;
 using Akka.TestKit.Xunit2;
 using Autofac;
 using GridDomain.Common;
-
+using GridDomain.Configuration;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced;
+using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.ProcessManagers.Creation;
@@ -27,33 +29,33 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 {
     public class Process_actor_should_execute_async_processes_with_block : TestKit
     {
-        public Process_actor_should_execute_async_processes_with_block(ITestOutputHelper output):base("", output)
+        public Process_actor_should_execute_async_processes_with_block(ITestOutputHelper output)
         {
-            var logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
-            var creator = new AsyncLongRunningProcessManagerFactory(logger);
-            var producer = new ProcessManager—reatorsCatalog<TestState>(AsyncLongRunningProcess.Descriptor, creator);
-            producer.RegisterAll(creator);
+            var logger =  new XUnitAutoTestLoggerConfiguration(output).CreateLogger(); 
+            var creator = new AsyncLongRunningProcessManagerFactory();
 
             _localAkkaEventBusTransport = Sys.InitLocalTransportExtension().Transport;
             var blackHole = Sys.ActorOf(BlackHoleActor.Props);
 
-            var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new ProcessorListCatalog(), blackHole)));
+            var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new HandlersDefaultProcessor(), blackHole)));
             _processId = Guid.NewGuid();
 
             var container = new ContainerBuilder();
 
             container.Register<ProcessStateActor<TestState>>(c =>
-                                                             new ProcessStateActor<TestState>(new ProcessStateCommandHandler<TestState>(),
+                                                             new ProcessStateActor<TestState>(CommandAggregateHandler.New<ProcessStateAggregate<TestState>>(),
                                                                                               new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
                                                                                               messageProcessActor));
             Sys.AddDependencyResolver(new AutoFacDependencyResolver(container.Build(), Sys));
-
-            var name = AggregateActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
-            _processActor = ActorOfAsTestActorRef(() => new ProcessManagerActor<TestState>(producer),
+            Sys.AttachSerilogLogging(logger);
+            //for process state retrival
+            var processStateActor = Sys.ActorOf(Props.Create(() => new ProcessStateHubActor<TestState>(new DefaultPersistentChildsRecycleConfiguration())), typeof(TestState).BeautyName() + "_Hub");
+            var name = EntityActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
+            _processActor = ActorOfAsTestActorRef(() => new ProcessActor<TestState>(new AsyncLongRunningProcess(), creator),
                                                   name);
         }
 
-        private readonly TestActorRef<ProcessManagerActor<TestState>> _processActor;
+        private readonly TestActorRef<ProcessActor<TestState>> _processActor;
         private readonly Guid _processId;
         private readonly IActorTransport _localAkkaEventBusTransport;
 

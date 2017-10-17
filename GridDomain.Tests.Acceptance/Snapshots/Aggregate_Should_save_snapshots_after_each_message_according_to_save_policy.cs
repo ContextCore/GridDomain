@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy : NodeTestKit
     {
         public Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy(ITestOutputHelper output)
-            : base(output, new BalloonFixture().UseSqlPersistence().EnableSnapshots()) {}
+            : base(new BalloonFixture(output).UseSqlPersistence().EnableSnapshots()) {}
 
         [Fact]
         public async Task Given_default_policy()
@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             Thread.Sleep(100);
 
-            var snapshots = await new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
+            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                   new BalloonAggregateFactory())
                                                                   .Load<Balloon>(aggregateId);
             //Snapshots_should_be_saved_two_times()

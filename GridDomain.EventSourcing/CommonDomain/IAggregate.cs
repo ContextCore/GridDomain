@@ -7,9 +7,13 @@ namespace GridDomain.EventSourcing.CommonDomain
     public interface IAggregate
     {
         Guid Id { get; }
-        int Version { get; }
         void ApplyEvent(DomainEvent @event);
+        void Commit(DomainEvent e);
+        void CommitAll();
+        bool HasUncommitedEvents { get; }
+        
         IReadOnlyCollection<DomainEvent> GetUncommittedEvents();
+        void InitEventStore(IEventStore store);
         IMemento GetSnapshot();
     }
 }

@@ -13,7 +13,7 @@ namespace GridDomain.Configuration.MessageRouting
                 r => r.RegisterAggregate(descriptor));
         }
 
-        public static IMessageRouteMap New(IProcessManagerDescriptor descriptor, string name = null)
+        public static IMessageRouteMap New(IProcessDescriptor descriptor, string name = null)
         {
             return new CustomRouteMap(name ?? $"map for {descriptor.GetType().Name}", r => r.RegisterProcess(descriptor));
         }

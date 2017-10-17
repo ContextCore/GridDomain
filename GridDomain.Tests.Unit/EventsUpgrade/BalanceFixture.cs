@@ -4,6 +4,7 @@ using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Common;
 using Quartz;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade
 {
@@ -11,19 +12,14 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     {
         protected readonly BalanceDomainDonfiguration BalanceDomainDonfiguration;
 
-        public BalanceFixture(IQuartzConfig config = null) 
+        public BalanceFixture(ITestOutputHelper output,IQuartzConfig config = null) :base(output)
         {
             BalanceDomainDonfiguration = new BalanceDomainDonfiguration();
             this.EnableScheduling(config ?? new InMemoryQuartzConfig(new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy())));
-
-        }
-
-        protected override NodeSettings CreateNodeSettings()
-        {
             Add(BalanceDomainDonfiguration);
-            var nodeSettings = base.CreateNodeSettings();
-            return nodeSettings;
         }
+
+      
         public BalanceFixture InitFastRecycle(
             TimeSpan? clearPeriod = null,
             TimeSpan? maxInactiveTime = null)

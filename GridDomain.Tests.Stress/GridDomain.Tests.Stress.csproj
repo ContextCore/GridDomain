@@ -46,8 +46,17 @@
     <Reference Include="Akka.Persistence.SqlServer, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.SqlServer.1.3.1\lib\net45\Akka.Persistence.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Akka.TestKit, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Akka.TestKit.1.3.1\lib\net45\Akka.TestKit.dll</HintPath>
+    </Reference>
+    <Reference Include="Automatonymous, Version=3.5.12.75, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Automatonymous.3.5.12\lib\net452\Automatonymous.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.3.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.3.0\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="GreenPipes, Version=1.1.0.83, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\GreenPipes.1.0.10\lib\net452\GreenPipes.dll</HintPath>
     </Reference>
     <Reference Include="GridDomain.Transport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -209,7 +218,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregateActor\AggregateActorPerf.cs" />
-    <Compile Include="AggregateCommandsHandlerExecution\AggregateCommandsHandlerPerfTest.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BenchmarkBalloonAggregateCommandsHandler.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BallonCommandsExecutionBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BaseAggregateWithDefaultHandlerBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BenchmarkBallonCommandAggregate.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BenchmarkBallonConventionAggregate.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\BenchmarkBalloonAggregate.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\CommandAggregateBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\ConventionAggregateBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\CustomAggregateWithCustomHandlerBench.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\CustomBenchmarkBalloonAggregateCommandsHandler.cs" />
+    <Compile Include="AggregateCommandsHandlerExecution\FakeEventStore.cs" />
     <Compile Include="AnemicEF\AnemicModelEFCOntextInMem.cs" />
     <Compile Include="BalloonsCreationAndChangeScenario.cs" />
     <Compile Include="AggregateActor\AggregateActorPerfInMem.cs" />
@@ -224,17 +243,19 @@
     <Compile Include="NodeCommandExecution\ConnectorCreationAndChangeWithProjectionInMem.cs" />
     <Compile Include="NodeCommandExecution\ConnectorCreationAndChangeWithProjectionInSql.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInMem.cs" />
+    <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnly_CommandAggregate_InMem.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWriteOnlyInSql.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInSql.cs" />
+    <Compile Include="NodeCommandExecution\HomeCreationAndChangeScenario.cs" />
     <Compile Include="NodeCommandExecution\ScenarionPerfTest.cs" />
     <Compile Include="NodeCommandExecution\BallonWriteOnlyDomain.cs" />
     <Compile Include="NodeCommandExecution\CreationAndChangeWithProjectionInMem.cs" />
-    <Compile Include="NodeCommandExecution\CommandExecutionWithProjectionPerfTestSql.cs" />
     <Compile Include="CommandPlan.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GridNodeExtensions.cs" />
     <Compile Include="INodeScenario.cs" />
     <Compile Include="InsertOptimazedBulkConfiguration.cs" />
+    <Compile Include="NodeCommandExecution\SerilogTestOutput.cs" />
+    <Compile Include="Processes\ProcessActorBench.cs" />
     <Compile Include="Single_LoadAllAssembliesTest.cs" />
     <Compile Include="NBenchAvailabilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -261,6 +282,10 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{3ff79114-bac6-4b56-838f-cd63f0894a38}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj">
+      <Project>{334DBDCC-BF94-4787-93DA-8AA29956A861}</Project>
+      <Name>GridDomain.Node.Persistence.Sql</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{c2709993-d05e-49a8-950f-04a1f2a8bd87}</Project>

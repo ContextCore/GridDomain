@@ -1,4 +1,5 @@
 using System;
+using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
@@ -15,7 +16,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
             var processId = Guid.NewGuid();
             var softwareProgrammingState = new SoftwareProgrammingState(processId, nameof(SoftwareProgrammingProcess.Sleeping));
 
-            var aggregate = EventSourcing.Aggregate.Empty<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
+            var aggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
             aggregate.ApplyEvents(new ProcessManagerCreated<SoftwareProgrammingState>(softwareProgrammingState, processId),
                                   new ProcessReceivedMessage<SoftwareProgrammingState>(processId,
                                                                                     softwareProgrammingState,

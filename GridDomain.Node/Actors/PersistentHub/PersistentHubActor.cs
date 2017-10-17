@@ -24,7 +24,7 @@ namespace GridDomain.Node.Actors.PersistentHub
         private readonly ActorMonitor _monitor;
         private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
         internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
-        private readonly ILoggingAdapter Log = Context.GetLogger();
+        private readonly ILoggingAdapter Log = Context.GetSeriLogger();
 
         protected PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
         {
@@ -34,8 +34,7 @@ namespace GridDomain.Node.Actors.PersistentHub
 
             Receive<Terminated>(t =>
                                 {
-                                    Guid id;
-                                    if (!AggregateActorName.TryParseId(t.ActorRef.Path.Name, out id))
+                                    if (!EntityActorName.TryParseId(t.ActorRef.Path.Name, out var id))
                                         return;
                                     if (Children.TryGetValue(id, out ChildInfo info) && info.PendingMessages.Any())
                                     {
@@ -49,12 +48,13 @@ namespace GridDomain.Node.Actors.PersistentHub
                                     }
                                     Children.Remove(id);
                                 });
+
             Receive<ClearChildren>(m => Clear());
+            Receive<NotifyOnPersistenceEvents>(m => SendToChild(m,m.Id,GetChildActorName(m.Id),Sender));
             Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
             Receive<WarmUpChild>(m =>
                                  {
-                                     ChildInfo info;
-                                     var created = InitChild(m.Id, GetChildActorName(m.Id), out info);
+                                     var created = InitChild(m.Id, GetChildActorName(m.Id), out var info);
                                      var sender = Sender;
                                      sender.Tell(new WarmUpResult(info, created));
                                  });
@@ -82,10 +82,9 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         protected void SendToChild(object message, Guid childId, string name, IActorRef sender)
         {
-            ChildInfo knownChild;
             //TODO: refactor this suspicious logic of child terminaition cancel
             bool childWasCreated;
-            if (!(childWasCreated = InitChild(childId, name, out knownChild)))
+            if (!(childWasCreated = InitChild(childId, name, out var knownChild)))
             {
                 if (knownChild.Terminating)
                 {
@@ -134,12 +133,12 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         protected virtual void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
         {
-            knownChild.Ref.Tell(message);
+            knownChild.Ref.Tell(message, sender);
         }
 
         private void Clear()
         {
-            Log.Warning("Starting children clear");
+            Log.Debug("Starting children clear");
 
             var now = BusinessDateTime.UtcNow;
             var childsToTerminate =
@@ -150,15 +149,14 @@ namespace GridDomain.Node.Actors.PersistentHub
             foreach (var childId in childsToTerminate)
                 ShutdownChild(childId);
 
-            Log.Warning("Removed {childsToTerminate} of {total} children",
+            Log.Debug("Removed {childsToTerminate} of {total} children",
                       childsToTerminate.Length,
                       Children.Count);
         }
 
         private void ShutdownChild(Guid childId)
         {
-            ChildInfo childInfo;
-            if (!Children.TryGetValue(childId, out childInfo))
+            if (!Children.TryGetValue(childId, out var childInfo))
                 return;
 
             childInfo.Ref.Tell(GracefullShutdownRequest.Instance);

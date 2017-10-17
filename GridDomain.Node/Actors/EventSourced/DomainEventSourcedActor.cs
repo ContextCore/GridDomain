@@ -10,27 +10,27 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.EventSourced.Messages;
-using GridDomain.Node.Actors.Serilog;
+using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.AkkaMessaging;
 using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
-    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : Aggregate
+    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : IAggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
         protected readonly ActorMonitor Monitor;
 
         protected readonly BehaviorStack Behavior;
-        protected new ILoggingAdapter Log { get; }
+        protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
+
         public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
         {
             _snapshotsPolicy = policy;
-            Log = Context.GetLogger(new SerilogLogMessageFormatter());
-
+          
             PersistenceId = Self.Path.Name;
-            Id = AggregateActorName.Parse<T>(Self.Path.Name)
+            Id = EntityActorName.Parse<T>(Self.Path.Name)
                                    .Id;
             State = (T) aggregateConstructor.Build(typeof(T), Id, null);
 
@@ -39,7 +39,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
             DefaultBehavior();
 
-            Recover<DomainEvent>(e => { ((IAggregate) State).ApplyEvent(e); });
+            Recover<DomainEvent>(e => { State.ApplyEvent(e); });
 
             Recover<SnapshotOffer>(offer =>
                                    {
@@ -191,9 +191,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected override void Unhandled(object message)
         {
-            Log.Warning("Skipping message {message} because it was unhandled. \r\n {@behavior}.",
-                message,
-                Behavior);
+            Log.Warning("Skipping message {message} because it was unhandled. \r\n Behavior: {@behavior}.",message,Behavior);
             base.Unhandled(message);
         }
 

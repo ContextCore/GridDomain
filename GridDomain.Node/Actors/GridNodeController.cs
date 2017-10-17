@@ -7,13 +7,17 @@ namespace GridDomain.Node.Actors
     {
         private readonly ActorMonitor _monitor;
 
-        public GridNodeController()
+        public GridNodeController(IActorRef commandPipe, IActorRef transportProxy)
         {
             _monitor = new ActorMonitor(Context);
-            Receive<Start>(m => {
+            Receive<HeartBeat>(m => {
                                _monitor.IncrementMessagesReceived();
-                               Sender.Tell(Started.Instance);
+                               Sender.Tell(Alive.Instance);
                            });
+            Receive<Connect>(m => {
+                                   _monitor.IncrementMessagesReceived();
+                                   Sender.Tell(new Connected(commandPipe, transportProxy));
+                               });
         }
 
         protected override void PreStart()
@@ -31,12 +35,35 @@ namespace GridDomain.Node.Actors
             _monitor.IncrementActorRestarted();
         }
 
-        public class Start {}
-
-        public class Started
+        public class HeartBeat
         {
-            private Started() {}
-            public static Started Instance { get; } = new Started();
+            private HeartBeat() { }
+            public static HeartBeat Instance { get; } = new HeartBeat();
+        }
+
+        public class Alive
+        {
+            private Alive() {}
+            public static Alive Instance { get; } = new Alive();
+        }
+
+        public class Connect
+        {
+            private Connect() { }
+            public static Connect Instance { get; } = new Connect();
+        }
+
+        public class Connected
+        {
+            public IActorRef PipeRef { get; }
+            public IActorRef TransportProxy { get; }
+
+            public Connected(IActorRef pipeRef, IActorRef transportProxy)
+            {
+                PipeRef = pipeRef;
+                TransportProxy = transportProxy;
+            }
+
         }
     }
 }

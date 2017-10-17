@@ -11,8 +11,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
     {
         public Given_AutomatonymousProcess_When_invalid_Transitions(ITestOutputHelper output)
         {
-            _given = new Given_Automatonymous_Process(m => m.Sleeping,
-                                                  new XUnitAutoTestLoggerConfiguration(output).CreateLogger());
+            _given = new Given_Automatonymous_Process(m => m.Sleeping);
         }
 
         private readonly Given_Automatonymous_Process _given;
@@ -34,33 +33,33 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         [Fact]
         public async Task Exception_occurs()
         {
-            await Assert.ThrowsAsync<UnbindedMessageReceivedException>(() => _given.ProcessManagerInstance
-                                                                                   .Transit(new WrongMessage()));
+            await Assert.ThrowsAsync<UnbindedMessageReceivedException>(() => _given.Process
+                                                                                   .Transit(_given.State, new WrongMessage()));
         }
 
         [Fact]
         public async Task No_commands_are_produced()
         {
             ProcessResult<SoftwareProgrammingState> newState = null;
-            await SwallowException(async () => newState = await _given.ProcessManagerInstance.Transit(new WrongMessage()));
+            await SwallowException(async () => newState = await _given.Process.Transit(_given.State, new WrongMessage()));
             Assert.Null(newState?.ProducedCommands);
         }
 
         [Fact]
         public async Task Null_message_Exception_occurs()
         {
-            await Assert.ThrowsAsync<UnbindedMessageReceivedException>(() => _given.ProcessManagerInstance
-                                                                             .Transit((object) null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _given.Process
+                                                                             .Transit(_given.State, null));
         }
 
         [Fact]
         public async Task Process_state_not_changed()
         {
-            var stateHashBefore = _given.ProcessManagerInstance.State.CurrentStateName;
+            var stateHashBefore = _given.State.CurrentStateName;
 
-            await SwallowException(() => _given.ProcessManagerInstance.Transit(new WrongMessage()));
+            await SwallowException(() => _given.Process.Transit(_given.State, new WrongMessage()));
 
-            var stateHashAfter = _given.ProcessManagerInstance.State.CurrentStateName;
+            var stateHashAfter = _given.State.CurrentStateName;
 
             Assert.Equal(stateHashBefore, stateHashAfter);
         }

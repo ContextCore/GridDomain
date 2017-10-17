@@ -5,6 +5,7 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.MessageWaiting;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.Serialization {
@@ -18,7 +19,7 @@ namespace GridDomain.Tests.Unit.Serialization {
             //Fault
             //ballonTitleChanged
             var msg = new MessageMetadataEnvelop<Fault<BalloonTitleChanged>>(fault,MessageMetadata.Empty);
-            var serializer = new DebugHyperionSerializer((ExtendedActorSystem)ActorSystem.Create("test"));
+            var serializer = new DebugHyperionSerializer((ExtendedActorSystem)TestActorSystem.Create());
 
             var bytes = serializer.ToBinary(msg);
             var restored = serializer.FromBinary(bytes, typeof(MessageMetadataEnvelop<Fault<BalloonTitleChanged>>));  
@@ -29,7 +30,7 @@ namespace GridDomain.Tests.Unit.Serialization {
         {
             var ex = new MessageHandleException(new BalloonTitleChanged("123", Guid.NewGuid()));
            
-            var serializer = new DebugHyperionSerializer((ExtendedActorSystem)ActorSystem.Create("test"));
+            var serializer = new DebugHyperionSerializer((ExtendedActorSystem)TestActorSystem.Create());
             var bytes = serializer.ToBinary(ex);
 
             var restored = serializer.FromBinary(bytes, typeof(MessageHandleException));  
@@ -52,7 +53,7 @@ namespace GridDomain.Tests.Unit.Serialization {
         {
             var ex = new AggregateException(new MessageHandleException(new BalloonTitleChanged("123", Guid.NewGuid())));
 
-            var serializer = new DebugHyperionSerializer((ExtendedActorSystem)ActorSystem.Create("test"));
+            var serializer = new DebugHyperionSerializer((ExtendedActorSystem)TestActorSystem.Create());
             var bytes = serializer.ToBinary(ex);
 
             var restored = (AggregateException)serializer.FromBinary(bytes, typeof(AggregateException));

@@ -1,12 +1,13 @@
 using Akka.Event;
-using GridDomain.Node.Actors.Serilog;
 using GridDomain.Node.Configuration;
+using Serilog.Events;
 
 namespace GridDomain.Tests.Common.Configuration
 {
     public class AutoTestNodeConfiguration : NodeConfiguration
     {
-        public AutoTestNodeConfiguration(LogLevel verbosity = LogLevel.DebugLevel)
-            : base(new AutoTestNodeNetworkAddress(), new AutoTestNodeDbConfiguration(), verbosity) {}
+        public static NodeConfiguration Default { get; } = new AutoTestNodeConfiguration();
+        public AutoTestNodeConfiguration(LogEventLevel verbosity = LogEventLevel.Information)
+            : base("AutoTest",new AutoTestNodeNetworkAddress(), verbosity) {}
     }
 }

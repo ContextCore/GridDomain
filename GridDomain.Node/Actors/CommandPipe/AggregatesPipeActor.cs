@@ -6,13 +6,13 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
-using GridDomain.Node.Actors.Serilog;
+using GridDomain.Node.Actors.Logging;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
     public class AggregatesPipeActor : ReceiveActor
     {
-        private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
+        private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
         public AggregatesPipeActor(ICatalog<IActorRef,object> aggregateCatalog)
         {
             Receive<IMessageMetadataEnvelop>(c =>

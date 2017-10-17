@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class LocalFilesystemSnapshotConfig : INodeConfig
+    internal class LocalFilesystemSnapshotConfig : IHoconConfig
     {
         public string Build()
         {

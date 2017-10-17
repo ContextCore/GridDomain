@@ -37,11 +37,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Recovery
 
             data.ApplyEvents(eventsToReplay);
 
-            var processManager = new ProcessManager<SoftwareProgrammingState>(process,data.State, _logger);
+            var processManager = new SoftwareProgrammingProcess();
 
             //Try to transit process by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());
-            var newState = await processManager.Transit(coffeMakeFailedEvent);
+            var newState = await processManager.Transit(data.State,coffeMakeFailedEvent);
             var dispatchedCommands = newState.ProducedCommands;
             //process_produce_commands_only_one_command()
             Assert.Equal(1, dispatchedCommands.Count);

@@ -7,15 +7,12 @@ namespace GridDomain.Tests.Unit.FutureEvents
 {
     internal class FutureEventsFixture : NodeTestFixture
     {
-        public FutureEventsFixture(ITestOutputHelper output=null) : this(output,(IQuartzConfig)null)
-        {
-        }
-        public FutureEventsFixture(ITestOutputHelper output, IRetrySettings settings) : base(null, null, output)
+        public FutureEventsFixture(ITestOutputHelper output, IRetrySettings settings=null) : base(output)
         {
             Add(new FutureAggregateDomainConfiguration());
-            this.EnableScheduling(settings);
+            this.EnableScheduling(settings ?? new InMemoryRetrySettings());
         }
-        public FutureEventsFixture(ITestOutputHelper output, IQuartzConfig config, bool clearScheduledData = true) : base(null, null, output)
+        public FutureEventsFixture(ITestOutputHelper output, IQuartzConfig config, bool clearScheduledData = true) : base(output)
         {
             Add(new FutureAggregateDomainConfiguration());
             this.EnableScheduling(config,clearScheduledData);

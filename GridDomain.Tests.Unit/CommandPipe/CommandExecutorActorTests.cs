@@ -23,8 +23,6 @@ namespace GridDomain.Tests.Unit.CommandPipe
 {
     public class CommandExecutorActorTests : TestKit
     {
-        private Node.CommandPipe _commandPipe;
-
         private class CreateCommand : InflateNewBallonCommand
         {
             public CreateCommand(int title, Guid aggregateId) : base(title, aggregateId) {}

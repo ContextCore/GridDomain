@@ -7,6 +7,7 @@ using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.ProcessManagers;
+using GridDomain.Tools;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,16 +17,16 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_should_recover_from_snapshot : NodeTestKit
     {
         public Aggregate_should_recover_from_snapshot(ITestOutputHelper output)
-            : base(output, new BalloonFixture().UseSqlPersistence().EnableSnapshots()) {}
+            : base(new BalloonFixture(output).UseSqlPersistence().EnableSnapshots()) {}
 
         [Fact]
         public async Task Given_persisted_snapshot_Aggregate_should_execute_command()
         {
             var aggregate = new Balloon(Guid.NewGuid(), "haha");
             aggregate.WriteNewTitle(10);
-            aggregate.PersistAll();
+            aggregate.CommitAll();
 
-            var repo = new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
+            var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                        new BalloonAggregateFactory());
             await repo.Add(aggregate);
 

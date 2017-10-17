@@ -5,6 +5,7 @@ using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.ProcessManagers;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
 {
@@ -12,18 +13,14 @@ namespace GridDomain.Tests.Unit
     {
         private readonly BalloonDomainConfiguration _balloonDomainConfiguration;
 
-        public BalloonFixture(IQuartzConfig config = null)
+        public BalloonFixture(ITestOutputHelper output, IQuartzConfig config = null):base(output)
         {
             this.EnableScheduling(config);
             _balloonDomainConfiguration = new BalloonDomainConfiguration();
-        }
-
-        protected override NodeSettings CreateNodeSettings()
-        {
             Add(_balloonDomainConfiguration);
-            return base.CreateNodeSettings();
-        }
 
+        }
+        
         public BalloonFixture EnableSnapshots(
             int keep = 1,
             TimeSpan? maxSaveFrequency = null,

@@ -10,13 +10,11 @@ namespace GridDomain.Configuration.MessageRouting
     {
         Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor);
 
-        Task RegisterProcess(IProcessManagerDescriptor processManagerDescriptor, string name = null);
+        Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null);
 
         Task RegisterSyncHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                        where TMessage : class, IHaveProcessId, IHaveId;
         Task RegisterFireAndForgetHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                                 where TMessage : class, IHaveProcessId, IHaveId;
-        Task RegisterParralelHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
-                                                           where TMessage : class, IHaveProcessId, IHaveId;
     }
 }

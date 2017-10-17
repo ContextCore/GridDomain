@@ -23,7 +23,7 @@ namespace GridDomain.CQRS
 
         public DateTime Time { get; private set; }
         public Guid Id { get; private set; }
-        public Guid ProcessId { get; private set; }
+        public Guid ProcessId { get; set; }
         public Guid AggregateId { get; }
 
         //TODO: think how to avoid cloning just for process id set

@@ -7,6 +7,8 @@ using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress {
+    //it is performance test, not pure xunit
+#pragma warning disable xUnit1013
     public class NBenchAvailabilityTest
     {
         private const string TotalCommandsExecutedCounter = nameof(TotalCommandsExecutedCounter);
@@ -52,7 +54,7 @@ namespace GridDomain.Tests.Stress {
             }
             _testOutputHelper.WriteLine("ok");
         }
-        [NBenchFact]
+        [NBenchFact(Skip = "only for debugging purposes")]
         [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
             NumberOfIterations = 5, RunMode = RunMode.Iterations,
             RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]

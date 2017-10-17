@@ -1,40 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing {
-    public class CommandAggregate : Aggregate, IAggregateCommandsHandlerDescriptor
+    public abstract class CommandAggregate : Aggregate, IAggregateCommandsHandler<CommandAggregate>
     {
         protected CommandAggregate(Guid id) : base(id)
         {
             AggregateType = GetType();
         }
-
-        //TODO: replace with types cache to reduce memory and increase performace
-        internal readonly AggregateCommandsHandler<CommandAggregate> CommandsHandler = new AggregateCommandsHandler<CommandAggregate>();
-
-        protected void Command<T>(Action<T> syncCommandAction) where T : ICommand
-        {
-            CommandsHandler.Map<T>(((c, a) => syncCommandAction(c)));
-        }
-        protected void Command<T>(Func<T,Task> asyncCommandAction) where T : ICommand
-        {
-            CommandsHandler.Map<T>(((c, a) => asyncCommandAction(c)));
-
-        }
-        protected void Command<T>(Func<T, CommandAggregate> aggregateCreator) where T : ICommand
-        {
-            CommandsHandler.Map<T>(aggregateCreator);
-        }
-
-        public Task ExecuteAsync(CommandAggregate aggregate, ICommand command, PersistenceDelegate persistenceDelegate)
-        {
-            return CommandsHandler.ExecuteAsync(aggregate, command, persistenceDelegate);
-        }
-
-        public IReadOnlyCollection<Type> RegisteredCommands => CommandsHandler.RegisteredCommands;
         public Type AggregateType { get; }
+        public abstract IReadOnlyCollection<Type> RegisteredCommands { get; }
+
+        protected abstract Task<IAggregate> Execute(ICommand cmd);
+
+        public async Task<CommandAggregate> ExecuteAsync(CommandAggregate aggregate, ICommand command, IEventStore eventStore)
+        {
+            aggregate = (CommandAggregate) await Execute(command);
+            await eventStore.Persist(aggregate);
+            return aggregate;
+        }
     }
 }

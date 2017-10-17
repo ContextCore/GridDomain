@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging;
+using GridDomain.Node.Persistence.Sql;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
@@ -16,45 +17,34 @@ namespace GridDomain.Tests.Acceptance.Tools
 {
     public class Aggregate_repository_tests_given_persisted_events
     {
-        private static readonly AutoTestNodeConfiguration AutoTestNodeConfiguration = new AutoTestNodeConfiguration();
+        private static readonly ISqlNodeDbConfiguration PersistenceConfiguration = new AutoTestNodeDbConfiguration();
+        private static readonly AcceptanceAutoTestAkkaFactory AkkaFactory = new AcceptanceAutoTestAkkaFactory();
 
-        private static readonly string AkkaWriteDbConnectionString =
-            AutoTestNodeConfiguration.Persistence.JournalConnectionString;
+        private static readonly string AkkaWriteDbConnectionString = PersistenceConfiguration.JournalConnectionString;
 
         public static readonly IEnumerable<object[]> EventRepositories =
         new []{
             new object[]
             {
-                ActorSystemJournalRepository.New(
-                                                 AutoTestNodeConfiguration,
+                ActorSystemJournalRepository.New(new AcceptanceAutoTestAkkaFactory(), 
                                                  new EventsAdaptersCatalog()),
-                new AggregateRepository(
-                                        ActorSystemJournalRepository.New(
-                                                                         new AutoTestNodeConfiguration(),
-                                                                         new EventsAdaptersCatalog()))
+                new AggregateRepository(ActorSystemJournalRepository.New(AkkaFactory,new EventsAdaptersCatalog()))
             },
             new object[]
             {
-                ActorSystemJournalRepository.New(
-                                                 AutoTestNodeConfiguration,
+                ActorSystemJournalRepository.New(AkkaFactory,
                                                  new EventsAdaptersCatalog()),
-                AggregateRepository.New(
-                                        AkkaWriteDbConnectionString)
+                AggregateRepository.New(AkkaWriteDbConnectionString)
             },
             new object[]
             {
-                DomainEventsRepository.New(
-                                           AkkaWriteDbConnectionString),
-                AggregateRepository.New(
-                                        AkkaWriteDbConnectionString)
+                DomainEventsRepository.New(AkkaWriteDbConnectionString),
+                AggregateRepository.New(AkkaWriteDbConnectionString)
             },
             new object[]
             {
-                DomainEventsRepository.New(
-                                           AkkaWriteDbConnectionString),
-                new AggregateRepository(
-                                        ActorSystemJournalRepository.New(
-                                                                         new AutoTestNodeConfiguration(),
+                DomainEventsRepository.New(AkkaWriteDbConnectionString),
+                new AggregateRepository(ActorSystemJournalRepository.New(AkkaFactory,
                                                                          new EventsAdaptersCatalog()))
             }
         };
@@ -75,7 +65,7 @@ namespace GridDomain.Tests.Acceptance.Tools
                 _created = new BalloonCreated("initial value", _sourceId);
                 _changed = new BalloonTitleChanged("changed value", _sourceId);
 
-                var persistenceId = AggregateActorName.New<Balloon>(_sourceId).ToString();
+                var persistenceId = EntityActorName.New<Balloon>(_sourceId).ToString();
                 await eventRepo.Save(persistenceId, _created, _changed);
                 _aggregate = await aggrRepo.LoadAggregate<Balloon>(_sourceId);
 

@@ -6,12 +6,12 @@ namespace GridDomain.Node.Actors.EventSourced.Messages
 {
     public class NotifyOnPersistenceEvents : IHaveId
     {
-        public static readonly NotifyOnPersistenceEvents Instance = new NotifyOnPersistenceEvents(null);
+        public static readonly NotifyOnPersistenceEvents Instance = new NotifyOnPersistenceEvents(null, Guid.Empty);
 
-        public NotifyOnPersistenceEvents(IActorRef waiter, Guid? id = null)
+        public NotifyOnPersistenceEvents(IActorRef waiter, Guid id)
         {
             Waiter = waiter;
-            Id = id ?? Guid.Empty;
+            Id = id;
         }
 
         public IActorRef Waiter { get; }

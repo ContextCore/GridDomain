@@ -321,6 +321,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoTestNodeDbConfiguration.cs" />
+    <Compile Include="AutoTestSqlActorSystemFactory.cs" />
     <Compile Include="BalloonDomain\BalloonCatalogItem.cs" />
     <Compile Include="BalloonDomain\BalloonCatalogProjection.cs" />
     <Compile Include="BalloonDomain\BalloonCatalogProjectionFactory.cs" />
@@ -328,7 +330,6 @@
     <Compile Include="BalloonDomain\BalloonDomainEventsExtensions.cs" />
     <Compile Include="BalloonDomain\BalloonWithProjectionDomainConfiguration.cs" />
     <Compile Include="BalloonDomain\BalloonWithProjectionFixture.cs" />
-    <Compile Include="ConsoleSerilogLoggerActor.cs" />
     <Compile Include="EventsUpgrade\Future_events_class_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\Future_events_upgraded_by_object_adapter.cs" />
     <Compile Include="EventsUpgrade\GridNode_should_upgrade_objects_in_domain_events_after_save_load_by_journal.cs" />
@@ -341,6 +342,7 @@
     <Compile Include="EventsUpgrade\SampleDomain\IOrder.cs" />
     <Compile Include="FutureDomainEvents\FutureEventsTest_Persistent_restart.cs" />
     <Compile Include="FutureDomainEvents\Given_aggregate_When_raising_several_future_events_Persistent.cs" />
+    <Compile Include="GridConsole\GridNodeClient_Tests.cs" />
     <Compile Include="Migrations\BalloonInitial.cs" />
     <Compile Include="Migrations\BalloonInitial.designer.cs">
       <DependentUpon>BalloonInitial.cs</DependentUpon>
@@ -377,6 +379,7 @@
     <Compile Include="Snapshots\Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy.cs" />
     <Compile Include="Snapshots\NodeTestFixtureExtensions.cs" />
     <Compile Include="Snapshots\SnapshotsPersistenceAfterEachMessagePolicy.cs" />
+    <Compile Include="Tools\AcceptanceAutoTestAkkaFactory.cs" />
     <Compile Include="Tools\AcceptanceAutoTestNodeConfiguration.cs" />
     <Compile Include="Tools\Aggregate_repository_tests_given_persisted_events.cs" />
     <Compile Include="DefaultConsoleLoggerConfiguration.cs" />
@@ -398,6 +401,10 @@
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
       <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj">
+      <Project>{334DBDCC-BF94-4787-93DA-8AA29956A861}</Project>
+      <Name>GridDomain.Node.Persistence.Sql</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>

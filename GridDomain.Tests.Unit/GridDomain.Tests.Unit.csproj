@@ -44,9 +44,6 @@
     <Reference Include="Akka.DI.Core, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.DI.Core.1.3.1\lib\net45\Akka.DI.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Akka.Logger.Serilog, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Akka.Logger.Serilog.1.3.0\lib\net45\Akka.Logger.Serilog.dll</HintPath>
-    </Reference>
     <Reference Include="Akka.Persistence, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Akka.Persistence.1.3.1\lib\net45\Akka.Persistence.dll</HintPath>
     </Reference>
@@ -251,6 +248,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
@@ -272,11 +270,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActorSystemExtensions.cs" />
     <Compile Include="Aggregate_actor_lifetime\AggregateHub_children_lifetime_tests.cs" />
     <Compile Include="Aggregate_actor_lifetime\IPersistentActorTestsInfrastructure.cs" />
     <Compile Include="Aggregate_actor_lifetime\PersistentHubFixture.cs" />
     <Compile Include="Aggregate_actor_lifetime\PersistentHubChildrenLifetimeTest.cs" />
     <Compile Include="Aggregate_actor_lifetime\ProcessHub_children_lifetime_tests.cs" />
+    <Compile Include="CommandsExecution\ConventionCommands\ConventionAggregateTests.cs" />
+    <Compile Include="Isolated.cs" />
+    <Compile Include="Logging\LogForCustomizedSystemTests.cs" />
+    <Compile Include="Logging\LogForAutoTestKitTests.cs" />
+    <Compile Include="Logging\LogForStandaloneActorSystemTest.cs" />
+    <Compile Include="Logging\LogForTestKitTests.cs" />
+    <Compile Include="Logging\TestLogActor.cs" />
+    <Compile Include="Logging\TestMessage.cs" />
+    <Compile Include="Scenario\ProcessScenarioTests.cs" />
+    <Compile Include="Scenario\AggregateScenarioTests.cs" />
+    <Compile Include="TestActorSystem.cs" />
+    <Compile Include="NodeConfigurationDebugExtensions.cs" />
     <Compile Include="ProcessManagers\BalloonAggregateFactory.cs" />
     <Compile Include="BalloonDomain\Configuration\BalloonDependencyFactory.cs" />
     <Compile Include="BalloonDomain\DoubleIncreaseTitleCommand.cs" />
@@ -386,13 +397,13 @@
     <Compile Include="FutureEvents\Reraising_future_event.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_regular_Reraise.cs" />
     <Compile Include="FutureEvents\Retry\FutureEvent_Reraise_stops_on_special_exceptions.cs" />
-    <Compile Include="GridConsole\GridConsole_Command_executions_Tests.cs" />
-    <Compile Include="GridConsole\TestGridNodeConfiguration.cs" />
     <Compile Include="BalloonDomain\IncreaseTitleCommand.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessManagerDependenciesFactory.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\CoffeMachineAggregate.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\CoffeMachineCreated.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Commands\CreatePersonCommand.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessDependenciesFactory.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Configuration\SoftwareProgrammingProcessDomainConfiguration.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\HomeDomainConfiguration.cs" />
-    <Compile Include="LogTest.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\SoftwareDomainConfiguration.cs" />
     <Compile Include="MessageWaiting\AkkaWaiterTest.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B.cs" />
     <Compile Include="MessageWaiting\AkkaWaiter_messages_test_A_and_B_or_C.cs" />
@@ -445,9 +456,8 @@
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Events\CoffeMakeFailedEvent.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Events\GotTiredEvent.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Events\SleptWellEvent.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\HomeAggregate.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\HomeAggregateHandler.cs" />
-    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\HomeCreated.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\ProgrammerAggregate.cs" />
+    <Compile Include="ProcessManagers\SoftwareProgrammingDomain\PersonCreated.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\Slept.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\SoftwareProgrammingProcess.cs" />
     <Compile Include="ProcessManagers\SoftwareProgrammingDomain\SoftwareProgrammingState.cs" />
@@ -489,6 +499,7 @@
     <Compile Include="Serialization\Process_state_aggregate_should_be_serializable.cs" />
     <Compile Include="Serialization\JsonSerializationSettings_can_be_overriden_by_user.cs" />
     <Compile Include="Serialization\Private_setters_without_parameter_in_constructor_deserialization.cs" />
+    <Compile Include="Serialization\XUnitTraceWriter.cs" />
     <Compile Include="SnapshotsSavePolicyTests.cs" />
     <Compile Include="SyncProjection\SynchronizedProjectionBuildersTests.cs" />
     <Compile Include="TestKitExtensions.cs" />
@@ -504,6 +515,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Cluster.Persistence.Sql\GridDomain.Cluster.Persistence.Sql.csproj">
+      <Project>{f96d0717-f27c-4ac2-a8cb-0c7a746a9a82}</Project>
+      <Name>GridDomain.Cluster.Persistence.Sql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
       <Project>{ab9bb393-1874-4421-a78a-55d9977a6173}</Project>
       <Name>GridDomain.Common</Name>
@@ -517,8 +532,12 @@
       <Name>GridDomain.CQRS</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
-      <Project>{af9dbe6f-985e-43b5-85c6-a7c52e1bd601}</Project>
+      <Project>{3ff79114-bac6-4b56-838f-cd63f0894a38}</Project>
       <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj">
+      <Project>{334DBDCC-BF94-4787-93DA-8AA29956A861}</Project>
+      <Name>GridDomain.Node.Persistence.Sql</Name>
     </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
       <Project>{760be08a-d943-4a71-944e-938590527153}</Project>
@@ -554,6 +573,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.7.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cluster\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

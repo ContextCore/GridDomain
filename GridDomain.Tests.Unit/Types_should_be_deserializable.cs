@@ -23,6 +23,7 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.CommandPipe;
+using GridDomain.Tests.Unit.MessageWaiting;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using KellermanSoftware.CompareNetObjects;
 using Ploeh.AutoFixture;
@@ -39,14 +40,14 @@ namespace GridDomain.Tests.Unit
         public Types_should_be_deserializable()
         {
 
-           Fixture.Customizations.Add(new TypeRelay(typeof(IMemento), typeof(HomeAggregate)));
+           Fixture.Customizations.Add(new TypeRelay(typeof(IMemento), typeof(ProgrammerAggregate)));
            Fixture.Customizations.Add(new TypeRelay(typeof(ICommand), typeof(FakeCommand)));
            Fixture.Customizations.Add(new TypeRelay(typeof(Command), typeof(FakeCommand)));
            Fixture.Customizations.Add(new TypeRelay(typeof(DomainEvent), typeof(BalloonCreated)));
            Fixture.Customizations.Add(new TypeRelay(typeof(IProcessState), typeof(SoftwareProgrammingState)));
 
 
-            _system = (ExtendedActorSystem)ActorSystem.Create("test");
+            _system = (ExtendedActorSystem)TestActorSystem.Create();
             var testActor = _system.ActorOf<BlackHoleActor>();
             _system.InitDomainEventsSerialization(new EventsAdaptersCatalog());
             Fixture.Register<IActorRef>(() => testActor);
@@ -69,7 +70,7 @@ namespace GridDomain.Tests.Unit
                                                                    Assembly.GetAssembly(typeof(SchedulingConfiguration)),
                                                                    Assembly.GetAssembly(typeof(ProcessReceivedMessage<>)),
                                                                    Assembly.GetAssembly(typeof(Balloon)),
-                                                                   Assembly.GetAssembly(typeof(IProcessManagerCreatorCatalog<>)),
+                                                                   Assembly.GetAssembly(typeof(IProcessStateFactory<>)),
                                                                    Assembly.GetAssembly(typeof(DomainEvent)),
                                                                    Assembly.GetAssembly(typeof(ExecutionOptions))
                                                                };

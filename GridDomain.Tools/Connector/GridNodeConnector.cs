@@ -4,60 +4,69 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node;
-using GridDomain.Node.Actors.CommandPipe;
+using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Serializers;
 using GridDomain.Transport;
 using GridDomain.Transport.Remote;
+using Serilog;
+using Serilog.Events;
 
-namespace GridDomain.Tools.Connector
-{
+namespace GridDomain.Tools.Connector {
     /// <summary>
-    ///     GridNodeConnector is used to connect to remote node and delegate commands execution
+    ///     GridNodeClient is used to connect to remote node and delegate commands execution
     /// </summary>
     public class GridNodeConnector : IGridDomainNode
     {
         private readonly NodeConfiguration _conf;
 
         private readonly TimeSpan _defaultTimeout;
-        private readonly INodeNetworkAddress _serverAddress;
+        private readonly NodeConfiguration _serverAddress;
 
         private ICommandExecutor _commandExecutor;
         private ActorSystem _consoleSystem;
         private MessageWaiterFactory _waiterFactory;
+        private readonly ILogger _logger;
 
-        public GridNodeConnector(INodeNetworkAddress serverAddress,
-                                 NodeConfiguration clientConfiguration = null,
-                                 TimeSpan? defaultTimeout = null)
+        public GridNodeConnector New(string nodeName, string host, int port)
         {
-            _serverAddress = serverAddress;
+            return new GridNodeConnector(new NodeConfiguration(nodeName,new NodeNetworkAddress(host,port)));
+        }
+
+        public GridNodeConnector(NodeConfiguration serverConfig,
+                                 NodeConfiguration clientConfiguration = null,
+                                 TimeSpan? defaultTimeout = null,
+                                 ILogger log = null)
+        {
+            _logger = log ?? Log.Logger;
+            _serverAddress = serverConfig;
             _defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(60);
-            _conf = clientConfiguration ?? new ConsoleNodeConfiguration();
+            _conf = clientConfiguration ?? new NodeConfiguration("Connector",new NodeNetworkAddress(), LogEventLevel.Warning);
+
         }
 
         public void Dispose()
         {
-            _consoleSystem.Dispose();
+            _consoleSystem?.Dispose();
         }
 
-        public Task Execute(ICommand command, IMessageMetadata metadata = null)
+        public async Task Execute(ICommand command, IMessageMetadata metadata = null)
         {
-            return _commandExecutor.Execute(command, metadata);
+            if (!IsConnected) throw new NotConnectedException();
+            await _commandExecutor.Execute(command, metadata);
         }
+
 
         public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
+            if (!IsConnected)throw new NotConnectedException();
             return _waiterFactory.NewExplicitWaiter(defaultTimeout);
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
+            if(!IsConnected) throw new NotConnectedException();
             return _commandExecutor.Prepare(cmd, metadata);
-        }
-
-        private async Task<IActorRef> GetActor(ActorSelection selection)
-        {
-            return await selection.ResolveOne(_defaultTimeout);
         }
 
         private ActorSelection GetSelection(string relativePath)
@@ -67,25 +76,49 @@ namespace GridDomain.Tools.Connector
             return _consoleSystem.ActorSelection(actorPath);
         }
 
-        public async Task Connect()
+        public bool IsConnected => _commandExecutor != null;
+        public async Task Connect(int maxRetries = 5, TimeSpan? timeout=null)
         {
             if (_consoleSystem != null)
                 return;
 
-            _consoleSystem = _conf.CreateInMemorySystem();
-            DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
 
-            var eventBusForwarder = await GetActor(GetSelection("ActorTransportProxy"));
+            IActorRef eventBusForwarder = null;
+            IActorRef commandExecutionActor = null;
+            int connectionCountLeft = maxRetries;
+            while(true)
+                try
+                {
+                    _consoleSystem = _conf.CreateInMemorySystem();
+                    DomainEventsJsonSerializationExtensionProvider.Provider.Apply(_consoleSystem);
+                    _logger.Information("Starting association");
+
+                    var data = await GetSelection(nameof(GridNodeController))
+                                    .Ask<GridNodeController.Connected>(GridNodeController.Connect.Instance, timeout ?? _defaultTimeout);
+
+                    eventBusForwarder = data.TransportProxy;
+                    commandExecutionActor = data.PipeRef;
+
+                    _logger.Information("Association formed");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _consoleSystem?.Dispose();
+                    _logger.Warning(ex,"could not get answer from grid node controller in time");
+                    if (--connectionCountLeft == 0)
+                        throw;
+                }
 
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
                                                                   eventBusForwarder,
                                                                   _defaultTimeout);
-
-            var commandExecutionActor = await GetActor(GetSelection(nameof(AggregatesPipeActor)));
+                
             _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem,
                                                            transportBridge,
                                                            commandExecutionActor,
                                                            _defaultTimeout);
+
             _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }
 

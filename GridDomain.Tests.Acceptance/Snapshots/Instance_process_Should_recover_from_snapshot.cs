@@ -5,6 +5,7 @@ using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
+using GridDomain.Tools;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using Xunit;
 using Xunit.Abstractions;
@@ -14,7 +15,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Instance_process_Should_recover_from_snapshot : NodeTestKit
     {
         public Instance_process_Should_recover_from_snapshot(ITestOutputHelper helper)
-            : base(helper, new SoftwareProgrammingProcessManagerFixture().UseSqlPersistence()) {}
+            : base(new SoftwareProgrammingProcessManagerFixture(helper).UseSqlPersistence()) {}
 
         [Fact]
         public async Task Test()
@@ -25,9 +26,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
             processStateAggregate.ReceiveMessage(state, new object());
-            processStateAggregate.PersistAll();
+            processStateAggregate.CommitAll();
 
-            var repo = new AggregateSnapshotRepository(NodeConfig.Persistence.JournalConnectionString,
+            var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                        new AggregateFactory());
             await repo.Add(processStateAggregate);
 

@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class RootConfig : INodeConfig
+    public class RootConfig : IHoconConfig
     {
-        private readonly INodeConfig[] _parts;
+        private readonly IHoconConfig[] _parts;
 
-        public RootConfig(params INodeConfig[] parts)
+        public RootConfig(params IHoconConfig[] parts)
         {
             _parts = parts;
         }

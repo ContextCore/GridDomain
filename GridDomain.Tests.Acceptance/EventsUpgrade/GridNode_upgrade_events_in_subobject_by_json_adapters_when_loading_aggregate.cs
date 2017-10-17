@@ -16,8 +16,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate : NodeTestKit
     {
         public GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate(ITestOutputHelper output)
-            : base(output,
-                   new BalloonFixture().UseSqlPersistence().
+            : base(
+                   new BalloonFixture(output).UseSqlPersistence().
                                         UseAdaper(new String01Adapter())) { }
 
         private class String01Adapter : ObjectAdapter<string, string>

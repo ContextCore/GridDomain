@@ -10,7 +10,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
-using GridDomain.Node.Actors.Serilog;
+using GridDomain.Node.Actors.Logging;
 using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.CommandPipe
@@ -23,15 +23,15 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class HandlersPipeActor : ReceiveActor
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
-        private ILoggingAdapter Log { get; } = Context.GetLogger(new SerilogLogMessageFormatter());
-        public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef processManagerPipeActor)
+        private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
+        public HandlersPipeActor(IMessageProcessor handlersCatalog, IActorRef processManagerPipeActor)
         {
             var publisher = Context.System.GetTransport();
             ReceiveAsync<IMessageMetadataEnvelop>(envelop =>
                                                            {
                                                                  Log.Debug("Received messages to project. {project}",envelop);
                                                                
-                                                                 return handlersCatalog.ProcessMessage(envelop)
+                                                                 return handlersCatalog.Process(envelop)
                                                                                        .ContinueWith(t =>
                                                                                                      {
                                                                                                          processManagerPipeActor.Tell(envelop);
@@ -40,6 +40,8 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                         })
                                                                                        .PipeTo(Sender);
                                                            });
+            Receive<ProcessesTransitComplete>(t => {//just ignore 
+            });
         }
     }
 }

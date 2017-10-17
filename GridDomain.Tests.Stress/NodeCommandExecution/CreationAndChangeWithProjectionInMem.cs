@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Akka.Event;
 using GridDomain.Node;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using Microsoft.EntityFrameworkCore;
 using Pro.NBench.xUnit.XunitExtensions;
@@ -11,31 +12,32 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
     public class CreationAndChangeWithProjectionInMem : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
-        private DbContextOptions<BalloonContext> _dbContextOptions;
+        internal DbContextOptions<BalloonContext> DbContextOptions;
 
         public CreationAndChangeWithProjectionInMem(ITestOutputHelper output):base(output)
         {
             _testOutputHelper = output;
+            DbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CreationAndChangeWithProjectionInMem)).Options;
         }
-        protected override void OnSetup()
+        internal override void OnSetup()
         {
-            _dbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseInMemoryDatabase(nameof(CreationAndChangeWithProjectionInMem)).Options;
-            using(var ctx = new BalloonContext(_dbContextOptions))
+            using(var ctx = new BalloonContext(DbContextOptions))
             {
                 ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
             }
+            base.OnSetup();
         }
 
         protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 20);
-        protected override IGridDomainNode CreateNode()
+        internal override IGridDomainNode CreateNode()
         {
-            return new BalloonWithProjectionFixture(_dbContextOptions)
+            var akkaConfig = new StressTestNodeConfiguration();
+            return new BalloonWithProjectionFixture(_testOutputHelper,DbContextOptions)
                    {
-                       Output = _testOutputHelper,
-                       NodeConfig = new StressTestNodeConfiguration(LogLevel.ErrorLevel),
-                       LogLevel = LogEventLevel.Error
-                   }.CreateNode().Result;
+                       NodeConfig = akkaConfig,
+                       SystemConfigFactory = () => akkaConfig.ToStandAloneInMemorySystemConfig()
+            }.CreateNode().Result;
         }
     }
 }

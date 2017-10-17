@@ -18,8 +18,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class Future_events_upgraded_by_object_adapter : NodeTestKit
     {
         public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
-            : base(output,
-                new BalanceFixture(new PersistedQuartzConfig()).UseSqlPersistence()
+            : base(
+                new BalanceFixture(output, new PersistedQuartzConfig()).UseSqlPersistence()
                                                                .InitFastRecycle()
                                                                .UseAdaper(new IncreaseBy100Adapter())) { }
 

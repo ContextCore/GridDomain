@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     public class Given_executing_commands_with_faulty_from_projection_builder : NodeTestKit
     {
         public Given_executing_commands_with_faulty_from_projection_builder(ITestOutputHelper output)
-            : base(output, new NodeTestFixture(new FaultyBalloonProjectionDomainConfiguration())) {}
+            : base(new NodeTestFixture(output,new FaultyBalloonProjectionDomainConfiguration())) {}
 
         [Fact]
         public async Task When_dont_expect_fault_Then_it_is_not_received_case_it_comes_from_projection_builder()

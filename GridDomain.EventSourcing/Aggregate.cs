@@ -4,31 +4,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {
-    public class Aggregate : IAggregate,
-                             IMemento,
-                             IEquatable<IAggregate>
+
+    public abstract class Aggregate : IAggregate,
+                                      IMemento,
+                                      IEquatable<IAggregate>
     {
-        private static readonly AggregateFactory Factory = new AggregateFactory();
-        public static T Empty<T>(Guid? id = null) where T : IAggregate
-        {
-            return Factory.Build<T>(id ?? Guid.NewGuid());
-        }
 
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
-        private IRouteEvents _registeredRoutes;
-        private PersistenceDelegate _persist;
+
+        public void CommitAll()
+        {
+            foreach(var e in _uncommittedEvents)
+                ((IAggregate)this).ApplyEvent(e);
+
+            _uncommittedEvents.Clear();
+        }
+        protected IEventStore EventStore;
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
-
-        public void SetPersistProvider(PersistenceDelegate caller)
-        {
-            _persist = caller;
-        }
-
+       
         protected Aggregate(Guid id)
         {
             Id = id;
@@ -50,18 +49,22 @@ namespace GridDomain.EventSourcing
         {
             return this;
         }
-        //TODO: think how to reduce pain from static cache 
-
-        private IRouteEvents RegisteredRoutes => _registeredRoutes ?? (_registeredRoutes = EventRouterCache.Instance.Get(this));
 
         public Guid Id { get; protected set; }
         public int Version { get; protected set; }
 
+        public void InitEventStore(IEventStore store)
+        {
+            EventStore = store;
+        }
+
         void IAggregate.ApplyEvent(DomainEvent @event)
         {
-            RegisteredRoutes.Dispatch(this,@event);
+            OnAppyEvent(@event);
             Version++;
         }
+
+        protected abstract void OnAppyEvent(DomainEvent evt);
 
         IReadOnlyCollection<DomainEvent> IAggregate.GetUncommittedEvents()
         {
@@ -78,27 +81,26 @@ namespace GridDomain.EventSourcing
             await Emit(await evtTask);
         }
 
-        public bool MarkPersisted(DomainEvent e)
+        public void Commit(DomainEvent e)
         {
-            if (!_uncommittedEvents.Contains(e))
+            if (!_uncommittedEvents.Remove(e))
                 throw new EventIsNotBelongingToAggregateException();
 
             ((IAggregate) this).ApplyEvent(e);
-            return _uncommittedEvents.Remove(e);
         }
 
+       
         protected async Task Emit(params DomainEvent[] events)
         {
             Produce(events);
-            await _persist(this);
+            await EventStore.Persist(this);
+            foreach(var e in events)
+                ((IAggregate)this).ApplyEvent(e);
         }
 
         protected void Produce(params DomainEvent[] events)
         {
-            foreach(var e in events)
-            {
-                _uncommittedEvents.Add(e);
-            }
+           _uncommittedEvents.AddRange(events);
         }
         public override int GetHashCode()
         {

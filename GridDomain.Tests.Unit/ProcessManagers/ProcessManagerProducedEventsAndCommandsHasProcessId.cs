@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 {
     public class ProcessManagerProducedEventsAndCommandsHasProcessId : SoftwareProgrammingProcessTest
     {
-        public ProcessManagerProducedEventsAndCommandsHasProcessId(ITestOutputHelper helper) : base(helper) {}
+        public ProcessManagerProducedEventsAndCommandsHasProcessId(ITestOutputHelper helper) : base(helper) { }
 
         [Fact]
         public async Task When_dispatch_command_than_command_should_have_right_processId()
@@ -25,14 +25,16 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             Node.Pipe.ProcessesPipeActor.Tell(new Initialize(TestActor));
 
             var processCreatedMsg = await Node.NewDebugWaiter()
-                                           .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-                                           .Create()
-                                           .SendToProcessManagers(new GotTiredEvent(Guid.NewGuid()));
+                                              .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
+                                              .Create()
+                                              .SendToProcessManagers(new GotTiredEvent(Guid.NewGuid()));
 
-            var processCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true);
+            var processCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true, TimeSpan.FromHours(1));
             var command = processCompleteMsg.Message;
 
-            Assert.Equal(processCreatedMsg.Message<ProcessStateEvent>().SourceId, command.ProcessId);
+            Assert.Equal(processCreatedMsg.Message<ProcessStateEvent>()
+                                          .SourceId,
+                         command.ProcessId);
             Assert.IsAssignableFrom<MakeCoffeCommand>(command);
         }
 
@@ -46,7 +48,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                         .Create()
                                         .SendToProcessManagers(domainEvent);
 
-            Assert.NotEqual(domainEvent.ProcessId, waitResults.Message<ProcessManagerCreated<SoftwareProgrammingState>>().State.Id);
+            Assert.NotEqual(domainEvent.ProcessId,
+                            waitResults.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
+                                       .State.Id);
         }
     }
 }

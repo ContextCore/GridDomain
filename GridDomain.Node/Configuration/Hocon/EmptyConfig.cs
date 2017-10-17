@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Configuration.Hocon
 {
-    internal class EmptyConfig : INodeConfig
+    internal class EmptyConfig : IHoconConfig
     {
         public string Build()
         {
