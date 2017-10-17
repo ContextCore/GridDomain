@@ -11,24 +11,11 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.Hadlers;
-using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    class ProcessStateAggregateConfiguration<TState> : AggregateConfiguration<ProcessStateActor<TState>, ProcessStateAggregate<TState>> where TState : IProcessState
-    {
-        internal ProcessStateAggregateConfiguration(IAggregateDependencyFactory<ProcessStateAggregate<TState>> factory) : base(factory)
-        {
-        }
-
-        protected override void RegisterHub(ContainerBuilder container)
-        {
-            container.Register<ProcessStateHubActor<TState>>(c => new ProcessStateHubActor<TState>(AggregateDependencyFactory.CreateRecycleConfiguration()));
-        }
-    }
-
     public class DomainBuilder : IDomainBuilder
     {
         private readonly List<IMessageRouteMap> _maps = new List<IMessageRouteMap>();

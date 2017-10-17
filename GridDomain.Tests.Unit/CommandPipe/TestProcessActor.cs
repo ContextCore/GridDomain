@@ -11,18 +11,18 @@ namespace GridDomain.Tests.Unit.CommandPipe
 {
     internal class TestProcessActor : ReceiveActor
     {
-        public TestProcessActor(IActorRef watcher,
-                                Func<DomainEvent, ICommand[]> commandFactory = null,
+        public TestProcessActor(IActorRef watcher, Guid id,
                                 TimeSpan? sleepTime = null)
         {
             var sleep = sleepTime ?? TimeSpan.FromMilliseconds(10);
-            commandFactory = commandFactory ?? (e => new ICommand[] {new TestCommand(e.SourceId)});
 
             Receive<IMessageMetadataEnvelop<DomainEvent>>(
                                                           m =>
                                                           {
                                                               Task.Delay(sleep)
-                                                                  .ContinueWith(t => new ProcessTransited(commandFactory(m.Message), m.Metadata, ProcessEntry.Empty,null))
+                                                                  .ContinueWith(t => 
+                                                                  new ProcessTransited(new []{new TestCommand(m.Message.SourceId){ProcessId = id}}, 
+                                                                                        m.Metadata, ProcessEntry.Empty,null))
                                                                   .PipeTo(Self, Sender);
                                                           });
 

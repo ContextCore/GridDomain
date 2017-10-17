@@ -24,14 +24,14 @@ namespace GridDomain.Node.Actors.CommandPipe
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
         private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
-        public HandlersPipeActor(IProcessorListCatalog handlersCatalog, IActorRef processManagerPipeActor)
+        public HandlersPipeActor(IMessageProcessor handlersCatalog, IActorRef processManagerPipeActor)
         {
             var publisher = Context.System.GetTransport();
             ReceiveAsync<IMessageMetadataEnvelop>(envelop =>
                                                            {
                                                                  Log.Debug("Received messages to project. {project}",envelop);
                                                                
-                                                                 return handlersCatalog.ProcessMessage(envelop)
+                                                                 return handlersCatalog.Process(envelop)
                                                                                        .ContinueWith(t =>
                                                                                                      {
                                                                                                          processManagerPipeActor.Tell(envelop);

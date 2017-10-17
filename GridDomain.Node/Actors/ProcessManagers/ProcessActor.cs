@@ -25,37 +25,6 @@ using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {
-
-
-    class ProcessCreationContext<TState>
-    {
-        public TState pendingState;
-        public IMessageMetadataEnvelop processingMessage;
-        public IActorRef processingMessageSender;
-
-        public void Clear()
-        {
-           pendingState = default(TState);
-           processingMessage = null;
-           processingMessageSender = null;
-        }
-    }
-
-    class ProcessTransitionContext<TState>
-    {
-        public IMessageMetadataEnvelop processingEnvelop;
-        public TState pendingState;
-        public IReadOnlyCollection<ICommand> producedCommands = new ICommand[] { };
-        public IActorRef processingMessageSender;
-
-        public void Clear()
-        {
-             processingEnvelop = null;
-             pendingState = default(TState);
-             producedCommands = new ICommand[] { };
-             processingMessageSender = null;
-        }
-    }
     //TODO: add status info, e.g. was any errors during execution or recover
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -325,26 +294,6 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 case IHaveProcessId p: return p.ProcessId;
             }
             throw new CannotGetProcessIdFromMessageException(msg);
-        }
-    }
-
-    internal class CannotFindProcessStatePersistenceActor : Exception
-    {
-        public string ProbedPath { get; }
-
-        public CannotFindProcessStatePersistenceActor(string probedPath)
-        {
-            ProbedPath = probedPath;
-        }
-    }
-
-    internal class CannotGetProcessIdFromMessageException : Exception
-    {
-        public object Msg { get; }
-
-        public CannotGetProcessIdFromMessageException(object msg)
-        {
-            Msg = msg;
         }
     }
 }

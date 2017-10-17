@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using GridDomain.Common;
 
 namespace GridDomain.Node.Actors.CommandPipe.MessageProcessors {
-    class ProcessorListCatalogBase<T> : TypeCatalog<List<T>, object>
+    class SeveralHandlersTypeCatalog<T> : TypeCatalog<List<T>, object>
     {
         private static readonly List<T> EmptyProcessorList = new List<T>();
 
@@ -14,8 +14,7 @@ namespace GridDomain.Node.Actors.CommandPipe.MessageProcessors {
 
         public override void Add(Type type, List<T> processor)
         {
-            List<T> list;
-            if(Catalog.TryGetValue(type, out list))
+            if(Catalog.TryGetValue(type, out var list))
                 list.AddRange(processor);
             else
                 base.Add(type, processor);
