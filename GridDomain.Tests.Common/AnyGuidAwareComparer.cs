@@ -4,9 +4,9 @@ using KellermanSoftware.CompareNetObjects.TypeComparers;
 
 namespace GridDomain.Tests.Common
 {
-    public class GuidComparer : BaseTypeComparer
+    public class AnyGuidAwareComparer : BaseTypeComparer
     {
-        public GuidComparer(RootComparer rootComparer) : base(rootComparer) {}
+        public AnyGuidAwareComparer(RootComparer rootComparer) : base(rootComparer) {}
 
         public override bool IsTypeMatch(Type type1, Type type2)
         {

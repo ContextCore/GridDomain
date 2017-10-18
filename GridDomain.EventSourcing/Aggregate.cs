@@ -94,8 +94,7 @@ namespace GridDomain.EventSourcing
         {
             Produce(events);
             await EventStore.Persist(this);
-            foreach(var e in events)
-                ((IAggregate)this).ApplyEvent(e);
+            CommitAll();
         }
 
         protected void Produce(params DomainEvent[] events)

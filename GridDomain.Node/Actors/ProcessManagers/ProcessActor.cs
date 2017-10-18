@@ -181,6 +181,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                           processingMessage = c.Message;
                                           processingMessageSender = Sender;
                                           pendingState = _processStateFactory.Create(processingMessage.Message, State);
+                                          if (pendingState == null)
+                                              throw new ProcessStateNullException();
                                           var cmd = new CreateNewStateCommand<TState>(pendingState.Id, pendingState);
                                           //will reply with CommandExecuted
                                           _stateAggregateActor.Tell(new MessageMetadataEnvelop<ICommand>(cmd, processingMessage.Metadata));
@@ -294,6 +296,14 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 case IHaveProcessId p: return p.ProcessId;
             }
             throw new CannotGetProcessIdFromMessageException(msg);
+        }
+    }
+
+    internal class ProcessStateNullException : Exception
+    {
+        public ProcessStateNullException():base("Process state, produced by state factory is null, check factory for possible errors")
+        {
+            
         }
     }
 }

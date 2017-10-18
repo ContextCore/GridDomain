@@ -10,6 +10,9 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
+using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
+using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
+using KellermanSoftware.CompareNetObjects;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.Scenario
@@ -42,6 +45,18 @@ namespace GridDomain.Tests.Unit.Scenario
            // ProcessScenario.New<SoftwareProgrammingProcess,SoftwareProgrammingState>()
            //     .
             await Task.CompletedTask;
+        }
+
+        [Fact]
+        public async Task Process_scenario_without_state_creates_it_on_start_message()
+        {
+            var personId = Guid.NewGuid();
+            var coffeMachineId = Guid.NewGuid();
+            await ProcessScenario.New(new SoftwareProgrammingProcess(), new SoftwareProgrammingProcessStateFactory(coffeMachineId))
+                                 .When(new GotTiredEvent(personId))
+                                 .Then(new MakeCoffeCommand(personId, coffeMachineId))
+                                 .Run()
+                                 .CheckProducedCommands();
         }
     }
 }

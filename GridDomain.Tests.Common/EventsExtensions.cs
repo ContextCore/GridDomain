@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Common
                                     }.ToList(),
                   CustomComparers = new List<BaseTypeComparer>
                                     {
-                                        new GuidComparer(RootComparerFactory.GetRootComparer())
+                                        new AnyGuidAwareComparer(RootComparerFactory.GetRootComparer())
                                     },
                   DoublePrecision = 0.0001
               };
@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Common
                   CustomComparers =
                       new List<BaseTypeComparer>
                       {
-                          new GuidComparer(RootComparerFactory.GetRootComparer()),
+                          new AnyGuidAwareComparer(RootComparerFactory.GetRootComparer()),
                           new DateTimeComparer(RootComparerFactory.GetRootComparer())
                       },
                   DoublePrecision = 0.0001
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Common
                   CustomComparers =
                       new List<BaseTypeComparer>
                       {
-                          new GuidComparer(RootComparerFactory.GetRootComparer())
+                          new AnyGuidAwareComparer(RootComparerFactory.GetRootComparer())
                       },
                   DoublePrecision = 0.0001
               };
