@@ -20,7 +20,7 @@ namespace GridDomain.ProcessManagers
        
         protected Task<ProcessResult<TState>> TransitMessage<TMessage>(Event<TMessage> evt, TMessage message, IProcessState state)
         {
-            //TODO: find more performant variant
+            //TODO: find more performant variant. May be reread state from state aggregate actor on exception? 
             var newState = (TState)state.Clone();
             var commandsToDispatch = new List<Command>();
             Dispatch = c =>

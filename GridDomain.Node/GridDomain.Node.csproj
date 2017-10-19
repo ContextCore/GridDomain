@@ -31,6 +31,7 @@
     <PackageReference Include="NMoneys" Version="5.1.4" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>
