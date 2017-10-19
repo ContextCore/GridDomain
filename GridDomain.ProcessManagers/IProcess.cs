@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 
 namespace GridDomain.ProcessManagers {
-    public interface IProcess<TState> where TState: IProcessState
+    public interface IProcess<in TState> where TState: IProcessState
     {
-        Task<ProcessResult<TState>> Transit(TState state, object domainMessage);
+        Task<IReadOnlyCollection<ICommand>> Transit(TState state, object domainMessage);
     }
 }

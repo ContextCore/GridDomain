@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.Serialization
             var state = new SoftwareProgrammingState(Guid.NewGuid(), "123", Guid.NewGuid(), Guid.NewGuid());
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
-            processStateAggregate.ReceiveMessage(state, typeof(Object));
+            processStateAggregate.ReceiveMessage(state, Guid.NewGuid());
             processStateAggregate.CommitAll();
 
 

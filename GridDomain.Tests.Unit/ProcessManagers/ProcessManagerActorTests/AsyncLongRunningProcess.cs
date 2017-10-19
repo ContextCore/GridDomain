@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Automatonymous;
+using GridDomain.CQRS;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
@@ -35,7 +37,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 
         public Event<BalloonCreated> Start { get; private set; }
         public Event<BalloonTitleChanged> Progress { get; private set; }
-        public override Task<ProcessResult<TestState>> Transit(TestState state, object message)
+        public override Task<IReadOnlyCollection<ICommand>> Transit(TestState state, object message)
         {
             switch (message)
             {

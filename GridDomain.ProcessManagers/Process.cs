@@ -18,27 +18,37 @@ namespace GridDomain.ProcessManagers
             InstanceState(d => d.CurrentStateName);
         }
        
-        protected Task<ProcessResult<TState>> TransitMessage<TMessage>(Event<TMessage> evt, TMessage message, IProcessState state)
+        protected async Task<IReadOnlyCollection<ICommand>> TransitMessage<TMessage>(Event<TMessage> evt, TMessage message, TState state)
         {
-            //TODO: find more performant variant. May be reread state from state aggregate actor on exception? 
-            var newState = (TState)state.Clone();
             var commandsToDispatch = new List<Command>();
-            Dispatch = c =>
-                               {
-                                   c.ProcessId = state.Id;
-                                   commandsToDispatch.Add(c);
-                               };
+            Dispatch = c => {
+                                c.ProcessId = state.Id;
+                                commandsToDispatch.Add(c);
+                            };
+            try
+            {
+                await this.RaiseEvent(state, evt, message);
+                return commandsToDispatch;
+            }
+            catch (EventExecutionException ex)
+            {
+                Exception unwrapped = ex;
+                //sometimes eventExecution excpetions are nested
+                do
+                {
+                    unwrapped = unwrapped.InnerException;
+                }
+                while (unwrapped is EventExecutionException);
 
-            return this.RaiseEvent(newState, evt, message)
-                                    .ContinueWith(t =>
-                                                  {
-                                                      if(t.IsFaulted)
-                                                          throw new ProcessTransitionException(message, t.Exception);
-
-                                                      return new ProcessResult<TState>(newState, commandsToDispatch);
-                                                  });
+                throw new ProcessTransitionException(message, unwrapped);
+            }
+            catch (Exception ex)
+            {
+               
+                throw new ProcessTransitionException(message, ex);
+            }
         }
 
-        public abstract Task<ProcessResult<TState>> Transit(TState state, object message);
+        public abstract Task<IReadOnlyCollection<ICommand>> Transit(TState state, object message);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.ProcessManagers.DomainBind;
 
 namespace GridDomain.ProcessManagers {
@@ -15,7 +16,7 @@ namespace GridDomain.ProcessManagers {
             _descriptor = ProcessDescriptor.ScanByConvention(processType);
         }
 
-        public override Task<ProcessResult<TState>> Transit(TState state, object message)
+        public override Task<IReadOnlyCollection<ICommand>> Transit(TState state, object message)
         {
             return _transitionRouter.Dispatch(this, state, message);
         }

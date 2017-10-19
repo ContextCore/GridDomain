@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var resTask = Node.NewDebugWaiter()
                               .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                               .Create()
-                              .SendToProcessManagers(startEvent);
+                              .SendToProcessManagers(startEvent,new MessageMetadata(startEvent.Id));
 
             var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>().SourceId;
 
@@ -49,8 +49,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             //to avoid racy state receiving expected message from processing GotTiredEvent 
             await Node.NewDebugWaiter()
-                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(
-                                        e => (e.Message as IMessageMetadataEnvelop)?.Message is CoffeMakeFailedEvent)
+                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e => e.MessageId == continueEvent.Id)
                       .Create()
                       .SendToProcessManagers(continueEvent, processId);
 

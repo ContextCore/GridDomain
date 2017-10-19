@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         {
             _knownCoffeMachineId = knownCoffeMachineId;
         }
-        public virtual SoftwareProgrammingState Create(object message, SoftwareProgrammingState state)
+        public virtual SoftwareProgrammingState Create(object message)
         {
             switch (message)
             {
@@ -24,7 +24,17 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                 //creating new process instance from a start message
                 case GotTiredEvent e: return new SoftwareProgrammingState(Guid.NewGuid(), nameof(SoftwareProgrammingProcess.Coding), Guid.Empty, _knownCoffeMachineId ?? Guid.NewGuid());
             }
-            return state;
+            throw new CannotCreateStateFromMessageException(message);
+        }
+    }
+
+    public class CannotCreateStateFromMessageException : Exception
+    {
+        public object Message { get; }
+
+        public CannotCreateStateFromMessageException(object message)
+        {
+            Message = message;
         }
     }
 }

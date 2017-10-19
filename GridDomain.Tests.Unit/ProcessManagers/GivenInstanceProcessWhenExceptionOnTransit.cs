@@ -46,13 +46,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             Assert.Equal(typeof(SoftwareProgrammingProcess), fault.Processor);
 
             Assert.True(exception.StackTrace == null || exception.StackTrace.Contains("Process"));
-             
-            //Fault_should_contains_exception_from_process()
-            var innerException = exception.InnerException.UnwrapSingle();
-            Assert.IsAssignableFrom<EventExecutionException>(innerException);
 
-            var innerInnerException = innerException.InnerException.UnwrapSingle();
-            Assert.IsAssignableFrom<UndefinedCoffeMachineException>(innerInnerException);
+            Assert.IsAssignableFrom<UndefinedCoffeMachineException>(exception.InnerException);
         }
     }
 }

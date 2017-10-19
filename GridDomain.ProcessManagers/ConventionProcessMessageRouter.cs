@@ -1,33 +1,35 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Automatonymous;
 using GridDomain.Common;
+using GridDomain.CQRS;
 
 namespace GridDomain.ProcessManagers
 {
-    public sealed class ConventionProcessMessageRouter<TState> : TypeCatalog<Func<Process<TState>, TState, object, Task<ProcessResult<TState>>>, object> where TState : class, IProcessState
+    public sealed class ConventionProcessMessageRouter<TState> : TypeCatalog<Func<Process<TState>, TState, object, Task<IReadOnlyCollection<ICommand>>>, object> where TState : class, IProcessState
     {
         public ConventionProcessMessageRouter(Type processType)
         {
             Register(processType);
         }
 
-        private Func<Process<TState>, TState, object, Task<ProcessResult<TState>>> CreateTransition(Type messageType, PropertyInfo stateMachineProperty, MethodInfo openTransitMethod)
+        private Func<Process<TState>, TState, object, Task<IReadOnlyCollection<ICommand>>> CreateTransition(Type messageType, PropertyInfo stateMachineProperty, MethodInfo openTransitMethod)
         {
             var process = Expression.Parameter(typeof(IProcess<TState>), "process");
             var state = Expression.Parameter(typeof(TState), "state");
             var message = Expression.Parameter(typeof(object), "message");
 
             //bake (process, state, message) => ((TConcreteProcess)process).TransitMessage<T>((Event<T>) process.Event, (T)message, state)
-            // returning Task<ProcessResult<T>>
+            // returning Task<IReadOnlyCollection<ICommand>>
             var closedTransitMethod = openTransitMethod.MakeGenericMethod(messageType);
             var processType = stateMachineProperty.DeclaringType;
 
             return
-                Expression.Lambda<Func<Process<TState>, TState, object, Task<ProcessResult<TState>>>>(
+                Expression.Lambda<Func<Process<TState>, TState, object, Task<IReadOnlyCollection<ICommand>>>>(
                                                                                                       Expression.Call(Expression.Convert(process, processType),
                                                                                                                       closedTransitMethod,
                                                                                                                       Expression.Property(Expression.Convert(process, processType), stateMachineProperty),
@@ -71,7 +73,7 @@ namespace GridDomain.ProcessManagers
             }
         }
 
-        public Task<ProcessResult<TState>> Dispatch(Process<TState> process, TState state, object message)
+        public Task<IReadOnlyCollection<ICommand>> Dispatch(Process<TState> process, TState state, object message)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));

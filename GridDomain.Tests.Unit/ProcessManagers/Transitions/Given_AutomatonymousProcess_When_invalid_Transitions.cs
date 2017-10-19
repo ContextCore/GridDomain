@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using Xunit;
@@ -40,9 +42,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         [Fact]
         public async Task No_commands_are_produced()
         {
-            ProcessResult<SoftwareProgrammingState> newState = null;
-            await SwallowException(async () => newState = await _given.Process.Transit(_given.State, new WrongMessage()));
-            Assert.Null(newState?.ProducedCommands);
+            IReadOnlyCollection<ICommand> commands = null;
+            await SwallowException(async () => commands = await _given.Process.Transit(_given.State, new WrongMessage()));
+            Assert.Null(commands);
         }
 
         [Fact]

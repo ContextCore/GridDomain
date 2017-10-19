@@ -25,9 +25,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
             var given = new Given_Automatonymous_Process(m => m.Coding);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var newState = await given.Process.Transit(given.State, subscriptionExpiredEvent);
+            var commands = await given.Process.Transit(given.State, subscriptionExpiredEvent);
 
-            Assert.NotEmpty(newState.ProducedCommands);
+            Assert.NotEmpty(commands);
         }
 
         [Fact]
@@ -36,31 +36,17 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
             var given = new Given_Automatonymous_Process(m => m.Coding);
 
             var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
-            var newState = await given.Process.Transit(given.State, subscriptionExpiredEvent);
+            await given.Process.Transit(given.State, subscriptionExpiredEvent);
 
-            Assert.Equal(subscriptionExpiredEvent.SourceId, newState.State.PersonId);
+            Assert.Equal(subscriptionExpiredEvent.SourceId, given.State.PersonId);
         }
 
         [Fact]
         public async Task State_in_transition_result_is_changed()
         {
             var given = new Given_Automatonymous_Process(m => m.MakingCoffee);
-            var newState = await given.Process.Transit(given.State, new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), newState.State.CurrentStateName);
-        }
-
-        [Fact]
-        public async Task Process_state_not_changed()
-        {
-            var given = new Given_Automatonymous_Process(m => m.MakingCoffee);
-
-            var stateBefore = given.State.CurrentStateName;
-
             await given.Process.Transit(given.State, new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
-
-            var stateAfter = given.State.CurrentStateName;
-
-            Assert.Equal(stateBefore, stateAfter);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), given.State.CurrentStateName);
         }
 
         [Fact]
@@ -68,16 +54,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         {
             var given = new Given_Automatonymous_Process(m => m.MakingCoffee);
             object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
-            var newState =  await given.Process.Transit(given.State, msg);
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), newState.State.CurrentStateName);
-        }
-
-        [Fact]
-        public async Task When_apply_known_but_not_mapped_event_in_state()
-        {
-            var given = new Given_Automatonymous_Process(m => m.Sleeping);
-            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid());
-            await given.Process.Transit(given.State,gotTiredEvent).ShouldThrow<ProcessTransitionException>();
+            await given.Process.Transit(given.State, msg);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), given.State.CurrentStateName);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
@@ -41,8 +43,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Recovery
 
             //Try to transit process by message, available only in desired state
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());
-            var newState = await processManager.Transit(data.State,coffeMakeFailedEvent);
-            var dispatchedCommands = newState.ProducedCommands;
+            var dispatchedCommands = await processManager.Transit(data.State,coffeMakeFailedEvent);
             //process_produce_commands_only_one_command()
             Assert.Equal(1, dispatchedCommands.Count);
             //Produced_command_has_right_person_id()

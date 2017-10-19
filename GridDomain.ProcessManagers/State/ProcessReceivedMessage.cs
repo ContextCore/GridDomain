@@ -4,15 +4,14 @@ namespace GridDomain.ProcessManagers.State
 {
     public class ProcessReceivedMessage<TState> : ProcessStateEvent
     {
-        public ProcessReceivedMessage(Guid sourceId, TState state, object message)
+        public ProcessReceivedMessage(Guid sourceId, TState state, Guid messageId)
             : base(sourceId)
         {
             State = state;
-            Message = message;
+            MessageId = messageId;
         }
 
-        //TODO: store type + message id to lower storage consumption
-        public object Message { get; }
+        public Guid MessageId { get; }
         public TState State { get; }
     }
 }

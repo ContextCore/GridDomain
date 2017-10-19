@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Automatonymous;
+using GridDomain.CQRS;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.DomainBind;
 
@@ -26,7 +28,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 
         public State Started { get; set; }
         public static IProcessDescriptor Descriptor { get; }
-        public override Task<ProcessResult<TestProcessState>> Transit(TestProcessState state, object message)
+        public override Task<IReadOnlyCollection<ICommand>> Transit(TestProcessState state, object message)
         {
             switch (message)
             {

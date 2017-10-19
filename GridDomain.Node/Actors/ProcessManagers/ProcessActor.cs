@@ -180,7 +180,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                           _log.Debug("Creating new process instance from {@message}", c);
                                           processingMessage = c.Message;
                                           processingMessageSender = Sender;
-                                          pendingState = _processStateFactory.Create(processingMessage.Message, State);
+                                          pendingState = _processStateFactory.Create(processingMessage.Message);
                                           if (pendingState == null)
                                               throw new ProcessStateNullException();
                                           var cmd = new CreateNewStateCommand<TState>(pendingState.Id, pendingState);
@@ -221,7 +221,6 @@ namespace GridDomain.Node.Actors.ProcessManagers
         private void TransitingProcessBehavior()
         {
             IMessageMetadataEnvelop processingEnvelop = null;
-            TState pendingState = null;
             IReadOnlyCollection<ICommand> producedCommands = null;
             IActorRef processingMessageSender = null;
 
@@ -231,25 +230,23 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
                                                  processingEnvelop = messageEnvelop;
                                                  processingMessageSender = Sender;
-                                                 Behavior.Become(AwaitingTransitionConfirmationBehavior, nameof(AwaitingTransitionConfirmationBehavior));
-                                                 Process.Transit(State, messageEnvelop.Message)
+                                                 var pendingState = (TState)State.Clone();
+                                                 Behavior.Become(() => AwaitingTransitionConfirmationBehavior(pendingState), nameof(AwaitingTransitionConfirmationBehavior));
+                                                 Process.Transit(pendingState, messageEnvelop.Message)
                                                         .PipeTo(Self);
                                              });
 
-            void AwaitingTransitionConfirmationBehavior()
+            void AwaitingTransitionConfirmationBehavior(TState pendingState)
             {
-                Receive<ProcessResult<TState>>(transitionResult =>
+                Receive<IReadOnlyCollection<ICommand>>(transitionResult =>
                                                {
-                                                   _log.Debug("Process was transited, new state is {@state}", transitionResult.State);
-
-                                                   pendingState = transitionResult.State;
-                                                   producedCommands = transitionResult.ProducedCommands;
+                                                   _log.Debug("Process was transited, new state is {@state}", pendingState);
+                                                   producedCommands = transitionResult;
                                                    var cmd = new SaveStateCommand<TState>(Id,
-                                                       pendingState,
-                                                       State.CurrentStateName,
-                                                       processingEnvelop);
+                                                                                          pendingState,
+                                                                                          GetMessageId(processingEnvelop));
                                                    //will reply back with CommandExecuted
-                                                   _stateAggregateActor.Tell(new MessageMetadataEnvelop<ICommand>(cmd, processingEnvelop.Metadata));
+                                                   _stateAggregateActor.Tell(new MessageMetadataEnvelop<SaveStateCommand<TState>>(cmd, processingEnvelop.Metadata));
                                                });
                 Receive<CommandExecuted>(c =>
                                          {
@@ -270,6 +267,16 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
                 StashingMessagesToProcessBehavior("process is waiting for transition confirmation");
             }
+        }
+
+        private static Guid GetMessageId(IMessageMetadataEnvelop processingEnvelop)
+        {
+            switch (processingEnvelop.Message)
+            {
+                case IHaveId e: return e.Id;
+                case IFault<ICommand> e: return e.Message.Id;
+            }
+            return processingEnvelop.Metadata.MessageId;
         }
 
         private void FinishWithError(IMessageMetadataEnvelop processingMessage, IActorRef messageSender, Exception error)

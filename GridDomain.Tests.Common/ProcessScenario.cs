@@ -100,19 +100,20 @@ namespace GridDomain.Tests.Common {
 
         public async Task<ProcessScenario<TState>> Run()
         {
-            TState state = State;
+            State = InitialState;
             //When
-            var producedCommands = new List<Command>();
+            var producedCommands = new List<ICommand>();
             foreach(var evt in ReceivedEvents)
 
             {
-                state = StateFactory.Create(evt, state);
-                if(state == null) throw new ProcessStateNullException();
-                var transitionResult = await Process.Transit(state, evt);
+                if(State == null)
+                    State = StateFactory.Create(evt);
 
-                producedCommands.AddRange(transitionResult.ProducedCommands);
+                if(State == null) throw new ProcessStateNullException();
+                var commands = await Process.Transit(State, evt);
+
+                producedCommands.AddRange(commands);
             }
-            State = state;
             //Then
             ProducedCommands = producedCommands.ToArray();
 

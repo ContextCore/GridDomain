@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
             aggregate.ApplyEvents(new ProcessManagerCreated<SoftwareProgrammingState>(softwareProgrammingState, processId),
                                   new ProcessReceivedMessage<SoftwareProgrammingState>(processId,
                                                                                     softwareProgrammingState,
-                                                                                    new GotTiredEvent(Guid.NewGuid())));
+                                                                                    Guid.NewGuid()));
             Assert.Equal(softwareProgrammingState, aggregate.State);
         }
     }

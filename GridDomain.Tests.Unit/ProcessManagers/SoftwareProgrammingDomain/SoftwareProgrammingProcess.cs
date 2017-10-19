@@ -25,7 +25,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                                            Dispatch(new MakeCoffeCommand(domainEvent.SourceId, state.CoffeeMachineId));
                                        })
                                  .TransitionTo(MakingCoffee),
-                   When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding));
+                   When(SleptWell).Then(ctx => ctx.Instance.SofaId = ctx.Data.SofaId).TransitionTo(Coding),
+                   When(Composite).Then(ctx => { }));
 
             During(MakingCoffee,
                    When(CoffeNotAvailable).Then(context =>
@@ -37,7 +38,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                                                                                 context.Instance.SofaId));
                                                 })
                                           .TransitionTo(Sleeping),
-                   When(CoffeReady).TransitionTo(Coding));
+                   When(CoffeReady).TransitionTo(Coding),
+                   When(Composite).Then(ctx => { }));
 
             During(Sleeping,
                    When(SleptBad).Then(ctx => ctx.Instance.BadSleepPersonId = ctx.Data.Message.PersonId).TransitionTo(Coding),

@@ -22,9 +22,9 @@ namespace GridDomain.ProcessManagers.State
 
         public TState State { get; private set; }
 
-        public void ReceiveMessage(TState state, object message)
+        public void ReceiveMessage(TState state, Guid messageId)
         {
-            Produce(new ProcessReceivedMessage<TState>(Id, state, message));
+            Produce(new ProcessReceivedMessage<TState>(Id, state, messageId));
         }
 
         protected override void OnAppyEvent(DomainEvent evt)
@@ -48,7 +48,7 @@ namespace GridDomain.ProcessManagers.State
             switch (cmd)
             {
                 case SaveStateCommand<TState> c:
-                    ReceiveMessage(c.State, c.Message);
+                    ReceiveMessage(c.State, c.MessageId);
                     break;
                 case CreateNewStateCommand<TState> c:
                     return Task.FromResult<IAggregate>(new ProcessStateAggregate<TState>(c.State));
