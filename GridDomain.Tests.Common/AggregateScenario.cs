@@ -6,6 +6,8 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Tools;
+using Serilog;
+using Serilog.Core;
 
 namespace GridDomain.Tests.Common
 {
@@ -45,16 +47,17 @@ namespace GridDomain.Tests.Common
 
     public class AggregateScenario<TAggregate> where TAggregate : Aggregate
     {
-        public AggregateScenario(TAggregate aggregate, IAggregateCommandsHandler<TAggregate> handler)
+        public AggregateScenario(TAggregate aggregate, IAggregateCommandsHandler<TAggregate> handler, ILogger log = null)
         {
             CommandsHandler = handler ?? throw new ArgumentNullException(nameof(handler));
             Aggregate = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
             Aggregate.InitEventStore(_eventStore);
+            Log = log ?? Serilog.Log.Logger;
         }
 
         private IAggregateCommandsHandler<TAggregate> CommandsHandler { get; }
         public TAggregate Aggregate { get; private set; }
-
+        public ILogger Log { get; }
         public DomainEvent[] ExpectedEvents { get; private set; } = {};
         public DomainEvent[] ProducedEvents { get; private set; } = {};
         public DomainEvent[] GivenEvents { get; private set; } = {};

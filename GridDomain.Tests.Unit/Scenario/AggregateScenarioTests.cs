@@ -10,12 +10,18 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
+using Serilog;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Scenario
 {
     public class AggregateScenarioTests
     {
+        public AggregateScenarioTests(ITestOutputHelper output)
+        {
+            Log.Logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
+        }
         [Fact]
         public async Task When_defined_aggregate_handler_then_it_can_execute_commands_and_produce_events()
         {

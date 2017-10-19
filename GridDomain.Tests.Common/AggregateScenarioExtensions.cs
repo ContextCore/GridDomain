@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace GridDomain.Tests.Common {
     public static class AggregateScenarioExtensions
@@ -16,35 +18,20 @@ namespace GridDomain.Tests.Common {
 
         public static AggregateScenario<TAggregate> Check<TAggregate>(this AggregateScenario<TAggregate> scenario) where TAggregate : Aggregate
         {
-            Console.WriteLine(CollectDebugInfo(scenario));
+            LogDebugInfo(scenario);
             EventsExtensions.CompareEvents(scenario.ExpectedEvents, scenario.ProducedEvents);
             return scenario;
         }
 
-        private static string CollectDebugInfo<TAggregate>(AggregateScenario<TAggregate> sc) where TAggregate : Aggregate
+        private static void LogDebugInfo<TAggregate>(AggregateScenario<TAggregate> sc) where TAggregate : Aggregate
         {
-            var sb = new StringBuilder();
+            var logger = sc.Log;
             foreach (var cmd in sc.GivenCommands)
-                sb.AppendLine($"Command: {cmd.ToPropsString()}");
+                sc.Log.Information("Command: {@cmd}", cmd);
 
-            AddEventInfo(sb, "Given events", sc.GivenEvents);
-            AddEventInfo(sb, "Produced events", sc.ProducedEvents);
-            AddEventInfo(sb, "Expected events", sc.ExpectedEvents);
-
-            return sb.ToString();
+            logger.Information("Given events:\r\n{@events}",  sc.GivenEvents);
+            logger.Information("Produced events:\r\n{@events}",  sc.ProducedEvents);
+            logger.Information("Expected events:\r\n{@events}",  sc.ExpectedEvents);
         }
-        private static void AddEventInfo(StringBuilder builder, string message, IEnumerable<DomainEvent> ev)
-        {
-            builder.AppendLine();
-            builder.AppendLine(message);
-            builder.AppendLine();
-            foreach (var e in ev)
-            {
-                builder.AppendLine($"Event:{e?.GetType().Name} : ");
-                builder.AppendLine(e?.ToPropsString());
-            }
-            builder.AppendLine();
-        }
-
     }
 }

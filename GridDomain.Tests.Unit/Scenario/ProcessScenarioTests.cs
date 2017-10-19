@@ -14,12 +14,18 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using KellermanSoftware.CompareNetObjects;
+using Serilog;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Scenario
 {
     public class ProcessScenarioTests
     {
+        public ProcessScenarioTests(ITestOutputHelper output)
+        {
+            Log.Logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
+        }
         [Fact]
         public async Task Process_scenario_transit_on_events_respecting_giving_state()
         {

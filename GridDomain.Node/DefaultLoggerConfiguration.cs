@@ -15,9 +15,6 @@ using Serilog.Events;
 
 namespace GridDomain.Node
 {
-
- 
-
     public class DefaultLoggerConfiguration : LoggerConfiguration
     {
         public const string DefaultTemplate = "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{LogSource}"
