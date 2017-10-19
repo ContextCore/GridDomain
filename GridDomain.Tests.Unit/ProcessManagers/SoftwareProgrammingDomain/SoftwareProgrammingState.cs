@@ -24,6 +24,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         public Guid BadSleepPersonId { get; set; }
         public Guid Id { get; }
         public string CurrentStateName { get; set; }
+        public int CompositeTrack { get; set; }
 
         public IProcessState Clone()
         {

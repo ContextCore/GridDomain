@@ -38,6 +38,28 @@ namespace GridDomain.Tests.Unit.Scenario
             scenario.Check();
         }
 
+        [Fact]
+        public async Task Future_events_aggregate_can_be_tested()
+        {
+            var aggregateId = Guid.NewGuid();
+            var scenario = await AggregateScenario.New<Balloon, BalloonCommandHandler>()
+                                                  .When(new InflateNewBallonCommand(42, aggregateId))
+                                                  .Then(new BalloonCreated("42", aggregateId))
+                                                  .Run();
+
+            //aggregate is changed 
+            Assert.Equal("42", scenario.Aggregate.Title);
+            Assert.Equal(aggregateId, scenario.Aggregate.Id);
+
+            //event is produced and stored
+            var producedEvent = scenario.ProducedEvents.OfType<BalloonCreated>()
+                                        .First();
+            Assert.Equal("42", producedEvent.Value);
+
+            //scenario check is OK
+            scenario.Check();
+        }
+
 
         [Fact]
         public async Task When_defined_scenario_has_given_it_is_applied_even_without_command()

@@ -56,8 +56,8 @@ namespace GridDomain.Tests.Common {
 
         public ICommand[] ExpectedCommands { get; private set; } = { };
         public ICommand[] ProducedCommands { get; private set; } = { };
-        protected DomainEvent[] GivenEvents { get; private set; } = { };
-        protected DomainEvent[] ReceivedEvents { get; private set; } = { };
+        public DomainEvent[] GivenEvents { get; private set; } = { };
+        public DomainEvent[] ReceivedEvents { get; private set; } = { };
 
         public TState InitialState { get; private set; }
 

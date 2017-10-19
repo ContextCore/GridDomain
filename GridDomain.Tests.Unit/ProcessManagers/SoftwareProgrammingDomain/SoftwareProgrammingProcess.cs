@@ -14,6 +14,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
     {
         public SoftwareProgrammingProcess()
         {
+            CompositeEvent(() => Composite,x => x.CompositeTrack, GotTired, CoffeNotAvailable);
+
             During(Coding,
                    When(GotTired).Then(context =>
                                        {
@@ -47,6 +49,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
         public Event<SleptWellEvent> SleptWell { get; private set; }
         public Event<Fault<GoSleepCommand>> SleptBad { get; private set; }
         public Event<CoffeMakeFailedEvent> CoffeNotAvailable { get; private set; }
+        public Event Composite { get; private set; }
 
         public State Coding { get; private set; }
         public State MakingCoffee { get; private set; }
