@@ -45,19 +45,9 @@ namespace GridDomain.Tests.Unit.Metadata
                          schedulingCommandFault.Message.Message.Id);
             //Result_metadata_has_command_id_as_casuation_id()
             Assert.Equal((jobFailedEnvelop.Message.ProcessingMessage as ICommand)?.Id,
-                         schedulingCommandFault.Metadata.CasuationId);
+                         Guid.Parse(schedulingCommandFault.Metadata.CasuationId));
             //Result_metadata_has_correlation_id_same_as_command_metadata()
             Assert.Equal(commandMetadata.CorrelationId, schedulingCommandFault.Metadata.CorrelationId);
-            //Result_metadata_has_processed_history_filled_from_aggregate()
-            //Assert.Equal(1, schedulingCommandFault.Metadata.History?.Steps.Count);
-            ////Result_metadata_has_processed_correct_filled_history_step()
-            //var step = schedulingCommandFault.Metadata.History.Steps.First();
-            //
-            //Assert.Equal(AggregateActorName.New<TestFutureEventsAggregate>(command.AggregateId)
-            //                               .Name,
-            //             step.Who);
-            //Assert.Equal(AggregateActorConstants.CommandRaisedAnError, step.Why);
-            //Assert.Equal(AggregateActorConstants.CommandExecutionFinished, step.What);
         }
     }
 }

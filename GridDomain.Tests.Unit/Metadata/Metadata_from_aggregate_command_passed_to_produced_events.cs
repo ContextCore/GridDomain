@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_message_has_expected_value()
             Assert.Equal(_command.Title.ToString(), balloonCreated.Value);
             //Result_metadata_has_command_id_as_casuation_id()
-            Assert.Equal(_command.Id, messageMetadata.CasuationId);
+            Assert.Equal(_command.Id, Guid.Parse(messageMetadata.CasuationId));
             //Result_metadata_has_correlation_id_same_as_command_metadata()
             Assert.Equal(_commandMetadata.CorrelationId, messageMetadata.CorrelationId);
             //Result_metadata_has_processed_history_filled_from_aggregate()

@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_message_has_expected_value()
             Assert.Equal(gotTiredEvent.PersonId, command.PersonId);
             //Result_metadata_has_command_id_as_casuation_id()
-            Assert.Equal(gotTiredEvent.SourceId, answer.Metadata.CasuationId);
+            Assert.Equal(gotTiredEvent.SourceId, Guid.Parse(answer.Metadata.CasuationId));
             //Result_metadata_has_correlation_id_same_as_command_metadata()
             Assert.Equal(gotTiredEventMetadata.CorrelationId, answer.Metadata.CorrelationId);
             //Result_metadata_has_processed_history_filled_from_aggregate()

@@ -42,7 +42,7 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_message_has_expected_id()
             Assert.Equal(command.AggregateId, answer.Message.SourceId);
             //Result_metadata_has_command_id_as_casuation_id()
-            Assert.Equal((jobSucced.Message.Message as ICommand)?.Id, answer.Metadata.CasuationId);
+            Assert.Equal((jobSucced.Message.Message as ICommand)?.Id, Guid.Parse(answer.Metadata.CasuationId));
             //Result_metadata_has_correlation_id_same_as_command_metadata()
             Assert.Equal(commandMetadata.CorrelationId, answer.Metadata.CorrelationId);
             //Result_metadata_has_processed_history_filled_from_aggregate()

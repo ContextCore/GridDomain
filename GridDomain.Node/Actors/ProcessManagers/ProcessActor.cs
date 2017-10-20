@@ -276,7 +276,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 case IHaveId e: return e.Id;
                 case IFault<ICommand> e: return e.Message.Id;
             }
-            return processingEnvelop.Metadata.MessageId;
+            throw new CannotGetProcessIdFromMessageException(processingEnvelop);
         }
 
         private void FinishWithError(IMessageMetadataEnvelop processingMessage, IActorRef messageSender, Exception error)
