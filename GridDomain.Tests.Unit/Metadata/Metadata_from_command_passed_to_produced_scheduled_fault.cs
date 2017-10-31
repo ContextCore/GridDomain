@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.Metadata
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            var commandMetadata = new MessageMetadata(Guid.NewGuid(), Guid.NewGuid());
+            var commandMetadata = MessageMetadata.New(Guid.NewGuid(), Guid.NewGuid(), null);
             var command = new PlanBoomCommand(Guid.NewGuid(), DateTime.Now.AddMilliseconds(100));
 
             var res = await Node.Prepare(command, commandMetadata)

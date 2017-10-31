@@ -70,7 +70,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
                                                                                          handlersActor)),
                             EntityActorName.New<ProgrammerAggregate>(command.Id).Name);
 
-            actor.Tell(new MessageMetadataEnvelop<ICommand>(command, new MessageMetadata(command.Id)));
+            actor.Tell(new MessageMetadataEnvelop<ICommand>(command, MessageMetadata.New(command.Id, null, null)));
 
             var fault = FishForMessage<MessageMetadataEnvelop>(m => m.Message is Fault<GoSleepCommand>).Message as IFault;
 

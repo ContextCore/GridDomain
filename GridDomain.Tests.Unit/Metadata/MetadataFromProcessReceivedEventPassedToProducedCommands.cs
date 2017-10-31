@@ -26,9 +26,7 @@ namespace GridDomain.Tests.Unit.Metadata
         public void When_publishing_start_message()
         {
             var gotTiredEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-            var gotTiredEventMetadata = new MessageMetadata(gotTiredEvent.SourceId,
-                                                            Guid.NewGuid(),
-                                                            Guid.NewGuid());
+            var gotTiredEventMetadata = MessageMetadata.New(gotTiredEvent.SourceId, Guid.NewGuid(), Guid.NewGuid());
 
             Node.Pipe.ProcessesPipeActor.Tell(new Initialize(TestActor));
             Node.Pipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<DomainEvent>(gotTiredEvent,

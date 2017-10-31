@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.Metadata
         public async Task When_execute_aggregate_command()
         {
             var command = new ScheduleEventInFutureCommand(DateTime.Now.AddMilliseconds(100), Guid.NewGuid(), "12");
-            var commandMetadata = new MessageMetadata(command.Id, Guid.NewGuid());
+            var commandMetadata = MessageMetadata.New(command.Id, Guid.NewGuid(), null);
 
             var res = await Node.Prepare(command, commandMetadata)
                                 .Expect<ValueChangedSuccessfullyEvent>()

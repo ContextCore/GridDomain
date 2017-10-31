@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var resTask = Node.NewDebugWaiter()
                               .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                               .Create()
-                              .SendToProcessManagers(startEvent,new MessageMetadata(startEvent.Id));
+                              .SendToProcessManagers(startEvent,MessageMetadata.New(startEvent.Id, null, null));
 
             var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>().SourceId;
 

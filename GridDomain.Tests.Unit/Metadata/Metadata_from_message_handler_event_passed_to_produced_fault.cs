@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.Metadata
         public async Task When_execute_aggregate_command_with_metadata()
         {
             var command = new InflateNewBallonCommand(1, Guid.NewGuid());
-            var commandMetadata = new MessageMetadata(command.Id, Guid.NewGuid());
+            var commandMetadata = MessageMetadata.New(command.Id, Guid.NewGuid(), null);
 
             var res = await Node.Prepare(command, commandMetadata)
                                 .Expect<BalloonCreated>()

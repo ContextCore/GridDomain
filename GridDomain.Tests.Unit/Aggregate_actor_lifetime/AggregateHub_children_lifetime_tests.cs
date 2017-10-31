@@ -21,9 +21,9 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
             {
                 ChildId = Guid.NewGuid();
                 ChildCreateMessage = new MessageMetadataEnvelop<ICommand>(new InflateNewBallonCommand(42, ChildId),
-                                                                          new MessageMetadata(ChildId));
+                                                                          MessageMetadata.New(ChildId, null, null));
                 ChildActivateMessage = new MessageMetadataEnvelop<ICommand>(new WriteTitleCommand(100, ChildId),
-                                                                            new MessageMetadata(ChildId));
+                                                                            MessageMetadata.New(ChildId, null, null));
             }
 
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)

@@ -24,11 +24,11 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
                 var gotTired = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), processId);
                 var coffeMadeEvent = new CoffeMadeEvent(gotTired.FavoriteCoffeMachineId, gotTired.PersonId, null, processId);
 
-                ChildCreateMessage = new MessageMetadataEnvelop<DomainEvent>(gotTired, new MessageMetadata(gotTired.SourceId));
+                ChildCreateMessage = new MessageMetadataEnvelop<DomainEvent>(gotTired, MessageMetadata.New(gotTired.SourceId, null, null));
                 //TODO: second message will not hit same process as created by previos, 
                 //think how to change it. 
                 ChildActivateMessage = new MessageMetadataEnvelop<DomainEvent>(coffeMadeEvent,
-                                                                               new MessageMetadata(coffeMadeEvent.SourceId));
+                                                                               MessageMetadata.New(coffeMadeEvent.SourceId, null, null));
             }
 
             Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)

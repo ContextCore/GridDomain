@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 
 namespace GridDomain.Common
 {
@@ -15,16 +16,13 @@ namespace GridDomain.Common
             History = history ?? new ProcessHistory(null);
         }
 
-        public MessageMetadata(Guid messageId,
-                               Guid? correlationId = null,
-                               Guid? casuationId = null,
-                               ProcessHistory history = null):this(messageId.ToString("D"),
-                                                                   correlationId?.ToString("D"),
-                                                                   casuationId?.ToString("D"),
-                                                                   history)
-        {
-        }
 
+        public static MessageMetadata New(Guid messageId,
+                                          Guid? correlationId = null,
+                                          Guid? casuationId = null)
+        {
+            return new MessageMetadata(messageId.ToString("D"), correlationId?.ToString("D"), casuationId?.ToString("D"));
+        }
         public static MessageMetadata Empty { get; } = new MessageMetadata("","");
 
         public string MessageId { get; }
