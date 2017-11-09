@@ -1,11 +1,13 @@
 ﻿using System;
+using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing {
     public static class CommandAggregateHandler
     {
-        public static IAggregateCommandsHandler<T> New<T>() where T : CommandAggregate
+        private static IConstructAggregates DefaultFactory = new AggregateFactory();
+        public static IAggregateCommandsHandler<T> New<T>(IConstructAggregates factory = null) where T : CommandAggregate
         {
-            return new ConventionAggregateHandler<T>(AggregateFactory.BuildEmpty<T>(Guid.Empty));
+            return new ConventionAggregateHandler<T>((factory ?? DefaultFactory).BuildEmpty<T>());
         }
     }
 }

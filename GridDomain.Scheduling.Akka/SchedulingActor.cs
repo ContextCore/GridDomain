@@ -26,7 +26,7 @@ namespace GridDomain.Scheduling.Akka
             _publisher = Context.System.GetTransport();
             _logger.Debug("Scheduling actor started at path {Path}", Self.Path);
             _scheduler = Context.System.GetExtension<SchedulingExtension>().Scheduler;
-            ReceiveAsync<ScheduleCommandExecution>(message => Schedule(message));
+            ReceiveAsync<ScheduleCommandExecution>(Schedule);
             Receive<Unschedule>(message => Unschedule(message));
         }
 

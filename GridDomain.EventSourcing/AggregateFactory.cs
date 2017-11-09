@@ -29,7 +29,7 @@ namespace GridDomain.EventSourcing
             return aggregate;
         }
 
-        private static IAggregate Build(Type type, Guid id)
+        protected static IAggregate BuildFromConventionConstructor(Type type, Guid id)
         {
             //TODO: add type cache to reduce search time
             var constructor = type.GetTypeInfo()
@@ -51,16 +51,9 @@ namespace GridDomain.EventSourcing
             return (T) Build(typeof(T), id, snapshot);
         }
 
-        public IAggregate Build(Type type, Guid id, IMemento snapshot)
+        public virtual IAggregate Build(Type type, Guid id, IMemento snapshot)
         {
-            return snapshot == null ? Build(type, id) : BuildFromSnapshot(type, id, snapshot);
-        }
-
-        private static readonly AggregateFactory Factory = new AggregateFactory();
-
-        public static T BuildEmpty<T>(Guid? id = null) where T : IAggregate
-        {
-            return Factory.Build<T>(id ?? Guid.NewGuid());
+            return snapshot == null ? BuildFromConventionConstructor(type, id) : BuildFromSnapshot(type, id, snapshot);
         }
     }
 }

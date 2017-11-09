@@ -277,6 +277,7 @@
     <Compile Include="Aggregate_actor_lifetime\PersistentHubChildrenLifetimeTest.cs" />
     <Compile Include="Aggregate_actor_lifetime\ProcessHub_children_lifetime_tests.cs" />
     <Compile Include="CommandsExecution\ConventionCommands\ConventionAggregateTests.cs" />
+    <Compile Include="DependencyInjection\CustomAggregateFactory.cs" />
     <Compile Include="Isolated.cs" />
     <Compile Include="Logging\LogForCustomizedSystemTests.cs" />
     <Compile Include="Logging\LogForAutoTestKitTests.cs" />

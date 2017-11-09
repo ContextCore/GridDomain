@@ -57,7 +57,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThanOrEqualTo, 10000)]
         public void AggregateCommandsHandlerThroughput()
         {
-            T aggregate = AggregateFactory.BuildEmpty<T>();
+            T aggregate = new AggregateFactory().BuildEmpty<T>();
 
             
             aggregate.InitEventStore(_fakeEventStore);
