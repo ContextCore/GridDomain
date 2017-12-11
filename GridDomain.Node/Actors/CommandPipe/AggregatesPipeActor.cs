@@ -19,7 +19,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                                             {
                                                 var aggregateProcessor = aggregateCatalog.Get(c.Message);
                                                 if (aggregateProcessor == null)
-                                                    throw new CannotFindAggregateForCommandExñeption(c.Message,
+                                                    throw new CannotFindAggregateForCommandException(c.Message,
                                                                                                      c.Message.GetType());
 
                                                 Log.Debug("Received command {@c}",c);

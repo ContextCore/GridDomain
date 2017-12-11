@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <Description>Libraries for domain development</Description>
     <PackageTags>CQRS ES DDD Akka</PackageTags>
     <Copyright>Copyright © aleskov</Copyright>

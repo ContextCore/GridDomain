@@ -25,7 +25,8 @@ namespace GridDomain.Configuration {
 
         public static DefaultAggregateDependencyFactory<TCommandAggregate> ForCommandAggregate<TCommandAggregate>() where TCommandAggregate : CommandAggregate
         {
-            return new DefaultAggregateDependencyFactory<TCommandAggregate>(CommandAggregateHandler.New<TCommandAggregate>);
+            return new DefaultAggregateDependencyFactory<TCommandAggregate>(
+                                                                            () => CommandAggregateHandler.New<TCommandAggregate>());
         }
     }
 
