@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <Description>Unit tests GridDomain framework.</Description>
@@ -17,23 +16,25 @@
     <FileVersion>1.0.0.0</FileVersion>
     <Version>1.0.0</Version>
   </PropertyGroup>
-
   <ItemGroup>
+    <PackageReference Include="Akka.TestKit.Xunit2" Version="1.3.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.0-preview-20171211-02" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.5.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj" />
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
+    <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj" />
+    <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="AkkaSqlPersistence.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
   </ItemGroup>
-
 </Project>
