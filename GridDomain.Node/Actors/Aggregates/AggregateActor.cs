@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using Akka.Actor;
-using Akka.Persistence;
 using Automatonymous;
 using GridDomain.Common;
 using GridDomain.Configuration;
@@ -21,76 +20,6 @@ using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.Aggregates
 {
-
-
-
-    public class CommandStateActor : ReceivePersistentActor
-    {
-        enum CommandState
-        {
-            New,
-            Executed,
-            Failed
-        }
-
-        private CommandState State;
-        public CommandStateActor()
-        {
-            State = CommandState.New;
-            PersistenceId = Self.Path.Name;
-            Command<AcceptCommandExecution>(a =>
-                                            {
-                                                if(State != CommandState.Executed)
-                                                    Sender.Tell(Accepted.Instance);
-                                                else 
-                                                   Sender.Tell(Rejected.Instance);
-                                            });
-            Command<CommandSucceed>(s => Persist(CommandState.Executed, e => State = e));
-            Command<CommandFailed>(s => Persist(CommandState.Failed, e => State = e));
-            Recover<CommandState>(s => State = s);
-        }
-
-        public class AcceptCommandExecution
-        {
-            private AcceptCommandExecution()
-            {
-                
-            }
-             public static AcceptCommandExecution Instance { get; } = new AcceptCommandExecution();
-        }
-
-        public class Accepted
-        {
-            private Accepted()
-            {
-                
-            }
-            public static Accepted Instance { get; } = new Accepted();
-        }
-
-        public class Rejected
-        {
-            private Rejected()
-            {
-                
-            }
-            public static Rejected Instance { get; } = new Rejected();
-        }
-
-        public class CommandFailed
-        {
-            private CommandFailed(){}
-            public static CommandFailed Instance { get; } = new CommandFailed();
-        }
-        public class CommandSucceed
-        {
-            private CommandSucceed(){}
-            public static CommandSucceed Instance { get; } = new CommandSucceed();
-        }
-
-        public override string PersistenceId { get; }
-    }
-    
     public class CommandAlreadyExecutedException:Exception { }
 
     /// <summary>
@@ -129,19 +58,6 @@ namespace GridDomain.Node.Actors.Aggregates
         protected void ValidatingCommandBehavior()
         {
             DefaultBehavior();
-            Command<IMessageMetadataEnvelop>(m =>
-                                             {
-                                                 var cmd = (ICommand)m.Message;
-                                                 var name = cmd.Id.ToString();
-
-                                                 var actorRef = Context.Child(name);
-                                                 ExecutionContext.Validator = actorRef != ActorRefs.Nobody ? actorRef : Context.ActorOf<CommandStateActor>(name);
-                                                 ExecutionContext.Command = cmd;
-                                                 ExecutionContext.CommandMetadata = m.Metadata;
-                                                 ExecutionContext.CommandSender = Sender;
-                                                 ExecutionContext.Validator.Tell(CommandStateActor.AcceptCommandExecution.Instance);
-                                                 
-                                             }, m => m.Message is ICommand);
             
             Command<CommandStateActor.Accepted>(a =>
                                                 {
@@ -169,14 +85,23 @@ namespace GridDomain.Node.Actors.Aggregates
             CommandAny(StashMessage);
         }
 
-        protected virtual void AwaitingCommandBehavior()
+        protected override void AwaitingCommandBehavior()
         {
             DefaultBehavior();
             
             Command<IMessageMetadataEnvelop>(m =>
                                             {
-                                                var cmd = (ICommand)m.Message;
                                                 Monitor.Increment(nameof(CQRS.Command));
+                                                var cmd = (ICommand)m.Message;
+                                                var name = cmd.Id.ToString();
+
+                                                var actorRef = Context.Child(name);
+                                                ExecutionContext.Validator = actorRef != ActorRefs.Nobody ? actorRef : Context.ActorOf<CommandStateActor>(name);
+                                                ExecutionContext.Command = cmd;
+                                                ExecutionContext.CommandMetadata = m.Metadata;
+                                                ExecutionContext.CommandSender = Sender;
+                                                ExecutionContext.Validator.Tell(CommandStateActor.AcceptCommandExecution.Instance);
+                                                 
                                                 Behavior.Become(ValidatingCommandBehavior,nameof(ValidatingCommandBehavior));
                                                 
                                             }, m => m.Message is ICommand);
@@ -248,6 +173,8 @@ namespace GridDomain.Node.Actors.Aggregates
             Command<Status.Failure>(f =>
                                     {
                                         ExecutionContext.Exception = f.Cause.UnwrapSingle();
+                                        ExecutionContext.Validator.Tell(CommandStateActor.CommandFailed.Instance);
+
                                         PublishError(ExecutionContext.Exception);
                                     });
 
@@ -262,15 +189,14 @@ namespace GridDomain.Node.Actors.Aggregates
                                          _publisher.Publish(c, completedMetadata);
 
                                          ExecutionContext.CommandSender.Tell(c);
+                                         ExecutionContext.Validator.Tell(CommandStateActor.CommandSucceed.Instance);
                                          ExecutionContext.Clear();
-                                         Behavior.Unbecome();
+                                         Behavior.Become(AwaitingCommandBehavior,nameof(AwaitingCommandBehavior));
                                          Stash.Unstash();
                                      });
-
-            Command<IMessageMetadataEnvelop>(o => StashMessage(o));
-            Command<GracefullShutdownRequest>(o => StashMessage(o));
-
             DefaultBehavior();
+
+            CommandAny(StashMessage);
         }
 
         private IFault PublishError(Exception exception)

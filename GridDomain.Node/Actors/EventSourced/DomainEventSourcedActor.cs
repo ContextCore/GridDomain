@@ -22,7 +22,7 @@ namespace GridDomain.Node.Actors.EventSourced
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
         protected readonly ActorMonitor Monitor;
 
-        protected readonly BehaviorStack Behavior;
+        protected readonly BehaviorQueue Behavior;
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
         public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
@@ -35,7 +35,7 @@ namespace GridDomain.Node.Actors.EventSourced
             State = (T) aggregateConstructor.Build(typeof(T), Id, null);
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
-            Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
+            Behavior = new BehaviorQueue(Become);
 
             DefaultBehavior();
 
@@ -115,7 +115,7 @@ namespace GridDomain.Node.Actors.EventSourced
             foreach (var watcher in _persistenceWatchers)
                 watcher.Tell(msg);
         }
-
+        protected virtual void AwaitingCommandBehavior(){}
         protected virtual void TerminatingBehavior()
         {
             Command<DeleteSnapshotsSuccess>(s =>
@@ -154,7 +154,7 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       Log.Warning("Received shutdown request but have unprocessed messages."
                                                                   + "Shutdown will be postponed until all messages processing");
 
-                                                      Behavior.Unbecome();
+                                                      Behavior.Become(AwaitingCommandBehavior,nameof(AwaitingCommandBehavior));
                                                       foreach (var m in messageToProcess)
                                                           Self.Tell(m.Message);
 

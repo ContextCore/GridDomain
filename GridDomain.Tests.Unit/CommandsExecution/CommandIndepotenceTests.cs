@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
             var cmd = new WriteTitleCommand(43, Guid.NewGuid());
 
             await Node.Execute(cmd);
-            await Node.Execute(cmd).CommandShouldThrow<CommandAlreadyExecutedException>();
+            await Node.Execute(cmd).ShouldThrow<CommandAlreadyExecutedException>();
         }
         
     }
