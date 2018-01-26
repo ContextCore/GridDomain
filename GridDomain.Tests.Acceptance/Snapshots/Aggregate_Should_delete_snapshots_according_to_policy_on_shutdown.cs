@@ -49,6 +49,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             await Task.Delay(3000);
 
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                                  new BalloonAggregateFactory(),
                                                                   new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
 
             //Only_2_Snapshots_should_left()

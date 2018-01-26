@@ -66,7 +66,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<ProgrammerAggregate>(CommandAggregateHandler.New<ProgrammerAggregate>(null),
                                                                                          new SnapshotsPersistencePolicy(1, 5, null, null),
-                                                                                         new AggregateFactory(),
+                                                                                         AggregateFactory.Default,
+                                                                                         AggregateFactory.Default,
                                                                                          handlersActor)),
                             EntityActorName.New<ProgrammerAggregate>(command.Id).Name);
 

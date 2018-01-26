@@ -16,9 +16,11 @@ namespace GridDomain.Node.Actors.ProcessManagers
         public ProcessStateActor(IAggregateCommandsHandler<ProcessStateAggregate<TState>> handler,
                                  ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                                  IConstructAggregates aggregateConstructor,
+                                 IConstructSnapshots snapshotsConstructor,
                                  IActorRef customHandlersActor) : base(handler,
                                                                        snapshotsPersistencePolicy,
                                                                        aggregateConstructor,
+                                                                       snapshotsConstructor,
                                                                        customHandlersActor)
         {
         }

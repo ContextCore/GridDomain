@@ -18,24 +18,6 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
         public string Title { get; private set; }
 
-        public static Balloon FromSnapshot(IMemento memento)
-        {
-            var snapshot = memento as BalloonSnapshot;
-            if (snapshot == null)
-                throw new InvalidOperationException("Sample aggregate can be restored only from memento with type "
-                                                    + typeof(BalloonSnapshot).Name);
-
-            var aggregate = new Balloon(snapshot.Id, snapshot.Value);
-            aggregate.CommitAll();
-            aggregate.Version = snapshot.Version;
-            return aggregate;
-        }
-
-        public override IMemento GetSnapshot()
-        {
-            return new BalloonSnapshot(Id, Version, Title);
-        }
-
        
 
         public void WriteNewTitle(int number)
@@ -115,19 +97,6 @@ namespace GridDomain.Tests.Unit.BalloonDomain
             Produce(new BalloonTitleChanged("0", Id));
         }
 
-        private class BalloonSnapshot : IMemento
-        {
-            public BalloonSnapshot(Guid id, int version, string value)
-            {
-                Id = id;
-                Version = version;
-                Value = value;
-            }
-
-            public string Value { get; }
-
-            public Guid Id { get; set; }
-            public int Version { get; set; }
-        }
+      
     }
 }

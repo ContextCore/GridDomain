@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
     <Authors>aleskov</Authors>
@@ -17,16 +16,13 @@
     <FileVersion>1.0.0.0</FileVersion>
     <Version>1.0.0</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Serilog" Version="2.5.0" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.5.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj" />
   </ItemGroup>
-
 </Project>

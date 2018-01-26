@@ -40,8 +40,8 @@ namespace GridDomain.Tests.Unit.Serialization
         public void Aggregate_by_default_can_be_saved_as_IMemento_for_snapshot()
         {
             _aggregate = new TestAggregate(1, Guid.NewGuid());
-            var snapshot = ((IAggregate) _aggregate).GetSnapshot();
             var factory = new AggregateFactory();
+            var snapshot = factory.GetSnapshot(_aggregate);
             _restoredAggregate = factory.Build<TestAggregate>(_aggregate.Id, snapshot);
 
             // Restored_aggregate_is_not_null()

@@ -16,17 +16,21 @@ using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
-    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : IAggregate
+    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : class, IAggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
         protected readonly ActorMonitor Monitor;
 
         protected readonly BehaviorQueue Behavior;
+        private IConstructSnapshots _snapshotsConstructor;
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
-        public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
+        public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, 
+                                       IConstructSnapshots snapshotsConstructor,
+                                       ISnapshotsPersistencePolicy policy)
         {
+            _snapshotsConstructor = snapshotsConstructor;
             _snapshotsPolicy = policy;
           
             PersistenceId = Self.Path.Name;
@@ -107,7 +111,7 @@ namespace GridDomain.Node.Actors.EventSourced
             if (!_snapshotsPolicy.ShouldSave(SnapshotSequenceNr, BusinessDateTime.UtcNow)) return;
             Log.Debug("Started snapshot save, cased by persisted event {event}",lastEventPersisted);
             _snapshotsPolicy.MarkSnapshotSaving();
-            SaveSnapshot(aggregate.GetSnapshot());
+            SaveSnapshot(_snapshotsConstructor.GetSnapshot(State));
         }
 
         protected void NotifyPersistenceWatchers(object msg)

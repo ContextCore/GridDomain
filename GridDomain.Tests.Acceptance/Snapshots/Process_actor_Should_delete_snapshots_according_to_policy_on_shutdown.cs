@@ -45,8 +45,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 
-            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString, new AggregateFactory())
-                                                                .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
+            var snapshots = await  AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString)
+                                                              .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
             //Only_two_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);
             // Restored_aggregates_should_have_same_ids()

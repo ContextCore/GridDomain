@@ -13,10 +13,18 @@ namespace GridDomain.Tests.Unit.DependencyInjection
             : base(new NodeTestFixture(helper).Add(new TestAggregateDomainConfiguration())) {}
 
         [Fact]
+                 public async Task
+                     Given_configured_container_When_executing_aggregate_handler_Then_container_is_available_in_aggregate_command_handler()
+                 {
+                     await Node.Prepare(new TestCommand(42, Guid.NewGuid()))
+                               .Expect<TestDomainEvent>()
+                               .Execute();
+                 }
+        [Fact]
         public async Task
-            Given_configured_container_When_executing_aggregate_handler_Then_container_is_available_in_aggregate_command_handler()
+            Given_configured_container_When_executing_command_Then_container_is_available_in_aggregate_private_constructor()
         {
-            await Node.Prepare(new TestCommand(42, Guid.NewGuid()))
+            await Node.Prepare(new TestCommandB(42, Guid.NewGuid()))
                       .Expect<TestDomainEvent>()
                       .Execute();
         }

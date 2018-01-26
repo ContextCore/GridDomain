@@ -27,6 +27,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             aggregate.CommitAll();
 
             var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                       new BalloonAggregateFactory(),
                                                        new BalloonAggregateFactory());
             await repo.Add(aggregate);
 

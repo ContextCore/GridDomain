@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;

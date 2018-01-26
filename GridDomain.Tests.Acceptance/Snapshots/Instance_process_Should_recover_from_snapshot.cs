@@ -29,7 +29,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             processStateAggregate.CommitAll();
 
             var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                       new AggregateFactory());
+                                                       AggregateFactory.Default,
+                                                       AggregateFactory.Default);
             await repo.Add(processStateAggregate);
 
             var restoredState = await this.LoadProcessByActor<SoftwareProgrammingState>(processStateAggregate.Id);

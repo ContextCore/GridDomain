@@ -14,6 +14,5 @@ namespace GridDomain.EventSourcing.CommonDomain
         
         IReadOnlyCollection<DomainEvent> GetUncommittedEvents();
         void InitEventStore(IEventStore store);
-        IMemento GetSnapshot();
     }
 }

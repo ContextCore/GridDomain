@@ -38,6 +38,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var snapshots =
                 await
                     new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                    new BalloonAggregateFactory(),
                                                     new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
 
             //Snapshots_should_be_saved_one_time()

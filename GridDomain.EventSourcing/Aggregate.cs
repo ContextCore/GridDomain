@@ -8,8 +8,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
-{
-
+{   
     public abstract class Aggregate : IAggregate,
                                       IMemento,
                                       IEquatable<IAggregate>
@@ -43,11 +42,6 @@ namespace GridDomain.EventSourcing
         {
             get => Version;
             set => Version = value;
-        }
-
-        public virtual IMemento GetSnapshot()
-        {
-            return this;
         }
 
         public Guid Id { get; protected set; }

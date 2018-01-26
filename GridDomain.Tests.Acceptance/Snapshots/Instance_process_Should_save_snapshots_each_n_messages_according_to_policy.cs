@@ -65,7 +65,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             await Node.KillProcessManager<SoftwareProgrammingProcess,SoftwareProgrammingState>(continueEventB.ProcessId);
             await Task.Delay(1000);
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                                  new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
+                                                                  AggregateFactory.Default,
+                                                                  AggregateFactory.Default).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //saving on each message, maximum on each command
             //Snapshots_should_be_saved_two_times

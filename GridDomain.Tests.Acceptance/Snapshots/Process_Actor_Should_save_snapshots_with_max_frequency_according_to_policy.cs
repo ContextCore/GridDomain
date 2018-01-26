@@ -57,8 +57,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 
 
-            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                                  new AggregateFactory()).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
+            var snapshots = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString)
+                                                             .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Single(snapshots);
