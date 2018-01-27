@@ -37,5 +37,6 @@
     <ProjectReference Include="..\GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj" />
     <ProjectReference Include="..\GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj" />
     <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj" />
+    <ProjectReference Include="..\GridDomain.Transport\GridDomain.Transport.csproj" />
   </ItemGroup>
 </Project>
