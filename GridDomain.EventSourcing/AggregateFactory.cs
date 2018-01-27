@@ -12,7 +12,7 @@ namespace GridDomain.EventSourcing
     // to create a valid instance of that object (eg, Person needs a twitter handle to be valid if I were doing twitter stream analysis)
     // Internally, to EventStore, I want it to be able to create my object via a private ctor and I'm going to pass in the
     // objects id.
-    public class AggregateFactory : IConstructAggregates
+    public class AggregateFactory : IConstructAggregates, IConstructSnapshots
     {
         //default convention: Aggregate is implementing IMemento itself
         protected virtual IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
@@ -29,11 +29,11 @@ namespace GridDomain.EventSourcing
             return aggregate;
         }
 
-        protected static IAggregate BuildFromConventionConstructor(Type type, Guid id)
+        protected static IAggregate BuildByConvention(Type type, Guid id)
         {
             //TODO: add type cache to reduce search time
             var constructor = type.GetTypeInfo()
-                                  .DeclaredConstructors.First(c =>
+                                  .DeclaredConstructors.FirstOrDefault(c =>
                                                               {
                                                                   var parameters = c.GetParameters();
                                                                   return parameters.Length == 1 && parameters[0]
@@ -46,14 +46,21 @@ namespace GridDomain.EventSourcing
             return constructor.Invoke(new object[] {id}) as IAggregate;
         }
 
-        public T Build<T>(Guid id, IMemento snapshot = null) where T : IAggregate
+        public virtual IAggregate Build(Type type, Guid id, IMemento snapshot=null)
         {
-            return (T) Build(typeof(T), id, snapshot);
+            return snapshot == null ? BuildByConvention(type, id) : BuildFromSnapshot(type, id, snapshot);
         }
 
-        public virtual IAggregate Build(Type type, Guid id, IMemento snapshot)
+        public static readonly AggregateFactory Default = new AggregateFactory();
+
+        public static T BuildEmpty<T>(Guid? id = null) where T : IAggregate
         {
-            return snapshot == null ? BuildFromConventionConstructor(type, id) : BuildFromSnapshot(type, id, snapshot);
+            return Default.Build<T>(id ?? Guid.NewGuid());
+        }
+
+        public virtual IMemento GetSnapshot(IAggregate aggregate)
+        {
+            return (Aggregate)aggregate;
         }
     }
 }

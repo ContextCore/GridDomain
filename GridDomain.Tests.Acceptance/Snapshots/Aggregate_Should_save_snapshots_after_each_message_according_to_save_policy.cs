@@ -42,7 +42,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Thread.Sleep(100);
 
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                                  new BalloonAggregateFactory())
+                                                                  BalloonAggregateFactory.Default,
+                                                                  BalloonAggregateFactory.Default
+                                                                  )
                                                                   .Load<Balloon>(aggregateId);
             //Snapshots_should_be_saved_two_times()
             Assert.Equal(2, snapshots.Length);

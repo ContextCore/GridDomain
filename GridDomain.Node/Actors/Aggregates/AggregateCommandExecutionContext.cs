@@ -18,6 +18,7 @@ namespace GridDomain.Node.Actors.Aggregates {
         public Exception Exception;
         public IActorRef PersistenceWaiter;
         public int MessagesToProject;
+        public IActorRef Validator;
 
         public void Clear()
         {
@@ -28,6 +29,7 @@ namespace GridDomain.Node.Actors.Aggregates {
             Exception = null;
             PersistenceWaiter = null;
             MessagesToProject = 0;
+            Validator = null;
         }
     }
 }

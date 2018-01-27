@@ -7,6 +7,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
+using Pro.NBench.xUnit.XunitExtensions.Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
@@ -57,7 +58,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThanOrEqualTo, 10000)]
         public void AggregateCommandsHandlerThroughput()
         {
-            T aggregate = new AggregateFactory().BuildEmpty<T>();
+            T aggregate = AggregateFactory.BuildEmpty<T>();
 
             
             aggregate.InitEventStore(_fakeEventStore);

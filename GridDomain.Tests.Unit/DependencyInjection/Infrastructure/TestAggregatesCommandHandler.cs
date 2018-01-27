@@ -9,6 +9,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
         public TestAggregatesCommandHandler(ITestDependency testDependency)
         {
             Map<TestCommand>((c, a) => a.Execute(c.Parameter, testDependency));
+            Map<TestCommandB>((c, a) => a.ExecuteWithOwnedDependency(c.Parameter));
         }
 
     }

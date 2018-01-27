@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
 
         }
 
-        private static Isolated<Initiator> _isolatedServerNode = new Isolated<Initiator>();
+        //private static Isolated<Initiator> _isolatedServerNode = new Isolated<Initiator>();
         class Initiator : MarshalByRefObject
         {
             private readonly CreationAndChangeWithProjectionInSql _test;
@@ -54,13 +54,13 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
 
         internal override void OnSetup()
         {
-            _isolatedServerNode.Value.Setup();
+            //_isolatedServerNode.Value.Setup();
             base.OnSetup();
         }
 
         public override void Cleanup()
         {
-            _isolatedServerNode.Value.CleanUp();
+          //  _isolatedServerNode.Value.CleanUp();
             //_isolatedServerNode?.Dispose();
             base.Cleanup();
         }

@@ -44,7 +44,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
 
             container.Register<ProcessStateActor<TestState>>(c =>
                                                              new ProcessStateActor<TestState>(CommandAggregateHandler.New<ProcessStateAggregate<TestState>>(),
-                                                                                              new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(),
+                                                                                              new EachMessageSnapshotsPersistencePolicy(),
+                                                                                              AggregateFactory.Default,
+                                                                                              AggregateFactory.Default,
                                                                                               messageProcessActor));
             Sys.AddDependencyResolver(new AutoFacDependencyResolver(container.Build(), Sys));
             Sys.AttachSerilogLogging(logger);

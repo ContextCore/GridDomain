@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ConventionCommands
         [Fact]
         public void ConventionRegisteredEvents_are_applied()
         {
-            var person = new AggregateFactory().BuildEmpty<ProgrammerAggregate>();
+            var person = AggregateFactory.BuildEmpty<ProgrammerAggregate>();
             var personCreated = new PersonCreated(Guid.NewGuid(), Guid.NewGuid());
             ((IAggregate)person).ApplyEvent(personCreated);
 

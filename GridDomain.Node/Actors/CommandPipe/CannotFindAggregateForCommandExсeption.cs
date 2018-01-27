@@ -2,13 +2,13 @@ using System;
 
 namespace GridDomain.Node.Actors.CommandPipe
 {
-    public class CannotFindAggregateForCommandExñeption : Exception
+    public class CannotFindAggregateForCommandException : Exception
     {
-        public CannotFindAggregateForCommandExñeption()
+        public CannotFindAggregateForCommandException()
         {
             
         }
-        public CannotFindAggregateForCommandExñeption(object command, Type topic)
+        public CannotFindAggregateForCommandException(object command, Type topic)
         {
             Command = command;
             Topic = topic;

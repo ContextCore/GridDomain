@@ -9,6 +9,7 @@ namespace GridDomain.Configuration
         IAggregateCommandsHandler<TAggregate> CreateCommandsHandler();
         ISnapshotsPersistencePolicy CreatePersistencePolicy();
         IConstructAggregates CreateAggregateFactory();
+        IConstructSnapshots  CreateSnapshotsFactory();
         IPersistentChildsRecycleConfiguration CreateRecycleConfiguration();
     }
 }

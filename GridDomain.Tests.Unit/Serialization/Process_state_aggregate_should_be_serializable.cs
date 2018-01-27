@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using Common.Logging;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Serializers;
 using GridDomain.ProcessManagers;

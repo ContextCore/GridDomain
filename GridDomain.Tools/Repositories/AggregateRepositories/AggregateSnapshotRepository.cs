@@ -17,17 +17,40 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
     {
         private readonly IConstructAggregates _aggregatesConstructor;
         private readonly DbContextOptions option;
+        private IConstructSnapshots _snapshotsConstructor;
 
-        public AggregateSnapshotRepository(DbContextOptions dbOptions, IConstructAggregates aggregatesConstructor)
+        public static AggregateSnapshotRepository New(string options)
         {
+            return new AggregateSnapshotRepository(options, AggregateFactory.Default, AggregateFactory.Default);
+        }
+        
+        public static AggregateSnapshotRepository New(DbContextOptions options)
+        {
+            return new AggregateSnapshotRepository(options, AggregateFactory.Default, AggregateFactory.Default);
+        }
+        
+        public static AggregateSnapshotRepository New<T>(DbContextOptions options, T factory) where T: class, IConstructAggregates,
+            IConstructSnapshots
+        {
+            return new AggregateSnapshotRepository(options, factory, factory);
+        }
+        
+        public AggregateSnapshotRepository(DbContextOptions dbOptions, 
+                                           IConstructAggregates aggregatesConstructor,
+                                           IConstructSnapshots snapshotsConstructor)
+        {
+            _snapshotsConstructor = snapshotsConstructor;
             _aggregatesConstructor = aggregatesConstructor;
             option = dbOptions;
         }
 
         public AggregateSnapshotRepository(string connString,
-                                           IConstructAggregates aggregatesConstructor) : this(new DbContextOptionsBuilder().UseSqlServer(connString).
+                                           IConstructAggregates aggregatesConstructor,
+                                           IConstructSnapshots snapshotsConstructor
+                                           ) : this(new DbContextOptionsBuilder().UseSqlServer(connString).
                                                                                                                             Options,
-                                                                                              aggregatesConstructor) { }
+                                                                                              aggregatesConstructor,
+                                                    snapshotsConstructor) { }
 
         public async Task<AggregateVersion<T>[]> Load<T>(Guid id) where T : Aggregate
         {
@@ -45,11 +68,11 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             }
         }
 
-        public async Task Add<T>(T aggregate) where T : IAggregate
+        public async Task Add<T>(T aggregate) where T : class, IAggregate
         {
             using (var repo = new RawSnapshotsRepository(option))
             {
-                var snapshot = aggregate.GetSnapshot();
+                var snapshot = _snapshotsConstructor.GetSnapshot(aggregate);
                 var item = new SnapshotItem
                            {
                                Manifest = snapshot.GetType().AssemblyQualifiedShortName(),

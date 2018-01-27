@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         {
             var processId = Guid.NewGuid();
             var softwareProgrammingState = new SoftwareProgrammingState(processId, nameof(SoftwareProgrammingProcess.Sleeping));
-            var aggregate = new AggregateFactory().BuildEmpty<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
+            var aggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
             aggregate.ApplyEvents(new ProcessManagerCreated<SoftwareProgrammingState>(softwareProgrammingState, processId));
 
             //Then_State_is_taken_from_event()

@@ -16,17 +16,21 @@ using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
-    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : IAggregate
+    public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : class, IAggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
         protected readonly ActorMonitor Monitor;
 
-        protected readonly BehaviorStack Behavior;
+        protected readonly BehaviorQueue Behavior;
+        private IConstructSnapshots _snapshotsConstructor;
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
-        public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, ISnapshotsPersistencePolicy policy)
+        public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, 
+                                       IConstructSnapshots snapshotsConstructor,
+                                       ISnapshotsPersistencePolicy policy)
         {
+            _snapshotsConstructor = snapshotsConstructor;
             _snapshotsPolicy = policy;
           
             PersistenceId = Self.Path.Name;
@@ -35,7 +39,7 @@ namespace GridDomain.Node.Actors.EventSourced
             State = (T) aggregateConstructor.Build(typeof(T), Id, null);
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
-            Behavior = new BehaviorStack(BecomeStacked, UnbecomeStacked);
+            Behavior = new BehaviorQueue(Become);
 
             DefaultBehavior();
 
@@ -107,7 +111,7 @@ namespace GridDomain.Node.Actors.EventSourced
             if (!_snapshotsPolicy.ShouldSave(SnapshotSequenceNr, BusinessDateTime.UtcNow)) return;
             Log.Debug("Started snapshot save, cased by persisted event {event}",lastEventPersisted);
             _snapshotsPolicy.MarkSnapshotSaving();
-            SaveSnapshot(aggregate.GetSnapshot());
+            SaveSnapshot(_snapshotsConstructor.GetSnapshot(State));
         }
 
         protected void NotifyPersistenceWatchers(object msg)
@@ -115,7 +119,7 @@ namespace GridDomain.Node.Actors.EventSourced
             foreach (var watcher in _persistenceWatchers)
                 watcher.Tell(msg);
         }
-
+        protected virtual void AwaitingCommandBehavior(){}
         protected virtual void TerminatingBehavior()
         {
             Command<DeleteSnapshotsSuccess>(s =>
@@ -154,7 +158,7 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       Log.Warning("Received shutdown request but have unprocessed messages."
                                                                   + "Shutdown will be postponed until all messages processing");
 
-                                                      Behavior.Unbecome();
+                                                      Behavior.Become(AwaitingCommandBehavior,nameof(AwaitingCommandBehavior));
                                                       foreach (var m in messageToProcess)
                                                           Self.Tell(m.Message);
 

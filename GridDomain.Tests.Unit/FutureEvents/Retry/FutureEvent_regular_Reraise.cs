@@ -8,7 +8,6 @@ using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Retry;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using QuickGraph.Serialization;
 using Xunit;
 using Xunit.Abstractions;
 

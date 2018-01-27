@@ -18,15 +18,17 @@ namespace GridDomain.Configuration {
         
         public static DefaultAggregateDependencyFactory<TAggregate> New<TAggregate, TAggregateCommandsHandler>()
             where TAggregate : IAggregate
-            where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>, new()
+            where TAggregateCommandsHandler : class, IAggregateCommandsHandler<TAggregate>, new()
         {
             return New(new TAggregateCommandsHandler());
         }
 
         public static DefaultAggregateDependencyFactory<TCommandAggregate> ForCommandAggregate<TCommandAggregate>(IConstructAggregates factory = null) where TCommandAggregate : CommandAggregate
         {
-            var defaultAggregateDependencyFactory = new DefaultAggregateDependencyFactory<TCommandAggregate>(() => CommandAggregateHandler.New<TCommandAggregate>(factory)) {AggregateFactoryCreator = () => factory ?? new AggregateFactory()};
-            return defaultAggregateDependencyFactory;
+            var depFactory = new DefaultAggregateDependencyFactory<TCommandAggregate>(() => CommandAggregateHandler.New<TCommandAggregate>(factory));
+            if (factory != null)
+                depFactory.AggregateFactoryCreator = () => factory;
+            return depFactory;
         }
     }
 
@@ -37,14 +39,17 @@ namespace GridDomain.Configuration {
         public Func<IAggregateCommandsHandler<TAggregate>> HandlerCreator { protected get; set; }
         public Func<ISnapshotsPersistencePolicy> SnapshotPolicyCreator { protected get; set; }
         public Func<IConstructAggregates> AggregateFactoryCreator { protected get; set; }
+        public Func<IConstructSnapshots> SnapshotsFactoryCreator { protected get; set; }
         public Func<IPersistentChildsRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
 
-        public DefaultAggregateDependencyFactory(Func<IAggregateCommandsHandler<TAggregate>> handler, Func<IMessageRouteMap> mapProducer = null)
+        public DefaultAggregateDependencyFactory(Func<IAggregateCommandsHandler<TAggregate>> handler, 
+                                                 Func<IMessageRouteMap> mapProducer = null)
         {
             MapProducer = mapProducer ?? (() => MessageRouteMap.New(handler()));
             HandlerCreator = handler ?? throw new ArgumentNullException(nameof(handler));
             SnapshotPolicyCreator = () => new NoSnapshotsPersistencePolicy();
-            AggregateFactoryCreator = () => new AggregateFactory();
+            AggregateFactoryCreator = () => AggregateFactory.Default;
+            SnapshotsFactoryCreator = () => AggregateFactory.Default;
             RecycleConfigurationCreator = () => new DefaultPersistentChildsRecycleConfiguration();
         }
 
@@ -63,6 +68,11 @@ namespace GridDomain.Configuration {
         public virtual IConstructAggregates CreateAggregateFactory()
         {
             return AggregateFactoryCreator();
+        }
+
+        public IConstructSnapshots CreateSnapshotsFactory()
+        {
+            return SnapshotsFactoryCreator();
         }
 
         public virtual IPersistentChildsRecycleConfiguration CreateRecycleConfiguration()

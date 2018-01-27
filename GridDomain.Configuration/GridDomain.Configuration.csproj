@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <Description>Integration package to configure you domain classes for running in GridDomain node environment</Description>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>

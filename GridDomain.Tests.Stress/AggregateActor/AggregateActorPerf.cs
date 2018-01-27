@@ -22,6 +22,7 @@ using Pro.NBench.xUnit.XunitExtensions;
 using Xunit;
 using Xunit.Abstractions;
 using GridDomain.Transport.Extension;
+using Pro.NBench.xUnit.XunitExtensions.Pro.NBench.xUnit.XunitExtensions;
 
 namespace GridDomain.Tests.Stress.AggregateActor {
     //it is performance test, not pure xunit
@@ -48,7 +49,11 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             var dummy = sys.ActorOf<CustomHandlersActorDummy>();
             _aggregateId = Guid.NewGuid();
             _aggregateActor = sys.ActorOf(Props.Create(
-                                                       () => new AggregateActor<Balloon>(new BalloonCommandHandler(), new EachMessageSnapshotsPersistencePolicy(), new AggregateFactory(), dummy)),
+                                                       () => new AggregateActor<Balloon>(new BalloonCommandHandler(), 
+                                                                                         new EachMessageSnapshotsPersistencePolicy(), 
+                                                                                         AggregateFactory.Default,
+                                                                                         AggregateFactory.Default,
+                                                                                         dummy)),
                                           EntityActorName.New<Balloon>(_aggregateId).ToString());
         }
 

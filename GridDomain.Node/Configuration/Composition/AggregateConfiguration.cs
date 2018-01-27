@@ -38,6 +38,7 @@ namespace GridDomain.Node.Configuration.Composition
                                      new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
                                          (pi, ctx) => ((Func<ISnapshotsPersistencePolicy>) AggregateDependencyFactory.CreatePersistencePolicy)()),
                                      new TypedParameter(typeof(IConstructAggregates), AggregateDependencyFactory.CreateAggregateFactory()),
+                                     new TypedParameter(typeof(IConstructSnapshots), AggregateDependencyFactory.CreateSnapshotsFactory()),
                                      new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
                                          (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))
                                 });
