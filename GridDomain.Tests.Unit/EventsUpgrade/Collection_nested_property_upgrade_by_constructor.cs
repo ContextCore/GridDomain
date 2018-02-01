@@ -94,7 +94,9 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
 
             var serializedValue = JsonConvert.SerializeObject(initialEvent, settings);
             Console.WriteLine(serializedValue);
-            Assert.Throws<ArgumentException>(() => JsonConvert.DeserializeObject<Event>(serializedValue, settings));
+            
+            var deserializeObject = JsonConvert.DeserializeObject<Event>(serializedValue, settings);
+            Assert.IsType<SubObject_V2>(deserializeObject.PayloadProp.First().Property.First());
         }
 
         [Fact]

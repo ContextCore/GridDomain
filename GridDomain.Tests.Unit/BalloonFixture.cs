@@ -29,7 +29,10 @@ namespace GridDomain.Tests.Unit
             var dependencyFactory = _balloonDomainConfiguration.BalloonDependencyFactory;
 
             dependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
-            dependencyFactory.AggregateFactoryCreator = () => new BalloonAggregateFactory();
+            var balloonAggregateFactory = new BalloonAggregateFactory();
+
+            dependencyFactory.AggregateFactoryCreator = () => balloonAggregateFactory;
+            dependencyFactory.SnapshotsFactoryCreator = () => balloonAggregateFactory;
 
             return this;
         }

@@ -5,10 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Tools.Repositories.RawDataRepositories
 {
+    
+    
     public class RawSnapshotsRepository : IRepository<SnapshotItem>
     {
         private readonly DbContextOptions _options;
 
+        public RawSnapshotsRepository(string connString):this(new DbContextOptionsBuilder().UseSqlServer(connString).Options)
+        {
+            
+        }
+        
         public RawSnapshotsRepository(DbContextOptions options)
         {
             _options = options;

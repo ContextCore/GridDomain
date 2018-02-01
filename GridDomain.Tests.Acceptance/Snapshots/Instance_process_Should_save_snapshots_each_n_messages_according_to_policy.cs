@@ -75,16 +75,16 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //First_snapshot_should_have_state_from_first_event
             Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee),
                          snapshots.First()
-                                  .Aggregate.State.CurrentStateName);
+                                  .Payload.State.CurrentStateName);
             //Last_snapshot_should_have_parameters_from_last_command()
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
                          snapshots.Last()
-                                  .Aggregate.State.CurrentStateName);
+                                  .Payload.State.CurrentStateName);
 
             //Restored_process_state_should_have_correct_ids
-            Assert.True(snapshots.All(s => s.Aggregate.Id == processId));
+            Assert.True(snapshots.All(s => s.Payload.Id == processId));
             //All_snapshots_should_not_have_uncommited_events()
-            Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
+            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
         }
     }
 }

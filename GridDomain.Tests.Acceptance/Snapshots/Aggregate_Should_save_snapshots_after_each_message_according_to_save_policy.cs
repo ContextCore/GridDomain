@@ -41,21 +41,17 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             Thread.Sleep(100);
 
-            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                                  BalloonAggregateFactory.Default,
-                                                                  BalloonAggregateFactory.Default
-                                                                  )
+            var aggregates = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                                   BalloonAggregateFactory.Default)
                                                                   .Load<Balloon>(aggregateId);
             //Snapshots_should_be_saved_two_times()
-            Assert.Equal(2, snapshots.Length);
+            Assert.Equal(2, aggregates.Length);
             //Restored_aggregates_should_have_same_ids()
-            Assert.True(snapshots.All(s => s.Aggregate.Id == aggregateId));
+            Assert.True(aggregates.All(s => s.Payload.Id == aggregateId));
             //First_snapshot_should_have_parameters_from_first_command()
-            Assert.Equal(initialParameter.ToString(), snapshots.First().Aggregate.Title);
+            Assert.Equal(initialParameter.ToString(), aggregates.First().Payload.Title);
             //Second_snapshot_should_have_parameters_from_second_command()
-            Assert.Equal(changedParameter.ToString(), snapshots.Skip(1).First().Aggregate.Title);
-            //All_snapshots_should_not_have_uncommited_events()
-            Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
+            Assert.Equal(changedParameter.ToString(), aggregates.Skip(1).First().Payload.Title);
         }
     }
 }

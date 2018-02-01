@@ -25,9 +25,10 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                                             TimeSpan? maxSaveFrequency = null,
                                                             int saveOnEach = 1)
         {
-            ProcessConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory
-                                                       .StateDependencyFactory
-                                                       .SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
+            var processStateDependencyFactory = ProcessConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory
+                                                                    .StateDependencyFactory;
+            processStateDependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
+          //  processStateDependencyFactory.SnapshotsFactoryCreator = () => 
             return this;
         }
     }

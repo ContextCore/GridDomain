@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers {
             return base.GetSnapshot(aggregate);
         }
         
-        private class BalloonSnapshot : IMemento
+        internal class BalloonSnapshot : IMemento
         {
             public BalloonSnapshot(Guid id, int version, string value)
             {

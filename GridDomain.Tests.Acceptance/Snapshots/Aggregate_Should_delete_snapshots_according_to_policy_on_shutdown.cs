@@ -55,16 +55,16 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //Only_2_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);
             //Restored_aggregates_should_have_same_ids()
-            Assert.True(snapshots.All(s => s.Aggregate.Id == aggregateId));
+            Assert.True(snapshots.All(s => s.Payload.Id == aggregateId));
             //Snapshots_should_have_parameters_from_last_command()
             Assert.Equal(_parameters.Skip(3)
                                     .Take(2)
                                     .Select(p => p.ToString())
                                     .ToArray(),
-                         snapshots.Select(s => s.Aggregate.Title)
+                         snapshots.Select(s => s.Payload.Title)
                                   .ToArray());
             //All_snapshots_should_not_have_uncommited_events()
-            Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
+            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
         }
     }
 }

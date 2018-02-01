@@ -8,6 +8,20 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.ProcessManagers.State
 {
+
+//    public class ProcessStateAggregateFactory<T> : AggregateFactory where T: TState
+//    {
+//        protected override IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
+//        {
+//            return base.BuildFromSnapshot(type, id, snapshot);
+//        }
+//    
+//        public override IMemento GetSnapshot(IAggregate aggregate)
+//        {
+//            return base.GetSnapshot(aggregate);
+//        }
+//    }
+    
     public class ProcessStateAggregate<TState> : CommandAggregate where TState : IProcessState
     {
         public ProcessStateAggregate(TState state): this(state.Id)
@@ -20,7 +34,7 @@ namespace GridDomain.ProcessManagers.State
         {
         }
 
-        public TState State { get; private set; }
+        public TState State { get;  private set; }
 
         public void ReceiveMessage(TState state, Guid messageId)
         {

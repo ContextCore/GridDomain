@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
+
+
 namespace GridDomain.EventSourcing {
+
+    //marker interface to simplify navigation from command to its aggregate
+
     public abstract class CommandAggregate : Aggregate, IAggregateCommandsHandler<CommandAggregate>
     {
         protected CommandAggregate(Guid id) : base(id)

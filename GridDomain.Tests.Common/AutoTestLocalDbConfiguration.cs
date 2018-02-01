@@ -8,9 +8,9 @@ namespace GridDomain.Tests.Common
         private const string JournalConnectionStringName = "ReadModel";
         
         public string ReadModelConnectionString
-            => Environment.GetEnvironmentVariable(JournalConnectionStringName) ??  @"Data Source=(local);Initial Catalog=AutoTestRead;Integrated Security = true";
+            => Environment.GetEnvironmentVariable(JournalConnectionStringName) ??  @"Data Source=localhost,1400;Initial Catalog=AutoTestRead;User = sa; Password = P@ssw0rd1;";
 
         public string LogsConnectionString
-            => Environment.GetEnvironmentVariable(JournalConnectionStringName) ?? @"Data Source=(local);Initial Catalog=AutoTestLogs;Integrated Security = true";
+            => Environment.GetEnvironmentVariable(JournalConnectionStringName) ?? @"Data Source=localhost,1400;Initial Catalog=AutoTestLogs;User = sa; Password = P@ssw0rd1;";
     }
 }

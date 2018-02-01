@@ -111,7 +111,7 @@ namespace GridDomain.Node.Actors.EventSourced
             if (!_snapshotsPolicy.ShouldSave(SnapshotSequenceNr, BusinessDateTime.UtcNow)) return;
             Log.Debug("Started snapshot save, cased by persisted event {event}",lastEventPersisted);
             _snapshotsPolicy.MarkSnapshotSaving();
-            SaveSnapshot(_snapshotsConstructor.GetSnapshot(State));
+            SaveSnapshot(_snapshotsConstructor.GetSnapshot(aggregate));
         }
 
         protected void NotifyPersistenceWatchers(object msg)

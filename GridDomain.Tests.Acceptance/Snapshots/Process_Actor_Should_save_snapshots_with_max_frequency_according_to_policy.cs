@@ -8,6 +8,7 @@ using GridDomain.Configuration;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.PersistentHub;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
@@ -19,6 +20,7 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Configuration;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using GridDomain.Tools.Repositories.AggregateRepositories;
+using GridDomain.Tools.Repositories.SnapshotRepositories;
 using Xunit;
 using Xunit.Abstractions;
 using GridDomain.Transport.Remote;
@@ -53,23 +55,25 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Create()
                       .SendToProcessManagers(continueEvent, processId);
 
-            this.Log.Info("Enforced additional snapshot save & delete");
+            Log.Info("Enforced additional snapshot save & delete");
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 
-
-            var snapshots = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString)
+           // var id = EntityActorName.New<ProcessStateAggregate<SoftwareProgrammingState>>(processId)
+           //                         .Name;
+            
+            var snapshots = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                                  AggregateFactory.Default)
                                                              .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
             //Snapshot_should_be_saved_one_time
             Assert.Single(snapshots);
             //Restored_process_state_should_have_correct_ids
-            Assert.True(snapshots.All(s => s.Aggregate.Id == processId));
+            Assert.True(snapshots.All(s => s.Payload.Id == processId));
             //Snapshot_should_have_parameters_from_first_event = created event
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
-                         snapshots.First()
-                                  .Aggregate.State.CurrentStateName);
+                         snapshots.First().Payload.State.CurrentStateName);
             //All_snapshots_should_not_have_uncommited_events
-            Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
+            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
         }
     }
 }

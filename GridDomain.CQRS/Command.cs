@@ -3,6 +3,24 @@ using GridDomain.Common;
 
 namespace GridDomain.CQRS
 {
+    /// <summary>
+    /// Marker interface just to simplify navigation from command to its Aggregate
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IForAggregate<T>
+    {
+        
+    }
+    
+    public class Command<T> : Command, IForAggregate<T>
+    {
+        protected Command(Guid id, Guid aggregateId, Guid processId, DateTime time) : base(id, aggregateId, processId, time) { }
+        protected Command(Guid id, Guid aggregateId, Guid processId) : base(id, aggregateId, processId) { }
+        protected Command(Guid id, Guid aggregateId, DateTime time) : base(id, aggregateId, time) { }
+        protected Command(Guid id, Guid aggregateId) : base(id, aggregateId) { }
+        protected Command(Guid aggregateId) : base(aggregateId) { }
+    }
+    
     public class Command : ICommand
     {
         protected Command(Guid id, Guid aggregateId, Guid processId, DateTime time)

@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Acceptance
     {
         public static ISqlNodeDbConfiguration Default { get; } = new AutoTestNodeDbConfiguration();
 
-        public AutoTestNodeDbConfiguration():base("Server=(local); Database = AutoTestWrite; Integrated Security = true; MultipleActiveResultSets = True")
+        public AutoTestNodeDbConfiguration():base("Server=localhost,1400; Database = AutoTestWrite; User = sa; Password = P@ssw0rd1; MultipleActiveResultSets = True")
         {
             
         }

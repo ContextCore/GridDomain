@@ -23,12 +23,11 @@ namespace GridDomain.EventSourcing
             return new JsonSerializerSettings
                    {
                        Formatting = Formatting.Indented,
-                      // PreserveReferencesHandling = PreserveReferencesHandling.,
-                       TypeNameHandling = TypeNameHandling.All,
+                       TypeNameHandling = TypeNameHandling.Objects,
                        TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                        CheckAdditionalContent = false,
                        ContractResolver = new DomainContractResolver(),
-                       ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+                       ConstructorHandling = ConstructorHandling.Default
                    };
         }
 
@@ -60,7 +59,7 @@ namespace GridDomain.EventSourcing
                 if (string.IsNullOrEmpty(jsonString))
                     return null;
 
-                var deserializeObject = JsonConvert.DeserializeObject(jsonString, settings ?? JsonSerializerSettings);
+                var deserializeObject = JsonConvert.DeserializeObject(jsonString, type, settings ?? JsonSerializerSettings);
                 if (deserializeObject == null)
                     throw new SerializationException("json string: " + jsonString);
 

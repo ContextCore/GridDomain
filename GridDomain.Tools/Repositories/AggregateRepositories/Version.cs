@@ -3,15 +3,15 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Tools.Repositories.AggregateRepositories
 {
-    public class AggregateVersion<T> where T : IAggregate
+    public class Version<T>
     {
-        public AggregateVersion(T aggregate, DateTime createdAt)
+        public Version(T payload, DateTime createdAt)
         {
-            Aggregate = aggregate;
+            Payload = payload;
             CreatedAt = createdAt;
         }
 
-        public T Aggregate { get; }
+        public T Payload { get; }
         public DateTime CreatedAt { get; }
     }
 }

@@ -50,20 +50,20 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             //Only_two_Snapshots_should_left()
             Assert.Equal(2, snapshots.Length);
             // Restored_aggregates_should_have_same_ids()
-            Assert.True(snapshots.All(s => s.Aggregate.Id == processId));
+            Assert.True(snapshots.All(s => s.Payload.Id == processId));
 
             // First_Snapshots_should_have_coding_state_from_first_event()
             Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee),
                 snapshots.First()
-                         .Aggregate.State.CurrentStateName);
+                         .Payload.State.CurrentStateName);
 
             //Last_Snapshots_should_have_coding_state_from_last_event()
             Assert.Equal(nameof(SoftwareProgrammingProcess.Sleeping),
                 snapshots.Last()
-                         .Aggregate.State.CurrentStateName);
+                         .Payload.State.CurrentStateName);
 
             //All_snapshots_should_not_have_uncommited_events()
-            Assert.Empty(snapshots.SelectMany(s => s.Aggregate.GetEvents()));
+            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
         }
     }
 }

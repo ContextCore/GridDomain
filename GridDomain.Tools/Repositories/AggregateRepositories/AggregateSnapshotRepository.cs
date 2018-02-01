@@ -17,7 +17,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
     {
         private readonly IConstructAggregates _aggregatesConstructor;
         private readonly DbContextOptions option;
-        private IConstructSnapshots _snapshotsConstructor;
+        private readonly IConstructSnapshots _snapshotsConstructor;
 
         public static AggregateSnapshotRepository New(string options)
         {
@@ -35,6 +35,12 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             return new AggregateSnapshotRepository(options, factory, factory);
         }
         
+        public static AggregateSnapshotRepository New<T>(string options, T factory) where T: class, IConstructAggregates,
+            IConstructSnapshots
+        {
+            return new AggregateSnapshotRepository(options, factory, factory);
+        }
+        
         public AggregateSnapshotRepository(DbContextOptions dbOptions, 
                                            IConstructAggregates aggregatesConstructor,
                                            IConstructSnapshots snapshotsConstructor)
@@ -47,26 +53,31 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
         public AggregateSnapshotRepository(string connString,
                                            IConstructAggregates aggregatesConstructor,
                                            IConstructSnapshots snapshotsConstructor
-                                           ) : this(new DbContextOptionsBuilder().UseSqlServer(connString).
-                                                                                                                            Options,
+                                           ) : this(new DbContextOptionsBuilder().UseSqlServer(connString).Options,
                                                                                               aggregatesConstructor,
                                                     snapshotsConstructor) { }
 
-        public async Task<AggregateVersion<T>[]> Load<T>(Guid id) where T : Aggregate
+        public async Task<Version<T>[]> Load<T>(Guid id) where T : class, IAggregate
         {
+            var snapshotType = _snapshotsConstructor.GetSnapshot(_aggregatesConstructor.Build<T>(Guid.Empty))
+                                                    .GetType();
+
             var serializer = new DomainSerializer();
-            using (var repo = new RawSnapshotsRepository(option))
+            
+            using (var snapshotItemsRepo = new RawSnapshotsRepository(option))
             {
-                return (await repo.Load(EntityActorName.New<T>(id).
+                return (await snapshotItemsRepo.Load(EntityActorName.New<T>(id).
                                                            Name)).Select(s =>
                                                                          {
-                                                                             var memento = (IMemento) serializer.FromBinary(s.Snapshot, typeof(IMemento));
+                                                                             var memento = (IMemento) serializer.FromBinary(s.Snapshot, snapshotType);
                                                                              var aggregate = (T) _aggregatesConstructor.Build(typeof(T), id, memento);
-                                                                             return new AggregateVersion<T>(aggregate, s.Timestamp);
+                                                                             return new Version<T>(aggregate, s.Timestamp);
                                                                          }).
                                                                   ToArray();
             }
         }
+        
+        
 
         public async Task Add<T>(T aggregate) where T : class, IAggregate
         {

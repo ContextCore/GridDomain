@@ -7,7 +7,7 @@ namespace GridDomain.Scheduling.Quartz.Configuration
     {
         private const string QuartzConnectionStringName = "Quartz";
 
-        public string ConnectionString  => "Server=(local); Database = Quartz; Integrated Security = true; MultipleActiveResultSets = True";
+        public string ConnectionString  => "Server=localhost,1400; Database = Quartz; User = sa; Password = P@ssw0rd1; MultipleActiveResultSets = True";
 
         public string StorageType => "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
 
@@ -16,14 +16,14 @@ namespace GridDomain.Scheduling.Quartz.Configuration
                 new NameValueCollection
                 {
                     ["quartz.jobStore.type"] = StorageType,
-                    ["quartz.jobStore.clustered"] = "true",
+                    ["quartz.jobStore.clustered"] = "false",
                     ["quartz.jobStore.dataSource"] = "default",
                     ["quartz.jobStore.tablePrefix"] = "QRTZ_",
                     ["quartz.jobStore.lockHandler.type"] =
                     "Quartz.Impl.AdoJobStore.UpdateLockRowSemaphore, Quartz",
                     ["quartz.dataSource.default.connectionString"] = ConnectionString,
-                    ["quartz.dataSource.default.provider"] = "SqlServer-20",
-                    ["quartz.scheduler.instanceId"] = "AUTO",
+                    ["quartz.dataSource.default.provider"] = "SqlServer-41",
+                    ["quartz.scheduler.instanceId"] = "ScheduledEvents",
                     ["quartz.serializer.type"] = "json"
                 };
 

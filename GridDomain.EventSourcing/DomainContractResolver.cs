@@ -28,6 +28,9 @@ namespace GridDomain.EventSourcing {
             {
                 if (property.PropertyName == nameof(Aggregate.HasUncommitedEvents))
                     property.ShouldSerialize = o => false;
+           
+               // if (property.PropertyName == nameof(Aggregate.Id))
+                 //   property.ShouldSerialize = o => false;
             }
             return property;
         }
