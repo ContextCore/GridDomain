@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
             : base(
                 new BalanceFixture(output, new PersistedQuartzConfig()).UseSqlPersistence()
-                                                               .InitFastRecycle()
+                                                               .InitFastRecycle(TimeSpan.FromMilliseconds(500),TimeSpan.FromMilliseconds(400))
                                                                .UseAdaper(new IncreaseBy100Adapter())) { }
 
         private class IncreaseBy100Adapter : ObjectAdapter<BalanceChangedEvent_V1, BalanceChangedEvent_V1>

@@ -19,6 +19,7 @@ namespace GridDomain.Node.Actors.Aggregates {
         public IActorRef PersistenceWaiter;
         public int MessagesToProject;
         public IActorRef Validator;
+        public bool InProgress => Command != null;
 
         public void Clear()
         {

@@ -28,7 +28,6 @@ namespace GridDomain.Scheduling.Akka
 
         public void Register(ContainerBuilder container)
         {
-            container.RegisterType<QuartzSchedulerFactory>();
 
             //hard initialization to get named instance of IScheduler
             //Quartz keeps static list of all schedulers so we need to be sure 
@@ -53,6 +52,8 @@ namespace GridDomain.Scheduling.Akka
 
             container.RegisterInstance<IRetrySettings>(_quartzConfig.RetryOptions);
             container.RegisterType<IRetryStrategy, ExponentialBackoffRetryStrategy>();
+            container.RegisterType<QuartzSchedulerFactory>();
+
         }
     }
 }

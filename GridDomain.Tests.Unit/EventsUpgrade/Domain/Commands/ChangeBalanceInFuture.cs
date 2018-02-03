@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands
 {
-    public class ChangeBalanceInFuture : Command
+    public class ChangeBalanceInFuture : Command<BalanceAggregatesCommandHandler>
     {
         public ChangeBalanceInFuture(int parameter, Guid aggregateId, DateTime raiseTime, bool useLegacyEvent)
             : base(aggregateId)

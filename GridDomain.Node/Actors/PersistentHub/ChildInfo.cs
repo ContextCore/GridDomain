@@ -9,12 +9,23 @@ namespace GridDomain.Node.Actors.PersistentHub
         public DateTime ExpiresAt;
         public DateTime LastTimeOfAccess;
         public bool Terminating;
-        public List<object> PendingMessages { get; } = new List<object>();
+        public List<MessageWithSender> PendingMessages { get; } = new List<MessageWithSender>();
         public ChildInfo(IActorRef actor)
         {
             Ref = actor;
         }
 
         public IActorRef Ref { get; }
+
+        public class MessageWithSender
+        {
+            public MessageWithSender(object message, IActorRef sender)
+            {
+                Message = message;
+                Sender = sender;
+            }
+            public object Message { get; }
+            public IActorRef Sender { get; }
+        }
     }
 }

@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Scheduling.Akka.Messages;
 using GridDomain.Scheduling.Quartz;
+using Serilog;
 
 namespace GridDomain.Scheduling.Akka
 {

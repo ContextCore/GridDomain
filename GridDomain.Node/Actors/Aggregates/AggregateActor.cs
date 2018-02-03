@@ -95,7 +95,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                 Monitor.Increment(nameof(CQRS.Command));
                                                 var cmd = (ICommand)m.Message;
                                                 var name = cmd.Id.ToString();
-
+                                                Log.Debug($"Received command {cmd.Id}");
                                                 var actorRef = Context.Child(name);
                                                 ExecutionContext.Validator = actorRef != ActorRefs.Nobody ? actorRef : Context.ActorOf<CommandStateActor>(name);
                                                 ExecutionContext.Command = cmd;
@@ -106,6 +106,14 @@ namespace GridDomain.Node.Actors.Aggregates
                                                 Behavior.Become(ValidatingCommandBehavior,nameof(ValidatingCommandBehavior));
                                                 
                                             }, m => m.Message is ICommand);
+        }
+
+        protected override bool CanShutdown(ref string description)
+        {
+            if (!ExecutionContext.InProgress) return true;
+            
+            description = $"Command {ExecutionContext.Command.Id} is in progress";
+            return false;
         }
 
         private void ProcessingCommandBehavior()

@@ -51,7 +51,8 @@ namespace GridDomain.Scheduling.Akka
             ScheduleKey key = message.Key;
             try
             {
-                var job = ((Func<IJobDetail>) (() => QuartzJob.Create(message.Key, message.Command, message.CommandMetadata, message.Options)))();
+                _logger.Debug($"Scheduling job {key} for {message.Options.RunAt}");
+                var job = QuartzJob.Create(message.Key, message.Command, message.CommandMetadata, message.Options);
                 var trigger =
                     TriggerBuilder.Create()
                                   .WithIdentity(job.Key.Name, job.Key.Group)

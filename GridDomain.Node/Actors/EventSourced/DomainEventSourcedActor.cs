@@ -59,12 +59,24 @@ namespace GridDomain.Node.Actors.EventSourced
                                        });
         }
 
+        protected virtual bool CanShutdown(ref string description)
+        {
+            return true;
+        }
         protected void DefaultBehavior()
         {
             Command<GracefullShutdownRequest>(req =>
                                               {
                                                   Log.Debug("Received shutdown request");
                                                   Monitor.IncrementMessagesReceived();
+                                                  var description = "";
+                                                  if (!CanShutdown(ref description))
+                                                  {
+                                                      Log.Debug($"Shutdown request declined, please resend request later \r\n Reason: {description}");
+                                                      Sender.Tell(GracefullShutdownRequestDecline.Instance);
+                                                      return;
+                                                  }
+                                                  
                                                   Behavior.Become(TerminatingBehavior, nameof(TerminatingBehavior));
                                                   Self.Tell(req);
                                               });
@@ -149,23 +161,7 @@ namespace GridDomain.Node.Actors.EventSourced
             Command<GracefullShutdownRequest>(s =>
                                               {
                                                   Log.Debug("Started gracefull shutdown process");
-                                                  var messageToProcess = Stash.ClearStash()
-                                                                              .Where(m => !(m.Message is GracefullShutdownRequest)) 
-                                                                              .ToArray();
-
-                                                  if (messageToProcess.Any())
-                                                  {
-                                                      Log.Warning("Received shutdown request but have unprocessed messages."
-                                                                  + "Shutdown will be postponed until all messages processing");
-
-                                                      Behavior.Become(AwaitingCommandBehavior,nameof(AwaitingCommandBehavior));
-                                                      foreach (var m in messageToProcess)
-                                                          Self.Tell(m.Message);
-
-                                                      Self.Tell(s);
-                                                      return;
-                                                  }
-
+                                              
                                                   if (_snapshotsPolicy.SnapshotsSaveInProgress)
                                                   {
                                                       Log.Debug("Snapshots save is in progress, will wait for it");

@@ -32,6 +32,16 @@ namespace GridDomain.Node.Actors.PersistentHub
             _monitor = new ActorMonitor(Context, $"Hub_{counterName}");
             _forwardEntry = new ProcessEntry(Self.Path.Name, "Forwarding to child", "All messages should be forwarded");
 
+            Receive<GracefullShutdownRequestDecline>(t =>
+                                {
+                                    if (!EntityActorName.TryParseId(Sender.Path.Name, out var id))
+                                        return;
+                                    if (Children.TryGetValue(id, out ChildInfo info))
+                                    {
+                                        info.Terminating = false;
+                                    }                                       
+                                });
+            
             Receive<Terminated>(t =>
                                 {
                                     if (!EntityActorName.TryParseId(t.ActorRef.Path.Name, out var id))
@@ -42,8 +52,8 @@ namespace GridDomain.Node.Actors.PersistentHub
                                             info.PendingMessages.Count, id);
 
                                         foreach (var msg in info.PendingMessages)
-                                            Self.Tell(msg);
-
+                                            Self.Tell(msg, msg.Sender);
+                                        
                                         info.PendingMessages.Clear();
                                     }
                                     Children.Remove(id);
@@ -88,7 +98,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             {
                 if (knownChild.Terminating)
                 {
-                    knownChild.PendingMessages.Add(message);
+                    knownChild.PendingMessages.Add(new ChildInfo.MessageWithSender(message,sender));
                     Log.Debug(
                         "Keeping message {@msg} for child {id}. Waiting for child to terminate. Message will be resent after.",
                         message,
@@ -149,7 +159,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             foreach (var childId in childsToTerminate)
                 ShutdownChild(childId);
 
-            Log.Debug("Removed {childsToTerminate} of {total} children",
+            Log.Debug("Removing {childsToTerminate} of {total} children",
                       childsToTerminate.Length,
                       Children.Count);
         }
@@ -159,8 +169,8 @@ namespace GridDomain.Node.Actors.PersistentHub
             if (!Children.TryGetValue(childId, out var childInfo))
                 return;
 
-            childInfo.Ref.Tell(GracefullShutdownRequest.Instance);
             childInfo.Terminating = true;
+            childInfo.Ref.Tell(GracefullShutdownRequest.Instance);
         }
 
         protected override bool AroundReceive(Receive receive, object message)
