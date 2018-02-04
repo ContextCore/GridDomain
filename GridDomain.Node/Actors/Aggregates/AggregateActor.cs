@@ -86,7 +86,7 @@ namespace GridDomain.Node.Actors.Aggregates
             CommandAny(StashMessage);
         }
 
-        protected override void AwaitingCommandBehavior()
+        protected void AwaitingCommandBehavior()
         {
             DefaultBehavior();
             

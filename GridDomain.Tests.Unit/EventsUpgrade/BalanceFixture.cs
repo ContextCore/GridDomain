@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             TimeSpan? maxInactiveTime = null)
         {
             this.BalanceDomainDonfiguration.DefaultAggregateDependencyFactory.RecycleConfigurationCreator = () =>
-                                                                                                                new PersistentChildsRecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
+                                                                                                                new RecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
                                                                                                                     maxInactiveTime ?? TimeSpan.FromMilliseconds(50));
             return this;
         }

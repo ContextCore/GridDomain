@@ -18,15 +18,15 @@ namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
 
         private IDomainConfiguration CreateDomainConfiguration()
         {
-            var balloonDependencyFactory = new BalloonDependencyFactory() {RecycleConfigurationCreator = () => new TestPersistentChildsRecycleConfiguration()};
+            var balloonDependencyFactory = new BalloonDependencyFactory() {RecycleConfigurationCreator = () => new TestRecycleConfiguration()};
             var processManagerDependenciesFactory = new SoftwareProgrammingProcessDependenciesFactory();
-            processManagerDependenciesFactory.StateDependencyFactory.RecycleConfigurationCreator = () => new TestPersistentChildsRecycleConfiguration();
+            processManagerDependenciesFactory.StateDependencyFactory.RecycleConfigurationCreator = () => new TestRecycleConfiguration();
 
             return new DomainConfiguration(b => b.RegisterAggregate(balloonDependencyFactory),
                                            b => b.RegisterProcessManager(processManagerDependenciesFactory));
         }
 
-        private class TestPersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
+        private class TestRecycleConfiguration : IRecycleConfiguration
         {
             public TimeSpan ChildClearPeriod => TimeSpan.FromSeconds(1);
             public TimeSpan ChildMaxInactiveTime => TimeSpan.FromSeconds(2);

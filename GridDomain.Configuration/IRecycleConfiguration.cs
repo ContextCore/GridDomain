@@ -2,7 +2,7 @@ using System;
 
 namespace GridDomain.Configuration
 {
-    public interface IPersistentChildsRecycleConfiguration
+    public interface IRecycleConfiguration
     {
         TimeSpan ChildClearPeriod { get; }
         TimeSpan ChildMaxInactiveTime { get; }

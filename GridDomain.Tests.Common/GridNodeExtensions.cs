@@ -141,8 +141,18 @@ namespace GridDomain.Tests.Common
             where TState : IProcessState
         {
             var hub = await node.LookupProcessHubActor<TProcess>(timeout);
-            var processActor = await node.LookupProcessActor<TProcess, TState>(id, timeout);
+            
+            IActorRef processActor; 
 
+            try
+            {
+                processActor = await node.LookupProcessActor<TProcess, TState>(id, timeout);
+            }
+            catch
+            {
+                return;
+            }
+            
             using (var inbox = Inbox.Create(node.System))
             {
                 inbox.Watch(processActor);

@@ -5,9 +5,9 @@ using GridDomain.Node.Actors.PersistentHub;
 
 namespace GridDomain.Tests.Common
 {
-    public class PersistentChildsRecycleConfiguration : IPersistentChildsRecycleConfiguration
+    public class RecycleConfiguration : IRecycleConfiguration
     {
-        public PersistentChildsRecycleConfiguration(TimeSpan childClearPeriod, TimeSpan childMaxInactiveTime)
+        public RecycleConfiguration(TimeSpan childClearPeriod, TimeSpan childMaxInactiveTime)
         {
             ChildClearPeriod = childClearPeriod;
             ChildMaxInactiveTime = childMaxInactiveTime;

@@ -10,6 +10,6 @@ namespace GridDomain.Configuration
         ISnapshotsPersistencePolicy CreatePersistencePolicy();
         IConstructAggregates CreateAggregateFactory();
         IConstructSnapshots  CreateSnapshotsFactory();
-        IPersistentChildsRecycleConfiguration CreateRecycleConfiguration();
+        IRecycleConfiguration CreateRecycleConfiguration();
     }
 }

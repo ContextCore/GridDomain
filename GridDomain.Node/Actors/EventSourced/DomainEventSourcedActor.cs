@@ -16,6 +16,14 @@ using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
+
+    public class ActivityWatchDog : ReceiveActor
+    {
+        public ActivityWatchDog()
+        {
+            
+        }
+    }
     public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : class, IAggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
@@ -72,12 +80,13 @@ namespace GridDomain.Node.Actors.EventSourced
                                                   var description = "";
                                                   if (!CanShutdown(ref description))
                                                   {
-                                                      Log.Debug($"Shutdown request declined, please resend request later \r\n Reason: {description}");
-                                                      Sender.Tell(GracefullShutdownRequestDecline.Instance);
+                                                      Log.Debug($"Shutdown request posponed. \r\n Reason: {description}");
+                                                      Stash.Stash();
                                                       return;
                                                   }
+                                                 
                                                   
-                                                  Behavior.Become(TerminatingBehavior, nameof(TerminatingBehavior));
+                                                  Behavior.Become(TerminateAfterSnapshotsBehavior, nameof(TerminateAfterSnapshotsBehavior));
                                                   Self.Tell(req);
                                               });
 
@@ -131,8 +140,8 @@ namespace GridDomain.Node.Actors.EventSourced
             foreach (var watcher in _persistenceWatchers)
                 watcher.Tell(msg);
         }
-        protected virtual void AwaitingCommandBehavior(){}
-        protected virtual void TerminatingBehavior()
+
+        private void TerminateAfterSnapshotsBehavior()
         {
             Command<DeleteSnapshotsSuccess>(s =>
                                             {
@@ -160,7 +169,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
             Command<GracefullShutdownRequest>(s =>
                                               {
-                                                  Log.Debug("Started gracefull shutdown process");
+                                                  Log.Debug("Starting gracefull shutdown process.");
                                               
                                                   if (_snapshotsPolicy.SnapshotsSaveInProgress)
                                                   {

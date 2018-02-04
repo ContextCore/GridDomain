@@ -10,7 +10,7 @@ namespace GridDomain.Node.Actors.Aggregates
 {
     public class AggregateHubActor<TAggregate> : PersistentHubActor where TAggregate : EventSourcing.Aggregate
     {
-        public AggregateHubActor(IPersistentChildsRecycleConfiguration conf) : base(conf, typeof(TAggregate).Name)
+        public AggregateHubActor(IRecycleConfiguration conf) : base(conf, typeof(TAggregate).Name)
         {
             ChildActorType = typeof(AggregateActor<TAggregate>);
         }

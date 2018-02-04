@@ -8,7 +8,7 @@ using GridDomain.ProcessManagers.State;
 namespace GridDomain.Node.Actors.Aggregates {
     public class ProcessStateHubActor<TState> : AggregateHubActor<ProcessStateAggregate<TState>> where TState : IProcessState
     {
-        public ProcessStateHubActor(IPersistentChildsRecycleConfiguration conf) : base(conf)
+        public ProcessStateHubActor(IRecycleConfiguration conf) : base(conf)
         {
             ChildActorType = typeof(ProcessStateActor<TState>);
             Receive<GetProcessState>(s =>

@@ -40,7 +40,7 @@ namespace GridDomain.Configuration {
         public Func<ISnapshotsPersistencePolicy> SnapshotPolicyCreator { protected get; set; }
         public Func<IConstructAggregates> AggregateFactoryCreator { protected get; set; }
         public Func<IConstructSnapshots> SnapshotsFactoryCreator { protected get; set; }
-        public Func<IPersistentChildsRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
+        public Func<IRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
 
         public DefaultAggregateDependencyFactory(Func<IAggregateCommandsHandler<TAggregate>> handler, 
                                                  Func<IMessageRouteMap> mapProducer = null)
@@ -50,7 +50,7 @@ namespace GridDomain.Configuration {
             SnapshotPolicyCreator = () => new NoSnapshotsPersistencePolicy();
             AggregateFactoryCreator = () => AggregateFactory.Default;
             SnapshotsFactoryCreator = () => AggregateFactory.Default;
-            RecycleConfigurationCreator = () => new DefaultPersistentChildsRecycleConfiguration();
+            RecycleConfigurationCreator = () => new DefaultRecycleConfiguration();
         }
 
        
@@ -75,7 +75,7 @@ namespace GridDomain.Configuration {
             return SnapshotsFactoryCreator();
         }
 
-        public virtual IPersistentChildsRecycleConfiguration CreateRecycleConfiguration()
+        public virtual IRecycleConfiguration CreateRecycleConfiguration()
         {
             return RecycleConfigurationCreator();
         }

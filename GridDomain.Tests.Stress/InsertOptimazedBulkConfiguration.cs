@@ -5,7 +5,7 @@ using GridDomain.Node.Actors.PersistentHub;
 
 namespace GridDomain.Tests.Stress
 {
-    public class InsertOptimazedBulkConfiguration : IPersistentChildsRecycleConfiguration
+    public class InsertOptimazedBulkConfiguration : IRecycleConfiguration
     {
         public TimeSpan ChildClearPeriod => TimeSpan.FromSeconds(30);
         public TimeSpan ChildMaxInactiveTime => TimeSpan.FromSeconds(30);

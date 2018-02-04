@@ -17,7 +17,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
     {
         private readonly string _processName;
 
-        public ProcessHubActor(IPersistentChildsRecycleConfiguration recycleConf, string processName): base(recycleConf, processName)
+        public ProcessHubActor(IRecycleConfiguration recycleConf, string processName): base(recycleConf, processName)
         {
             _processName = processName;
             // var redirectEntry = new ProcessEntry(Self.Path.Name, "Forwarding to new child", "New process was created");

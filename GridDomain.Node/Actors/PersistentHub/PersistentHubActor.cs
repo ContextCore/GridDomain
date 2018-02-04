@@ -22,11 +22,11 @@ namespace GridDomain.Node.Actors.PersistentHub
     {
         private readonly ProcessEntry _forwardEntry;
         private readonly ActorMonitor _monitor;
-        private readonly IPersistentChildsRecycleConfiguration _recycleConfiguration;
+        private readonly IRecycleConfiguration _recycleConfiguration;
         internal readonly IDictionary<Guid, ChildInfo> Children = new Dictionary<Guid, ChildInfo>();
         private readonly ILoggingAdapter Log = Context.GetSeriLogger();
 
-        protected PersistentHubActor(IPersistentChildsRecycleConfiguration recycleConfiguration, string counterName)
+        protected PersistentHubActor(IRecycleConfiguration recycleConfiguration, string counterName)
         {
             _recycleConfiguration = recycleConfiguration;
             _monitor = new ActorMonitor(Context, $"Hub_{counterName}");

@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             Sys.AddDependencyResolver(new AutoFacDependencyResolver(container.Build(), Sys));
             Sys.AttachSerilogLogging(logger);
             //for process state retrival
-            var processStateActor = Sys.ActorOf(Props.Create(() => new ProcessStateHubActor<TestState>(new DefaultPersistentChildsRecycleConfiguration())), typeof(TestState).BeautyName() + "_Hub");
+            var processStateActor = Sys.ActorOf(Props.Create(() => new ProcessStateHubActor<TestState>(new DefaultRecycleConfiguration())), typeof(TestState).BeautyName() + "_Hub");
             var name = EntityActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
             _processActor = ActorOfAsTestActorRef(() => new ProcessActor<TestState>(new AsyncLongRunningProcess(), creator),
                                                   name);
