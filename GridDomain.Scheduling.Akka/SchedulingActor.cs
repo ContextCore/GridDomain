@@ -61,9 +61,9 @@ namespace GridDomain.Scheduling.Akka
                                   .Build();
 
                 var fireTime = await _scheduler.ScheduleJob(job, trigger);
-                var commandExecutionScheduled = new CommandExecutionScheduled(message.Command.Id, fireTime.UtcDateTime);
-                Sender.Tell(commandExecutionScheduled);
-                _publisher.Publish(commandExecutionScheduled,message.CommandMetadata);
+                var scheduleConfirmation = new CommandExecutionScheduled(message.Command.Id, fireTime.UtcDateTime);
+                Sender.Tell(scheduleConfirmation);
+                _publisher.Publish(scheduleConfirmation,message.CommandMetadata);
             }
             catch (Exception e)
             {

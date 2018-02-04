@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
             var res = await Node.Prepare(cmd)
                                 .Expect<BalanceChangedEvent_V1>()
-                                .Execute(TimeSpan.FromSeconds(10));
+                                .Execute(TimeSpan.FromSeconds(1000));
 
             //event should be modified by json object adapter, changing its Amount
             Assert.Equal(101, res.Message<BalanceChangedEvent_V1>()

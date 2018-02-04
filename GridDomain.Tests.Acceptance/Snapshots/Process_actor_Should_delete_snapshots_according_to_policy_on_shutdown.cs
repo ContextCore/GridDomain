@@ -45,6 +45,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 
+            await Task.Delay(1000); // for persistence of snapshots after actor termination
+            
             var snapshots = await  AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString)
                                                               .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
             //Only_two_Snapshots_should_left()

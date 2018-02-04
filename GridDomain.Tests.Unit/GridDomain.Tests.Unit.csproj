@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj" />
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
+    <ProjectReference Include="..\GridDomain.Scheduling.Akka\GridDomain.Scheduling.Akka.csproj" />
     <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj" />
     <ProjectReference Include="..\GridDomain.Tools\GridDomain.Tools.csproj" />
   </ItemGroup>

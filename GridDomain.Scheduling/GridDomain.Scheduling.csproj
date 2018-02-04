@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Framework for distributed business applications development using DDD\ES architecture scaled by CQRS and actor model.</Description>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>
@@ -17,18 +16,15 @@
     <FileVersion>1.0.0.0</FileVersion>
     <Version>1.0.0</Version>
   </PropertyGroup>
-  
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
-    <PackageReference Include="Quartz" Version="3.0.0-alpha3" />
-    <PackageReference Include="Quartz.Serialization.Json" Version="3.0.0-alpha3" />
+    <PackageReference Include="Quartz" Version="3.0.2" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.0.2" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.5.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj" />
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
   </ItemGroup>
-
 </Project>
