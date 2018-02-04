@@ -6,7 +6,6 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.ProcessManagers.State;
-using GridDomain.Tests.Acceptance.EventsUpgrade;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.ProcessManagers;
@@ -23,12 +22,10 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Process_Should_save_snapshots_each_n_messages_according_to_policy : NodeTestKit
     {
         public Process_Should_save_snapshots_each_n_messages_according_to_policy(ITestOutputHelper output)
-            : base(new SoftwareProgrammingProcessManagerFixture(output){LogLevel = LogEventLevel.Debug}
-                                                              .UseSqlPersistence()
-                                                              .InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
-                                                              .IgnorePipeCommands())
-        {
-        }
+            : base(new SoftwareProgrammingProcessManagerFixture(output) {LogLevel = LogEventLevel.Debug}
+                       .UseSqlPersistence()
+                       .InitSnapshots(5, TimeSpan.FromMilliseconds(1), 2)
+                       .IgnorePipeCommands()) { }
 
         [Fact]
         public async Task Given_default_policy()
@@ -62,30 +59,40 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Create()
                       .SendToProcessManagers(continueEventB);
 
-            await Node.KillProcessManager<SoftwareProgrammingProcess,SoftwareProgrammingState>(continueEventB.ProcessId);
-            
-            await Task.Delay(1000);
-            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                                  AggregateFactory.Default,
-                                                                  AggregateFactory.Default).Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
+            await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(continueEventB.ProcessId);
 
-            //saving on each message, maximum on each command
-            //Snapshots_should_be_saved_two_times
-            //4 events in total, two saves of snapshots due to policy saves on each two events
-            Assert.Equal(2, snapshots.Length);
-            //First_snapshot_should_have_state_from_first_event
-            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee),
-                         snapshots.First()
-                                  .Payload.State.CurrentStateName);
-            //Last_snapshot_should_have_parameters_from_last_command()
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
-                         snapshots.Last()
-                                  .Payload.State.CurrentStateName);
+            Version<ProcessStateAggregate<SoftwareProgrammingState>>[] snapshots = null;
 
-            //Restored_process_state_should_have_correct_ids
-            Assert.True(snapshots.All(s => s.Payload.Id == processId));
-            //All_snapshots_should_not_have_uncommited_events()
-            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+
+            AwaitAssert(() =>
+                        {
+                            snapshots = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                                        AggregateFactory.Default,
+                                                                        AggregateFactory.Default)
+                                .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId)
+                                .Result;
+
+                            //saving on each message, maximum on each command
+                            //Snapshots_should_be_saved_two_times
+                            //4 events in total, two saves of snapshots due to policy saves on each two events
+                            Assert.Equal(2, snapshots.Length);
+
+
+                            //First_snapshot_should_have_state_from_first_event
+                            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee),
+                                         snapshots.First()
+                                                  .Payload.State.CurrentStateName);
+                            //Last_snapshot_should_have_parameters_from_last_command()
+                            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
+                                         snapshots.Last()
+                                                  .Payload.State.CurrentStateName);
+                            //Restored_process_state_should_have_correct_ids
+                            Assert.True(snapshots.All(s => s.Payload.Id == processId));
+                            //All_snapshots_should_not_have_uncommited_events()
+                            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+                        },
+                        TimeSpan.FromSeconds(10),
+                        TimeSpan.FromSeconds(1));
         }
     }
 }

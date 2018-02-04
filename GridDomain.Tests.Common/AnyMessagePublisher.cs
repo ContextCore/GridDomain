@@ -20,28 +20,28 @@ namespace GridDomain.Tests.Common
             _commandPipe = commandPipe;
         }
 
-        public async Task<IWaitResult> SendToProcessManagers(DomainEvent message, Guid processId, IMessageMetadata metadata = null)
+        public Task<IWaitResult> SendToProcessManagers(DomainEvent message, Guid processId, IMessageMetadata metadata = null)
         {
-            return await SendToProcessManagers(message.CloneForProcess(processId), metadata);
+            return SendToProcessManagers(message.CloneForProcess(processId), metadata);
         }
 
-        public async Task<IWaitResult> SendToProcessManagers(DomainEvent message, IMessageMetadata metadata = null)
+        public Task<IWaitResult> SendToProcessManagers(DomainEvent message, IMessageMetadata metadata = null)
         {
             var task = _waiter.Start();
 
             _commandPipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<DomainEvent>(message,
                                                                                     metadata ?? MessageMetadata.Empty));
 
-            return await task;
+            return task;
         }
 
-        public async Task<IWaitResult> SendToProcessManagers(IFault message, IMessageMetadata metadata = null)
+        public Task<IWaitResult> SendToProcessManagers(IFault message, IMessageMetadata metadata = null)
         {
             var task = _waiter.Start();
 
             _commandPipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<IFault>(message, metadata ?? MessageMetadata.Empty));
 
-            return await task;
+            return task;
         }
     }
 }

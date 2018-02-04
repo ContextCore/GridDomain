@@ -49,6 +49,24 @@ namespace GridDomain.Node.Actors.ProcessManagers
         public IStash Stash { get; set; }
 
         private Guid Id { get; }
+
+        class ProcessExecutionContext
+        {
+            public TState PendingState;
+            public IMessageMetadataEnvelop ProcessingMessage;
+            public IActorRef ProcessingMessageSender;
+
+            public bool IsFinished => PendingState != null;
+            public bool IsInitializing { get; set; }
+            public void Clear()
+            {
+                PendingState = null;
+                ProcessingMessage = null;
+                ProcessingMessageSender = null;
+            }
+        }
+
+        private ProcessExecutionContext ExecutionContext { get; } = new ProcessExecutionContext();
         public ProcessActor(IProcess<TState> process, IProcessStateFactory<TState> processStateFactory)
 
         {
@@ -80,6 +98,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         private void InitializingBehavior()
         {
+            ExecutionContext.IsInitializing = true;
+            
             _stateActorSelection.ResolveOne(TimeSpan.FromSeconds(10))
                                 .PipeTo(Self);
 
@@ -92,6 +112,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             Receive<ProcesStateMessage<TState>>(ss =>
                                                 {
                                                     State = ss.State;
+                                                    ExecutionContext.IsInitializing = false;
                                                     Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
                                                 });
             StashingMessagesToProcessBehavior("process is initializing");
@@ -146,22 +167,21 @@ namespace GridDomain.Node.Actors.ProcessManagers
         {
             Receive<GracefullShutdownRequest>(r =>
                                               {
-                                                  var remangingMessages = Stash.ClearStash()
-                                                                               .ToArray();
-                                                 
-                                                  if(!remangingMessages.Any())
+                                                  if (ExecutionContext.IsInitializing)
                                                   {
-                                                      _log.Debug("Terminating process");
-                                                      Context.Stop(Self);
+                                                      Sender.Tell(GracefullShutdownRequestDecline.Instance);
+                                                      _log.Debug("Process gracefull shutdown request declined. Waiting initializtion to finish");
+                                                      return;
                                                   }
-                                                  else
+                                                  if (!ExecutionContext.IsFinished)
                                                   {
-                                                      _log.Debug("Process termination is requested, but got {count} messages to process, will process them first and terminate after", remangingMessages.Length);
-                                                      Stash.Stash();
-
-                                                      foreach(var message in remangingMessages)
-                                                          Self.Tell(message);
+                                                      Sender.Tell(GracefullShutdownRequestDecline.Instance);
+                                                      _log.Debug("Process gracefull shutdown request declined. Waiting process execution to finish");
+                                                      return;
                                                   }
+                                                  
+                                                   _log.Debug("Terminating process due to gracefull shutdown request");
+                                                   Context.Stop(Self);
                                               });
 
 
@@ -170,49 +190,64 @@ namespace GridDomain.Node.Actors.ProcessManagers
             Receive<NotifyOnPersistenceEvents>(c => ((ICanTell)_stateAggregateActor ?? _stateActorSelection).Tell(c, Sender));
         }
 
+        //private TState pendingState
+        //{
+        //    get => ExecutionContext.PendingState;
+        //    set => ExecutionContext.PendingState = value;
+        //}
+        //private IMessageMetadataEnvelop processingMessage
+        //{
+        //    get => ExecutionContext.ProcessingMessage;
+        //    set => ExecutionContext.ProcessingMessage = value;
+        //}
+        //private IActorRef processingMessageSender
+        //{
+        //    get => ExecutionContext.ProcessingMessageSender;
+        //    set => ExecutionContext.ProcessingMessageSender = value;
+        //}
+      
         private void CreatingProcessBehavior()
         {
-            TState pendingState = null;
-            IMessageMetadataEnvelop processingMessage = null;
-            IActorRef processingMessageSender = null;
+//            TState pendingState = null;
+//            IMessageMetadataEnvelop processingMessage = null;
+//            IActorRef processingMessageSender = null;
             Receive<CreateNewProcess>(c =>
                                       {
                                           _log.Debug("Creating new process instance from {@message}", c);
-                                          processingMessage = c.Message;
-                                          processingMessageSender = Sender;
-                                          pendingState = _processStateFactory.Create(processingMessage.Message);
-                                          if (pendingState == null)
+                                          ExecutionContext.ProcessingMessage = c.Message;
+                                          ExecutionContext.ProcessingMessageSender = Sender;
+                                          ExecutionContext.PendingState = _processStateFactory.Create(ExecutionContext.ProcessingMessage.Message);
+                                          if (ExecutionContext.PendingState == null)
                                               throw new ProcessStateNullException();
-                                          var cmd = new CreateNewStateCommand<TState>(pendingState.Id, pendingState);
+                                          var cmd = new CreateNewStateCommand<TState>(ExecutionContext.PendingState.Id, ExecutionContext.PendingState);
                                           //will reply with CommandExecuted
-                                          _stateAggregateActor.Tell(new MessageMetadataEnvelop<ICommand>(cmd, processingMessage.Metadata));
+                                          _stateAggregateActor.Tell(new MessageMetadataEnvelop<ICommand>(cmd, ExecutionContext.ProcessingMessage.Metadata));
                                           Behavior.Become(AwaitingCreationConfirmationBehavior,nameof(AwaitingCreationConfirmationBehavior));
                                       });
 
             void AwaitingCreationConfirmationBehavior()
             {
-                Receive<Status.Failure>(f => FinishWithError(processingMessage, processingMessageSender, f.Cause));
+                Receive<Status.Failure>(f => FinishWithError(ExecutionContext.ProcessingMessage, ExecutionContext.ProcessingMessageSender, f.Cause));
 
                 //from state aggregate actor after persist
                 Receive<CommandExecuted>(c =>
                                          {
-                                             _log.Debug("Process instance created by message {@processResult}", processingMessage);
+                                             _log.Debug("Process instance created by message {@processResult}", ExecutionContext.ProcessingMessage);
 
-                                             if(Id != pendingState.Id)
+                                             var pendingStateId = ExecutionContext.PendingState.Id;
+                                             if(Id != pendingStateId)
                                              {
-                                                 _log.Debug("Redirecting message to newly created process state instance, {id}", pendingState.Id);
-                                                 var redirect = new MessageMetadataEnvelop(new ProcessRedirect(pendingState.Id, processingMessage), processingMessage.Metadata);
+                                                 _log.Debug("Redirecting message to newly created process state instance, {id}", pendingStateId);
+                                                 var redirect = new MessageMetadataEnvelop(new ProcessRedirect(pendingStateId, ExecutionContext.ProcessingMessage), ExecutionContext.ProcessingMessage.Metadata);
                                                  //requesting redirect from parent - persistence hub 
-                                                 Context.Parent.Tell(redirect, processingMessageSender);
+                                                 Context.Parent.Tell(redirect, ExecutionContext.ProcessingMessageSender);
                                                  Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
                                                  return;
                                              }
-                                             State = pendingState;
-                                             Self.Tell(processingMessage, processingMessageSender);
+                                             State = ExecutionContext.PendingState;
+                                             Self.Tell(ExecutionContext.ProcessingMessage, ExecutionContext.ProcessingMessageSender);
                                              Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
-                                             pendingState = null;
-                                             processingMessage = null;
-                                             processingMessageSender = null;
+                                             ExecutionContext.Clear();
                                          });
                 StashingMessagesToProcessBehavior("process is waiting for process instance creation");
             }
