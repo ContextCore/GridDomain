@@ -5,9 +5,8 @@ using GridDomain.Common;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.PersistentHub;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
+namespace GridDomain.Tests.Unit.AggregateLifetime
 {
     public abstract class PersistentHubChildrenLifetimeTest : NodeTestKit
     {

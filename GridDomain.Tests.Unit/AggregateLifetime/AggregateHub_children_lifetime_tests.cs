@@ -8,7 +8,7 @@ using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
+namespace GridDomain.Tests.Unit.AggregateLifetime
 {
     public class AggregateHub_children_lifetime_tests : PersistentHubChildrenLifetimeTest
     {

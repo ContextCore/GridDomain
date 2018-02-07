@@ -17,18 +17,24 @@ namespace GridDomain.Node.Actors.RecycleMonitor
             var log = Context.GetLogger();
             var schedule = ScheduleCheck(recycleConfiguration.ChildClearPeriod);
             var isWaitingForShutdown = false;
-            
+            lastActivityTime = BusinessDateTime.UtcNow;;
+
             Receive<Activity>(a =>
                               {
-                                  lastActivityTime = BusinessDateTime.UtcNow;
+                                  var now = BusinessDateTime.UtcNow;
+                                  var inactiveTime = now - lastActivityTime;
+                                  lastActivityTime = now;
+                                  log.Debug($"Received activity after {inactiveTime}");
                                   if (!isWaitingForShutdown) return;
-                                  
+                                  log.Debug($"Rescheduling schecks after receiving activity after shutdown request");
+
                                   isWaitingForShutdown = false;
                                   schedule = ScheduleCheck(recycleConfiguration.ChildClearPeriod);
                               }, a => Sender.Path == watched.Path);
             Receive<Check>(c =>
                            {                                                                           
                                var inactivityDuration = BusinessDateTime.UtcNow - lastActivityTime;
+                               log.Debug($"inactivity duration: {inactivityDuration}");
                                if (inactivityDuration > recycleConfiguration.ChildMaxInactiveTime)
                                {
                                    log.Debug($"Sending graceful shutdown request to {watched} due to inactivity for {inactivityDuration} with max allowed {recycleConfiguration.ChildMaxInactiveTime}");

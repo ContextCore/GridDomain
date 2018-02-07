@@ -4,7 +4,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Configuration;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
+namespace GridDomain.Tests.Unit.AggregateLifetime
 {
     public class PersistentHubFixture : NodeTestFixture
     {

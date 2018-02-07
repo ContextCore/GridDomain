@@ -8,7 +8,7 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.Aggregate_actor_lifetime
+namespace GridDomain.Tests.Unit.AggregateLifetime
 {
     public class ProcessHub_children_lifetime_tests : PersistentHubChildrenLifetimeTest
     {
