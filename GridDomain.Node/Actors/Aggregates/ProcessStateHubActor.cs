@@ -13,7 +13,7 @@ namespace GridDomain.Node.Actors.Aggregates {
             ChildActorType = typeof(ProcessStateActor<TState>);
             Receive<GetProcessState>(s =>
                                      {
-                                         SendToChild(s, s.Id, GetChildActorName(s.Id), Sender);
+                                         SendToChild(s, GetChildActorName(s.Id), Sender);
                                      });
         }
         protected override Type ChildActorType { get; }

@@ -30,7 +30,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             //                           });
         }
 
-        protected override string GetChildActorName(Guid childId)
+        internal override string GetChildActorName(Guid childId)
         {
             return new EntityActorName(_processName,childId).ToString();
         }
