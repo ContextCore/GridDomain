@@ -25,7 +25,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
         {
         }
 
-        protected void AwaitingCommandBehavior()
+        protected override void AwaitingCommandBehavior()
         {
             Command<GetProcessState>(c => Sender.Tell(new ProcesStateMessage<TState>(State.State)));
             base.AwaitingCommandBehavior();

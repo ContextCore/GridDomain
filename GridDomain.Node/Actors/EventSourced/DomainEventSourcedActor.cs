@@ -17,13 +17,7 @@ using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 namespace GridDomain.Node.Actors.EventSourced
 {
 
-    public class ActivityWatchDog : ReceiveActor
-    {
-        public ActivityWatchDog()
-        {
-            
-        }
-    }
+
     public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : class, IAggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
@@ -69,7 +63,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected virtual bool CanShutdown(ref string description)
         {
-            return true;
+            return !_snapshotsPolicy.SnapshotsSaveInProgress;
         }
         protected void DefaultBehavior()
         {
@@ -80,30 +74,30 @@ namespace GridDomain.Node.Actors.EventSourced
                                                   var description = "";
                                                   if (!CanShutdown(ref description))
                                                   {
-                                                      Log.Debug($"Shutdown request posponed. \r\n Reason: {description}");
-                                                      Stash.Stash();
+                                                      Log.Debug("Shutdown request declined. \r\n Reason: {description}", description);
                                                       return;
                                                   }
-                                                 
+                                              
+                                                  if (_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
+                                                  {
+                                                      var criteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
+                                                      Log.Debug("Shutdown request declined. \r\n Reason: snapshots delete, {criteria}", criteria);
+                                                      DeleteSnapshots(criteria);
+                                                      return;
+                                                  }
                                                   
-                                                  Behavior.Become(TerminateAfterSnapshotsBehavior, nameof(TerminateAfterSnapshotsBehavior));
-                                                  Self.Tell(req);
+                                                  StopNow();
                                               });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
-
             Command<NotifyOnPersistenceEvents>(c => SubscribePersistentObserver(c));
-
+            Command<DeleteSnapshotsSuccess>(s => NotifyPersistenceWatchers(s));
+            Command<DeleteSnapshotsFailure>(s => NotifyPersistenceWatchers(s));
             Command<SaveSnapshotSuccess>(s =>
                                          {
+                                             NotifyPersistenceWatchers(s);
                                              CountSnapshotSaved(s);
                                          });
-
-            Command<DeleteSnapshotSuccess>(s =>
-                                           {
-                                               Log.Debug("snapshot deleted");
-                                               NotifyPersistenceWatchers(s);
-                                           });
         }
 
         protected void StashMessage(object message)
@@ -139,55 +133,6 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             foreach (var watcher in _persistenceWatchers)
                 watcher.Tell(msg);
-        }
-
-        private void TerminateAfterSnapshotsBehavior()
-        {
-            Command<DeleteSnapshotsSuccess>(s =>
-                                            {
-                                                Log.Debug("snapshots deleted, {criteria}", s.Criteria);
-                                                NotifyPersistenceWatchers(s);
-                                                StopNow();
-                                            });
-            Command<DeleteSnapshotsFailure>(s =>
-                                            {
-                                                Log.Debug("snapshots failed to delete, {criteria}", s.Criteria);
-                                                NotifyPersistenceWatchers(s);
-                                                StopNow();
-                                            });
-            //for cases when actor is ask to termite and snapshot save is in progress
-            Command<SaveSnapshotSuccess>(s =>
-                                         {
-                                             Log.Debug("snapshot saved during termination");
-                                             CountSnapshotSaved(s);
-
-                                             if (_snapshotsPolicy.SnapshotsSaveInProgress) return;
-                                             
-                                             Log.Debug("All snapshots blocking terminations were saved, continue work");
-                                             Stash.UnstashAll();
-                                         });
-
-            Command<GracefullShutdownRequest>(s =>
-                                              {
-                                                  Log.Debug("Starting gracefull shutdown process.");
-                                              
-                                                  if (_snapshotsPolicy.SnapshotsSaveInProgress)
-                                                  {
-                                                      Log.Debug("Snapshots save is in progress, will wait for it");
-                                                      Stash.Stash();
-                                                      return;
-                                                  }
-
-                                                  if (_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
-                                                  {
-                                                      var snapshotSelectionCriteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
-                                                      Log.Debug("started snapshots delete, {criteria}", snapshotSelectionCriteria);
-                                                      DeleteSnapshots(snapshotSelectionCriteria);
-                                                      return;
-                                                  }
-
-                                                  StopNow();
-                                              });
         }
 
         private void CountSnapshotSaved(SaveSnapshotSuccess s)

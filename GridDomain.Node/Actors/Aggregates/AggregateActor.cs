@@ -86,7 +86,7 @@ namespace GridDomain.Node.Actors.Aggregates
             CommandAny(StashMessage);
         }
 
-        protected void AwaitingCommandBehavior()
+        protected virtual void AwaitingCommandBehavior()
         {
             DefaultBehavior();
             
@@ -110,7 +110,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
         protected override bool CanShutdown(ref string description)
         {
-            if (!ExecutionContext.InProgress) return true;
+            if (!ExecutionContext.InProgress) return base.CanShutdown(ref description);
             
             description = $"Command {ExecutionContext.Command.Id} is in progress";
             return false;
