@@ -10,9 +10,5 @@ namespace GridDomain.Configuration
         //called on aggregte restore to set up initinal sequence numbers
         void MarkSnapshotApplied(long sequenceNr);
         void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime = null);
-
-        //called on aggregte snapshot save start
-        void MarkSnapshotSaving(DateTime? now = null);
-        bool SnapshotsSaveInProgress { get; }
     }
 }

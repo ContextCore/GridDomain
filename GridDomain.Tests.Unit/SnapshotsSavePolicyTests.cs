@@ -14,11 +14,11 @@ namespace GridDomain.Tests.Unit
     public class SnapshotsSavePolicyTests
     {
         [Fact]
-        public async Task Given_policy_with_frequency_limitations_When_saved_to_frequently_Then_only_should_save_is_true_after_time_passed()
+        public async Task Given_policy_with_frequency_limitations_When_saved_too_frequently_Then_should_save_after_time_passed()
         {
             var policy = new SnapshotsPersistencePolicy(1,10,TimeSpan.FromSeconds(1));
             Assert.True(policy.ShouldSave(1));
-            policy.MarkSnapshotSaving();
+            policy.MarkSnapshotSaved(1);
             Assert.False(policy.ShouldSave(2));
             Assert.False(policy.ShouldSave(1));
             await Task.Delay(policy.MaxSaveFrequency);
@@ -29,11 +29,10 @@ namespace GridDomain.Tests.Unit
         public void Given_policy_with_keep_When_saved_many_Then_only_keep_amount_is_left()
         {
             var policy = new SnapshotsPersistencePolicy(1, 2);
-            SnapshotSelectionCriteria deleteCriteria;
 
             CheckSnapshotSaved(policy, 1);
             //should not delete as keep limit 2 was not reached
-            Assert.False(policy.ShouldDelete(out deleteCriteria));
+            Assert.False(policy.ShouldDelete(out var deleteCriteria));
 
             CheckSnapshotSaved(policy, 2);
             //should not delete as keep limit 2 was not exceeded
@@ -64,8 +63,6 @@ namespace GridDomain.Tests.Unit
             var confirmationSequence = new[] {1, 2, 3, 4, 5};
             confirmationSequence.Shuffle();
 
-            confirmationSequence.ForEach(s => 
-                            policy.MarkSnapshotSaving());
 
             confirmationSequence.ForEach(s =>
                                              policy.MarkSnapshotSaved(s));
@@ -78,7 +75,6 @@ namespace GridDomain.Tests.Unit
         private static void CheckSnapshotSaved(SnapshotsPersistencePolicy policy, int snapshotsSequenceNumber)
         {
             Assert.True(policy.ShouldSave(snapshotsSequenceNumber));
-            policy.MarkSnapshotSaving();
             policy.MarkSnapshotSaved(snapshotsSequenceNumber);
         }
     }

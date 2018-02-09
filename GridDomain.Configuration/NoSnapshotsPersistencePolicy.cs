@@ -13,16 +13,10 @@ namespace GridDomain.Configuration
         public void MarkSnapshotApplied(long sequenceNr) {}
 
         public void MarkSnapshotSaved(long snapshotSequenceNumber, DateTime? saveTime = null) {}
-        public void MarkSnapshotSaving(DateTime? now)
-        {
-            
-        }
 
         public bool ShouldSave(long snapshotSequenceNr, DateTime? now = null)
         {
             return false;
         }
-
-        public bool SnapshotsSaveInProgress { get;}
     }
 }

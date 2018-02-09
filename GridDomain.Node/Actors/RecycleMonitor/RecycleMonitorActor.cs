@@ -41,8 +41,7 @@ namespace GridDomain.Node.Actors.RecycleMonitor
                                    watched.Tell(GracefullShutdownRequest.Instance);
                                    isWaitingForShutdown = true;
                                }
-                               else 
-                                   schedule = ScheduleCheck(recycleConfiguration.ChildClearPeriod);
+                               schedule = ScheduleCheck(recycleConfiguration.ChildClearPeriod);
                            });
             Receive<Terminated>(t =>
                                 {

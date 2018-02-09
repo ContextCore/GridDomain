@@ -58,7 +58,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
         [Fact]
         public void Given_monitor_sent_shutdown_request_When_suspect_is_active_Then_new_shutdown_request_is_scheduled()
         {
-            var recycleConfiguration = new RecycleConfiguration(TimeSpan.FromMilliseconds(20),TimeSpan.FromMilliseconds(60));
+            var recycleConfiguration = new RecycleConfiguration(TimeSpan.FromMilliseconds(200),TimeSpan.FromMilliseconds(600));
 
             var watched = CreateTestProbe();
             
@@ -68,19 +68,19 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
             watched.ExpectMsg<GracefullShutdownRequest>();
             
             watched.Send(monitor,RecycleMonitorActor.Activity.Instance);
-            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(50));
+            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(400));
             
             watched.Send(monitor,RecycleMonitorActor.Activity.Instance);
-            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(50));
+            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(400));
 
             watched.Send(monitor,RecycleMonitorActor.Activity.Instance);
-            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(50));
+            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(400));
             
             watched.Send(monitor,RecycleMonitorActor.Activity.Instance);
-            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(50));
+            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(400));
             
             watched.Send(monitor,RecycleMonitorActor.Activity.Instance);
-            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(50));
+            watched.ExpectNoMsg(TimeSpan.FromMilliseconds(400));
 
             watched.ExpectMsg<GracefullShutdownRequest>();
             Sys.Stop(watched);

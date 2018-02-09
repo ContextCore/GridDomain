@@ -14,7 +14,7 @@ namespace GridDomain.Node.Actors.EventSourced
         private readonly int _saveOnEach;
         private long _lastSavedSnapshot;
         private long _lastSnapshotAppliedNumber;
-        private DateTime? _lastSaveStartedAt;
+        private DateTime? _lastSaveTime;
 
         public SnapshotsPersistencePolicy(int saveOnEach = 1,
                                           int eventsToKeep = 10,
@@ -24,30 +24,25 @@ namespace GridDomain.Node.Actors.EventSourced
             MaxSaveFrequency = maxSaveFrequency ?? TimeSpan.MinValue;
             _saveOnEach = saveOnEach;
             _eventsToKeep = eventsToKeep;
-            _lastSaveStartedAt = savedAt;
+            _lastSaveTime = savedAt;
         }
 
-        public void MarkSnapshotSaving(DateTime? now=null)
-        {
-            _snapshotsSaveInProgressCount++;
-            _lastSaveStartedAt = now ?? BusinessDateTime.UtcNow;
-        }
+       
 
         public bool ShouldSave(long snapshotSequenceNr, DateTime? now = null)
         {
             var canSaveByFrequencyLimitation = 
                 MaxSaveFrequency == TimeSpan.MinValue || 
-                _lastSaveStartedAt == null ||
-                (now ?? BusinessDateTime.UtcNow) - (_lastSaveStartedAt ?? BusinessDateTime.UtcNow) >= MaxSaveFrequency;
+                _lastSaveTime == null ||
+                (now ?? BusinessDateTime.Now) - (_lastSaveTime ?? BusinessDateTime.Now) >= MaxSaveFrequency;
 
+            if (!canSaveByFrequencyLimitation) return false;
+            
             snapshotSequenceNr = Math.Max(snapshotSequenceNr, _lastSnapshotAppliedNumber);
 
-            return canSaveByFrequencyLimitation && snapshotSequenceNr % _saveOnEach == 0;
+            return snapshotSequenceNr % _saveOnEach == 0;
         }
 
-        public bool SnapshotsSaveInProgress => _snapshotsSaveInProgressCount > 0;
-
-        private int _snapshotsSaveInProgressCount;
 
         public bool ShouldDelete(out SnapshotSelectionCriteria snapshotsToDeleteCriteria)
         {
@@ -67,7 +62,7 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             //save confirmations can arrive out of order 
             _lastSavedSnapshot = Math.Max(_lastSavedSnapshot,snapshotsSequenceNumber);
-            _snapshotsSaveInProgressCount--;
+            _lastSaveTime = saveTime ?? BusinessDateTime.Now;
         }
     }
 }

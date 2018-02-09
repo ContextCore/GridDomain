@@ -28,6 +28,9 @@ namespace GridDomain.Node.Actors.EventSourced
         private IConstructSnapshots _snapshotsConstructor;
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
+        private int _snapshotsDeleteInProgressCount=0;
+        private int _snapshotsSaveInProgressCount=0;
+        
         public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, 
                                        IConstructSnapshots snapshotsConstructor,
                                        ISnapshotsPersistencePolicy policy)
@@ -63,7 +66,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected virtual bool CanShutdown(ref string description)
         {
-            return !_snapshotsPolicy.SnapshotsSaveInProgress;
+            return _snapshotsSaveInProgressCount == 0 && _snapshotsDeleteInProgressCount == 0;
         }
         protected void DefaultBehavior()
         {
@@ -83,20 +86,40 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       var criteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
                                                       Log.Debug("Shutdown request declined. \r\n Reason: snapshots delete, {criteria}", criteria);
                                                       DeleteSnapshots(criteria);
+                                                      _snapshotsDeleteInProgressCount++;
                                                       return;
                                                   }
-                                                  
-                                                  StopNow();
+
+                                                  Log.Debug("Stopped");
+                                                  Context.Stop(Self);
                                               });
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
             Command<NotifyOnPersistenceEvents>(c => SubscribePersistentObserver(c));
-            Command<DeleteSnapshotsSuccess>(s => NotifyPersistenceWatchers(s));
-            Command<DeleteSnapshotsFailure>(s => NotifyPersistenceWatchers(s));
+            Command<DeleteSnapshotsSuccess>(s =>
+                                            {
+                                                _snapshotsDeleteInProgressCount--;
+                                                NotifyPersistenceWatchers(s);
+                                            });
+            Command<DeleteSnapshotsFailure>(s =>
+                                            {
+                                                _snapshotsDeleteInProgressCount--;
+                                                NotifyPersistenceWatchers(s);
+                                            });
             Command<SaveSnapshotSuccess>(s =>
                                          {
+                                             _snapshotsSaveInProgressCount--;
+
                                              NotifyPersistenceWatchers(s);
-                                             CountSnapshotSaved(s);
+                                             Log.Debug("snapshot saved at {time}, sequence number is {number}", s.Metadata.Timestamp,s.Metadata.SequenceNr);
+                                             NotifyPersistenceWatchers(s);
+                                             _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
+                                                                                BusinessDateTime.UtcNow);
+                                         });
+            Command<SaveSnapshotFailure>(s =>
+                                         {
+                                             _snapshotsSaveInProgressCount--;
+                                             NotifyPersistenceWatchers(s);
                                          });
         }
 
@@ -125,8 +148,8 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             if (!_snapshotsPolicy.ShouldSave(SnapshotSequenceNr, BusinessDateTime.UtcNow)) return;
             Log.Debug("Started snapshot save, cased by persisted event {event}",lastEventPersisted);
-            _snapshotsPolicy.MarkSnapshotSaving();
             SaveSnapshot(_snapshotsConstructor.GetSnapshot(aggregate));
+            _snapshotsSaveInProgressCount++;
         }
 
         protected void NotifyPersistenceWatchers(object msg)
@@ -135,24 +158,10 @@ namespace GridDomain.Node.Actors.EventSourced
                 watcher.Tell(msg);
         }
 
-        private void CountSnapshotSaved(SaveSnapshotSuccess s)
-        {
-            Log.Debug("snapshot saved at {time}, sequence number is {number}", s.Metadata.Timestamp,s.Metadata.SequenceNr);
-            NotifyPersistenceWatchers(s);
-            _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
-                                               BusinessDateTime.UtcNow);
-        }
-
         protected override void Unhandled(object message)
         {
             Log.Warning("Skipping message {message} because it was unhandled. \r\n Behavior: {@behavior}.",message,Behavior);
             base.Unhandled(message);
-        }
-
-        private void StopNow()
-        {
-            Log.Debug("Stopped");
-            Context.Stop(Self);
         }
 
         protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)

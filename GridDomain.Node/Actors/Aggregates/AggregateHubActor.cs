@@ -32,4 +32,4 @@ namespace GridDomain.Node.Actors.Aggregates
 
         protected override Type ChildActorType { get; }
     }
-}
+}                                           
