@@ -23,10 +23,11 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
 
             var watched = CreateTestProbe();
             
-            var monitor = Sys.ActorOf(Props.Create(() => new RecycleMonitorActor(recycleConfiguration, watched)),"monitor");
+            var monitor = Sys.ActorOf(Props.Create(() => new RecycleMonitorActor(recycleConfiguration, watched,TestActor)),"monitor");
             Watch(monitor);
-            watched.ExpectMsg<GracefullShutdownRequest>();
+            watched.ExpectMsg<Shutdown.Request>();
             Sys.Stop(watched);
+            ExpectMsg<Shutdown.Complete>();
             ExpectTerminated(monitor);
         }
         
@@ -36,7 +37,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
             var recycleConfiguration = new RecycleConfiguration(TimeSpan.FromMilliseconds(100),TimeSpan.FromMilliseconds(50));
 
             var watched = CreateTestProbe();
-            var monitor = Sys.ActorOf(Props.Create(() => new RecycleMonitorActor(recycleConfiguration, watched)),"monitor");
+            var monitor = Sys.ActorOf(Props.Create(() => new RecycleMonitorActor(recycleConfiguration, watched, null)),"monitor");
             Watch(monitor);
             
             watched.Send(monitor,RecycleMonitorActor.Activity.Instance);
@@ -49,7 +50,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
             ExpectNoMsg(TimeSpan.FromMilliseconds(50));
 
             
-            watched.ExpectMsg<GracefullShutdownRequest>();
+            watched.ExpectMsg<Shutdown.Request>();
             Sys.Stop(watched);
 
             ExpectTerminated(monitor); 
@@ -62,10 +63,10 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
 
             var watched = CreateTestProbe();
             
-            var monitor = Sys.ActorOf(Props.Create(() => new RecycleMonitorActor(recycleConfiguration, watched)),"monitor");
+            var monitor = Sys.ActorOf(Props.Create(() => new RecycleMonitorActor(recycleConfiguration, watched,null)),"monitor");
             Watch(monitor);
             
-            watched.ExpectMsg<GracefullShutdownRequest>();
+            watched.ExpectMsg<Shutdown.Request>();
             
             watched.Send(monitor,RecycleMonitorActor.Activity.Instance);
             watched.ExpectNoMsg(TimeSpan.FromMilliseconds(400));
@@ -82,7 +83,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
             watched.Send(monitor,RecycleMonitorActor.Activity.Instance);
             watched.ExpectNoMsg(TimeSpan.FromMilliseconds(400));
 
-            watched.ExpectMsg<GracefullShutdownRequest>();
+            watched.ExpectMsg<Shutdown.Request>();
             Sys.Stop(watched);
             ExpectTerminated(monitor); 
         }

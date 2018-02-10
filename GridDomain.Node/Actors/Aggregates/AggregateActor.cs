@@ -108,9 +108,9 @@ namespace GridDomain.Node.Actors.Aggregates
                                             }, m => m.Message is ICommand);
         }
 
-        protected override bool CanShutdown(ref string description)
+        protected override bool CanShutdown(out string description)
         {
-            if (!ExecutionContext.InProgress) return base.CanShutdown(ref description);
+            if (!ExecutionContext.InProgress) return base.CanShutdown(out description);
             
             description = $"Command {ExecutionContext.Command.Id} is in progress";
             return false;

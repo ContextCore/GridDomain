@@ -25,13 +25,13 @@ namespace GridDomain.Node.Actors.EventSourced
         protected readonly ActorMonitor Monitor;
 
         protected readonly BehaviorQueue Behavior;
-        private IConstructSnapshots _snapshotsConstructor;
+        private readonly IConstructSnapshots _snapshotsConstructor;
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
-        private int _snapshotsDeleteInProgressCount=0;
-        private int _snapshotsSaveInProgressCount=0;
-        
-        public DomainEventSourcedActor(IConstructAggregates aggregateConstructor, 
+        private int _snapshotsDeleteInProgressCount;
+        private int _snapshotsSaveInProgressCount;
+
+        protected DomainEventSourcedActor(IConstructAggregates aggregateConstructor, 
                                        IConstructSnapshots snapshotsConstructor,
                                        ISnapshotsPersistencePolicy policy)
         {
@@ -64,31 +64,40 @@ namespace GridDomain.Node.Actors.EventSourced
                                        });
         }
 
-        protected virtual bool CanShutdown(ref string description)
+        protected virtual bool CanShutdown(out string description)
         {
+            description = "";
+            if (_snapshotsSaveInProgressCount != 0)
+            {
+                description += $"{_snapshotsSaveInProgressCount} snapshots saving is in progress ";
+            } 
+            if (_snapshotsDeleteInProgressCount != 0)
+            {
+                description += $"{_snapshotsDeleteInProgressCount} snapshots deleting is in progress";
+            }
+
             return _snapshotsSaveInProgressCount == 0 && _snapshotsDeleteInProgressCount == 0;
         }
         protected void DefaultBehavior()
         {
-            Command<GracefullShutdownRequest>(req =>
+            Command<Shutdown.Request>(req =>
                                               {
                                                   Log.Debug("Received shutdown request");
                                                   Monitor.IncrementMessagesReceived();
-                                                  var description = "";
-                                                  if (!CanShutdown(ref description))
+
+                                                  if (!CanShutdown(out var description))
                                                   {
-                                                      Log.Debug("Shutdown request declined. \r\n Reason: {description}", description);
+                                                      Log.Debug("Shutdown request declined. Reason: \r\n {description}", description);
                                                       return;
                                                   }
-                                              
+                                                  
                                                   if (_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
                                                   {
                                                       var criteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
-                                                      Log.Debug("Shutdown request declined. \r\n Reason: snapshots delete, {criteria}", criteria);
                                                       DeleteSnapshots(criteria);
                                                       _snapshotsDeleteInProgressCount++;
-                                                      return;
                                                   }
+                                                  
 
                                                   Log.Debug("Stopped");
                                                   Context.Stop(Self);
@@ -96,23 +105,30 @@ namespace GridDomain.Node.Actors.EventSourced
 
             Command<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
             Command<NotifyOnPersistenceEvents>(c => SubscribePersistentObserver(c));
+
+           
             Command<DeleteSnapshotsSuccess>(s =>
                                             {
                                                 _snapshotsDeleteInProgressCount--;
+                                                Log.Debug("Deleted snapshot bulk mode up to {reason}, in progress:{progress}",
+                                                          s.Criteria,_snapshotsDeleteInProgressCount);
                                                 NotifyPersistenceWatchers(s);
                                             });
             Command<DeleteSnapshotsFailure>(s =>
                                             {
                                                 _snapshotsDeleteInProgressCount--;
+                                                Log.Debug("Failed to delete snapshots in bulk mode {reason}, delete in progress: {progress}", s,_snapshotsDeleteInProgressCount);
                                                 NotifyPersistenceWatchers(s);
                                             });
             Command<SaveSnapshotSuccess>(s =>
                                          {
                                              _snapshotsSaveInProgressCount--;
-
                                              NotifyPersistenceWatchers(s);
-                                             Log.Debug("snapshot saved at {time}, sequence number is {number}", s.Metadata.Timestamp,s.Metadata.SequenceNr);
-                                             NotifyPersistenceWatchers(s);
+                                             Log.Debug("snapshot saved at {time}\r\n "
+                                                       + "sequence number is {number} \r\n "
+                                                       + "savings in progress: {progress} \r\n "
+                                                       , s.Metadata.Timestamp,s.Metadata.SequenceNr,_snapshotsSaveInProgressCount);
+                                            
                                              _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
                                                                                 BusinessDateTime.UtcNow);
                                          });

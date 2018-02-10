@@ -21,6 +21,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         public Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
             : base(
                    new BalloonFixture(output).UseSqlPersistence()
+                                             .InitFastRecycle()
                                              .EnableSnapshots(2)) { }
 
         private readonly int[] _parameters = new int[5];
@@ -41,12 +42,12 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             await Node.Execute(new InflateNewBallonCommand(1, aggregateId));
 
-            await ChangeSeveralTimes(5, aggregateId);
+           await ChangeSeveralTimes(5, aggregateId);
 
-            await Node.KillAggregate<Balloon>(aggregateId,TimeSpan.FromSeconds(100));
+           await Node.KillAggregate<Balloon>(aggregateId,TimeSpan.FromSeconds(10));                                
 
             //sql server still need some time to commit deleted snapshots;
-            await Task.Delay(3000);
+            await Task.Delay(TimeSpan.FromSeconds(3));
 
             var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                   new BalloonAggregateFactory(),

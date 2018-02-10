@@ -129,11 +129,19 @@ namespace GridDomain.Tests.Common
             var aggregateHubActor = await node.LookupAggregateHubActor<TAggregate>(timeout);
             var aggregateActor = await node.LookupAggregateActor<TAggregate>(id, timeout);
 
+            await ShutDownHubActor(node, id, aggregateActor, aggregateHubActor, timeout);
+        }
+
+        private static async Task ShutDownHubActor(GridDomainNode node, Guid id, IActorRef aggregateActor, IActorRef aggregateHubActor, TimeSpan? timeout=null)
+        {
             using (var inbox = Inbox.Create(node.System))
             {
                 inbox.Watch(aggregateActor);
                 aggregateHubActor.Tell(new ShutdownChild(id));
-                inbox.ReceiveWhere(m => m is Terminated, timeout ?? node.DefaultTimeout);
+
+                var msg = await inbox.ReceiveAsync(timeout ?? node.DefaultTimeout);
+                if (!(msg is Terminated))
+                    throw new UnexpectedMessageExpection($"Expected {typeof(Terminated)} but got {msg}");
             }
         }
 
@@ -152,20 +160,15 @@ namespace GridDomain.Tests.Common
             {
                 return;
             }
+
+            await ShutDownHubActor(node, id, processActor, hub, timeout);
+
+            var processStateHubActor =  await node.ResolveActor($"{typeof(TState).Name}_Hub", timeout);
+            var processStateActor = await node.ResolveActor($"{typeof(TState).Name}_Hub/" + EntityActorName.New<ProcessStateAggregate<TState>>(id), timeout);
             
-            using (var inbox = Inbox.Create(node.System))
-            {
-                inbox.Watch(processActor);
-                hub.Tell(new ShutdownChild(id));
-                inbox.ReceiveWhere(m => m is Terminated t && t.ActorRef.Path == processActor.Path, timeout ?? node.DefaultTimeout);
+            await ShutDownHubActor(node, id, processStateActor, processStateHubActor, timeout);
 
-                var processStateHubActor =  await node.ResolveActor($"{typeof(TState).Name}_Hub", timeout);
-                var processStateActor = await node.ResolveActor($"{typeof(TState).Name}_Hub/" + EntityActorName.New<ProcessStateAggregate<TState>>(id), timeout);
 
-                inbox.Watch(processStateActor);
-                processStateHubActor.Tell(new ShutdownChild(id));
-                inbox.ReceiveWhere(m => m is Terminated, timeout ?? node.DefaultTimeout);
-            }
         }
 
         public static async Task<IActorRef> LookupProcessActor<TProcess, TData>(this GridDomainNode node,

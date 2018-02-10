@@ -5,20 +5,28 @@ using Autofac.Core.Activators;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Node.Actors.EventSourced.Messages;
+using Serilog;
 
 namespace GridDomain.Node.Actors.RecycleMonitor
 {
     public class RecycleMonitorActor:ReceiveActor
     {
-        public RecycleMonitorActor(IRecycleConfiguration recycleConfiguration, IActorRef watched)
+        private IActorRef _actorRef;
+
+        public RecycleMonitorActor(IRecycleConfiguration recycleConfiguration, IActorRef watched, IActorRef watcher = null)
         {
+            _actorRef = watcher;
             Context.Watch(watched);
-            var lastActivityTime = BusinessDateTime.UtcNow;
-            var log = Context.GetLogger();
+            var log = Context.GetSeriLogger();
             var schedule = ScheduleCheck(recycleConfiguration.ChildClearPeriod);
             var isWaitingForShutdown = false;
-            lastActivityTime = BusinessDateTime.UtcNow;;
+            var lastActivityTime = BusinessDateTime.UtcNow;;
 
+            log.Debug("Initialized recycle monitor for {actor}, max inactive time {inactive}, check period is {period}",
+                watched, 
+                recycleConfiguration.ChildMaxInactiveTime,
+                recycleConfiguration.ChildClearPeriod);
+            
             Receive<Activity>(a =>
                               {
                                   var now = BusinessDateTime.UtcNow;
@@ -26,7 +34,7 @@ namespace GridDomain.Node.Actors.RecycleMonitor
                                   lastActivityTime = now;
                                   log.Debug($"Received activity after {inactiveTime}");
                                   if (!isWaitingForShutdown) return;
-                                  log.Debug($"Rescheduling schecks after receiving activity after shutdown request");
+                                  log.Debug("Rescheduling schecks after receiving activity after shutdown request");
 
                                   isWaitingForShutdown = false;
                                   schedule = ScheduleCheck(recycleConfiguration.ChildClearPeriod);
@@ -38,7 +46,7 @@ namespace GridDomain.Node.Actors.RecycleMonitor
                                if (inactivityDuration > recycleConfiguration.ChildMaxInactiveTime)
                                {
                                    log.Debug($"Sending graceful shutdown request to {watched} due to inactivity for {inactivityDuration} with max allowed {recycleConfiguration.ChildMaxInactiveTime}");
-                                   watched.Tell(GracefullShutdownRequest.Instance);
+                                   watched.Tell(Shutdown.Request.Instance);
                                    isWaitingForShutdown = true;
                                }
                                schedule = ScheduleCheck(recycleConfiguration.ChildClearPeriod);
@@ -46,6 +54,7 @@ namespace GridDomain.Node.Actors.RecycleMonitor
             Receive<Terminated>(t =>
                                 {
                                     schedule.Cancel();
+                                    _actorRef?.Tell(Shutdown.Complete.Instance);
                                     Context.Stop(Self);
                                 }, t => t.ActorRef.Path == watched.Path);
         }

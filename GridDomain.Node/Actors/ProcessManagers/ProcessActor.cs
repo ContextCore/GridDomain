@@ -56,7 +56,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             public IMessageMetadataEnvelop ProcessingMessage;
             public IActorRef ProcessingMessageSender;
 
-            public bool IsFinished => PendingState != null;
+            public bool IsFinished => PendingState == null;
             public bool IsInitializing { get; set; }
             public void Clear()
             {
@@ -165,17 +165,15 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         private void ProxifyingCommandsBehavior()
         {
-            Receive<GracefullShutdownRequest>(r =>
+            Receive<Shutdown.Request>(r =>
                                               {
                                                   if (ExecutionContext.IsInitializing)
                                                   {
-                                                      Sender.Tell(GracefullShutdownRequestDecline.Instance);
                                                       _log.Debug("Process gracefull shutdown request declined. Waiting initializtion to finish");
                                                       return;
                                                   }
                                                   if (!ExecutionContext.IsFinished)
                                                   {
-                                                      Sender.Tell(GracefullShutdownRequestDecline.Instance);
                                                       _log.Debug("Process gracefull shutdown request declined. Waiting process execution to finish");
                                                       return;
                                                   }
@@ -190,27 +188,10 @@ namespace GridDomain.Node.Actors.ProcessManagers
             Receive<NotifyOnPersistenceEvents>(c => ((ICanTell)_stateAggregateActor ?? _stateActorSelection).Tell(c, Sender));
         }
 
-        //private TState pendingState
-        //{
-        //    get => ExecutionContext.PendingState;
-        //    set => ExecutionContext.PendingState = value;
-        //}
-        //private IMessageMetadataEnvelop processingMessage
-        //{
-        //    get => ExecutionContext.ProcessingMessage;
-        //    set => ExecutionContext.ProcessingMessage = value;
-        //}
-        //private IActorRef processingMessageSender
-        //{
-        //    get => ExecutionContext.ProcessingMessageSender;
-        //    set => ExecutionContext.ProcessingMessageSender = value;
-        //}
-      
+       
         private void CreatingProcessBehavior()
         {
-//            TState pendingState = null;
-//            IMessageMetadataEnvelop processingMessage = null;
-//            IActorRef processingMessageSender = null;
+
             Receive<CreateNewProcess>(c =>
                                       {
                                           _log.Debug("Creating new process instance from {@message}", c);

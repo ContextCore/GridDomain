@@ -3,6 +3,7 @@ using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Scheduling.Quartz.Configuration;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.ProcessManagers;
 using Xunit.Abstractions;
@@ -34,6 +35,16 @@ namespace GridDomain.Tests.Unit
             dependencyFactory.AggregateFactoryCreator = () => balloonAggregateFactory;
             dependencyFactory.SnapshotsFactoryCreator = () => balloonAggregateFactory;
 
+            return this;
+        }
+        
+        public BalloonFixture InitFastRecycle(
+            TimeSpan? clearPeriod = null,
+            TimeSpan? maxInactiveTime = null)
+        {
+            this._balloonDomainConfiguration.BalloonDependencyFactory.RecycleConfigurationCreator = () =>
+                                                                                                           new RecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(100),
+                                                                                                                                         maxInactiveTime ?? TimeSpan.FromMilliseconds(200));
             return this;
         }
     }

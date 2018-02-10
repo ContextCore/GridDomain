@@ -27,4 +27,7 @@
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj" />
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="packages.config" />
+  </ItemGroup>
 </Project>

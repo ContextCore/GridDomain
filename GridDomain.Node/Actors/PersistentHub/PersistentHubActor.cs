@@ -33,7 +33,13 @@ namespace GridDomain.Node.Actors.PersistentHub
             var forwardEntry = new ProcessEntry(Self.Path.Name, "Forwarding to child", "All messages should be forwarded");
 
             Receive<NotifyOnPersistenceEvents>(m => SendToChild(m,GetChildActorName(m.Id),Sender));
-            Receive<ShutdownChild>(m => ShutdownChild(m.ChildId));
+            Receive<ShutdownChild>(m => {
+                                       var childActorName = GetChildActorName(m.ChildId);
+                                       var child = Context.Child(childActorName);
+                                       if (child == Nobody.Instance) return;
+                                       CreateRecyleMonitor(child, ChildFastShutdownRecycleConfiguration.Instance,
+                                                           $"Shutdown_RecycleMonitor_{childActorName}");
+                                   });
             Receive<WarmUpChild>(m =>
                                  {
                                      var created = InitChild(GetChildActorName(m.Id), out var info);
@@ -56,7 +62,7 @@ namespace GridDomain.Node.Actors.PersistentHub
             if (child == Nobody.Instance)
             {
                 childInfo = CreateChild(name);
-                CreateRecyleMonitor(childInfo.Ref, _recycleConfiguration);
+                CreateRecyleMonitor(childInfo.Ref, _recycleConfiguration,$"RecycleMonitor_{name}");
                 return true;
 
             }
@@ -64,9 +70,9 @@ namespace GridDomain.Node.Actors.PersistentHub
             return false;
         }
 
-        private void CreateRecyleMonitor(IActorRef child, IRecycleConfiguration recycleConfiguration)
+        private void CreateRecyleMonitor(IActorRef child, IRecycleConfiguration recycleConfiguration, string name, IActorRef watcher=null)
         {
-            Context.ActorOf(Props.Create(() => new RecycleMonitorActor(recycleConfiguration, child)));
+            Context.ActorOf(Props.Create(() => new RecycleMonitorActor(recycleConfiguration, child, watcher)),name);
         }
 
         protected void SendToChild(object message, string name, IActorRef sender)
@@ -106,17 +112,11 @@ namespace GridDomain.Node.Actors.PersistentHub
 
         class ChildFastShutdownRecycleConfiguration : IRecycleConfiguration
         {
-            public TimeSpan ChildClearPeriod { get; } = TimeSpan.FromMilliseconds(10);
+            public TimeSpan ChildClearPeriod { get; } = TimeSpan.FromMilliseconds(500);
             public TimeSpan ChildMaxInactiveTime { get; }= TimeSpan.Zero;
 
             private ChildFastShutdownRecycleConfiguration(){}
             public static ChildFastShutdownRecycleConfiguration Instance { get; } = new ChildFastShutdownRecycleConfiguration();
-        }
-        private void ShutdownChild(Guid childId)
-        {
-            var child = Context.Child(GetChildActorName(childId));
-            if (child == Nobody.Instance) return;
-            CreateRecyleMonitor(child, ChildFastShutdownRecycleConfiguration.Instance);
         }
 
         protected override bool AroundReceive(Receive receive, object message)
