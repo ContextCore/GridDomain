@@ -61,7 +61,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
             Watch(childRef);
             //It_should_be_terminated()
             FishForMessage<Terminated>(m => m.ActorRef.Path == childRef.Path,
-                                      TimeSpan.FromSeconds(10));
+                                       Dilated(TimeSpan.FromSeconds(20)));
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
             var actorToWatchPath = Child.Path;
 
             //And_it_is_not_active_until_lifetime_period_is_expired
-            FishForMessage<Terminated>(t => t.ActorRef.Path == actorToWatchPath,TimeSpan.FromSeconds(5));
+            FishForMessage<Terminated>(t => t.ActorRef.Path == actorToWatchPath,Dilated(TimeSpan.FromSeconds(20)));
             await And_command_for_child_is_sent();
             
             //Hub_should_contains_child()
