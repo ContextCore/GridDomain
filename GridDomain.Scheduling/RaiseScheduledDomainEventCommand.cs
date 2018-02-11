@@ -5,11 +5,11 @@ namespace GridDomain.Scheduling
 {
     public class RaiseScheduledDomainEventCommand : Command
     {
-        public RaiseScheduledDomainEventCommand(Guid futureEventId, Guid aggregateId, Guid id) : base(id, aggregateId)
+        public RaiseScheduledDomainEventCommand(string futureEventId, string aggregateId, string id) : base(id, aggregateId)
         {
             FutureEventId = futureEventId;
         }
 
-        public Guid FutureEventId { get; }
+        public string FutureEventId { get; }
     }
 }

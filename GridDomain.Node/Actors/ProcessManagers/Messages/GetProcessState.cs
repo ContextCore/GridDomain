@@ -6,9 +6,9 @@ namespace GridDomain.Node.Actors.ProcessManagers.Messages
 {
     class GetProcessState
     {
-        public Guid Id { get; }
+        public string Id { get; }
 
-        public GetProcessState(Guid id)
+        public GetProcessState(string id)
         {
             Id = id;
         }

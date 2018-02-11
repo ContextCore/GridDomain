@@ -8,9 +8,9 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Events
         public decimal Value;
 
         public AggregateCreatedEvent(decimal value,
-                                     Guid sourceId,
+                                     string sourceId,
                                      DateTime? createdTime = default(DateTime?),
-                                     Guid processId = default(Guid)) : base(sourceId, processId: processId, createdTime: createdTime)
+                                     string processId = null) : base(sourceId, processId: processId, createdTime: createdTime)
         {
             Value = value;
         }

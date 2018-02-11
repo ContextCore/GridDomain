@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         [Fact]
         public async Task Given_aggregate_When_executing_same_command_twice_Then_second_commands_fails()
         {
-            var cmd = new WriteTitleCommand(43, Guid.NewGuid());
+            var cmd = new WriteTitleCommand(43, Guid.NewGuid().ToString());
 
             await Node.Execute(cmd);
             await Node.Execute(cmd).ShouldThrow<CommandAlreadyExecutedException>();

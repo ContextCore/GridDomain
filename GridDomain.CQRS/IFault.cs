@@ -10,7 +10,7 @@ namespace GridDomain.CQRS
     {
         object Message { get; }
         Exception Exception { get; }
-        Guid ProcessId { get; }
+        string ProcessId { get; }
         DateTime OccuredTime { get; }
         Type Processor { get; }
     }

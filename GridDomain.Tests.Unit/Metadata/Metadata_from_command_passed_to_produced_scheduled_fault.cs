@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.Metadata
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            var commandMetadata = MessageMetadata.New(Guid.NewGuid(), Guid.NewGuid(), null);
+            var commandMetadata = MessageMetadata.New(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null);
             var command = new PlanBoomCommand(Guid.NewGuid(), DateTime.Now.AddMilliseconds(100));
 
             var res = await Node.Prepare(command, commandMetadata)
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Unit.Metadata
                          schedulingCommandFault.Message.Message.Id);
             //Result_metadata_has_command_id_as_casuation_id()
             Assert.Equal((jobFailedEnvelop.Message.ProcessingMessage as ICommand)?.Id,
-                         Guid.Parse(schedulingCommandFault.Metadata.CasuationId));
+                         schedulingCommandFault.Metadata.CasuationId);
             //Result_metadata_has_correlation_id_same_as_command_metadata()
             Assert.Equal(commandMetadata.CorrelationId, schedulingCommandFault.Metadata.CorrelationId);
         }

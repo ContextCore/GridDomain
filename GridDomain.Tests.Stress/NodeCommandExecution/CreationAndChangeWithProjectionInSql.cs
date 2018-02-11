@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             {
                 ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
-                ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
+                ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid().ToString(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
                 ctx.SaveChanges();
             }
             base.OnSetup();

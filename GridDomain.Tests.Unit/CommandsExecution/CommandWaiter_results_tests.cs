@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task When_expect_more_than_one_messages()
         {
-            var cmd = new InflateCopyCommand(100, Guid.NewGuid());
+            var cmd = new InflateCopyCommand(100, Guid.NewGuid().ToString());
 
             _result = await Node.Prepare(cmd)
                                 .Expect<BalloonTitleChanged>(e => e.SourceId == cmd.AggregateId)

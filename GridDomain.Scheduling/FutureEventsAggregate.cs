@@ -9,7 +9,7 @@ namespace GridDomain.Scheduling
 {
     public class FutureEventsAggregate : ConventionAggregate
     {
-        protected FutureEventsAggregate(Guid id):base(id)
+        protected FutureEventsAggregate(string id):base(id)
         {
             _schedulingSourceName = GetType().Name;
         }
@@ -19,7 +19,7 @@ namespace GridDomain.Scheduling
         private readonly string _schedulingSourceName;
 
       
-        public async Task RaiseScheduledEvent(Guid futureEventId, Guid futureEventOccuredEventId)
+        public async Task RaiseScheduledEvent(string futureEventId, string futureEventOccuredEventId)
         {
             FutureEventScheduledEvent ev = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
             if (ev == null)
@@ -32,13 +32,13 @@ namespace GridDomain.Scheduling
             Produce(futureEventOccuredEvent);
         }
 
-        protected void Produce(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
+        protected void Produce(DomainEvent @event, DateTime raiseTime, string futureEventId = null)
         {
-             Produce(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event, _schedulingSourceName));
+             Produce(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid().ToString(), Id, raiseTime, @event, _schedulingSourceName));
         }
-        protected Task Emit(DomainEvent @event, DateTime raiseTime, Guid? futureEventId = null)
+        protected Task Emit(DomainEvent @event, DateTime raiseTime, string futureEventId = null)
         {
-            return Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid(), Id, raiseTime, @event, _schedulingSourceName));
+            return Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid().ToString(), Id, raiseTime, @event, _schedulingSourceName));
         }
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
@@ -68,7 +68,7 @@ namespace GridDomain.Scheduling
             DeleteFutureEvent(e.FutureEventId);
         }
 
-        private void DeleteFutureEvent(Guid futureEventId)
+        private void DeleteFutureEvent(string futureEventId)
         {
             FutureEventScheduledEvent evt = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
             if (evt == null)

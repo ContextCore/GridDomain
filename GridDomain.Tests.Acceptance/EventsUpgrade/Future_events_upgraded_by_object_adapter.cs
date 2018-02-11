@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Fact]
         public async Task Future_event_is_upgraded_by_json_adapter()
         {
-            var cmd = new ChangeBalanceInFuture(1, Guid.NewGuid(), BusinessDateTime.Now.AddSeconds(2), false);
+            var cmd = new ChangeBalanceInFuture(1, Guid.NewGuid().ToString(), BusinessDateTime.Now.AddSeconds(2), false);
 
             var res = await Node.Prepare(cmd)
                                 .Expect<BalanceChangedEvent_V1>()

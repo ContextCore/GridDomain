@@ -118,7 +118,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
         private void ProcessingCommandBehavior()
         {
-            var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
+            var producedEventsMetadata = MessageMetadataExtensions.CreateChild(ExecutionContext.CommandMetadata, Id, _domainEventProcessEntry);
             
             //just for catching Failures on events persist
             Command<IReadOnlyCollection<DomainEvent>>(domainEvents =>

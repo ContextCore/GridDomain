@@ -16,8 +16,8 @@ namespace GridDomain.Tests.Unit.FutureEvents
         [Fact]
         public async Task Raising_several_future_events_for_different_aggregates()
         {
-            var commandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value A");
-            var commandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid(), "test value B");
+            var commandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid().ToString(), "test value A");
+            var commandB = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(0.5), Guid.NewGuid().ToString(), "test value B");
 
             var eventA =
                 await Node.Prepare(commandA).Expect<FutureEventOccuredEvent>().Execute().Received();

@@ -5,13 +5,13 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Comman
 {
     internal class MakeCoffeCommand : Command
     {
-        public MakeCoffeCommand(Guid personId, Guid coffeMachineId) : base(personId)
+        public MakeCoffeCommand(string personId, string coffeMachineId) : base(personId)
         {
             CoffeMachineId = coffeMachineId;
         }
 
-        public Guid PersonId => AggregateId;
+        public string PersonId => AggregateId;
 
-        public Guid CoffeMachineId { get; }
+        public string CoffeMachineId { get; }
     }
 }

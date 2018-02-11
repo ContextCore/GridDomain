@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
     public class BoomNowCommand : Command
     {
-        public BoomNowCommand(Guid aggregateId)
+        public BoomNowCommand(string aggregateId)
             : base(aggregateId)
         {
     

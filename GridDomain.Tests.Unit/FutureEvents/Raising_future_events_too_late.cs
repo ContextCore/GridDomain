@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         {
             var scheduledTime = DateTime.Now.AddSeconds(-5);
             var now = DateTime.Now;
-            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
+            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid().ToString(), "test value");
 
             await Node.Prepare(testCommand)
                       .Expect<JobSucceeded>()

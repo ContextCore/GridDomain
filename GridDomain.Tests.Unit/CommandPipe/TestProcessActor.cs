@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 {
     internal class TestProcessActor : ReceiveActor
     {
-        public TestProcessActor(IActorRef watcher, Guid id,
+        public TestProcessActor(IActorRef watcher, string id,
                                 TimeSpan? sleepTime = null)
         {
             var sleep = sleepTime ?? TimeSpan.FromMilliseconds(10);

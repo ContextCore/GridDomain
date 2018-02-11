@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             var blackHole = Sys.ActorOf(BlackHoleActor.Props);
 
             var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new HandlersDefaultProcessor(), blackHole)));
-            _processId = Guid.NewGuid();
+            _processId = Guid.NewGuid().ToString();
 
             var container = new ContainerBuilder();
 
@@ -58,14 +58,14 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         }
 
         private readonly TestActorRef<ProcessActor<TestState>> _processActor;
-        private readonly Guid _processId;
+        private readonly string _processId;
         private readonly IActorTransport _localAkkaEventBusTransport;
 
         [Fact]
         public void Process_actor_process_one_message_in_time()
         {
-            var domainEventA = new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _processId);
-            var domainEventB = new BalloonTitleChanged("2", Guid.NewGuid(), DateTime.Now, _processId);
+            var domainEventA = new BalloonCreated("1", Guid.NewGuid().ToString(), DateTime.Now, _processId);
+            var domainEventB = new BalloonTitleChanged("2", Guid.NewGuid().ToString(), DateTime.Now, _processId);
 
             _processActor.Tell(MessageMetadataEnvelop.New(domainEventA, MessageMetadata.Empty));
             _processActor.Tell(MessageMetadataEnvelop.New(domainEventB, MessageMetadata.Empty));
@@ -81,7 +81,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         [Fact]
         public void Process_change_state_after_transitions()
         {
-            var domainEventA = new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _processId);
+            var domainEventA = new BalloonCreated("1", Guid.NewGuid().ToString(), DateTime.Now, _processId);
 
             _processActor.Ref.Tell(MessageMetadataEnvelop.New(domainEventA));
 
@@ -93,7 +93,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         [Fact]
         public void Process_transition_raises_state_events()
         {
-            _processActor.Ref.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid(), DateTime.Now, _processId),
+            _processActor.Ref.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString(), DateTime.Now, _processId),
                                                            MessageMetadata.Empty));
 
             _localAkkaEventBusTransport.Subscribe(typeof(IMessageMetadataEnvelop), TestActor);

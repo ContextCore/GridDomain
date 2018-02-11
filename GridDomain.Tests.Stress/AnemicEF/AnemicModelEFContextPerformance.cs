@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Stress.AnemicEF {
         private IEnumerable<IEFCommand> CreateAggregatePlan(int changeAmount)
         {
             var random = new Random();
-            var newGuid = Guid.NewGuid();
+            var newGuid = Guid.NewGuid().ToString();
             yield return new InflateNewBallonCommandEF(newGuid,random.Next().ToString(),_contextCreator);
             for(var num = 0; num < changeAmount; num++)
                 yield return new UpdateBallonCommandEF(newGuid,random.Next().ToString(), _contextCreator);

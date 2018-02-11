@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands
 {
     public class CreateBalanceCommand : Command
     {
-        public CreateBalanceCommand(int parameter, Guid aggregateId) : base(aggregateId)
+        public CreateBalanceCommand(int parameter, string aggregateId) : base(aggregateId)
         {
             Parameter = parameter;
         }

@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Stress.AnemicEF {
             //warm up EF 
             using(var ctx = new BalloonContext(DbContextOptions))
             {
-                ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
+                ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid().ToString(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
                 ctx.SaveChanges();
             }
 

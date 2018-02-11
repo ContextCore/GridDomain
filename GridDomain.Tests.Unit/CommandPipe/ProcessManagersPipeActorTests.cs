@@ -27,19 +27,19 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public async Task All_Processes_performs_linear_and_results_from_all_processes_are_gathered()
         {
-            var processAId = Guid.NewGuid();
+            var processAId = Guid.NewGuid().ToString();
             _output.WriteLine("Process A:" + processAId);
             var testProcessActorA =
                 Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, processAId, TimeSpan.FromMilliseconds(1000))));
 
-            var processBId = Guid.NewGuid();
+            var processBId = Guid.NewGuid().ToString();
             _output.WriteLine("Process B:" + processBId);
 
             var testProcessActorB =
                 Sys.ActorOf(Props.Create(() =>new TestProcessActor(TestActor,
                                                                    processBId,
                                                                    TimeSpan.FromMilliseconds(50))));
-            var processCId = Guid.NewGuid();
+            var processCId = Guid.NewGuid().ToString();
             _output.WriteLine("Process C:" + processCId);
 
             var testProcessActorC =
@@ -52,8 +52,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
             catalog.Add<BalloonTitleChanged>(new SyncProcessManagerProcessor(testProcessActorC));
 
 
-            var balloonCreated = new BalloonCreated("1", Guid.NewGuid());
-            var balloonTitleChanged = new BalloonTitleChanged("2", Guid.NewGuid());
+            var balloonCreated = new BalloonCreated("1", Guid.NewGuid().ToString());
+            var balloonTitleChanged = new BalloonTitleChanged("2", Guid.NewGuid().ToString());
 
 
             //var resultA = await catalog.Process(MessageMetadataEnvelop.New<DomainEvent>(balloonCreated));
@@ -114,13 +114,13 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
         class Inherited : BalloonCreated
         {
-            public Inherited() : base("123", Guid.NewGuid()) { }
+            public Inherited() : base("123", Guid.NewGuid().ToString()) { }
         }
 
         [Fact]
         public async Task ProcessManagerPipeActor_does_not_support_domain_event_inheritance()
         {
-            var testProcessActor = Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, Guid.NewGuid(),null)));
+            var testProcessActor = Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, Guid.NewGuid().ToString(),null)));
             var catalog = new ProcessesDefaultProcessor();
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActor));
 
@@ -138,7 +138,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public async Task ProcessPipeActor_routes_events_by_type()
         {
-            var testProcessActor = Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, Guid.NewGuid(), null)));
+            var testProcessActor = Sys.ActorOf(Props.Create(() => new TestProcessActor(TestActor, Guid.NewGuid().ToString(), null)));
 
             var catalog = new ProcessesDefaultProcessor();
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActor));
@@ -147,7 +147,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
 
-            var msg = new MessageMetadataEnvelop<DomainEvent>(new BalloonCreated("1", Guid.NewGuid()),
+            var msg = new MessageMetadataEnvelop<DomainEvent>(new BalloonCreated("1", Guid.NewGuid().ToString()),
                                                               MessageMetadata.Empty);
 
             processPipeActor.Tell(msg);

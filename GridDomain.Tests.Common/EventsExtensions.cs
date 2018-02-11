@@ -41,7 +41,8 @@ namespace GridDomain.Tests.Common
                       new List<BaseTypeComparer>
                       {
                           new AnyGuidAwareComparer(RootComparerFactory.GetRootComparer()),
-                          new DateTimeComparer(RootComparerFactory.GetRootComparer())
+                          new DateTimeComparer(RootComparerFactory.GetRootComparer()),
+                          new AnyIdStringAwareComparer(RootComparerFactory.GetRootComparer())
                       },
                   DoublePrecision = 0.0001
               };

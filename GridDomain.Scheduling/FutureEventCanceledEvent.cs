@@ -5,17 +5,17 @@ namespace GridDomain.Scheduling
 {
     public class FutureEventCanceledEvent : DomainEvent
     {
-        public FutureEventCanceledEvent(Guid futureEventId,
-                                        Guid sourceId,
+        public FutureEventCanceledEvent(string futureEventId,
+                                        string sourceId,
                                         string sourceName,
                                         DateTime? createdTime = null,
-                                        Guid? processId = null) : base(sourceId,  processId, createdTime: createdTime)
+                                        string processId = null) : base(sourceId,  processId, createdTime: createdTime)
         {
             FutureEventId = futureEventId;
             SourceName = sourceName;
         }
 
-        public Guid FutureEventId { get; }
+        public string FutureEventId { get; }
         public string SourceName { get; }
     }
 }

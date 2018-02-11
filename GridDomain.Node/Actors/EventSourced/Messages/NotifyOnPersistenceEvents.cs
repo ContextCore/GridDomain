@@ -6,15 +6,15 @@ namespace GridDomain.Node.Actors.EventSourced.Messages
 {
     public class NotifyOnPersistenceEvents : IHaveId
     {
-        public static readonly NotifyOnPersistenceEvents Instance = new NotifyOnPersistenceEvents(null, Guid.Empty);
+        public static readonly NotifyOnPersistenceEvents Instance = new NotifyOnPersistenceEvents(null, null);
 
-        public NotifyOnPersistenceEvents(IActorRef waiter, Guid id)
+        public NotifyOnPersistenceEvents(IActorRef waiter, string id)
         {
             Waiter = waiter;
             Id = id;
         }
 
         public IActorRef Waiter { get; }
-        public Guid Id { get; }
+        public string Id { get; }
     }
 }

@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task CommandWaiter_throws_exception_after_wait_with_only_default_timeout()
         {
-            var syncCommand = new PlanTitleWriteCommand(1000, Guid.NewGuid());
+            var syncCommand = new PlanTitleWriteCommand(1000, Guid.NewGuid().ToString());
             var waiter =
                 Node.Prepare(syncCommand)
                     .Expect<BalloonTitleChanged>(e => e.SourceId == syncCommand.AggregateId)

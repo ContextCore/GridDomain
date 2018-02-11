@@ -5,13 +5,13 @@ namespace GridDomain.Scheduling
 {
     public class FutureEventScheduledEvent : DomainEvent, IFutureDomainEvent
     {
-        public FutureEventScheduledEvent(Guid id,
-                                         Guid sourceId,
+        public FutureEventScheduledEvent(string id,
+                                         string sourceId,
                                          DateTime raiseTime,
                                          DomainEvent @event,
                                          string sourceName = null,
                                          DateTime? createdTime = null,
-                                         Guid? processId = null) : base(sourceId, processId, id, createdTime)
+                                         string processId =null ) : base(sourceId, processId, id, createdTime)
         {
             RaiseTime = raiseTime;
             Event = @event;

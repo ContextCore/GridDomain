@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
     {
         object ChildCreateMessage { get; }
         object ChildActivateMessage { get; }
-        Guid ChildId { get; }
+        string ChildId { get; }
         Props CreateHubProps(ActorSystem system);
     }
 }

@@ -5,11 +5,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
     public class PersonCreated : DomainEvent
     {
-        public PersonCreated(Guid sourceId, Guid personId) : base(sourceId)
+        public PersonCreated(string sourceId, string personId) : base(sourceId)
         {
             PersonId = personId;
         }
 
-        public Guid PersonId { get; private set; }
+        public string PersonId { get; private set; }
     }
 }

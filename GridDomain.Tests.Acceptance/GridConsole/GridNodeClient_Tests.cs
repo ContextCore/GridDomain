@@ -69,7 +69,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
                                                        new NodeConfiguration("Console",new NodeNetworkAddress()));
 
                 connector.Connect().Wait();
-                var command = new InflateNewBallonCommand(42, Guid.NewGuid());
+                var command = new InflateNewBallonCommand(42, Guid.NewGuid().ToString());
                 connector.Prepare(command)
                          .Expect<BalloonCreated>()
                          .Execute().Wait();
@@ -97,7 +97,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
                     new NodeConfiguration("Console", new NodeNetworkAddress()));
 
                 connector.Connect().Wait();
-                var command = new InflateNewBallonCommand(42, Guid.NewGuid());
+                var command = new InflateNewBallonCommand(42, Guid.NewGuid().ToString());
                 connector.Execute(command).Wait();
 
                 Success = true;
@@ -121,7 +121,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
         public async Task Throws_exception_on_action_and_not_connected()
         {
             var connector = new GridNodeConnector(new ServerConfiguration(), new NodeConfiguration("Console", new NodeNetworkAddress()));
-            await connector.Execute(new InflateNewBallonCommand(42, Guid.NewGuid()))
+            await connector.Execute(new InflateNewBallonCommand(42, Guid.NewGuid().ToString()))
                             .ShouldThrow<NotConnectedException>();
         }
 

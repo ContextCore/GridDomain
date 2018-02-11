@@ -29,13 +29,13 @@ namespace GridDomain.Tests.Acceptance.Projection
             //warm up EF 
             using (var context = new BalloonContext(dbOptions))
             {
-                context.BalloonCatalog.Add(new BalloonCatalogItem() {BalloonId = Guid.NewGuid(),LastChanged = DateTime.UtcNow,Title="WarmUp"});
+                context.BalloonCatalog.Add(new BalloonCatalogItem() {BalloonId = Guid.NewGuid().ToString(),LastChanged = DateTime.UtcNow,Title="WarmUp"});
                 await context.SaveChangesAsync();
             }
 
             await TestDbTools.Truncate(autoTestDb, "BalloonCatalog");
             
-            var cmd = new InflateNewBallonCommand(123, Guid.NewGuid());
+            var cmd = new InflateNewBallonCommand(123, Guid.NewGuid().ToString());
             await Node.Prepare(cmd)
                       .Expect<BalloonCreatedNotification>()
                       .Execute(TimeSpan.FromSeconds(30));

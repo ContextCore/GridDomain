@@ -5,12 +5,12 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Comman
 {
     public class GoSleepCommand : Command
     {
-        public GoSleepCommand(Guid personId, Guid sofaId) : base(personId)
+        public GoSleepCommand(string personId, string sofaId) : base(personId)
         {
             SofaId = sofaId;
         }
 
-        public Guid SofaId { get; }
-        public Guid PersonId => AggregateId;
+        public string SofaId { get; }
+        public string PersonId => AggregateId;
     }
 }

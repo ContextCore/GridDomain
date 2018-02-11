@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         [InlineData("10")] //, Description = "planned exception from message processor")]
         public void Message_process_actor_produce_fault_with_processId_from_incoming_message(string payload)
         {
-            var message = new BalloonTitleChanged(payload, Guid.NewGuid(), DateTime.Now, Guid.NewGuid());
+            var message = new BalloonTitleChanged(payload, Guid.NewGuid().ToString(), DateTime.Now, Guid.NewGuid().ToString());
 
             var transport = new LocalAkkaEventBusTransport(Sys);
             transport.Subscribe<IMessageMetadataEnvelop>(TestActor);
@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         [Fact]
         public void Aggregate_actor_produce_fault_with_processId_from_command()
         {
-            var command = new GoSleepCommand(Guid.Empty, Guid.Empty).CloneForProcess(Guid.NewGuid());
+            var command = new GoSleepCommand(null, null).CloneForProcess(Guid.NewGuid().ToString());
 
             var transport = Sys.InitLocalTransportExtension().Transport;
             transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);

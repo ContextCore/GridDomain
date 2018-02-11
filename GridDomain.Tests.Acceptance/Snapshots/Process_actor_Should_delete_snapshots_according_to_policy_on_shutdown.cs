@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
-            var startEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var res = await Node.NewDebugWaiter()
                                 .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
                                .SourceId;
 
-            var continueEventA = new CoffeMakeFailedEvent(Guid.NewGuid(),
+            var continueEventA = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(),
                                                           startEvent.PersonId,
                                                           BusinessDateTime.UtcNow,
                                                           processId);

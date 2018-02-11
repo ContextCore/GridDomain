@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
     public class TestAggregate : ConventionAggregate
     {
 
-        private TestAggregate(Guid id) : base(id) {}
+        private TestAggregate(string id) : base(id) {}
 
         public void Apply(ScheduledCommandSuccessfullyProcessed @event)
         {

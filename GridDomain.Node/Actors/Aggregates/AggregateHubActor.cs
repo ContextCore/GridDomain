@@ -20,14 +20,14 @@ namespace GridDomain.Node.Actors.Aggregates
             knownChild.Ref.Tell(message, sender);
         }
 
-        internal override string GetChildActorName(Guid childId)
+        internal override string GetChildActorName(string childId)
         {
             return EntityActorName.New<TAggregate>(childId).ToString();
         }
 
-        protected override Guid GetChildActorId(IMessageMetadataEnvelop message)
+        protected override string GetChildActorId(IMessageMetadataEnvelop message)
         {
-            return (message.Message as ICommand)?.AggregateId ?? Guid.Empty;
+            return (message.Message as ICommand)?.AggregateId;
         }
 
         protected override Type ChildActorType { get; }

@@ -8,9 +8,9 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
     {
         public string Value;
 
-        private TestFutureEventsAggregate(Guid id) : base(id) {}
+        private TestFutureEventsAggregate(string id) : base(id) {}
 
-        public TestFutureEventsAggregate(Guid id, string initialValue = "") : this(id)
+        public TestFutureEventsAggregate(string id, string initialValue = "") : this(id)
         {
             Produce(new ValueChangedSuccessfullyEvent(initialValue, 1, Id));
         }

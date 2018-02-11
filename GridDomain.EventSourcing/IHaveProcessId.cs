@@ -4,6 +4,6 @@ namespace GridDomain.EventSourcing
 {
     public interface IHaveProcessId
     {
-        Guid ProcessId { get; }
+        string ProcessId { get; }
     }
 }

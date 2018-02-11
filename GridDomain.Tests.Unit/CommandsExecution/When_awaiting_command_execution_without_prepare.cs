@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task Then_command_executed_aggregate_is_persisted()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
             await Node.Execute(new InflateCopyCommand(100, aggregateId),
                                new WriteTitleCommand(200, aggregateId));
 

@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class SuccessCommand : Command
     {
-        public SuccessCommand(string text) : base(Guid.NewGuid())
+        public SuccessCommand(string text) : base(Guid.NewGuid().ToString())
         {
             Text = text;
         }

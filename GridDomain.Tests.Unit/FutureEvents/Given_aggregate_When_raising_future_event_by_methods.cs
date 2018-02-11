@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         [Fact]
         public void When_raising_future_event()
         {
-            var testCommand = new ScheduleEventInFutureCommand(DateTime.Now, Guid.NewGuid(), "test value");
+            var testCommand = new ScheduleEventInFutureCommand(DateTime.Now, Guid.NewGuid().ToString(), "test value");
 
             var aggregate = new TestFutureEventsAggregate(testCommand.AggregateId);
             aggregate.ScheduleInFuture(testCommand.RaiseTime, testCommand.Value);
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
             aggregate.Commit(futureEventEnvelop);
 
             //quite ugly, but it only safe way to run some logic after scheduled event persistence
-            aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid());
+            aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid().ToString());
         }
 
         private static Task AfterScheduledEventOccures(TestFutureEventsAggregate aggregate,

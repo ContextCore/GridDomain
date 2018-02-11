@@ -43,7 +43,7 @@ namespace GridDomain.Scheduling.Akka
 
             var scheduleKey = CreateScheduleKey(scheduleId, message.SourceId, message.SourceName, description);
 
-            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid());
+            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid().ToString());
             var metadata = messageMetadata.CreateChild(command.Id, _schedulingFutureEventProcessEntry);
 
             var scheduleEvent = new ScheduleCommandExecution(command,
@@ -54,7 +54,7 @@ namespace GridDomain.Scheduling.Akka
             return _schedulerActorRef.Ask<CommandExecutionScheduled>(scheduleEvent);
         }
 
-        internal static ScheduleKey CreateScheduleKey(Guid scheduleId, Guid sourceId, string sourceName, string description = null)
+        internal static ScheduleKey CreateScheduleKey(string scheduleId, string sourceId, string sourceName, string description = null)
         {
             return new ScheduleKey($"{scheduleId:N}",
                                    $"{sourceName}_{sourceId:N}_future_events",

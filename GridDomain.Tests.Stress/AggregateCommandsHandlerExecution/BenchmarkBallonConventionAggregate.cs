@@ -7,13 +7,13 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
     public class BenchmarkBallonConventionAggregate : ConventionAggregate
     {
         public string Title { get; private set; }
-        protected BenchmarkBallonConventionAggregate(Guid id) : base(id)
+        protected BenchmarkBallonConventionAggregate(string id) : base(id)
         {
             Apply<BalloonTitleChanged>(e => Title = e.Value);
             Execute<InflateNewBallonCommand>(c => new BenchmarkBallonCommandAggregate(c.AggregateId, c.Title.ToString()));
             Execute<WriteTitleCommand>(c => WriteTitle(c.Parameter.ToString()));
         }
-        public BenchmarkBallonConventionAggregate(Guid id, string title) : this(id)
+        public BenchmarkBallonConventionAggregate(string id, string title) : this(id)
         {
             Produce(new BalloonCreated(title, id));
         }

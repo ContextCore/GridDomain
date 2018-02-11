@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
         [Fact]
         public void Then_nothing_happened()
         {
-            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
+            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid().ToString());
             var testValue = "value D";
 
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), testValue);

@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Recovery
         public async Task Given_instance_process_When_recovering_from_creation()
         {
             var aggregateFactory = new AggregateFactory();
-            var processId = Guid.NewGuid();
+            var processId = Guid.NewGuid().ToString();
 
             var data = aggregateFactory.Build<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
             var process = new SoftwareProgrammingProcess();
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Recovery
             var processManager = new SoftwareProgrammingProcess();
 
             //Try to transit process by message, available only in desired state
-            var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());
+            var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var dispatchedCommands = await processManager.Transit(data.State,coffeMakeFailedEvent);
             //process_produce_commands_only_one_command()
             Assert.Equal(1, dispatchedCommands.Count);

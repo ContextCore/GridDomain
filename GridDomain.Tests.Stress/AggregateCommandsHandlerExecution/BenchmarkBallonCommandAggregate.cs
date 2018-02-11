@@ -11,11 +11,11 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
     public class BenchmarkBallonCommandAggregate:CommandAggregate
     {
         public string Title { get; private set; }
-        protected BenchmarkBallonCommandAggregate(Guid id) : base(id)
+        protected BenchmarkBallonCommandAggregate(string id) : base(id)
         {
 
         }
-        public BenchmarkBallonCommandAggregate(Guid id, string title):this(id)
+        public BenchmarkBallonCommandAggregate(string id, string title):this(id)
         {
             Produce(new BalloonCreated(title, id));
         }

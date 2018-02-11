@@ -5,7 +5,7 @@ namespace GridDomain.EventSourcing.CommonDomain
 {
     public interface IConstructAggregates
     {
-        IAggregate Build(Type type, Guid id, IMemento snapshot=null);
+        IAggregate Build(Type type, string id, IMemento snapshot=null);
     }
     
     public interface IConstructSnapshots
@@ -15,7 +15,7 @@ namespace GridDomain.EventSourcing.CommonDomain
 
     public static class ConstructAggregateExtensions
     {
-        public static T Build<T>(this IConstructAggregates constructor, Guid id, IMemento snapshot = null) where T:IAggregate
+        public static T Build<T>(this IConstructAggregates constructor, string id, IMemento snapshot = null) where T:IAggregate
         {
             return (T) constructor.Build(typeof(T), id, snapshot);
         }

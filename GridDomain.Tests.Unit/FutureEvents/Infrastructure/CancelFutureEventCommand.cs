@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
     public class CancelFutureEventCommand : Command
     {
-        public CancelFutureEventCommand(Guid aggregateId, string value) : base(aggregateId)
+        public CancelFutureEventCommand(string aggregateId, string value) : base(aggregateId)
         {
             Value = value;
         }

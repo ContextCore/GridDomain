@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit
 {
     public static class TestKitExtensions
     {
-        public static async Task<T> LoadAggregateByActor<T>(this TestKit kit, Guid id) where T : Aggregate
+        public static async Task<T> LoadAggregateByActor<T>(this TestKit kit, string id) where T : Aggregate
         {
             var name = EntityActorName.New<T>(id).ToString();
             var actor = await kit.LoadActor<AggregateActor<T>>(name);
@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Unit
             return actor.UnderlyingActor;
         }
 
-        public static async Task<TState> LoadProcessByActor<TState>(this TestKit kit, Guid id)
+        public static async Task<TState> LoadProcessByActor<TState>(this TestKit kit, string id)
             where TState : class, IProcessState
         {
             return (await kit.LoadAggregateByActor<ProcessStateAggregate<TState>>(id)).State;

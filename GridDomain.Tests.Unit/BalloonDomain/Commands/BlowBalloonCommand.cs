@@ -5,6 +5,6 @@ namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
     public class BlowBalloonCommand : Command
     {
-        public BlowBalloonCommand(Guid aggregateId) : base(aggregateId) {}
+        public BlowBalloonCommand(string aggregateId) : base(aggregateId) {}
     }
 }

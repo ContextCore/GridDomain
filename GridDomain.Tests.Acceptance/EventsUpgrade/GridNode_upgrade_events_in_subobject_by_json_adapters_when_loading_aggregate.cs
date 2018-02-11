@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Fact]
         public async Task Then_domain_events_should_be_upgraded_by_json_custom_adapter()
         {
-            var cmd = new InflateNewBallonCommand(1, Guid.NewGuid());
+            var cmd = new InflateNewBallonCommand(1, Guid.NewGuid().ToString());
 
             await Node.Prepare(cmd).
                        Expect<BalloonCreated>().

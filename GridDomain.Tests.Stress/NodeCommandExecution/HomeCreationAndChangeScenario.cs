@@ -20,10 +20,10 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
 
         private IEnumerable<CommandPlan> CreateAggregatePlan(int changeAmount)
         {
-            var personId = Guid.NewGuid();
+            var personId = Guid.NewGuid().ToString();
             yield return new CommandPlan(new CreatePersonCommand(personId), (n,c) => n.Execute(c));
             for (var num = 0; num < changeAmount; num++)
-                yield return new CommandPlan(new GoSleepCommand(personId,Guid.NewGuid()), (n,c) => n.Execute(c));
+                yield return new CommandPlan(new GoSleepCommand(personId,Guid.NewGuid().ToString()), (n,c) => n.Execute(c));
         }
 
         public Task Execute(IGridDomainNode node, Action<CommandPlan> singlePlanExecutedCallback)

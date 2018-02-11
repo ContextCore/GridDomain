@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.Serialization
 
         private class SampleDomainEvent : DomainEvent
         {
-            public SampleDomainEvent(int parameter, Guid aggregateId) : base(aggregateId, processId: aggregateId, createdTime: null)
+            public SampleDomainEvent(int parameter, string aggregateId) : base(aggregateId, processId: aggregateId, createdTime: null)
             {
                 Parameter = parameter;
             }
@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.Serialization
         [Fact]
         public void Test()
         {
-            _original = (SampleDomainEvent) new SampleDomainEvent(1223, Guid.NewGuid()).CloneForProcess(Guid.NewGuid());
+            _original = (SampleDomainEvent) new SampleDomainEvent(1223, Guid.NewGuid().ToString()).CloneForProcess(Guid.NewGuid().ToString());
             var ser = new DomainSerializer();
             var bytes = ser.ToBinary(_original);
             _restored = (SampleDomainEvent) ser.FromBinary(bytes, typeof(SampleDomainEvent));

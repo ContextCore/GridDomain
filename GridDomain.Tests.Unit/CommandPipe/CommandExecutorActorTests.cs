@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
     {
         private class CreateCommand : InflateNewBallonCommand
         {
-            public CreateCommand(int title, Guid aggregateId) : base(title, aggregateId) {}
+            public CreateCommand(int title, string aggregateId) : base(title, aggregateId) {}
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregatesPipeActor(catalog)));
 
-            var msg = new MessageMetadataEnvelop<CreateCommand>(new CreateCommand(1, Guid.NewGuid()), MessageMetadata.Empty);
+            var msg = new MessageMetadataEnvelop<CreateCommand>(new CreateCommand(1, Guid.NewGuid().ToString()), MessageMetadata.Empty);
 
             actor.Tell(msg);
 
@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregatesPipeActor(catalog)));
 
-            var msg = new MessageMetadataEnvelop<ICommand>(new InflateNewBallonCommand(1, Guid.NewGuid()),
+            var msg = new MessageMetadataEnvelop<ICommand>(new InflateNewBallonCommand(1, Guid.NewGuid().ToString()),
                                                            MessageMetadata.Empty);
 
             actor.Tell(msg);

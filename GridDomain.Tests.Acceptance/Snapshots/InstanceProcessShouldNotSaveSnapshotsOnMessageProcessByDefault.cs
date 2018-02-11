@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Fact]
         public async Task Given_default_policy()
         {
-            var startEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var res = await
                 Node.NewDebugWaiter()
@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>().SourceId;
 
-            var continueEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), startEvent.PersonId, BusinessDateTime.UtcNow, processId);
+            var continueEvent = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(), startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
             await Node.NewDebugWaiter()
                     .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()

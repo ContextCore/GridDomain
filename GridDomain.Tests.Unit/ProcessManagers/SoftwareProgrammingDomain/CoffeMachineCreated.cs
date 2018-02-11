@@ -6,7 +6,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain {
     {
         public int MaxCups { get; }
 
-        public CoffeMachineCreated(Guid id, int maxCups):base(id)
+        public CoffeMachineCreated(string id, int maxCups):base(id)
         {
             MaxCups = maxCups;
         }

@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
         {
             switch (message)
             {
-                case TestProcessStartMessage e: return new TestProcessState(Guid.NewGuid(), nameof(TestProcess.Initial));
+                case TestProcessStartMessage e: return new TestProcessState(Guid.NewGuid().ToString(), nameof(TestProcess.Initial));
             }
             throw new CannotCreateStateFromMessageException(message);
         }

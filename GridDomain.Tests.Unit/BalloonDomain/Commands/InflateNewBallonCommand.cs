@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
     public class InflateNewBallonCommand : Command
     {
-        public InflateNewBallonCommand(int title, Guid aggregateId) : base(aggregateId)
+        public InflateNewBallonCommand(int title, string aggregateId) : base(aggregateId)
         {
             Title = title;
         }

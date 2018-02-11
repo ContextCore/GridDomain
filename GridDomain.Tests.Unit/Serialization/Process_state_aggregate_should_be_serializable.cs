@@ -24,10 +24,10 @@ namespace GridDomain.Tests.Unit.Serialization
         [Fact]
         public void Test()
         {
-            var state = new SoftwareProgrammingState(Guid.NewGuid(), "123", Guid.NewGuid(), Guid.NewGuid());
+            var state = new SoftwareProgrammingState(Guid.NewGuid().ToString(), "123", Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
-            processStateAggregate.ReceiveMessage(state, Guid.NewGuid());
+            processStateAggregate.ReceiveMessage(state, Guid.NewGuid().ToString());
             processStateAggregate.CommitAll();
 
 

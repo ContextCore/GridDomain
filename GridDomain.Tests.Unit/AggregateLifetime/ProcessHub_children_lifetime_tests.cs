@@ -19,9 +19,9 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
         {
             public ProcessHubInfrastructure()
             {
-                var processId = Guid.NewGuid();
+                var processId = Guid.NewGuid().ToString();
                 ChildId = processId;
-                var gotTired = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), processId);
+                var gotTired = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), processId);
                 var coffeMadeEvent = new CoffeMadeEvent(gotTired.FavoriteCoffeMachineId, gotTired.PersonId, null, processId);
 
                 ChildCreateMessage = new MessageMetadataEnvelop<DomainEvent>(gotTired, MessageMetadata.New(gotTired.SourceId, null, null));
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
 
             public object ChildCreateMessage { get; }
             public object ChildActivateMessage { get; }
-            public Guid ChildId { get; }
+            public string ChildId { get; }
         }
     }
 }

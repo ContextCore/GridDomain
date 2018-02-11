@@ -22,10 +22,10 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var i = Node.Id; //just start node
             var process  = new SoftwareProgrammingProcess();
-            var state = new SoftwareProgrammingState(Guid.NewGuid(), process.Coding.Name, Guid.NewGuid(), Guid.NewGuid());
+            var state = new SoftwareProgrammingState(Guid.NewGuid().ToString(), process.Coding.Name, Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
-            processStateAggregate.ReceiveMessage(state, Guid.Empty);
+            processStateAggregate.ReceiveMessage(state, null);
             processStateAggregate.CommitAll();
 
             var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,

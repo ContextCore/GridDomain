@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 {
     internal class TestCommand : Command
     {
-        public TestCommand(Guid aggregateId):base(aggregateId)
+        public TestCommand(string aggregateId):base(aggregateId)
         {
 
         }

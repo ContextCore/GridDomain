@@ -4,7 +4,7 @@ namespace GridDomain.ProcessManagers.State
 {
     public class ProcessManagerCreated<TState> : ProcessStateEvent
     {
-        public ProcessManagerCreated(TState state, Guid sourceId) : base(sourceId)
+        public ProcessManagerCreated(TState state, string sourceId) : base(sourceId)
         {
             State = state;
         }

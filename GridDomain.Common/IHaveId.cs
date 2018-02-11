@@ -4,6 +4,6 @@ namespace GridDomain.Common
 {
     public interface IHaveId
     {
-        Guid Id { get; }
+        string Id { get; }
     }
 }

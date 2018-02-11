@@ -5,11 +5,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingState : IProcessState
     {
-        public SoftwareProgrammingState(Guid id,
+        public SoftwareProgrammingState(string id,
                                         string currentStateName,
-                                        Guid sofaId = default(Guid),
-                                        Guid coffeeMachineId = default(Guid),
-                                        Guid personId = default(Guid))
+                                        string sofaId = null,
+                                        string coffeeMachineId = null,
+                                        string personId = null)
         {
             Id = id;
             SofaId = sofaId;
@@ -18,11 +18,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
             PersonId = personId;
         }
 
-        public Guid PersonId { get; set; }
-        public Guid CoffeeMachineId { get; }
-        public Guid SofaId { get; set; }
-        public Guid BadSleepPersonId { get; set; }
-        public Guid Id { get; }
+        public string PersonId { get; set; }
+        public string CoffeeMachineId { get; }
+        public string SofaId { get; set; }
+        public string BadSleepPersonId { get; set; }
+        public string Id { get; }
         public string CurrentStateName { get; set; }
         public int CompositeTrack { get; set; }
 

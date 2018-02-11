@@ -7,9 +7,9 @@ namespace GridDomain.Tests.Unit.BalloonDomain.Events
                                                IHaveProcessingHistory
     {
         public BalloonTitleChanged(string value,
-                                           Guid sourceId,
+                                   string sourceId,
                                            DateTime? createdTime = null,
-                                           Guid processId = new Guid()) : base(sourceId, processId: processId, createdTime: createdTime)
+                                   string processId = null) : base(sourceId, processId: processId, createdTime: createdTime)
         {
             Value = value;
         }

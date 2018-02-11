@@ -25,8 +25,8 @@ namespace GridDomain.Tests.Unit.Metadata
         [Fact]
         public void When_publishing_start_message()
         {
-            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-            var gotTiredEventMetadata = MessageMetadata.New(gotTiredEvent.SourceId, Guid.NewGuid(), Guid.NewGuid());
+            var gotTiredEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var gotTiredEventMetadata = MessageMetadata.New(gotTiredEvent.SourceId, Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             Node.Pipe.ProcessesPipeActor.Tell(new Initialize(TestActor));
             Node.Pipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<DomainEvent>(gotTiredEvent,
@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_message_has_expected_value()
             Assert.Equal(gotTiredEvent.PersonId, command.PersonId);
             //Result_metadata_has_command_id_as_casuation_id()
-            Assert.Equal(gotTiredEvent.SourceId, Guid.Parse(answer.Metadata.CasuationId));
+            Assert.Equal(gotTiredEvent.SourceId, answer.Metadata.CasuationId);
             //Result_metadata_has_correlation_id_same_as_command_metadata()
             Assert.Equal(gotTiredEventMetadata.CorrelationId, answer.Metadata.CorrelationId);
             //Result_metadata_has_processed_history_filled_from_aggregate()

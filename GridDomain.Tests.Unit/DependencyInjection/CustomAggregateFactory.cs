@@ -59,7 +59,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
             {
                 _dependency = dep;
             }
-            public override IAggregate Build(Type type, Guid id, IMemento snapshot)
+            public override IAggregate Build(Type type, string id, IMemento snapshot)
             {
                 if (type == typeof(AggregateWithDependency))
                 {
@@ -73,7 +73,11 @@ namespace GridDomain.Tests.Unit.DependencyInjection
         {
             public int Value { get; }
 
-            public CreateCommand(Guid id, int value) : base(id)
+            public CreateCommand(string id, int value) : base(id)
+            {
+                Value = value;
+            }
+            public CreateCommand(Guid id, int value) : base(id.ToString())
             {
                 Value = value;
             }
@@ -81,13 +85,13 @@ namespace GridDomain.Tests.Unit.DependencyInjection
 
         class AggregateWithDependency : ConventionAggregate
         {
-            internal AggregateWithDependency(Guid id, IDependency dep):base(id)
+            internal AggregateWithDependency(string id, IDependency dep):base(id)
             {
                 Apply<Created>(c => { });
                 Execute<CreateCommand>(c => new AggregateWithDependency(c.AggregateId, c.Value,dep));
             }
 
-            public AggregateWithDependency(Guid id, int value, IDependency dep):this(id,dep)
+            public AggregateWithDependency(string id, int value, IDependency dep):this(id,dep)
             {
                 Produce(new Created(id,value,dep.GetValue()));
             }
@@ -109,7 +113,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
         public int InitialValue { get; }
         public int Produced { get; }
 
-        public Created(Guid id, int initialValue, int produced):base(id)
+        public Created(string id, int initialValue, int produced):base(id)
         {
             InitialValue = initialValue;
             Produced = produced;

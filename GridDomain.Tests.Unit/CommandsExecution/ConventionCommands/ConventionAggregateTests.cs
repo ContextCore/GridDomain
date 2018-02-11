@@ -23,14 +23,14 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ConventionCommands
         [Fact]
         public async Task ConventionRegisteredCommands_are_executed()
         {
-            await Node.Prepare(new GoSleepCommand(Guid.NewGuid(), Guid.NewGuid()))
+            await Node.Prepare(new GoSleepCommand(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
                       .Expect<Slept>()
                       .Execute();
         }
         [Fact]
         public async Task ConventionRegistered_aggregate_can_be_created()
         {
-            await Node.Prepare(new CreatePersonCommand(Guid.NewGuid()))
+            await Node.Prepare(new CreatePersonCommand(Guid.NewGuid().ToString()))
                       .Expect<PersonCreated>()
                       .Execute();
         }
@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ConventionCommands
         public void ConventionRegisteredEvents_are_applied()
         {
             var person = AggregateFactory.BuildEmpty<ProgrammerAggregate>();
-            var personCreated = new PersonCreated(Guid.NewGuid(), Guid.NewGuid());
+            var personCreated = new PersonCreated(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             ((IAggregate)person).ApplyEvent(personCreated);
 
             Assert.Equal(personCreated.PersonId,person.PersonId);

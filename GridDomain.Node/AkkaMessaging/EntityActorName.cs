@@ -7,22 +7,22 @@ namespace GridDomain.Node.AkkaMessaging
     {
         private static readonly string Separator = ":";
 
-        internal EntityActorName(string entityName, Guid id)
+        internal EntityActorName(string entityName, string id)
         {
             Id = id;
             Name = entityName + Separator + id;
         }
 
-        public Guid Id { get; }
+        public string Id { get; }
 
         public string Name { get; }
 
-        public static EntityActorName New<T>(Guid id)
+        public static EntityActorName New<T>(string id)
         {
             return New(typeof(T), id);
         }
 
-        public static EntityActorName New(Type entityType, Guid id)
+        public static EntityActorName New(Type entityType, string id)
         {
             return new EntityActorName(entityType.BeautyName(), id);
         }
@@ -31,15 +31,21 @@ namespace GridDomain.Node.AkkaMessaging
         {
             var entityType = typeof(T);
             var beautyName = entityType.BeautyName();
-            var id = Guid.Parse(value.Replace(beautyName + Separator, ""));
+            var id = value.Replace(beautyName + Separator, "");
             return New(entityType, id);
         }
 
-        public static bool TryParseId(string value, out Guid id)
+        public static bool TryParseId(string value, out string id)
         {
             var parts = value.Split(new[] {Separator}, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2)
+            {
+                id = parts[1];
+                return true;
+            }
 
-            return Guid.TryParse(parts[1], out id);
+            id = null;
+            return false;
         }
 
         public override string ToString()

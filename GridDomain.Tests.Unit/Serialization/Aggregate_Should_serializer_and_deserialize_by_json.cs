@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.Serialization
         [Fact]
         public void Test()
         {
-            _aggregate = new Balloon(Guid.NewGuid(), "test");
+            _aggregate = new Balloon(Guid.NewGuid().ToString(), "test");
             _aggregate.WriteNewTitle(10);
             _aggregate.CommitAll();
 

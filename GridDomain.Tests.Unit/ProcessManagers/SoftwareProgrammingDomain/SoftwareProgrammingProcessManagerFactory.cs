@@ -9,9 +9,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
     public class SoftwareProgrammingProcessStateFactory : IProcessStateFactory<SoftwareProgrammingState>
     {
-        private readonly Guid? _knownCoffeMachineId;
+        private readonly string _knownCoffeMachineId;
 
-        public SoftwareProgrammingProcessStateFactory(Guid? knownCoffeMachineId=null)
+        public SoftwareProgrammingProcessStateFactory(string knownCoffeMachineId=null)
         {
             _knownCoffeMachineId = knownCoffeMachineId;
         }
@@ -20,9 +20,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
             switch (message)
             {
                 //creating new process instance from a start message
-                case SleptWellEvent e: return new SoftwareProgrammingState(Guid.NewGuid(), nameof(SoftwareProgrammingProcess.Coding), Guid.Empty, _knownCoffeMachineId ?? Guid.NewGuid());
+                case SleptWellEvent e: return new SoftwareProgrammingState(Guid.NewGuid().ToString(), nameof(SoftwareProgrammingProcess.Coding), null, _knownCoffeMachineId ?? Guid.NewGuid().ToString());
                 //creating new process instance from a start message
-                case GotTiredEvent e: return new SoftwareProgrammingState(Guid.NewGuid(), nameof(SoftwareProgrammingProcess.Coding), Guid.Empty, _knownCoffeMachineId ?? Guid.NewGuid());
+                case GotTiredEvent e: return new SoftwareProgrammingState(Guid.NewGuid().ToString(), nameof(SoftwareProgrammingProcess.Coding), null, _knownCoffeMachineId ?? Guid.NewGuid().ToString());
             }
             throw new CannotCreateStateFromMessageException(message);
         }

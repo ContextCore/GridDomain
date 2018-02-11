@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         {
             var given = new Given_Automatonymous_Process(m => m.Coding);
 
-            var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
+            var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid().ToString());
             var commands = await given.Process.Transit(given.State, subscriptionExpiredEvent);
 
             Assert.NotEmpty(commands);
@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         {
             var given = new Given_Automatonymous_Process(m => m.Coding);
 
-            var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid());
+            var subscriptionExpiredEvent = new GotTiredEvent(Guid.NewGuid().ToString());
             await given.Process.Transit(given.State, subscriptionExpiredEvent);
 
             Assert.Equal(subscriptionExpiredEvent.SourceId, given.State.PersonId);
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         public async Task State_in_transition_result_is_changed()
         {
             var given = new Given_Automatonymous_Process(m => m.MakingCoffee);
-            await given.Process.Transit(given.State, new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid()));
+            await given.Process.Transit(given.State, new CoffeMadeEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString()));
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), given.State.CurrentStateName);
         }
 
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         public async Task State_is_changed_on_using_non_generic_transit_method()
         {
             var given = new Given_Automatonymous_Process(m => m.MakingCoffee);
-            object msg = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid());
+            object msg = new CoffeMadeEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             await given.Process.Transit(given.State, msg);
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), given.State.CurrentStateName);
         }

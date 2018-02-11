@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         [Fact]
         public async Task Process_state_should_not_be_changed()
         {
-            var coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid(), Guid.NewGuid(), null, Guid.NewGuid());
+            var coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null, Guid.NewGuid().ToString());
 
             Node.Transport.Publish(coffeMadeEvent);
             await Task.Delay(200);

@@ -28,8 +28,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid());
-            var sampleAggregateChangedEvent = new BalloonTitleChanged("1", Guid.NewGuid());
+            var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid().ToString());
+            var sampleAggregateChangedEvent = new BalloonTitleChanged("1", Guid.NewGuid().ToString());
 
             actor.Tell(new MessageMetadataEnvelop(sampleAggregateCreatedEvent));
 
@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             Sys.InitLocalTransportExtension();
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid());
+            var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid().ToString());
 
             actor.Tell(MessageMetadataEnvelop.New(sampleAggregateCreatedEvent,MessageMetadata.Empty));
 
@@ -76,7 +76,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            actor.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid())));
+            actor.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString())));
 
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor
@@ -85,7 +85,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
             ExpectMsg<AllHandlersCompleted>();
             
-            actor.Tell(MessageMetadataEnvelop.New(new BalloonTitleChanged("2", Guid.NewGuid())));
+            actor.Tell(MessageMetadataEnvelop.New(new BalloonTitleChanged("2", Guid.NewGuid().ToString())));
             ExpectMsg<MarkedHandlerExecutedMessage>();
             ExpectMsg<MarkedHandlerExecutedMessage>();
             //HandlersProcessActor should notify next step - process actor that work is done
@@ -98,7 +98,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
         class Inherited : BalloonCreated
         {
-            public Inherited() : base("inherited", Guid.NewGuid()) { }
+            public Inherited() : base("inherited", Guid.NewGuid().ToString()) { }
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             catalog.Add<BalloonCreated>(new FireAndForgetActorMessageProcessor(TestActor));
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            actor.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid())));
+            actor.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString())));
            
             //TestActor as processor receives message for work
             ExpectMsg<MessageMetadataEnvelop<BalloonCreated>>();
@@ -158,8 +158,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            actor.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid())));
-            actor.Tell(MessageMetadataEnvelop.New(new BalloonTitleChanged("1", Guid.NewGuid())));
+            actor.Tell(MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString())));
+            actor.Tell(MessageMetadataEnvelop.New(new BalloonTitleChanged("1", Guid.NewGuid().ToString())));
 
             ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonCreated && s == fastHandler);
             ExpectMsg<IMessageMetadataEnvelop<BalloonCreated>>();

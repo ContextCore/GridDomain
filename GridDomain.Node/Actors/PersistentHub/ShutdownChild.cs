@@ -4,11 +4,11 @@ namespace GridDomain.Node.Actors.PersistentHub
 {
     public class ShutdownChild
     {
-        public ShutdownChild(Guid childId)
+        public ShutdownChild(string childId)
         {
             ChildId = childId;
         }
 
-        public Guid ChildId { get; }
+        public string ChildId { get; }
     }
 }

@@ -13,14 +13,14 @@ namespace GridDomain.Tests.Unit.ProcessManagers.Transitions
         [Fact]
         public void Given_created_and_message_received_and_transitioned_event()
         {
-            var processId = Guid.NewGuid();
+            var processId = Guid.NewGuid().ToString();
             var softwareProgrammingState = new SoftwareProgrammingState(processId, nameof(SoftwareProgrammingProcess.Sleeping));
 
             var aggregate = AggregateFactory.BuildEmpty<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
             aggregate.ApplyEvents(new ProcessManagerCreated<SoftwareProgrammingState>(softwareProgrammingState, processId),
                                   new ProcessReceivedMessage<SoftwareProgrammingState>(processId,
                                                                                     softwareProgrammingState,
-                                                                                    Guid.NewGuid()));
+                                                                                    Guid.NewGuid().ToString()));
             Assert.Equal(softwareProgrammingState, aggregate.State);
         }
     }

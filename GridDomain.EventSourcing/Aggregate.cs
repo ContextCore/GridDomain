@@ -27,12 +27,12 @@ namespace GridDomain.EventSourcing
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
        
-        protected Aggregate(Guid id)
+        protected Aggregate(string id)
         {
             Id = id;
         }
 
-        Guid IMemento.Id
+        string IMemento.Id
         {
             get => Id;
             set => Id = value;
@@ -44,7 +44,7 @@ namespace GridDomain.EventSourcing
             set => Version = value;
         }
 
-        public Guid Id { get; protected set; }
+        public string Id { get; protected set; }
         public int Version { get; protected set; }
 
         public void InitEventStore(IEventStore store)

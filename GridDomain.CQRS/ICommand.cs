@@ -5,7 +5,7 @@ namespace GridDomain.CQRS
 {
     public interface ICommand : IHaveId
     {
-        Guid ProcessId { get; }
-        Guid AggregateId { get; }
+        string ProcessId { get; }
+        string AggregateId { get; }
     }
 }

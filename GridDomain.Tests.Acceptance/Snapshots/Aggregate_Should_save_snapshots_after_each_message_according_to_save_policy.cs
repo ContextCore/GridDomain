@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Fact]
         public async Task Given_default_policy()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
             var initialParameter = 1;
             var cmd = new InflateNewBallonCommand(initialParameter, aggregateId);
             await Node.Prepare(cmd)

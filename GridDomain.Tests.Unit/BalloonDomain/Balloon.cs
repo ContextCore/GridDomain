@@ -9,9 +9,9 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class Balloon : Aggregate
     {
-        private Balloon(Guid id) : base(id) {}
+        private Balloon(string id) : base(id) {}
 
-        public Balloon(Guid id, string title) : this(id)
+        public Balloon(string id, string title) : this(id)
         {
             Produce(new BalloonCreated(title, id));
         }

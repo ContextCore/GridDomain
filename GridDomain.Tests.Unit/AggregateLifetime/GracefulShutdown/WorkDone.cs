@@ -6,7 +6,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
     {
         public string Value { get; }
 
-        public WorkDone(Guid sourceId, string value):base(sourceId)
+        public WorkDone(string sourceId, string value):base(sourceId)
         {
             Value = value;
         }    

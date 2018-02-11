@@ -6,10 +6,10 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Events
     public class BalanceChangedEvent_V0 : DomainEvent
     {
         public BalanceChangedEvent_V0(decimal amountChange,
-                                      Guid sourceId,
+                                      string sourceId,
                                       decimal koefficient = 1,
                                       DateTime? createdTime = null,
-                                      Guid processId = new Guid()) : base(sourceId, processId: processId, createdTime: createdTime)
+                                      string processId = null) : base(sourceId, processId: processId, createdTime: createdTime)
         {
             Koefficient = koefficient;
             AmountChange = amountChange;

@@ -14,8 +14,8 @@ namespace GridDomain.Tests.Unit.Serialization {
         [Fact]
         public void Message_Envelop_should_be_serializable()
         {
-            var evt = new BalloonTitleChanged("123",Guid.NewGuid());
-            var fault = new Fault<BalloonTitleChanged>(evt, new Exception(), typeof(object), Guid.NewGuid(), DateTime.Now);
+            var evt = new BalloonTitleChanged("123",Guid.NewGuid().ToString());
+            var fault = new Fault<BalloonTitleChanged>(evt, new Exception(), typeof(object), Guid.NewGuid().ToString(), DateTime.Now);
             //Fault
             //ballonTitleChanged
             var msg = new MessageMetadataEnvelop<Fault<BalloonTitleChanged>>(fault,MessageMetadata.Empty);
@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.Serialization {
         [Fact]
         public void MessageHandleException_should_be_serializable()
         {
-            var ex = new MessageHandleException(new BalloonTitleChanged("123", Guid.NewGuid()));
+            var ex = new MessageHandleException(new BalloonTitleChanged("123", Guid.NewGuid().ToString()));
            
             var serializer = new DebugHyperionSerializer((ExtendedActorSystem)TestActorSystem.Create());
             var bytes = serializer.ToBinary(ex);
@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Unit.Serialization {
         [Fact]
         public void AggregateException_should_be_serializable()
         {
-            var ex = new AggregateException(new MessageHandleException(new BalloonTitleChanged("123", Guid.NewGuid())));
+            var ex = new AggregateException(new MessageHandleException(new BalloonTitleChanged("123", Guid.NewGuid().ToString())));
 
             var serializer = new DebugHyperionSerializer((ExtendedActorSystem)TestActorSystem.Create());
             var bytes = serializer.ToBinary(ex);

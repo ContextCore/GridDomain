@@ -57,9 +57,9 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
                                                                                               aggregatesConstructor,
                                                     snapshotsConstructor) { }
 
-        public async Task<Version<T>[]> Load<T>(Guid id) where T : class, IAggregate
+        public async Task<Version<T>[]> Load<T>(string id) where T : class, IAggregate
         {
-            var snapshotType = _snapshotsConstructor.GetSnapshot(_aggregatesConstructor.Build<T>(Guid.Empty))
+            var snapshotType = _snapshotsConstructor.GetSnapshot(_aggregatesConstructor.BuildEmpty<T>())
                                                     .GetType();
 
             var serializer = new DomainSerializer();

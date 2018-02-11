@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
             return new TestAggregate(snapshot.Id, dep) {Value = snapshot.Value};
         }
         
-        internal TestAggregate(Guid id, ITestDependency d) : base(id)
+        internal TestAggregate(string id, ITestDependency d) : base(id)
         {
             _testDependency = d;
         }

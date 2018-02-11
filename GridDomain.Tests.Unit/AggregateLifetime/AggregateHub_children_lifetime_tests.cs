@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
         {
             public AggregatePersistedHubInfrastructure()
             {
-                ChildId = Guid.NewGuid();
+                ChildId = Guid.NewGuid().ToString();
                 ChildCreateMessage = new MessageMetadataEnvelop<ICommand>(new InflateNewBallonCommand(42, ChildId),
                                                                           MessageMetadata.New(ChildId, null, null));
                 ChildActivateMessage = new MessageMetadataEnvelop<ICommand>(new WriteTitleCommand(100, ChildId),
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
 
             public object ChildCreateMessage { get; }
             public object ChildActivateMessage { get; }
-            public Guid ChildId { get; }
+            public string ChildId { get; }
         }
     }
 }

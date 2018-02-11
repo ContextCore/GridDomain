@@ -156,7 +156,7 @@ namespace GridDomain.Node.Actors.EventSourced
             Sender.Tell(SubscribeAck.Instance);
         }
 
-        protected Guid Id { get; }
+        protected string Id { get; }
         public override string PersistenceId { get; }
         public T State { get; protected set; }
 

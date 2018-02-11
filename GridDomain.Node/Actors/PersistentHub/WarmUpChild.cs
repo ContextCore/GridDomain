@@ -3,10 +3,10 @@ using System;
 namespace GridDomain.Node.Actors.PersistentHub {
     class WarmUpChild
     {
-        public WarmUpChild(Guid id)
+        public WarmUpChild(string id)
         {
             Id = id;
         }
-        public Guid Id { get; }
+        public string Id { get; }
     }
 }

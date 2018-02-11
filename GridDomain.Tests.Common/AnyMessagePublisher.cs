@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Common
             _commandPipe = commandPipe;
         }
 
-        public Task<IWaitResult> SendToProcessManagers(DomainEvent message, Guid processId, IMessageMetadata metadata = null)
+        public Task<IWaitResult> SendToProcessManagers(DomainEvent message, string processId, IMessageMetadata metadata = null)
         {
             return SendToProcessManagers(message.CloneForProcess(processId), metadata);
         }

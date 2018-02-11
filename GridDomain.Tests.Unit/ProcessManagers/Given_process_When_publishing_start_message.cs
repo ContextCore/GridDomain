@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         [Fact]
         public async Task When_publishing_start_message_A()
         {
-            var startMessage = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var startMessage = new SleptWellEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var state = await Node.GetTransitedState<SoftwareProgrammingState>(startMessage);
             // process_has_correct_data()
             Assert.Equal(startMessage.SofaId, state.SofaId);
@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         [Fact]
         public async Task When_publishing_start_message_B()
         {
-            var startMessage = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var startMessage = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var state = await Node.GetTransitedState<SoftwareProgrammingState>(startMessage);
 
             //process_has_correct_data()

@@ -8,9 +8,9 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
         public string Value;
 
         public TestDomainEvent(string value,
-                               Guid sourceId,
+                               string sourceId,
                                DateTime? createdTime = default(DateTime?),
-                               Guid processId = default(Guid)) : base(sourceId, processId: processId, createdTime: createdTime)
+                               string processId = null) : base(sourceId, processId: processId, createdTime: createdTime)
         {
             Value = value;
         }

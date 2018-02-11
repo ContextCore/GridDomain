@@ -15,7 +15,7 @@ namespace GridDomain.EventSourcing
     public class AggregateFactory : IConstructAggregates, IConstructSnapshots
     {
         //default convention: Aggregate is implementing IMemento itself
-        protected virtual IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
+        protected virtual IAggregate BuildFromSnapshot(Type type, string id, IMemento snapshot)
         {
             var snapshotVersion = snapshot.Version;
             if (!(snapshot is IAggregate aggregate))
@@ -29,7 +29,7 @@ namespace GridDomain.EventSourcing
             return aggregate;
         }
 
-        protected static IAggregate BuildByConvention(Type type, Guid id)
+        protected static IAggregate BuildByConvention(Type type, string id)
         {
             //TODO: add type cache to reduce search time
             var constructor = type.GetTypeInfo()
@@ -37,7 +37,7 @@ namespace GridDomain.EventSourcing
                                                               {
                                                                   var parameters = c.GetParameters();
                                                                   return parameters.Length == 1 && parameters[0]
-                                                                             .ParameterType == typeof(Guid);
+                                                                             .ParameterType == typeof(string);
                                                               });
 
             if (constructor == null)
@@ -46,16 +46,16 @@ namespace GridDomain.EventSourcing
             return constructor.Invoke(new object[] {id}) as IAggregate;
         }
 
-        public virtual IAggregate Build(Type type, Guid id, IMemento snapshot=null)
+        public virtual IAggregate Build(Type type, string id, IMemento snapshot=null)
         {
             return snapshot == null ? BuildByConvention(type, id) : BuildFromSnapshot(type, id, snapshot);
         }
 
         public static readonly AggregateFactory Default = new AggregateFactory();
 
-        public static T BuildEmpty<T>(Guid? id = null) where T : IAggregate
+        public static T BuildEmpty<T>(string id = null) where T : IAggregate
         {
-            return Default.Build<T>(id ?? Guid.NewGuid());
+            return Default.Build<T>(id ?? Guid.NewGuid().ToString());
         }
 
         public virtual IMemento GetSnapshot(IAggregate aggregate)

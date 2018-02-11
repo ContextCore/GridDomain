@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Fact]
         public async Task Given_persisted_snapshot_Aggregate_should_execute_command()
         {
-            var aggregate = new Balloon(Guid.NewGuid(), "haha");
+            var aggregate = new Balloon(Guid.NewGuid().ToString(), "haha");
             aggregate.WriteNewTitle(10);
             aggregate.CommitAll();
 

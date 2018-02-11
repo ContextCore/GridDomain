@@ -15,8 +15,8 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         [Fact]
         public async Task When_aggregate_await_async_emit_produced_events_applied_to_state()
         {
-            var asyncCommand = new DoubleIncreaseTitleCommand(43, Guid.NewGuid());
-            var received = new HashSet<Guid>();
+            var asyncCommand = new DoubleIncreaseTitleCommand(43, Guid.NewGuid().ToString());
+            var received = new HashSet<string>();
             var waiter = Node.NewWaiter().Expect<BalloonTitleChanged>(e =>
                                                                       {
                                                                           received.Add(e.Id);

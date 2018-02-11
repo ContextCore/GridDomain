@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task SyncExecute_throw_exception_according_to_node_default_timeout()
         {
-            await Node.Prepare(new PlanTitleWriteCommand(1000, Guid.NewGuid()))
+            await Node.Prepare(new PlanTitleWriteCommand(1000, Guid.NewGuid().ToString()))
                       .Expect<BalloonTitleChanged>()
                       .Execute()
                       .ShouldThrow<TimeoutException>();

@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         [Fact]
         public void Serializer_can_serialize_and_deserialize_polymorphic_types()
         {
-            var withType = new ExecutionOptions(DateTime.MaxValue, typeof(ScheduledCommandSuccessfullyProcessed),Guid.NewGuid(),TimeSpan.FromMinutes(1));
+            var withType = new ExecutionOptions(DateTime.MaxValue, typeof(ScheduledCommandSuccessfullyProcessed),Guid.NewGuid().ToString(),TimeSpan.FromMinutes(1));
             var serializer = new DomainSerializer();
             var bytes = serializer.ToBinary(withType);
             var deserialized = (ExecutionOptions) serializer.FromBinary(bytes, typeof(ExecutionOptions));

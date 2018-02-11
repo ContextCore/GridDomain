@@ -48,7 +48,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         public IStash Stash { get; set; }
 
-        private Guid Id { get; }
+        private string Id { get; }
 
         class ProcessExecutionContext
         {
@@ -88,6 +88,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             if (!EntityActorName.TryParseId(Self.Path.Name, out var id))
                 throw new BadNameFormatException();
+            
             Id = id;
 
             _publisher = Context.System.GetTransport();
@@ -299,7 +300,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             }
         }
 
-        private static Guid GetMessageId(IMessageMetadataEnvelop processingEnvelop)
+        private static string GetMessageId(IMessageMetadataEnvelop processingEnvelop)
         {
             switch (processingEnvelop.Message)
             {
@@ -316,7 +317,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             var processorType = Process?.GetType() ?? typeof(TState);
             var fault = (IFault) Fault.NewGeneric(processingMessage.Message, error.UnwrapSingle(), Id, processorType);
 
-            var faultMetadata = processingMessage.Metadata.CreateChild(fault.ProcessId, _exceptionOnTransit);
+            var faultMetadata = MessageMetadataExtensions.CreateChild(processingMessage.Metadata, (string) fault.ProcessId, _exceptionOnTransit);
 
             _publisher.Publish(fault, faultMetadata);
 
@@ -326,7 +327,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             ExecutionContext.Clear();
         }
 
-        private Guid GetProcessId(object msg)
+        private string GetProcessId(object msg)
         {
             switch (msg)
             {

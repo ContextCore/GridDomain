@@ -5,7 +5,7 @@ namespace GridDomain.Common
     public static class MessageMetadataExtensions
     {
         public static MessageMetadata CreateChild(this IMessageMetadata metadata,
-                                                  Guid messageId,
+                                                  string messageId,
                                                   params ProcessEntry[] process)
         {
             return MessageMetadata.CreateFrom(messageId, metadata, process);
@@ -19,12 +19,12 @@ namespace GridDomain.Common
         }
 
         public static MessageMetadata CreateChild(this IMessageMetadata metadata,
-                                                  Guid messageId,
+                                                  string messageId,
                                                   string who,
                                                   string what,
                                                   string why)
         {
-            return metadata.CreateChild(messageId, new ProcessEntry(who, what, why));
+            return CreateChild(metadata, (string) messageId, new ProcessEntry(who, what, why));
         }
     }
 }

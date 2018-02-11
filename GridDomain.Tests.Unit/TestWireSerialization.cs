@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit {
         public void Process_Faults_Should_be_deserializable()
         {
             //CoffeMakeFailedEvent
-            var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(), Guid.NewGuid());
+            var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             CheckDeserialize(coffeMakeFailedEvent, nameof(coffeMakeFailedEvent));
 
             var undefinedCoffeMachineException = new UndefinedCoffeMachineException();

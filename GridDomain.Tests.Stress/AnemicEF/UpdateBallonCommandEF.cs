@@ -6,10 +6,10 @@ namespace GridDomain.Tests.Stress.AnemicEF {
     class UpdateBallonCommandEF : IEFCommand
     {
         private readonly Func<BalloonContext> _creator;
-        private readonly Guid _guid;
+        private readonly string _guid;
         private readonly string _title;
 
-        public UpdateBallonCommandEF(Guid id, string title, Func<BalloonContext> creator)
+        public UpdateBallonCommandEF(string id, string title, Func<BalloonContext> creator)
         {
             _title = title;
             _guid = id;

@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Acceptance.Tools
         [Fact]
         public async Task Given_persisted_aggreate()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
             var agregateValue = "initial";
             var aggregate = new Balloon(aggregateId, agregateValue);
 

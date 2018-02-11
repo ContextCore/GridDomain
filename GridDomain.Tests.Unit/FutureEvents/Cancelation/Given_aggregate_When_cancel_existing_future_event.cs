@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
         [Fact]
         public async Task Then_it_occures_and_applies_to_aggregate()
         {
-            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid());
+            var aggregate = new TestFutureEventsAggregate(Guid.NewGuid().ToString());
             aggregate.CommitAll();
 
             var testValue = "value D";
@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
             Assert.True(cancelEvents.All(e => e.FutureEventId != futureEventOutOfCriteria.Id));
             // Canceled_event_cannot_be_raised()
 
-            await aggregate.RaiseScheduledEvent(futureEventA.Id, Guid.NewGuid()).ShouldThrow<ScheduledEventNotFoundException>();
+            await aggregate.RaiseScheduledEvent(futureEventA.Id, Guid.NewGuid().ToString()).ShouldThrow<ScheduledEventNotFoundException>();
 
             var anyEvents = aggregate.GetEvents<DomainEvent>();
             Assert.Empty(anyEvents);

@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
             var random = new Random();
             for (int i = 0; i < aggregateNum; i++)
             {
-                var aggregateId = Guid.NewGuid();
+                var aggregateId = Guid.NewGuid().ToString();
                 yield return new InflateNewBallonCommand(random.Next(),aggregateId);
                 for (int j = 0; j < changeNum; j++)
                     yield return new WriteTitleCommand(random.Next(),aggregateId);

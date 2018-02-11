@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
                 await context.SaveChangesAsync();
 
                 _publisher.Publish(new BalloonTitleChangedNotification(){BallonId = msg.SourceId},
-                                    metadata.CreateChild(Guid.NewGuid(), _readModelUpdatedProcessEntry));
+                                    metadata.CreateChild(Guid.NewGuid().ToString(), _readModelUpdatedProcessEntry));
             }
             _log.Debug("Projected balloon catalog from message {@msg}", msg);
         }
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
                 context.BalloonCatalog.Add(msg.ToCatalogItem());
                 await context.SaveChangesAsync();
                 _publisher.Publish(new BalloonCreatedNotification() { BallonId = msg.SourceId },
-                                   metadata.CreateChild(Guid.NewGuid(), _readModelUpdatedProcessEntry));
+                                   metadata.CreateChild(Guid.NewGuid().ToString(), _readModelUpdatedProcessEntry));
             }
         }
     }

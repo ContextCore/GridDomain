@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         public async Task Then_separate_process_startes_on_each_message()
         {
             
-            var startMessageA = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var startMessageA = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var resA = await Node.NewDebugWaiter()
                                  .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 
             var stateA = resA.Message<ProcessReceivedMessage<SoftwareProgrammingState>>().State;
 
-            var secondStartMessageB = new SleptWellEvent(Guid.NewGuid(), Guid.NewGuid());
+            var secondStartMessageB = new SleptWellEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var resB = await Node.NewDebugWaiter()
                                  .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()

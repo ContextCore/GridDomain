@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         [Fact]
         public async Task When_aggregate_is_recovered_from_persistence()
         {
-            var balanceId = Guid.NewGuid();
+            var balanceId = Guid.NewGuid().ToString();
             var events = new DomainEvent[]
                          {
                              new AggregateCreatedEvent(0, balanceId),

@@ -6,6 +6,6 @@ namespace GridDomain.ProcessManagers.State
 {
     public class ProcessStateEvent : DomainEvent
     {
-        public ProcessStateEvent(Guid processId) : base(processId, processId: processId, createdTime: BusinessDateTime.UtcNow) {}
+        public ProcessStateEvent(string processId) : base(processId, processId: processId, createdTime: BusinessDateTime.UtcNow) {}
     }
 }

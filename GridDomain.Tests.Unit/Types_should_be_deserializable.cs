@@ -62,7 +62,7 @@ namespace GridDomain.Tests.Unit
 
         private class FakeCommand : Command
         {
-            public FakeCommand(Guid aggregateId) : base(aggregateId) {}
+            public FakeCommand(string aggregateId) : base(aggregateId) {}
         }
 
         protected override Assembly[] AllAssemblies { get; } = {

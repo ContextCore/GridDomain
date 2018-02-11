@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Common
         }
         private static TAggregate CreateAggregate<TAggregate>() where TAggregate: Aggregate
         {
-            return (TAggregate)new AggregateFactory().Build(typeof(TAggregate), Guid.NewGuid(), null);
+            return (TAggregate)new AggregateFactory().Build(typeof(TAggregate), Guid.NewGuid().ToString(), null);
         }
 
         private static IAggregateCommandsHandler<TAggregate> CreateCommandsHandler<TAggregate,THandler>() where THandler : IAggregateCommandsHandler<TAggregate> where TAggregate : IAggregate

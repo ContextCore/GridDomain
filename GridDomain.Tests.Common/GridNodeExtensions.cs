@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Common
     public static class GridNodeExtensions
     {
 
-        public static async Task<WarmUpResult> WarmUpProcessManager<TProcess>(this GridDomainNode node, Guid id,TimeSpan? timeout = null)
+        public static async Task<WarmUpResult> WarmUpProcessManager<TProcess>(this GridDomainNode node, string id,TimeSpan? timeout = null)
         {
             var processHub = await node.LookupProcessHubActor<TProcess>(timeout);
             return await processHub.Ask<WarmUpResult>(new WarmUpChild(id));
@@ -66,7 +66,7 @@ namespace GridDomain.Tests.Common
             return waiter;
         }
 
-        public static async Task<TAggregate> LoadAggregate<TAggregate>(this GridDomainNode node, Guid id)
+        public static async Task<TAggregate> LoadAggregate<TAggregate>(this GridDomainNode node, string id)
             where TAggregate : Aggregate
         {
             using (var eventsRepo = new ActorSystemEventRepository(node.System))
@@ -102,7 +102,7 @@ namespace GridDomain.Tests.Common
             aggregate.CommitAll();
         }
 
-        public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, Guid id, params DomainEvent[] messages)
+        public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, string id, params DomainEvent[] messages)
             where TAggregate : Aggregate
         {
             var name = EntityActorName.New<TAggregate>(id).Name;
@@ -110,7 +110,7 @@ namespace GridDomain.Tests.Common
         }
 
         public static async Task<IActorRef> LookupAggregateActor<T>(this GridDomainNode node,
-                                                                    Guid id,
+                                                                    string id,
                                                                     TimeSpan? timeout = null) where T : IAggregate
         {
             var name = EntityActorName.New<T>(id).Name;
@@ -123,7 +123,7 @@ namespace GridDomain.Tests.Common
             return await node.ResolveActor($"{typeof(T).Name}_Hub", timeout);
         }
 
-        public static async Task KillAggregate<TAggregate>(this GridDomainNode node, Guid id, TimeSpan? timeout = null)
+        public static async Task KillAggregate<TAggregate>(this GridDomainNode node, string id, TimeSpan? timeout = null)
             where TAggregate : Aggregate
         {
             var aggregateHubActor = await node.LookupAggregateHubActor<TAggregate>(timeout);
@@ -132,7 +132,7 @@ namespace GridDomain.Tests.Common
             await ShutDownHubActor(node, id, aggregateActor, aggregateHubActor, timeout);
         }
 
-        private static async Task ShutDownHubActor(GridDomainNode node, Guid id, IActorRef aggregateActor, IActorRef aggregateHubActor, TimeSpan? timeout=null)
+        private static async Task ShutDownHubActor(GridDomainNode node, string id, IActorRef aggregateActor, IActorRef aggregateHubActor, TimeSpan? timeout=null)
         {
             using (var inbox = Inbox.Create(node.System))
             {
@@ -145,7 +145,7 @@ namespace GridDomain.Tests.Common
             }
         }
 
-        public static async Task KillProcessManager<TProcess, TState>(this GridDomainNode node, Guid id, TimeSpan? timeout = null)
+        public static async Task KillProcessManager<TProcess, TState>(this GridDomainNode node, string id, TimeSpan? timeout = null)
             where TState : IProcessState
         {
             var hub = await node.LookupProcessHubActor<TProcess>(timeout);
@@ -172,7 +172,7 @@ namespace GridDomain.Tests.Common
         }
 
         public static async Task<IActorRef> LookupProcessActor<TProcess, TData>(this GridDomainNode node,
-                                                                               Guid id,
+                                                                                string id,
                                                                                TimeSpan? timeout = null) where TData : IProcessState
         {
             var name = EntityActorName.New<TProcess>(id).Name;

@@ -4,6 +4,6 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
 {
     public class BalloonTitleChangedNotification
     {
-        public Guid BallonId { get; set; }
+        public string BallonId { get; set; }
     }
 }

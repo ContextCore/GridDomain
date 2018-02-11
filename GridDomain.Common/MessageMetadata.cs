@@ -1,6 +1,3 @@
-using System;
-using System.CodeDom;
-
 namespace GridDomain.Common
 {
     public class MessageMetadata : IMessageMetadata
@@ -17,11 +14,11 @@ namespace GridDomain.Common
         }
 
 
-        public static MessageMetadata New(Guid messageId,
-                                          Guid? correlationId = null,
-                                          Guid? casuationId = null)
+        public static MessageMetadata New(string messageId,
+                                          string correlationId = null,
+                                          string casuationId = null)
         {
-            return new MessageMetadata(messageId.ToString("D"), correlationId?.ToString("D"), casuationId?.ToString("D"));
+            return new MessageMetadata(messageId, correlationId, casuationId);
         }
         public static MessageMetadata Empty { get; } = new MessageMetadata("","");
 
@@ -30,11 +27,11 @@ namespace GridDomain.Common
         public string CorrelationId { get; }
         public ProcessHistory History { get; }
 
-        public static MessageMetadata CreateFrom(Guid messageId,
+        public static MessageMetadata CreateFrom(string messageId,
                                                  IMessageMetadata existedMessage,
                                                  params ProcessEntry[] process)
         {
-            return new MessageMetadata(messageId.ToString("D"),
+            return new MessageMetadata(messageId,
                                        existedMessage.CorrelationId,
                                        existedMessage.MessageId,
 #if DEBUG

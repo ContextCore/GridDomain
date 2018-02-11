@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
         private readonly int[] _parameters = new int[5];
 
-        private async Task ChangeSeveralTimes(int changeNumber, Guid aggregateId)
+        private async Task ChangeSeveralTimes(int changeNumber, string aggregateId)
         {
             for (var cmdNum = 0; cmdNum < changeNumber; cmdNum++)
             {
@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
 
             await Node.Execute(new InflateNewBallonCommand(1, aggregateId));
 

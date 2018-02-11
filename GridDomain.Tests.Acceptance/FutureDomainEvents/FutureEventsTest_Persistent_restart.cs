@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         {
 
             var node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig()).UseSqlPersistence().CreateNode();
-            var cmd = new ScheduleEventInFutureCommand(BusinessDateTime.UtcNow.AddSeconds(5), Guid.NewGuid(), "test value");
+            var cmd = new ScheduleEventInFutureCommand(BusinessDateTime.UtcNow.AddSeconds(5), Guid.NewGuid().ToString(), "test value");
 
             await node.Execute(cmd);
             await node.Stop();

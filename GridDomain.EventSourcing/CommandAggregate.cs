@@ -13,7 +13,7 @@ namespace GridDomain.EventSourcing {
 
     public abstract class CommandAggregate : Aggregate, IAggregateCommandsHandler<CommandAggregate>
     {
-        protected CommandAggregate(Guid id) : base(id)
+        protected CommandAggregate(string id) : base(id)
         {
             AggregateType = GetType();
         }

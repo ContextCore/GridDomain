@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers {
         
         public new static BalloonAggregateFactory Default { get; } = new BalloonAggregateFactory();
         
-        protected override IAggregate BuildFromSnapshot(Type type, Guid id, IMemento memento)
+        protected override IAggregate BuildFromSnapshot(Type type, string id, IMemento memento)
         {
                 var snapshot = memento as BalloonSnapshot;
                 if (snapshot == null)
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers {
         
         internal class BalloonSnapshot : IMemento
         {
-            public BalloonSnapshot(Guid id, int version, string value)
+            public BalloonSnapshot(string id, int version, string value)
             {
                 Id = id;
                 Version = version;
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers {
 
             public string Value { get; }
 
-            public Guid Id { get; set; }
+            public string Id { get; set; }
             public int Version { get; set; }
         }
     }

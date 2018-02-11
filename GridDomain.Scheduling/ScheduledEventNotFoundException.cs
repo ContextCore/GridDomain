@@ -8,11 +8,11 @@ namespace GridDomain.Scheduling
         {
             
         }
-        public ScheduledEventNotFoundException(Guid eventId)
+        public ScheduledEventNotFoundException(string eventId)
         {
             EventId = eventId;
         }
 
-        public Guid EventId { get; }
+        public string EventId { get; }
     }
 }

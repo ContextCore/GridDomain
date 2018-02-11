@@ -104,7 +104,7 @@ namespace GridDomain.Scheduling.Quartz
 
             _quartzLogger.Information("job {key} succeed", jobKey.Name);
 
-            var successMetadata = commandMetadata.CreateChild(Guid.NewGuid(),
+            var successMetadata = commandMetadata.CreateChild(Guid.NewGuid().ToString(),
                                                               new ProcessEntry(nameof(QuartzJob),
                                                                                "Publishing success notification",
                                                                                "Job execution completed succesfully. Command executed and confirmed."));

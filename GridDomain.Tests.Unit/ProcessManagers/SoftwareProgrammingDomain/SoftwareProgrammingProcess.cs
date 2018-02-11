@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
             During(MakingCoffee,
                    When(CoffeNotAvailable).Then(context =>
                                                 {
-                                                    if (context.Data.CoffeMachineId == Guid.Empty)
+                                                    if (string.IsNullOrEmpty(context.Data.CoffeMachineId))
                                                         throw new UndefinedCoffeMachineException();
 
                                                     Dispatch(new GoSleepCommand(context.Data.ForPersonId,

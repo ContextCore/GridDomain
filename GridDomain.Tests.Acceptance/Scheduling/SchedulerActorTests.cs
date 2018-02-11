@@ -50,14 +50,14 @@ namespace GridDomain.Tests.Acceptance.Scheduling
 
         private ExecutionOptions CreateOptions(double seconds,
                                                        TimeSpan? timeout = null,
-                                                       Guid? id = null,
+                                                       string id = null,
                                                        string checkField = null,
                                                        int? retryCount = null,
                                                        TimeSpan? repeatInterval = null)
         {
             return new ExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
                                                 typeof(ScheduledCommandSuccessfullyProcessed),
-                                                id ?? Guid.Empty,
+                                                id,
                                                 timeout);
         }
 

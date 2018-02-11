@@ -5,20 +5,20 @@ namespace GridDomain.EventSourcing
 {
     public class DomainEvent : ISourcedEvent, IHaveId, IHaveProcessId
     {
-        protected DomainEvent(Guid sourceId, Guid? processId = null, Guid? id = null, DateTime? createdTime = null)
+        protected DomainEvent(string sourceId, string processId = null, string id = null, DateTime? createdTime = null)
         {
             SourceId = sourceId;
             CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
-            ProcessId = processId ?? Guid.Empty;
-            Id = id ?? Guid.NewGuid();
+            ProcessId = processId;
+            Id = id ?? Guid.NewGuid().ToString();
         }
 
         //Source of the event - aggregate that created it
         //private setter for serializers
-        public Guid SourceId { get; private set; }
-        public Guid ProcessId { get; internal set; }
+        public string SourceId { get; private set; }
+        public string ProcessId { get; internal set; }
         public DateTime CreatedTime { get; private set; }
-        public Guid Id { get; private set; }
+        public string Id { get; private set; }
 
         public override bool Equals(object obj)
         {
@@ -34,7 +34,7 @@ namespace GridDomain.EventSourcing
             return Id.GetHashCode();
         }
 
-        public DomainEvent CloneForProcess(Guid processId)
+        public DomainEvent CloneForProcess(string processId)
         {
             var evt = (DomainEvent) MemberwiseClone();
             evt.ProcessId = processId;

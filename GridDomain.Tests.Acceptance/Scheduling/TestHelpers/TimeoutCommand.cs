@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
     public class TimeoutCommand : Command
     {
-        public TimeoutCommand(string text, TimeSpan timeout) : base(Guid.NewGuid())
+        public TimeoutCommand(string text, TimeSpan timeout) : base(Guid.NewGuid().ToString())
         {
             Text = text;
             Timeout = timeout;

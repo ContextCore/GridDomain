@@ -20,15 +20,15 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         public async Task When_process_produce_command_and_waiting_for_it_fault()
         {
 
-            var givenProcessStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(new SoftwareProgrammingState(Guid.NewGuid(), 
+            var givenProcessStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(new SoftwareProgrammingState(Guid.NewGuid().ToString(), 
                                                                                             nameof(SoftwareProgrammingProcess.MakingCoffee))
                                                                                           {
-                                                                                              PersonId = Guid.NewGuid()
+                                                                                              PersonId = Guid.NewGuid().ToString()
                                                                                           });
 
             await Node.SaveToJournal(givenProcessStateAggregate);
 
-            var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid(),
+            var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(),
                                                                 givenProcessStateAggregate.State.PersonId,
                                                                 BusinessDateTime.UtcNow,
                                                                 givenProcessStateAggregate.Id);

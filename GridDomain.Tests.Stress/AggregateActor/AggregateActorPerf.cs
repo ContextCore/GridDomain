@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
         private Counter _counter;
         private readonly IActorRef _aggregateActor;
         private readonly ICommand[] _commands;
-        private readonly Guid _aggregateId;
+        private readonly string _aggregateId;
 
         protected AggregateActorPerf(ITestOutputHelper output,string actorSystemConfig)
         {
@@ -45,7 +45,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             sys.InitLocalTransportExtension();
             sys.InitDomainEventsSerialization(new EventsAdaptersCatalog());
             var dummy = sys.ActorOf<CustomHandlersActorDummy>();
-            _aggregateId = Guid.NewGuid();
+            _aggregateId = Guid.NewGuid().ToString();
             _aggregateActor = sys.ActorOf(Props.Create(
                                                        () => new AggregateActor<Balloon>(new BalloonCommandHandler(), 
                                                                                          new EachMessageSnapshotsPersistencePolicy(), 

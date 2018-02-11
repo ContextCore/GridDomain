@@ -22,8 +22,8 @@ namespace GridDomain.Tests.Unit.Metadata
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
         {
-            var command = new BlowBalloonCommand(Guid.NewGuid());
-            var commandMetadata = MessageMetadata.New(command.Id, Guid.NewGuid(), null);
+            var command = new BlowBalloonCommand(Guid.NewGuid().ToString());
+            var commandMetadata = MessageMetadata.New(command.Id, Guid.NewGuid().ToString(), null);
 
             var res = await Node.Prepare(command, commandMetadata)
                                 .Expect<Fault<BlowBalloonCommand>>()
@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Unit.Metadata
             //Result_message_has_expected_value()
             Assert.Equal(command.GetType(), fault.Message.GetType());
             //Result_metadata_has_command_id_as_casuation_id()
-            Assert.Equal(command.Id, Guid.Parse(metadata.CasuationId));
+            Assert.Equal(command.Id, metadata.CasuationId);
             //Result_metadata_has_correlation_id_same_as_command_metadata()
             Assert.Equal(commandMetadata.CorrelationId, metadata.CorrelationId);
             //Result_metadata_has_processed_history_filled_from_aggregate()

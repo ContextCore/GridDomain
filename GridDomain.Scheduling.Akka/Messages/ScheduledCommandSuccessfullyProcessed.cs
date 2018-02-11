@@ -5,7 +5,7 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class ScheduledCommandSuccessfullyProcessed : DomainEvent
     {
-        public ScheduledCommandSuccessfullyProcessed(Guid sourceId, DateTime? createdTime = null, Guid processId = new Guid())
+        public ScheduledCommandSuccessfullyProcessed(string sourceId, DateTime? createdTime = null, string processId = null)
             : base(sourceId, processId: processId, createdTime: createdTime) {}
     }
 }

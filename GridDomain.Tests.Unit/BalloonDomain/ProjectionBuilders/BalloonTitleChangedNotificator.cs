@@ -24,7 +24,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders
 
         public Task Handle(BalloonTitleChanged msg, IMessageMetadata metadata)
         {
-            var notificationMetadata = metadata.CreateChild(Guid.NewGuid(),
+            var notificationMetadata = MessageMetadataExtensions.CreateChild(metadata,
+                                                            Guid.NewGuid().ToString(),
                                                             new ProcessEntry(nameof(BalloonTitleChangedNotificator),
                                                                              "Publishing notification",
                                                                              "Aggregate created event processed"));

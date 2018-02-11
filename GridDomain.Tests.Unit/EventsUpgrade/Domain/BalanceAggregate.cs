@@ -11,11 +11,14 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
     {
         public decimal Amount;
 
-        private BalanceAggregate(Guid id) : base(id) {}
+        private BalanceAggregate(string id) : base(id) {}
 
-        public BalanceAggregate(Guid id, decimal value) : this(id)
+        public BalanceAggregate(string id, decimal value) : this(id)
         {
             Produce(new AggregateCreatedEvent(value, id));
+        }
+        public BalanceAggregate(Guid id, decimal value) : this(id.ToString(), value)
+        {
         }
 
         public void ChangeState(int number)

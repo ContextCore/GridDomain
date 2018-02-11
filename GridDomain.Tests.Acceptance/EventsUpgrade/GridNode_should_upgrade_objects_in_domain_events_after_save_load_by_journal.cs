@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Fact]
         public async Task GridNode_updates_objects_in_events_by_adapter()
         {
-            var id = Guid.NewGuid();
+            var id = Guid.NewGuid().ToString();
             var persistId = id.ToString();
 
             await Node.SaveToJournal(persistId, new EventA(id, new BookOrder_V1("A")), new EventB(id, new BookOrder_V1("B")));

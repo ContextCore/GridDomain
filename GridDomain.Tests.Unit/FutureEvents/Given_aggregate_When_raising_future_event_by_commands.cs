@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         public async Task When_raising_future_event()
         {
             var scheduledTime = DateTime.Now.AddSeconds(1);
-            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
+            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid().ToString(), "test value");
 
             var waitResults = await Node.Prepare(testCommand)
                                         .Expect<FutureEventScheduledEvent>()

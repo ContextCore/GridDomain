@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task When_expect_more_than_one_messages()
         {
-            var syncCommand = new InflateCopyCommand(100, Guid.NewGuid());
+            var syncCommand = new InflateCopyCommand(100, Guid.NewGuid().ToString());
             var waitResults =
                 await
                     Node.Prepare(syncCommand)

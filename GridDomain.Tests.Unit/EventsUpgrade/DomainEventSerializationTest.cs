@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         [Fact(Skip = "Disabled due to backward versioning is not ready")]
         public void Given_historical_event_it_writes_version_from_type_name()
         {
-            var evt = new TestEvent_V1(Guid.NewGuid());
+            var evt = new TestEvent_V1(Guid.NewGuid().ToString());
             var serializedString = SerializedToString(evt);
 
             var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent_V1)).ToString();
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
         [Fact(Skip = "Disabled due to backward versioning is not ready")]
         public void Given_original_event_it_writes_its_version_in_type_name()
         {
-            var evt = new TestEvent(Guid.NewGuid());
+            var evt = new TestEvent(Guid.NewGuid().ToString());
             var serializedString = SerializedToString(evt);
 
             var expectedTypeName = VersionedTypeName.Parse(typeof(TestEvent), 2).ToString();

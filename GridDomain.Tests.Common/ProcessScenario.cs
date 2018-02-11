@@ -84,7 +84,7 @@ namespace GridDomain.Tests.Common {
 
         public ProcessScenario<TState> When(params DomainEvent[] events)
         {
-            ReceivedEvents = events.Select(e => e.CloneForProcess(Any.GUID)).ToArray();
+            ReceivedEvents = events.Select(e => e.CloneForProcess(Any.GUID.ToString())).ToArray();
             return this;
         }
 
@@ -93,7 +93,7 @@ namespace GridDomain.Tests.Common {
             ExpectedCommands = expectedCommands;
             foreach (var expectedCommand in expectedCommands)
             {
-                expectedCommand.ProcessId = Any.GUID;
+                expectedCommand.ProcessId = Any.GUID.ToString();
             }
             return this;
         }

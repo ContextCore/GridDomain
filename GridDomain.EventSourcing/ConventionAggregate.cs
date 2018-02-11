@@ -7,7 +7,7 @@ using GridDomain.EventSourcing.CommonDomain;
 namespace GridDomain.EventSourcing {
     public class ConventionAggregate : CommandAggregate
     {
-        protected ConventionAggregate(Guid id) : base(id)
+        protected ConventionAggregate(string id) : base(id)
         {
             _eventsRouter = new ConventionEventRouter(GetType());
 

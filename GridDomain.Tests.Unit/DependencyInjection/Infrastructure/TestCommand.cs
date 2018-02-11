@@ -5,7 +5,10 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 {
     public class TestCommand : Command
     {
-        public TestCommand(int parameter, Guid aggregateId) : base(aggregateId)
+        public TestCommand(int parameter, Guid aggregateId) : this(parameter,aggregateId.ToString())
+        {
+        } 
+        public TestCommand(int parameter, string aggregateId) : base(aggregateId)
         {
             Parameter = parameter;
         }
@@ -15,7 +18,11 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
 }
 public class TestCommandB : Command
 {
-    public TestCommandB(int parameter, Guid aggregateId) : base(aggregateId)
+    public TestCommandB(int parameter, Guid aggregateId) : this(parameter,aggregateId.ToString())
+    {
+    }
+    
+    public TestCommandB(int parameter, string aggregateId) : base(aggregateId)
     {
         Parameter = parameter;
     }

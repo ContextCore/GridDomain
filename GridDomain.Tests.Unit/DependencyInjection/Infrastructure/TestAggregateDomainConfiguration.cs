@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
 
     public class TestAggregateSnapshot : IMemento
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public int Version { get; set; }
         public string Value { get; set; }
     }
@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
             _testDependencyImplementation = testDependencyImplementation;
         }
 
-        public override IAggregate Build(Type type, Guid id, IMemento snapshot = null)
+        public override IAggregate Build(Type type, string id, IMemento snapshot = null)
         {
             if (type == typeof(TestAggregate) && snapshot == null)
             {
@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
             return base.GetSnapshot(aggregate);
         }
 
-        protected override IAggregate BuildFromSnapshot(Type type, Guid id, IMemento snapshot)
+        protected override IAggregate BuildFromSnapshot(Type type, string id, IMemento snapshot)
         {
             if (type == typeof(TestAggregate))
             {

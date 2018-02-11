@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 {
     public class IncreaseTitleCommand : Command
     {
-        public IncreaseTitleCommand(int value, Guid aggregateId) : base(aggregateId)
+        public IncreaseTitleCommand(int value, string aggregateId) : base(aggregateId)
         {
             Value = value;
         }

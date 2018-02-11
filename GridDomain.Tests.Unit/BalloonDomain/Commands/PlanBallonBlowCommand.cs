@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
     public class PlanBallonBlowCommand : Command
     {
-        public PlanBallonBlowCommand(Guid aggregateId, TimeSpan? sleepTime = null) : base(aggregateId)
+        public PlanBallonBlowCommand(string aggregateId, TimeSpan? sleepTime = null) : base(aggregateId)
         {
             SleepTime = sleepTime ?? TimeSpan.FromMilliseconds(500);
         }

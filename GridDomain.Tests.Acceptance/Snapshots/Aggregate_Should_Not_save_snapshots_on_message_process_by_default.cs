@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Fact]
         public async Task Given_timeout_only_default_policy()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
 
             var cmd = new InflateNewBallonCommand(1, aggregateId);
             await Node.Prepare(cmd).Expect<BalloonCreated>().Execute();

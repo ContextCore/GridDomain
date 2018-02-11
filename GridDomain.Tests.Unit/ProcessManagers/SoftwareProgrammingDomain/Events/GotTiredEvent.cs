@@ -5,18 +5,18 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events
 {
     public class GotTiredEvent : DomainEvent
     {
-        public GotTiredEvent(Guid sourceId,
-                             Guid lovelySofaId = default(Guid),
-                             Guid favoriteCoffeMachineId = default(Guid),
-                             Guid? processId = null,
+        public GotTiredEvent(string sourceId,
+                             string lovelySofaId = null,
+                             string favoriteCoffeMachineId = null,
+                             string processId = null,
                              DateTime? createdTime = null) : base(sourceId, processId, createdTime: createdTime)
         {
             LovelySofaId = lovelySofaId;
             FavoriteCoffeMachineId = favoriteCoffeMachineId;
         }
-
-        public Guid PersonId => SourceId;
-        public Guid LovelySofaId { get; }
-        public Guid FavoriteCoffeMachineId { get; }
+        
+        public string PersonId => SourceId;
+        public string LovelySofaId { get; }
+        public string FavoriteCoffeMachineId { get; }
     }
 }

@@ -50,7 +50,13 @@ namespace GridDomain.Node.Actors.PersistentHub
             Receive<IMessageMetadataEnvelop>(messageWithMetadata =>
                                              {
                                                  var childId = GetChildActorId(messageWithMetadata);
+                                                 if (string.IsNullOrEmpty(childId))
+                                                     throw new InvalidOperationException("child id is empty." + messageWithMetadata);
+                                                 
                                                  var name = GetChildActorName(childId);
+                                                 if (string.IsNullOrEmpty(childId))
+                                                     throw new InvalidOperationException("child name is empty." + messageWithMetadata);
+
                                                  messageWithMetadata.Metadata.History.Add(forwardEntry);
                                                  SendToChild(messageWithMetadata, name, Sender);
                                              });
@@ -101,8 +107,8 @@ namespace GridDomain.Node.Actors.PersistentHub
 
      
         public IStash Stash { get; set; }
-        internal abstract string GetChildActorName(Guid childId);
-        protected abstract Guid GetChildActorId(IMessageMetadataEnvelop message);
+        internal abstract string GetChildActorName(string childId);
+        protected abstract string GetChildActorId(IMessageMetadataEnvelop message);
         protected abstract Type ChildActorType { get; }
 
         protected virtual void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)

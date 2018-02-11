@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
         public async Task Should_not_retry_on_exception()
         {
             //will retry 1 time
-            var command = new PlanBoomCommand(Guid.NewGuid(), DateTime.Now.AddSeconds(0.2));
+            var command = new PlanBoomCommand(Guid.NewGuid().ToString(), DateTime.Now.AddSeconds(0.2));
 
             await Node.Prepare(command)
                       .Expect<JobFailed>()

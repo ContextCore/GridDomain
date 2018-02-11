@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.Serialization
 
         private class TestAggregate : ConventionAggregate
         {
-            public TestAggregate(int value, Guid id) : base(id)
+            public TestAggregate(int value, string id) : base(id)
             {
                 Produce(new TestAggregateCreatedEvent(id, value));
             }
@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.Serialization
 
             internal class TestAggregateCreatedEvent : DomainEvent
             {
-                public TestAggregateCreatedEvent(Guid sourceId, int value) : base(sourceId)
+                public TestAggregateCreatedEvent(string sourceId, int value) : base(sourceId)
                 {
                     Value = value;
                 }
@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.Serialization
         [Fact]
         public void Aggregate_by_default_can_be_saved_as_IMemento_for_snapshot()
         {
-            _aggregate = new TestAggregate(1, Guid.NewGuid());
+            _aggregate = new TestAggregate(1, Guid.NewGuid().ToString());
             var factory = new AggregateFactory();
             var snapshot = factory.GetSnapshot(_aggregate);
             _restoredAggregate = factory.Build<TestAggregate>(_aggregate.Id, snapshot);

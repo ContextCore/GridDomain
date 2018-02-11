@@ -68,7 +68,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         [Fact]
         public async Task Then_command_executed_sync_and_parralel_message_processor_are_executed()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
             var slowCounterWaiter = Node.NewWaiter()
                                         .Expect<IntResult>()
                                         .Create();

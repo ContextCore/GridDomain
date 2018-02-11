@@ -4,13 +4,13 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class CommandExecutionScheduled
     {
-        public CommandExecutionScheduled(Guid commandId, DateTime nextExecution)
+        public CommandExecutionScheduled(string commandId, DateTime nextExecution)
         {
             CommandId = commandId;
             NextExecution = nextExecution;
         }
 
-        public Guid CommandId { get; }
+        public string CommandId { get; }
         public DateTime NextExecution { get; }
     }
 }

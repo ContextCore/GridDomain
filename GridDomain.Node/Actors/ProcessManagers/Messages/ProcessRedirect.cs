@@ -7,9 +7,9 @@ namespace GridDomain.Node.Actors.ProcessManagers.Messages
     public class ProcessRedirect :  IProcessCompleted
     {
         public IMessageMetadataEnvelop MessageToRedirect { get; }
-        public Guid ProcessId { get; }
+        public string ProcessId { get; }
 
-        public ProcessRedirect(Guid processId, IMessageMetadataEnvelop messageToRedirect)
+        public ProcessRedirect(string processId, IMessageMetadataEnvelop messageToRedirect)
         {
             ProcessId = processId;
             MessageToRedirect = messageToRedirect;

@@ -14,16 +14,16 @@ namespace GridDomain.CQRS
     
     public class Command<T> : Command, IForAggregate<T>
     {
-        protected Command(Guid id, Guid aggregateId, Guid processId, DateTime time) : base(id, aggregateId, processId, time) { }
-        protected Command(Guid id, Guid aggregateId, Guid processId) : base(id, aggregateId, processId) { }
-        protected Command(Guid id, Guid aggregateId, DateTime time) : base(id, aggregateId, time) { }
-        protected Command(Guid id, Guid aggregateId) : base(id, aggregateId) { }
-        protected Command(Guid aggregateId) : base(aggregateId) { }
+        protected Command(string id, string aggregateId, string processId, DateTime time) : base(id, aggregateId, processId, time) { }
+        protected Command(string id, string aggregateId, string processId) : base(id, aggregateId, processId) { }
+        protected Command(string id, string aggregateId, DateTime time) : base(id, aggregateId, time) { }
+        protected Command(string id, string aggregateId) : base(id, aggregateId) { }
+        protected Command(string aggregateId) : base(aggregateId) { }
     }
     
     public class Command : ICommand
     {
-        protected Command(Guid id, Guid aggregateId, Guid processId, DateTime time)
+        protected Command(string id, string aggregateId, string processId, DateTime time)
         {
             Id = id;
             Time = time;
@@ -31,21 +31,21 @@ namespace GridDomain.CQRS
             AggregateId = aggregateId;
         }
 
-        protected Command(Guid id, Guid aggregateId, Guid processId) : this(id, aggregateId, processId, BusinessDateTime.UtcNow) {}
+        protected Command(string id, string aggregateId, string processId) : this(id, aggregateId, processId, BusinessDateTime.UtcNow) {}
 
-        protected Command(Guid id, Guid aggregateId, DateTime time) : this(id, aggregateId, Guid.Empty, time) {}
+        protected Command(string id, string aggregateId, DateTime time) : this(id, aggregateId, Guid.Empty.ToString(), time) {}
 
-        protected Command(Guid id, Guid aggregateId) : this(id, aggregateId, BusinessDateTime.UtcNow) {}
+        protected Command(string id, string aggregateId) : this(id, aggregateId, BusinessDateTime.UtcNow) {}
 
-        protected Command(Guid aggregateId) : this(Guid.NewGuid(), aggregateId) {}
+        protected Command(string aggregateId) : this(Guid.NewGuid().ToString(), aggregateId) {}
 
         public DateTime Time { get; private set; }
-        public Guid Id { get; private set; }
-        public Guid ProcessId { get; set; }
-        public Guid AggregateId { get; }
+        public string Id { get; private set; }
+        public string ProcessId { get;  set; }
+        public string AggregateId { get; }
 
         //TODO: think how to avoid cloning just for process id set
-        public Command CloneForProcess(Guid processId)
+        public Command CloneForProcess(string processId)
         {
             var copy = (Command) MemberwiseClone();
             copy.ProcessId = processId;

@@ -17,13 +17,13 @@ namespace GridDomain.ProcessManagers.State
             Produce(new ProcessManagerCreated<TState>(state, state.Id));
         }
         
-        private ProcessStateAggregate(Guid id) : base(id)
+        private ProcessStateAggregate(string id) : base(id)
         {
         }
 
         public TState State { get;  private set; }
 
-        public void ReceiveMessage(TState state, Guid messageId)
+        public void ReceiveMessage(TState state, string messageId)
         {
             Produce(new ProcessReceivedMessage<TState>(Id, state, messageId));
         }

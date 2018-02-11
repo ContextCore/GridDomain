@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             var processCreatedMsg = await Node.NewDebugWaiter()
                                               .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
                                               .Create()
-                                              .SendToProcessManagers(new GotTiredEvent(Guid.NewGuid()));
+                                              .SendToProcessManagers(new GotTiredEvent(Guid.NewGuid().ToString()));
 
             var processCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true, TimeSpan.FromHours(1));
             var command = processCompleteMsg.Message;
@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         [Fact]
         public async Task When_process_created_from_event_with_processId_new_Id_is_generated()
         {
-            var domainEvent = new GotTiredEvent(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+            var domainEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var waitResults = await Node.NewDebugWaiter()
                                         .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()

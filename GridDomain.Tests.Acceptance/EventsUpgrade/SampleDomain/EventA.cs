@@ -5,7 +5,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade.SampleDomain
 {
     internal class EventA : DomainEvent
     {
-        public EventA(Guid sourceId, IOrder order) : base(sourceId)
+        public EventA(string sourceId, IOrder order) : base(sourceId)
         {
             Order = order;
         }

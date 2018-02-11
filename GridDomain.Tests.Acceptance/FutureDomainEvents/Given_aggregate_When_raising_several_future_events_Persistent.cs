@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         [Fact]
         public async Task FutureDomainEvent_envelops_has_unique_id()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
             var testCommandA = new ScheduleEventInFutureCommand(DateTime.Now.AddSeconds(1), aggregateId, "test value A");
 
             var waitResult = await Node.Prepare(testCommandA)

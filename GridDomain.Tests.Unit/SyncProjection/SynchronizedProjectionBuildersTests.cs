@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.SyncProjection
 
             var createCommands =
                 Enumerable.Range(0, totalAggregates)
-                          .Select(r => new InflateNewBallonCommand(0, Guid.NewGuid()))
+                          .Select(r => new InflateNewBallonCommand(0, Guid.NewGuid().ToString()))
                           .ToArray();
 
             var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();

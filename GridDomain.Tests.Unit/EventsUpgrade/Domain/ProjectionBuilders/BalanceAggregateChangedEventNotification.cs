@@ -4,6 +4,6 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.ProjectionBuilders
 {
     public class BalanceAggregateChangedEventNotification
     {
-        public Guid AggregateId { get; set; }
+        public string AggregateId { get; set; }
     }
 }

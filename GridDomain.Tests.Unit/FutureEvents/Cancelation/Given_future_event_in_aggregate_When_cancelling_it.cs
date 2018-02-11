@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Cancelation
         public async Task When_raising_future_event()
         {
             var scheduledTime = DateTime.Now.AddSeconds(200);
-            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid(), "test value");
+            var testCommand = new ScheduleEventInFutureCommand(scheduledTime, Guid.NewGuid().ToString(), "test value");
 
             var futureEventEnvelop =
                 (await Node.Prepare(testCommand).Expect<FutureEventScheduledEvent>().Execute())

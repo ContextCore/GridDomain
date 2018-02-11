@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.Scenario
         [Fact]
         public async Task When_defined_aggregate_handler_then_it_can_execute_commands_and_produce_events()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
             var scenario = await AggregateScenario.New<Balloon, BalloonCommandHandler>()
                                                   .When(new InflateNewBallonCommand(42, aggregateId))
                                                   .Then(new BalloonCreated("42", aggregateId))
@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Unit.Scenario
         [Fact]
         public async Task Future_events_aggregate_can_be_tested()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
             var scenario = await AggregateScenario.New<Balloon, BalloonCommandHandler>()
                                                   .When(new InflateNewBallonCommand(42, aggregateId))
                                                   .Then(new BalloonCreated("42", aggregateId))
@@ -70,7 +70,7 @@ namespace GridDomain.Tests.Unit.Scenario
         [Fact]
         public async Task When_defined_scenario_has_given_it_is_applied_even_without_command()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
 
             var scenario = await AggregateScenario.New<ProgrammerAggregate>()
                                                   .Given(new PersonCreated(aggregateId, aggregateId))
@@ -89,7 +89,7 @@ namespace GridDomain.Tests.Unit.Scenario
         [Fact]
         public async Task When_defined_scenario_it_checks_for_produced_events_properties()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
 
             await AggregateScenario.New<Balloon, BalloonCommandHandler>()
                                    .When(new InflateNewBallonCommand(42, aggregateId))
@@ -102,7 +102,7 @@ namespace GridDomain.Tests.Unit.Scenario
         [Fact]
         public async Task When_defined_scenario_it_checks_for_produced_events_count()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
 
             await AggregateScenario.New<Balloon, BalloonCommandHandler>()
                                    .When(new InflateNewBallonCommand(42, aggregateId))
@@ -117,7 +117,7 @@ namespace GridDomain.Tests.Unit.Scenario
         [Fact]
         public async Task When_defined_scenario_try_execute_missing_command_on_default_handler_it_throws_exception()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
 
             await AggregateScenario.New<Balloon, BalloonCommandHandler>()
                                    .When(new CreateBalanceCommand(42, aggregateId))
@@ -131,7 +131,7 @@ namespace GridDomain.Tests.Unit.Scenario
         [Fact]
         public async Task When_defined_scenario_executes_command_with_excpetion_it_throws_command_exception()
         {
-            var aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid().ToString();
 
             await AggregateScenario.New<Balloon, BalloonCommandHandler>()
                                    .When(new PlanTitleWriteAndBlowCommand(43, aggregateId, TimeSpan.FromMilliseconds(50)))

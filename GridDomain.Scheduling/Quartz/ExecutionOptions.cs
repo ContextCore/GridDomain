@@ -6,7 +6,7 @@ namespace GridDomain.Scheduling.Quartz
     {
         public ExecutionOptions(DateTime runAt,
                                 Type succesEventType,
-                                Guid successMessageId,
+                                string successMessageId,
                                 TimeSpan? timeout = null) 
         {
             RunAt = runAt;
@@ -17,12 +17,12 @@ namespace GridDomain.Scheduling.Quartz
 
         public static ExecutionOptions ForCommand(DateTime runAt, Type succesEventType, TimeSpan? timeout = null)
         {
-            return new ExecutionOptions(runAt, succesEventType, Guid.Empty, timeout);
+            return new ExecutionOptions(runAt, succesEventType, null, timeout);
         }
 
         public Type SuccesEventType { get; }
         public DateTime RunAt { get; }
         public TimeSpan Timeout { get; }
-        public Guid SuccessMessageId { get; }
+        public string SuccessMessageId { get; }
     }
 }

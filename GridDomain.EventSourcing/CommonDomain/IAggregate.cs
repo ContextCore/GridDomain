@@ -6,7 +6,7 @@ namespace GridDomain.EventSourcing.CommonDomain
 {
     public interface IAggregate
     {
-        Guid Id { get; }
+        string Id { get; }
         void ApplyEvent(DomainEvent @event);
         void Commit(DomainEvent e);
         void CommitAll();

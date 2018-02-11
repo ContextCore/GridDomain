@@ -5,10 +5,10 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Events
 {
     public class TestEvent : DomainEvent
     {
-        public TestEvent(Guid sourceId, DateTime? createdTime = null, Guid processId = new Guid())
+        public TestEvent(string sourceId, DateTime? createdTime = null, string processId = null)
             : base(sourceId, processId: processId, createdTime: createdTime) {}
 
-        public TestEvent() : this(Guid.Empty) {}
+        public TestEvent() : this(null) {}
 
         public int Field { get; set; }
     }

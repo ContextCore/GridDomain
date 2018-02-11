@@ -16,8 +16,8 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task Default_wait_for_event_matches_by_correlation_id_when_projection_builder_cares_about_metadata()
         {
-            var commandA = new PlanTitleWriteCommand(10, Guid.NewGuid());
-            var commandB = new PlanTitleWriteCommand(10, Guid.NewGuid());
+            var commandA = new PlanTitleWriteCommand(10, Guid.NewGuid().ToString());
+            var commandB = new PlanTitleWriteCommand(10, Guid.NewGuid().ToString());
 
             await Node.Execute(commandB);
             var res = await Node.Prepare(commandA)

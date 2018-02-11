@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
     {
         public static List<string> ExecutedCommands = new List<string>();
             
-        public ShutdownTestAggregate(Guid id):base(id)
+        public ShutdownTestAggregate(string id):base(id)
         {
             Execute<DoWorkCommand>(async c =>
                                    {

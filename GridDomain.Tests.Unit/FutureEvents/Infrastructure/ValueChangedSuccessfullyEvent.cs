@@ -10,9 +10,9 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 
         public ValueChangedSuccessfullyEvent(string value,
                                int retriesToSucceed,
-                               Guid sourceId,
+                                             string sourceId,
                                DateTime? createdTime = default(DateTime?),
-                               Guid processId = default(Guid)) : base(sourceId, processId, null, createdTime)
+                                             string processId = null) : base(sourceId, processId, null, createdTime)
         {
             Value = value;
             RetriesToSucceed = retriesToSucceed;

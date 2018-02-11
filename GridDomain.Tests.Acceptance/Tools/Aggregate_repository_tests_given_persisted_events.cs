@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Acceptance.Tools
         private Balloon _aggregate;
         private BalloonTitleChanged _changed;
         private BalloonCreated _created;
-        private Guid _sourceId;
+        private string _sourceId;
 
         [Theory]
         [MemberData(nameof(EventRepositories))]
@@ -61,7 +61,7 @@ namespace GridDomain.Tests.Acceptance.Tools
         {
             try
             {
-                _sourceId = Guid.NewGuid();
+                _sourceId = Guid.NewGuid().ToString();
                 _created = new BalloonCreated("initial value", _sourceId);
                 _changed = new BalloonTitleChanged("changed value", _sourceId);
 

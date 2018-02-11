@@ -34,7 +34,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             aggr.CommitAll();
         }
 
-        public async Task<T> LoadAggregate<T>(Guid id, IConstructAggregates factory = null) where T : IAggregate
+        public async Task<T> LoadAggregate<T>(string id, IConstructAggregates factory = null) where T : IAggregate
         {
             var agr = (factory ?? DefaultFactory).BuildEmpty<T>(id);
             var persistId = EntityActorName.New<T>(id).ToString();

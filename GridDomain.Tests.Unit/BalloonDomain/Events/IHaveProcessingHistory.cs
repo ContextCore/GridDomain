@@ -6,6 +6,6 @@ namespace GridDomain.Tests.Unit.BalloonDomain.Events
     {
         ProcessedHistory History { get; }
 
-        Guid SourceId { get; }
+        string SourceId { get; }
     }
 }
