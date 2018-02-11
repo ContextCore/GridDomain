@@ -52,17 +52,29 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         class ProcessExecutionContext
         {
-            public TState PendingState;
-            public IMessageMetadataEnvelop ProcessingMessage;
-            public IActorRef ProcessingMessageSender;
+            public TState PendingState { get; private set;}
+            public IMessageMetadataEnvelop ProcessingMessage { get;private set;}
+            public IActorRef ProcessingMessageSender { get; private set; }
 
             public bool IsFinished => PendingState == null;
             public bool IsInitializing { get; set; }
+
+            public void StartNewExecution(TState pendingState, IMessageMetadataEnvelop msg, IActorRef sender)
+            {
+                if(IsInitializing) 
+                    throw new InvalidOperationException("Cannot start new execution while initializing");
+
+                PendingState = pendingState ?? throw new ProcessStateNullException();
+                ProcessingMessage = msg;
+                ProcessingMessageSender = sender;
+            }
+            
             public void Clear()
             {
                 PendingState = null;
                 ProcessingMessage = null;
                 ProcessingMessageSender = null;
+                IsInitializing = false;
             }
         }
 
@@ -172,6 +184,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                       _log.Debug("Process gracefull shutdown request declined. Waiting initializtion to finish");
                                                       return;
                                                   }
+                                                  
                                                   if (!ExecutionContext.IsFinished)
                                                   {
                                                       _log.Debug("Process gracefull shutdown request declined. Waiting process execution to finish");
@@ -195,11 +208,10 @@ namespace GridDomain.Node.Actors.ProcessManagers
             Receive<CreateNewProcess>(c =>
                                       {
                                           _log.Debug("Creating new process instance from {@message}", c);
-                                          ExecutionContext.ProcessingMessage = c.Message;
-                                          ExecutionContext.ProcessingMessageSender = Sender;
-                                          ExecutionContext.PendingState = _processStateFactory.Create(ExecutionContext.ProcessingMessage.Message);
-                                          if (ExecutionContext.PendingState == null)
-                                              throw new ProcessStateNullException();
+                                          var pendingState = _processStateFactory.Create(c.Message.Message);
+
+                                          ExecutionContext.StartNewExecution(pendingState, c.Message, Sender);
+                                        
                                           var cmd = new CreateNewStateCommand<TState>(ExecutionContext.PendingState.Id, ExecutionContext.PendingState);
                                           //will reply with CommandExecuted
                                           _stateAggregateActor.Tell(new MessageMetadataEnvelop<ICommand>(cmd, ExecutionContext.ProcessingMessage.Metadata));
@@ -223,8 +235,10 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                  //requesting redirect from parent - persistence hub 
                                                  Context.Parent.Tell(redirect, ExecutionContext.ProcessingMessageSender);
                                                  Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
+                                                 ExecutionContext.Clear();
                                                  return;
                                              }
+                                             
                                              State = ExecutionContext.PendingState;
                                              Self.Tell(ExecutionContext.ProcessingMessage, ExecutionContext.ProcessingMessageSender);
                                              Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
@@ -309,6 +323,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             messageSender.Tell(new ProcessFault(fault, processingMessage.Metadata));
 
             Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
+            ExecutionContext.Clear();
         }
 
         private Guid GetProcessId(object msg)
