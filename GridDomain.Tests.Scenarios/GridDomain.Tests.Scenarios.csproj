@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="UnitTest1.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj">
+      <Project>{3FF79114-BAC6-4B56-838F-CD63F0894A38}</Project>
+      <Name>GridDomain.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj">
+      <Project>{EEE0F83B-D1C2-49B7-8460-4F9DE743C698}</Project>
+      <Name>GridDomain.ProcessManagers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Ploeh.AutoFixture, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f">
+      <HintPath>..\..\.nuget\packages\autofixture\4.0.0-alpha.226\lib\netstandard1.5\Ploeh.AutoFixture.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

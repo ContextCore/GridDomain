@@ -1,5 +1,3 @@
-using GridDomain.Tests.Common;
-using GridDomain.Tests.Common.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Tests.Acceptance.BalloonDomain

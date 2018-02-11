@@ -1,15 +1,13 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.Tools;
+using GridDomain.Tests.Common;
 using Serilog;
-using Serilog.Core;
 
-namespace GridDomain.Tests.Common
+namespace GridDomain.Tests.Scenarios
 {
 
     public static class AggregateScenario

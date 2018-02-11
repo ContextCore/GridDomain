@@ -11,6 +11,7 @@ using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
+using Moq;
 using Xunit;
 
 namespace GridDomain.Tests.Unit
@@ -30,7 +31,7 @@ namespace GridDomain.Tests.Unit
         [InlineData(TransportMode.Standalone)]
         public void All_base_registrations_can_be_resolved(TransportMode transportMode)
         {
-            var container = CreateContainer(transportMode, new AutoTestLocalDbConfiguration());
+            var container = CreateContainer(transportMode, Mock.Of<IDbConfiguration>());
             ResolveAll(container);
         }
 
@@ -38,7 +39,7 @@ namespace GridDomain.Tests.Unit
         [InlineData(TransportMode.Standalone)]
         public void Container_can_be_disposed(TransportMode transportMode)
         {
-            var createContainer = Task.Run(() => CreateContainer(transportMode, new AutoTestLocalDbConfiguration()));
+            var createContainer = Task.Run(() => CreateContainer(transportMode, Mock.Of<IDbConfiguration>()));
             if (!createContainer.Wait(TimeSpan.FromSeconds(5)))
                 throw new TimeoutException("Container creation took to much time");
 

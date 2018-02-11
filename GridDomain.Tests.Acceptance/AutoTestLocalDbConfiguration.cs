@@ -1,7 +1,7 @@
 ﻿using System;
 using GridDomain.Node.Configuration.Persistence;
 
-namespace GridDomain.Tests.Common
+namespace GridDomain.Tests.Acceptance
 {
     public class AutoTestLocalDbConfiguration : IDbConfiguration
     {

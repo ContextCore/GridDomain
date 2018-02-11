@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using Newtonsoft.Json;
-using Serilog;
+using GridDomain.Tests.Common;
 
-namespace GridDomain.Tests.Common {
+namespace GridDomain.Tests.Scenarios {
     public static class AggregateScenarioExtensions
     {
 

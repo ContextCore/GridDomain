@@ -1,9 +1,8 @@
 ﻿using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using GridDomain.Node.Configuration;
 
-namespace GridDomain.Tests.Common
+namespace GridDomain.Tests.Acceptance
 {
     public static class TestDbTools
     {

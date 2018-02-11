@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
 using GridDomain.ProcessManagers;
+using GridDomain.Tests.Common;
 using KellermanSoftware.CompareNetObjects;
 using Xunit;
 
-namespace GridDomain.Tests.Common
+namespace GridDomain.Tests.Scenarios
 {
     public static class ProcessScenarioExtensions
     {

@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections;
 using System.Threading.Tasks;
-using Akka.Remote;
-using GridDomain.EventSourcing;
-using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit.BalloonDomain;
-using GridDomain.Tests.Unit.BalloonDomain.Commands;
-using GridDomain.Tests.Unit.BalloonDomain.Events;
-using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
+using GridDomain.Tests.Scenarios;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
-using KellermanSoftware.CompareNetObjects;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,7 +33,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                         .Run();
 
             
-            Assert.Single(results.ExpectedCommands);
+            Assert.Single((IEnumerable) results.ExpectedCommands);
             Assert.Equal(2,results.ReceivedEvents.Length);
             Assert.Equal(sofaId, results.State.SofaId);
             results.CheckStateName(nameof(SoftwareProgrammingProcess.Coding));

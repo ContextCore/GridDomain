@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Acceptance.BalloonDomain;
 using GridDomain.Tests.Acceptance.Snapshots;
-using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;

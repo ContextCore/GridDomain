@@ -1,21 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
-using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers;
-using GridDomain.ProcessManagers.Creation;
-using GridDomain.ProcessManagers.DomainBind;
-using GridDomain.ProcessManagers.State;
+using GridDomain.Tests.Common;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Dsl;
-using Remotion.Linq.Parsing.Structure.ExpressionTreeProcessors;
 
-namespace GridDomain.Tests.Common {
+namespace GridDomain.Tests.Scenarios {
     public static class ProcessScenario
     {
         public static ProcessScenario<TState> New<TState>(IProcess<TState> process,
@@ -109,7 +104,7 @@ namespace GridDomain.Tests.Common {
                 if(State == null)
                     State = StateFactory.Create(evt);
 
-                if(State == null) throw new ProcessStateNullException();
+                if(State == null) throw new ArgumentNullException(nameof(State));
                 var commands = await Process.Transit(State, evt);
 
                 producedCommands.AddRange(commands);

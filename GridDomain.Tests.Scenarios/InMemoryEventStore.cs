@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 
-namespace GridDomain.Tests.Common {
+namespace GridDomain.Tests.Scenarios {
     class InMemoryEventStore : IEventStore
     {
         public Task Persist(IAggregate aggregate)
