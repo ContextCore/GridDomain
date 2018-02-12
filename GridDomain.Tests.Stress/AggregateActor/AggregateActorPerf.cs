@@ -20,7 +20,6 @@ using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 using GridDomain.Transport.Extension;
-using Pro.NBench.xUnit.XunitExtensions.Pro.NBench.xUnit.XunitExtensions;
 
 namespace GridDomain.Tests.Stress.AggregateActor {
     //it is performance test, not pure xunit

@@ -7,7 +7,6 @@ using GridDomain.Tests.Acceptance.BalloonDomain;
 using Microsoft.EntityFrameworkCore;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
-using Pro.NBench.xUnit.XunitExtensions.Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress.AnemicEF {

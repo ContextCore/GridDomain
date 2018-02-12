@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
-using Pro.NBench.xUnit.XunitExtensions.Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Stress {
@@ -30,7 +29,7 @@ namespace GridDomain.Tests.Stress {
         }
 
 
-        [NBenchFact(Skip = "only for debugging purposes")]
+        [NBenchFact]
         [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
             NumberOfIterations = 1, RunMode = RunMode.Iterations,
             RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]
@@ -55,7 +54,7 @@ namespace GridDomain.Tests.Stress {
             }
             _testOutputHelper.WriteLine("ok");
         }
-        [NBenchFact(Skip = "only for debugging purposes")]
+        [NBenchFact]
         [PerfBenchmark(Description = "Test to ensure that a minimal throughput test can be rapidly executed.",
             NumberOfIterations = 5, RunMode = RunMode.Iterations,
             RunTimeMilliseconds = 1000, TestMode = TestMode.Test)]

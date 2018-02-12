@@ -62,18 +62,29 @@ namespace GridDomain.Node.Actors.PersistentHub
                                              });
         }
 
-        private bool InitChild(string name, out ChildInfo childInfo)
+        private static int _recycleMonitorCollisionCounter = 0;
+        
+        private bool InitChild(string name, out IActorRef childRef)
         {
-            var child = Context.Child(name);
-            if (child == Nobody.Instance)
-            {
-                childInfo = CreateChild(name);
-                CreateRecyleMonitor(childInfo.Ref, _recycleConfiguration,$"RecycleMonitor_{name}");
-                return true;
-
-            }
-            childInfo = new ChildInfo(child);
-            return false;
+            childRef = Context.Child(name);
+            if (childRef != Nobody.Instance) return false;
+            
+            childRef = Context.ActorOf(Context.DI().Props(ChildActorType), name);
+            
+            
+            var monitorName = $"RecycleMonitor_{name}";
+           // var existingMonitor = Context.Child(monitorName);
+           // if (existingMonitor != Nobody.Instance)
+           // {
+           //     //in rare cases of recreating existing child its old monitor will not be terminated 
+           //     //as it terminates after child
+           //     //so we just pick up another name, to not bother will waiting for old monitor termination
+           //     _recycleMonitorCollisionCounter++;
+           //     monitorName = $"RecycleMonitor_{_recycleMonitorCollisionCounter}_{name}";
+           // }
+                
+            CreateRecyleMonitor(childRef, _recycleConfiguration,monitorName);
+            return true;
         }
 
         private void CreateRecyleMonitor(IActorRef child, IRecycleConfiguration recycleConfiguration, string name, IActorRef watcher=null)
@@ -111,9 +122,9 @@ namespace GridDomain.Node.Actors.PersistentHub
         protected abstract string GetChildActorId(IMessageMetadataEnvelop message);
         protected abstract Type ChildActorType { get; }
 
-        protected virtual void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
+        protected virtual void SendMessageToChild(IActorRef knownChild, object message, IActorRef sender)
         {
-            knownChild.Ref.Tell(message, sender);
+            knownChild.Tell(message, sender);
         }
 
         class ChildFastShutdownRecycleConfiguration : IRecycleConfiguration
@@ -129,13 +140,6 @@ namespace GridDomain.Node.Actors.PersistentHub
         {
             _monitor.IncrementMessagesReceived();
             return base.AroundReceive(receive, message);
-        }
-
-        private ChildInfo CreateChild(string name)
-        {
-            var props = Context.DI().Props(ChildActorType);
-            var childActorRef = Context.ActorOf(props, name);
-            return new ChildInfo(childActorRef);
         }
 
         protected override void PreStart()

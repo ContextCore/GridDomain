@@ -15,9 +15,9 @@ namespace GridDomain.Node.Actors.Aggregates
             ChildActorType = typeof(AggregateActor<TAggregate>);
         }
 
-        protected override void SendMessageToChild(ChildInfo knownChild, object message, IActorRef sender)
+        protected override void SendMessageToChild(IActorRef knownChild, object message, IActorRef sender)
         {
-            knownChild.Ref.Tell(message, sender);
+            knownChild.Tell(message, sender);
         }
 
         internal override string GetChildActorName(string childId)

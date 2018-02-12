@@ -15,25 +15,26 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
         public AggregateHub_children_lifetime_tests(ITestOutputHelper output)
             : base(new PersistentHubFixture(output,new AggregatePersistedHubInfrastructure())) {}
 
-        private class AggregatePersistedHubInfrastructure : IPersistentActorTestsInfrastructure
+    }
+    
+    class AggregatePersistedHubInfrastructure : IPersistentActorTestsInfrastructure
+    {
+        public AggregatePersistedHubInfrastructure()
         {
-            public AggregatePersistedHubInfrastructure()
-            {
-                ChildId = Guid.NewGuid().ToString();
-                ChildCreateMessage = new MessageMetadataEnvelop<ICommand>(new InflateNewBallonCommand(42, ChildId),
-                                                                          MessageMetadata.New(ChildId, null, null));
-                ChildActivateMessage = new MessageMetadataEnvelop<ICommand>(new WriteTitleCommand(100, ChildId),
-                                                                            MessageMetadata.New(ChildId, null, null));
-            }
-
-            Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
-            {
-                return system.DI().Props<AggregateHubActor<Balloon>>();
-            }
-
-            public object ChildCreateMessage { get; }
-            public object ChildActivateMessage { get; }
-            public string ChildId { get; }
+            ChildId = Guid.NewGuid().ToString();
+            ChildCreateMessage = new MessageMetadataEnvelop<ICommand>(new InflateNewBallonCommand(42, ChildId),
+                                                                      MessageMetadata.New(ChildId, null, null));
+            ChildActivateMessage = new MessageMetadataEnvelop<ICommand>(new WriteTitleCommand(100, ChildId),
+                                                                        MessageMetadata.New(ChildId, null, null));
         }
+
+        Props IPersistentActorTestsInfrastructure.CreateHubProps(ActorSystem system)
+        {
+            return system.DI().Props<AggregateHubActor<Balloon>>();
+        }
+
+        public object ChildCreateMessage { get; }
+        public object ChildActivateMessage { get; }
+        public string ChildId { get; }
     }
 }
