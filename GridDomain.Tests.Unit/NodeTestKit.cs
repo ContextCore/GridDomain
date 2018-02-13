@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit
 {
     public class NodeTestKit : TestKit
     {
-        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.SystemConfigFactory(), fixture.Name)
+        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.SystemConfig.Value, fixture.Name)
         {
             Sys.AttachSerilogLogging(fixture.Logger);
             Node = fixture.CreateNode(() => Sys).Result;

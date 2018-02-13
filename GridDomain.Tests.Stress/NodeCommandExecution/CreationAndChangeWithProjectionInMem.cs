@@ -29,15 +29,13 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             base.OnSetup();
         }
 
-        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 20);
+        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(10, 10);
         internal override IGridDomainNode CreateNode()
         {
-            var akkaConfig = new StressTestNodeConfiguration();
-            return new BalloonWithProjectionFixture(_testOutputHelper,DbContextOptions)
-                   {
-                       NodeConfig = akkaConfig,
-                       SystemConfigFactory = () => akkaConfig.ToStandAloneInMemorySystemConfig()
-            }.CreateNode().Result;
+            return new BalloonWithProjectionFixture(_testOutputHelper,
+                                                    DbContextOptions,
+                                                    new StressTestNodeConfiguration(), 
+                                                    cfg => cfg.ToStandAloneInMemorySystemConfig()).CreateNode().Result;
         }
     }
 }

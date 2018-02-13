@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         {
             _testOutputHelper = output;
         }
-        protected override INodeScenario Scenario { get; } = new Stress.BalloonsCreationAndChangeScenario(100, 100);
+        protected override INodeScenario Scenario { get; } = new Stress.BalloonsCreationAndChangeScenario(10, 10);
         internal override IGridDomainNode CreateNode()
         {
             return new BalloonWriteOnlyFixture(_testOutputHelper).CreateNode().Result;

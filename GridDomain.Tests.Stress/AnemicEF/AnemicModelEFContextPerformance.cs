@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Stress.AnemicEF {
                        NumberOfIterations = 3,
                        RunMode = RunMode.Iterations,
                        TestMode = TestMode.Test)]
-        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100)]
+        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 50)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
 
         public void MeasureCommandExecution()

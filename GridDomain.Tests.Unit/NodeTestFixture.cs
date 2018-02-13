@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit
 #if DEBUG
              LogEventLevel.Debug
 #else
-             LogEventLevel.Warning
+             LogEventLevel.Info
 #endif
             );
 
@@ -36,24 +36,40 @@ namespace GridDomain.Tests.Unit
             
         }
        
-        public NodeTestFixture(ITestOutputHelper helper, IDomainConfiguration[] domainConfiguration = null, TimeSpan? defaultTimeout = null)
+        public NodeTestFixture(ITestOutputHelper helper, 
+                               IDomainConfiguration[] domainConfiguration = null, 
+                               TimeSpan? defaultTimeout = null) :
+            this(helper,null,null,domainConfiguration,defaultTimeout)
+                 {
+                    
+                 }
+        
+        public NodeTestFixture(ITestOutputHelper helper, 
+                               NodeConfiguration cfg, 
+                               Func<NodeConfiguration, string> systemConfigFactorry=null, 
+                               IDomainConfiguration[] domainConfiguration = null, 
+                               TimeSpan? defaultTimeout = null)
         {
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
-            SystemConfigFactory = () => NodeConfig.ToStandAloneInMemorySystemConfig();
+            NodeConfig = cfg ?? DefaultNodeConfig;
+            
+            ConfigBuilder =  systemConfigFactorry ?? (n => n.ToStandAloneInMemorySystemConfig());
+            SystemConfig = new Lazy<string>(() => ConfigBuilder(NodeConfig));
             Logger = new XUnitAutoTestLoggerConfiguration(helper, NodeConfig.LogLevel).CreateLogger();
             if (domainConfiguration == null)
                 return;
-
+         
             foreach(var c in domainConfiguration)
                 Add(c);
         }
         public GridDomainNode Node { get; private set; }
-        public Func<string> SystemConfigFactory { get; set; }
+        public Func<NodeConfiguration,string> ConfigBuilder { get; set; }
+        public Lazy<string> SystemConfig { get; }
         public ILogger Logger { get; }
-        public NodeConfiguration NodeConfig { get; set; } = DefaultNodeConfig;
+        public NodeConfiguration NodeConfig { get; }
         public string Name => NodeConfig.Name;
-        public LogEventLevel LogLevel { get => NodeConfig.LogLevel;
-                                        set => NodeConfig.LogLevel = value;}
+
+      
         private const int DefaultTimeOutSec =
 #if DEBUG
             10; //in debug mode all messages serialization is enabled, and it slows down all tests greatly

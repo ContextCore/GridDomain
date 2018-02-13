@@ -1,3 +1,6 @@
+using System;
+using GridDomain.Configuration;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Projection;
 using GridDomain.Tests.Unit;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +10,14 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
 {
     public class BalloonWithProjectionFixture : NodeTestFixture
     {
-        public BalloonWithProjectionFixture(ITestOutputHelper output, DbContextOptions<BalloonContext> dbContextOptions):
-            base(output,new BalloonWithProjectionDomainConfiguration(dbContextOptions))
+        public BalloonWithProjectionFixture(ITestOutputHelper output,
+                                            DbContextOptions<BalloonContext> dbContextOptions,
+                                            NodeConfiguration cfg = null,
+                                            Func<NodeConfiguration, string> configBuilder = null) :
+            base(output, cfg, configBuilder, new IDomainConfiguration[] {
+            new BalloonWithProjectionDomainConfiguration(dbContextOptions)
+        })
+
         {
         }
     }

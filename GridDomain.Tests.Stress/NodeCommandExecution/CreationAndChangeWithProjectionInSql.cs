@@ -15,7 +15,8 @@ using Microsoft.EntityFrameworkCore;
 using Serilog.Events;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Stress.NodeCommandExecution {
+namespace GridDomain.Tests.Stress.NodeCommandExecution
+{
     public class CreationAndChangeWithProjectionInSql : ScenarionPerfTest
     {
         private readonly ITestOutputHelper _output;
@@ -29,48 +30,57 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
         internal override void OnSetup()
         {
             var readDb = new AutoTestLocalDbConfiguration();
-            DbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString).Options;
-            using(var ctx = new BalloonContext(DbContextOptions))
+            DbContextOptions = new DbContextOptionsBuilder<BalloonContext>().UseSqlServer(readDb.ReadModelConnectionString)
+                                                                            .Options;
+            using (var ctx = new BalloonContext(DbContextOptions))
             {
                 ctx.Database.EnsureDeleted();
                 ctx.Database.EnsureCreated();
-                ctx.BalloonCatalog.Add(new BalloonCatalogItem() { BalloonId = Guid.NewGuid().ToString(), LastChanged = DateTime.UtcNow, Title = "WarmUp" });
+                ctx.BalloonCatalog.Add(new BalloonCatalogItem()
+                                       {
+                                           BalloonId = Guid.NewGuid()
+                                                           .ToString(),
+                                           LastChanged = DateTime.UtcNow,
+                                           Title = "WarmUp"
+                                       });
                 ctx.SaveChanges();
             }
+
             base.OnSetup();
         }
 
-        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(20, 50);
+        protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(10, 10);
+
         internal override IGridDomainNode CreateNode()
         {
-            var fixture = new BalloonWithProjectionFixture(_output,DbContextOptions)
-                                               {
-                                                   NodeConfig = new StressTestNodeConfiguration(),
-                                               }.UseSqlPersistence();
-
-            fixture.SystemConfigFactory = () => fixture.NodeConfig.ToStandAloneSystemConfig(AutoTestNodeDbConfiguration.Default);
-            return fixture.CreateNode().Result;
+            return new BalloonWithProjectionFixture(_output, DbContextOptions, new StressTestNodeConfiguration())
+                        .UseSqlPersistence()
+                        .CreateNode()
+                        .Result;
         }
 
         public override void Cleanup()
         {
             var totalCommandsToIssue = Scenario.CommandPlans.Count();
             var journalConnectionString = new AutoTestNodeDbConfiguration().JournalConnectionString;
-            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(journalConnectionString).Options;
+            var dbContextOptions = new DbContextOptionsBuilder().UseSqlServer(journalConnectionString)
+                                                                .Options;
 
             var rawJournalRepository = new RawJournalRepository(dbContextOptions);
             var count = rawJournalRepository.TotalCount();
-            if(count != totalCommandsToIssue)
+            if (count != totalCommandsToIssue)
             {
                 _output.WriteLine($"!!! Journal contains only {count} of {totalCommandsToIssue} !!!");
-                Task.Delay(2000).Wait();
+                Task.Delay(2000)
+                    .Wait();
                 count = rawJournalRepository.TotalCount();
                 _output.WriteLine($"After 2 sec Journal contains {count} of {totalCommandsToIssue}");
             }
 
-            using(var context = new BalloonContext(DbContextOptions))
+            using (var context = new BalloonContext(DbContextOptions))
             {
-                var projectedCount = context.BalloonCatalog.Select(x => x).Count();
+                var projectedCount = context.BalloonCatalog.Select(x => x)
+                                            .Count();
                 _output.WriteLine($"Found {projectedCount} projected rows");
             }
         }

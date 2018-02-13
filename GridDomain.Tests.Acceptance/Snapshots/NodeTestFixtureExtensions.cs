@@ -10,11 +10,18 @@ using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Tests.Unit;
+using Serilog.Events;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public static class NodeTestFixtureExtensions
     {
+        public static T SetLogLevel<T>(this T fixture, LogEventLevel value)where T:NodeTestFixture
+        {
+            fixture.NodeConfig.LogLevel = value;
+            return fixture;
+        }
+        
         public static T UseSqlPersistence<T>(this T fixture, bool clearData = true, ISqlNodeDbConfiguration dbConfig = null) where T : NodeTestFixture
         {
             var persistence = dbConfig ?? new AutoTestNodeDbConfiguration();
@@ -24,7 +31,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                     ClearData(persistence).Wait();
                                                 };
 
-            fixture.SystemConfigFactory = () => fixture.NodeConfig.ToDebugStandAloneSystemConfig(persistence);
+            fixture.ConfigBuilder = n => n.ToDebugStandAloneSystemConfig(persistence);
 
             return fixture;
         }

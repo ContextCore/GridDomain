@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
 #pragma warning restore xUnit1013 // Public method should be marked as test
         {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
-            _commndsToExecute = CreateCommandPlan(1000, 1000).ToArray();
+            _commndsToExecute = CreateCommandPlan(100, 1000).ToArray();
             _fakeEventStore = new FakeEventStore();
         }
 

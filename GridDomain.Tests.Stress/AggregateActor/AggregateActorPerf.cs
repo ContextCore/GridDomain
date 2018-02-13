@@ -36,8 +36,8 @@ namespace GridDomain.Tests.Stress.AggregateActor {
         {
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
-            _commands = Enumerable.Range(0, 40)
-                                  .SelectMany(n => CreateAggregatePlan(40))
+            _commands = Enumerable.Range(0, 20)
+                                  .SelectMany(n => CreateAggregatePlan(20))
                                   .ToArray();
 
             var sys = ActorSystem.Create("test",actorSystemConfig);
