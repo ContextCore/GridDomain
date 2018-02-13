@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime {
         private readonly IActorRef _hubRef;
 
         [Fact]
-        public async Task When_child_revives_monitor_should_be_created_even_on_collision()
+        public void When_child_revives_monitor_should_be_created_even_on_collision()
         {
 
             var ChildId = "testChild";

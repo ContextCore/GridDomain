@@ -73,15 +73,15 @@ namespace GridDomain.Node.Actors.PersistentHub
             
             
             var monitorName = $"RecycleMonitor_{name}";
-           // var existingMonitor = Context.Child(monitorName);
-           // if (existingMonitor != Nobody.Instance)
-           // {
-           //     //in rare cases of recreating existing child its old monitor will not be terminated 
-           //     //as it terminates after child
-           //     //so we just pick up another name, to not bother will waiting for old monitor termination
-           //     _recycleMonitorCollisionCounter++;
-           //     monitorName = $"RecycleMonitor_{_recycleMonitorCollisionCounter}_{name}";
-           // }
+            var existingMonitor = Context.Child(monitorName);
+            if (existingMonitor != Nobody.Instance)
+            {
+                //in rare cases of recreating existing child its old monitor will not be terminated 
+                //as it terminates after child
+                //so we just pick up another name, to not bother will waiting for old monitor termination
+                _recycleMonitorCollisionCounter++;
+                monitorName = $"RecycleMonitor_{_recycleMonitorCollisionCounter}_{name}";
+            }
                 
             CreateRecyleMonitor(childRef, _recycleConfiguration,monitorName);
             return true;
