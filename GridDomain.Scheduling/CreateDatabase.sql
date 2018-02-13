@@ -1,7 +1,24 @@
--- this script is for SQL Server and Azure SQL
-CREATE DATABASE [Quartz]
+-- This script is for:
+-- 64-bit Enterprise, Developer, or Evaluation edition of SQL Server 2014
+-- SQL Server 2016 RTM (pre-SP1) you need Enterprise, Developer, or Evaluation edition.
+-- SQL Server 2016 SP1 (or later), any edition. 
+CREATE DATABASE [QUARTZ]
+USE [master];
 GO
-USE [Quartz]
+
+-- NOTE: Modify database, path, filegroup, and file names as required
+ALTER DATABASE [QUARTZ] ADD FILEGROUP [MemoryOptimizedData] CONTAINS MEMORY_OPTIMIZED_DATA
+GO
+ALTER DATABASE [QUARTZ] ADD FILE ( NAME = N'MemoryOptimizedData', FILENAME = N'[enter_path_here]\MemoryOptimizedData' ) TO FILEGROUP [MemoryOptimizedData]
+GO
+ALTER DATABASE [QUARTZ] SET MEMORY_OPTIMIZED_ELEVATE_TO_SNAPSHOT = ON
+GO
+ALTER DATABASE [QUARTZ] SET READ_COMMITTED_SNAPSHOT ON WITH NO_WAIT
+GO
+ALTER DATABASE [QUARTZ] SET ALLOW_SNAPSHOT_ISOLATION ON
+GO
+
+USE [QUARTZ];
 GO
 
 IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[FK_QRTZ_TRIGGERS_QRTZ_JOB_DETAILS]') AND OBJECTPROPERTY(id, N'ISFOREIGNKEY') = 1)
@@ -124,10 +141,13 @@ CREATE TABLE [dbo].[QRTZ_SCHEDULER_STATE] (
 )
 GO
 
-CREATE TABLE [dbo].[QRTZ_LOCKS] (
-  [SCHED_NAME] [NVARCHAR] (120)  NOT NULL ,
-  [LOCK_NAME] [NVARCHAR] (40)  NOT NULL
-)
+-- NOTE: Review BUCKET_COUNT and modify as required
+CREATE TABLE [dbo].[QRTZ_LOCKS]
+(
+  [ID] [uniqueidentifier] PRIMARY KEY NONCLUSTERED HASH ( [ID] ) WITH ( BUCKET_COUNT = 1000 ) DEFAULT ( newsequentialid() ) NOT NULL,
+  [SCHED_NAME] [nvarchar] ( 120 ) COLLATE Latin1_General_100_BIN2 NOT NULL,
+  [LOCK_NAME] [nvarchar] ( 40 ) COLLATE Latin1_General_100_BIN2 NOT NULL,
+) WITH ( MEMORY_OPTIMIZED = ON, DURABILITY = SCHEMA_AND_DATA );
 GO
 
 CREATE TABLE [dbo].[QRTZ_JOB_DETAILS] (
@@ -239,14 +259,6 @@ ALTER TABLE [dbo].[QRTZ_SCHEDULER_STATE] WITH NOCHECK ADD
     (
       [SCHED_NAME],
       [INSTANCE_NAME]
-    )
-GO
-
-ALTER TABLE [dbo].[QRTZ_LOCKS] WITH NOCHECK ADD
-  CONSTRAINT [PK_QRTZ_LOCKS] PRIMARY KEY  CLUSTERED
-    (
-      [SCHED_NAME],
-      [LOCK_NAME]
     )
 GO
 
