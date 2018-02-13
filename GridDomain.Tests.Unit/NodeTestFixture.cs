@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit
 #if DEBUG
              LogEventLevel.Debug
 #else
-             LogEventLevel.Info
+             LogEventLevel.Information
 #endif
             );
 
