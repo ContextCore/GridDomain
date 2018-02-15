@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit
                                                 {
 
                                                    var ext = node.System.InitSchedulingExtension(quartzConfig,
-                                                                                                 fixture.Logger,
+                                                                                                 node.Log,
                                                                                                  node.Transport,
                                                                                                  node);
 
