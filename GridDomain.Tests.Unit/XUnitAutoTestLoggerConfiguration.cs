@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -19,9 +20,12 @@ namespace GridDomain.Tests.Unit
 {
     public class XUnitAutoTestLoggerConfiguration : DefaultLoggerConfiguration
     {
-        public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose):base(level)
+        public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose, string logFileName = null):base(level)
         {
             WriteTo.XunitTestOutput(output,level,DefaultTemplate);
+            if(logFileName != null)
+                WriteTo.File(logFileName, level, DefaultTemplate);
+          //  var b = Environment.CurrentDirectory;
         }
     }
 }

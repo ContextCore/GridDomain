@@ -11,8 +11,11 @@ namespace GridDomain.Tests.Unit
     {
         protected NodeTestKit(NodeTestFixture fixture) : base(fixture.SystemConfig.Value, fixture.Name)
         {
-            Sys.AttachSerilogLogging(fixture.Logger);
-            Node = fixture.CreateNode(() => Sys).Result;
+            var testClassName = $"Logs/{GetType().Name}.log"; 
+            var logger = new XUnitAutoTestLoggerConfiguration(fixture.Output, fixture.NodeConfig.LogLevel, testClassName)
+                                    .CreateLogger();
+            Sys.AttachSerilogLogging(logger);
+            Node = fixture.CreateNode(() => Sys,logger).Result;
         }
 
         protected GridDomainNode Node { get; }

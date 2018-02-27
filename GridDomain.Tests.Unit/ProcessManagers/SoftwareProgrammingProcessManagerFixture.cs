@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 
         public SoftwareProgrammingProcessManagerFixture(ITestOutputHelper output) : base(output)
         {
-            ProcessConfiguration = new SoftwareProgrammingProcessDomainConfiguration(Logger);
+            ProcessConfiguration = new SoftwareProgrammingProcessDomainConfiguration();
             Add(new BalloonDomainConfiguration());
             Add(ProcessConfiguration);
 

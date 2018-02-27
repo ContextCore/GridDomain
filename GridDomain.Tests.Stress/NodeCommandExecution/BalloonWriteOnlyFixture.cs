@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Stress.NodeCommandExecution {
     public class BalloonWriteOnlyFixture : NodeTestFixture
     {
-        public BalloonWriteOnlyFixture(ITestOutputHelper helper):base(helper,
+        public BalloonWriteOnlyFixture(ITestOutputHelper output):base(output,
                                                                       new StressTestNodeConfiguration {LogLevel = LogEventLevel.Warning},
                                                                       null,
                                                                       new  IDomainConfiguration[]{new BallonWriteOnlyDomain()})
