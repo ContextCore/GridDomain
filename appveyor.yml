@@ -42,7 +42,83 @@ build_script:
 
     msbuild GridDomain.sln /p:Configuration=Release /v:Minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:GeneratePackageOnBuild=true /p:IncludeSymbols=true
 test_script:
-- ps: "[reflection.assembly]::LoadWithPartialName(\"Microsoft.SqlServer.Smo\") | Out-Null\n[reflection.assembly]::LoadWithPartialName(\"Microsoft.SqlServer.SqlWmiManagement\") | Out-Null\n\n$serverName = $env:COMPUTERNAME\n$instanceName = 'SQL2016'\n$smo = 'Microsoft.SqlServer.Management.Smo.'\n$wmi = new-object ($smo + 'Wmi.ManagedComputer')\n\n# Set Alias\nNew-Item HKLM:\\SOFTWARE\\Microsoft\\MSSQLServer\\Client -Name ConnectTo | Out-Null\nSet-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\MSSQLServer\\Client\\ConnectTo -Name '(local)' -Value \"DBMSSOCN,$serverName\\$instanceName\" | Out-Null\n\n# Start services\nSet-Service SQLBrowser -StartupType Manual\nStart-Service SQLBrowser\nStart-Service \"MSSQL`$$instanceName\"\n\nsqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -Q \"Use [master]; CREATE DATABASE [AutoTestRead];\"\n\nsqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Node\\Persistence.sql\"\n\nsqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Node\\Human_schema.sql\"\n\nsqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Scheduling\\CreateDatabase.sql\"\n#to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository\nsqlcmd -S \"(local)\" -d AutoTestWrite -U \"sa\" -P \"Password12!\" -Q \"SELECT * FROM [Snapshots]\" \n\n\nfunction PushTestLogs($projectName)\n{\n$name=$projectName+\"_Logs_$env:APPVEYOR_BUILD_VERSION.zip\"\n$logpath = \"C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\\netcoreapp2.0\\Logs\\*\"\n7z a $name \"$logpath\"\nPush-AppveyorArtifact $name\n}\n\nfunction OpenRdp()\n{\n$blockRdp = $true;\niex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))\n}\n\n\ncd C:\\projects\\griddomain\\GridDomain.Tests.Unit\n\nOpenRdp\n\ndotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -internaldiagnostics  -usemsbuild -nobuild\n\n\nif($LastExitCode -ne 0){\nPushTestLogs -projectName \"Unit\"\n$host.SetShouldExit($LastExitCode)\n}\n\ncd C:\\projects\\griddomain\\GridDomain.Tests.Acceptance\n\ndotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0 -noshadow -configuration Release -internaldiagnostics\n\nif($LastExitCode -ne 0){\nPushTestLogs -projectName \"Acceptance\"\n$host.SetShouldExit($LastExitCode)\n} \nexit 1\ncd C:\\projects\\griddomain\\GridDomain.Tests.Stress\n\ndotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0 -noshadow -configuration Release -internaldiagnostics -xml C:\\projects\\griddomain\\stress_results.xml \n\nif($LastExitCode -ne 0){\nPushTestLogs -projectName \"Stress\"\n$host.SetShouldExit($LastExitCode)\n} \n\nGet-Content C:\\projects\\griddomain\\stress_results.xml"
+- ps: >-
+
+[reflection.assembly]::LoadWithPartialName(\"Microsoft.SqlServer.Smo\") | Out-Null	
+[reflection.assembly]::LoadWithPartialName(\"Microsoft.SqlServer.SqlWmiManagement\") | Out-Null	
+	
+$serverName = $env:COMPUTERNAME	
+$instanceName = 'SQL2016'	
+$smo = 'Microsoft.SqlServer.Management.Smo.'	
+$wmi = new-object ($smo + 'Wmi.ManagedComputer')	
+	
+# Set Alias	
+New-Item HKLM:\\SOFTWARE\\Microsoft\\MSSQLServer\\Client -Name ConnectTo | Out-Null	
+Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\MSSQLServer\\Client\\ConnectTo -Name '(local)' -Value \"DBMSSOCN,$serverName\\$instanceName\" | Out-Null	
+	
+# Start services	
+Set-Service SQLBrowser -StartupType Manual	
+Start-Service SQLBrowser	
+Start-Service \"MSSQL`$$instanceName\"	
+	
+sqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -Q \"Use [master]; CREATE DATABASE [AutoTestRead];\"	
+	
+sqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Node\\Persistence.sql\"	
+	
+sqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Node\\Human_schema.sql\"	
+	
+sqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Scheduling\\CreateDatabase.sql\"	
+#to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
+sqlcmd -S \"(local)\" -d AutoTestWrite -U \"sa\" -P \"Password12!\" -Q \"SELECT * FROM [Snapshots]\" 	
+	
+	
+function PushTestLogs($projectName)	
+{	
+$name=$projectName+\"_Logs_$env:APPVEYOR_BUILD_VERSION.zip\"	
+$logpath = \"C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\	
+etcoreapp2.0\\Logs\\*\"	
+7z a $name \"$logpath\"	
+Push-AppveyorArtifact $name	
+}	
+	
+function OpenRdp()	
+{	
+$blockRdp = $true;	
+iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))	
+}	
+	
+	
+cd C:\\projects\\griddomain\\GridDomain.Tests.Unit	
+	
+#OpenRdp	
+	
+dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -internaldiagnostics  -usemsbuild -nobuild	
+	
+	
+if($LastExitCode -ne 0){	
+PushTestLogs -projectName \"Unit\"	
+$host.SetShouldExit($LastExitCode)	
+}	
+	
+cd C:\\projects\\griddomain\\GridDomain.Tests.Acceptance	
+	
+dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0 -noshadow -configuration Release -internaldiagnostics	
+	
+if($LastExitCode -ne 0){	
+PushTestLogs -projectName \"Acceptance\"	
+$host.SetShouldExit($LastExitCode)	
+} 	
+exit 1	
+cd C:\\projects\\griddomain\\GridDomain.Tests.Stress	
+	
+dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0 -noshadow -configuration Release -internaldiagnostics -xml C:\\projects\\griddomain\\stress_results.xml 	
+	
+if($LastExitCode -ne 0){	
+PushTestLogs -projectName \"Stress\"	
+$host.SetShouldExit($LastExitCode)	
+} 	
+	
+Get-Content C:\\projects\\griddomain\\stress_results.xml"
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
