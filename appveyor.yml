@@ -31,14 +31,9 @@ cache: packages  -> **\packages.config
 build_script:
 - ps: |
     nuget sources add -Name pro_nbench -Source "https://ci.appveyor.com/nuget/pro-nbench-xunit"
-
     nuget sources add -Name autoFixture_Night -Source "https://www.myget.org/F/autofixture/api/v3/index.json"
-
-
     nuget update -self
-
     nuget restore -verbosity quiet GridDomain.sln
-
 
     msbuild GridDomain.sln /p:Configuration=Release /v:Minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:GeneratePackageOnBuild=true /p:IncludeSymbols=true
 test_script:
