@@ -75,7 +75,7 @@ test_script:
     ExecuteSQL -sql "-i GridDomain.Node\\Human_schema.sql"	
     ExecuteSQL -sql "-i GridDomain.Scheduling\\CreateDatabase.sql"	
     #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
-    ExecuteSQL -sql "-Q "SELECT * FROM [Snapshots]"	
+    ExecuteSQL -sql "-Q SELECT * FROM [Snapshots]"	
     	
     RunTest -name "Unit"
     RunTest -name "Acceptance"
