@@ -78,7 +78,7 @@ test_script:
     #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
     sqlcmd -S "(local)" -d AutoTestWrite -U "sa" -P "Password12!" -Q "SELECT * FROM [Snapshots]" 	
     	
-    exit 0
+  
     function PushTestLogs($projectName)	
     {	
         $name=$projectName+"_Logs_$env:APPVEYOR_BUILD_VERSION.zip"	
@@ -109,6 +109,8 @@ test_script:
     #OpenRdp	
     	
     RunTest -name "Unit"
+    OpenRdp	
+    exit 0
     RunTest -name "Acceptance"
     RunTest -name "Stress" -addition "-xml C:\\projects\\griddomain\\stress_results.xml"
     	
