@@ -50,7 +50,7 @@ test_script:
     $serverName = $env:COMPUTERNAME	
     
     $instanceName = 'SQL2016'
-	
+    
     $smo = 'Microsoft.SqlServer.Management.Smo.'	
     
     $wmi = new-object ($smo + 'Wmi.ManagedComputer')	
