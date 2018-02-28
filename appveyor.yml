@@ -42,43 +42,13 @@ build_script:
 
     msbuild GridDomain.sln /p:Configuration=Release /v:Minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:GeneratePackageOnBuild=true /p:IncludeSymbols=true
 test_script:
-- ps: |
-    #[reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null	
+- ps: |    	
+   
+    function ExecuteSQL($sql)
+    {
+      sqlcmd -S "(local)\SQL2016" -U "sa" -P "Password12!" $sql
+    }
     
-    #[reflection.assembly]::LoadWithPartialName("Microsoft.SqlServer.SqlWmiManagement") | Out-Null	
-    
-    #$serverName = $env:COMPUTERNAME	
-    
-    #$instanceName = 'SQL2016'
-    
-    #$smo = 'Microsoft.SqlServer.Management.Smo.'	
-    
-    #$wmi = new-object ($smo + 'Wmi.ManagedComputer')	
-    
-    # Set Alias	
-    #New-Item HKLM:\\SOFTWARE\\Microsoft\\MSSQLServer\\Client -Name ConnectTo | Out-Null	
-    
-    #Set-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\MSSQLServer\\Client\\ConnectTo -Name "(local)" -Value "DBMSSOCN,$serverName\\$instanceName" | Out-Null	
-    	
-    # Start services	
-    #Set-Service SQLBrowser -StartupType Manual	
-    
-    #Start-Service SQLBrowser	
-    
-    #Start-Service "MSSQL`$$instanceName"	
-    	
-    sqlcmd -S "(local)\SQL2016" -U "sa" -P "Password12!" -Q "Use [master]; CREATE DATABASE [AutoTestRead];"	
-    	
-    sqlcmd -S "(local)\SQL2016" -U "sa" -P "Password12!" -i "GridDomain.Node\\Persistence.sql"	
-    	
-    sqlcmd -S "(local)\SQL2016" -U "sa" -P "Password12!" -i "GridDomain.Node\\Human_schema.sql"	
-    	
-    sqlcmd -S "(local)\SQL2016" -U "sa" -P "Password12!" -i "GridDomain.Scheduling\\CreateDatabase.sql"	
-    
-    #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
-    sqlcmd -S "(local)" -d AutoTestWrite -U "sa" -P "Password12!" -Q "SELECT * FROM [Snapshots]" 	
-    	
-  
     function PushTestLogs($projectName)	
     {	
         $name=$projectName+"_Logs_$env:APPVEYOR_BUILD_VERSION.zip"	
@@ -105,8 +75,13 @@ test_script:
         $host.SetShouldExit($LastExitCode)	
         }	
     }	
-    	
-    exit 0	
+    
+    ExecuteSQL "-Q Use [master]; CREATE DATABASE [AutoTestRead];"	
+    ExecuteSQL "-i GridDomain.Node\\Persistence.sql"	
+    ExecuteSQL "-i GridDomain.Node\\Human_schema.sql"	
+    ExecuteSQL "-i GridDomain.Scheduling\\CreateDatabase.sql"	
+    #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
+    ExecuteSQL "-Q "SELECT * FROM [Snapshots]"	
     	
     RunTest -name "Unit"
     RunTest -name "Acceptance"
