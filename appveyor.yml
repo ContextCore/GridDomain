@@ -47,8 +47,7 @@ test_script:
     function PushTestLogs($projectName)	
     {	
         $name=$projectName+"_Logs_$env:APPVEYOR_BUILD_VERSION.zip"	
-        $logpath = "C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\	
-        etcoreapp2.0\\Logs\\*"	
+        $logpath = "C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\\netcoreapp2.0\\Logs\\*"	
         7z a $name "$logpath"	
         Push-AppveyorArtifact $name	
     }	
