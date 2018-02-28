@@ -6,7 +6,6 @@ branches:
   - 2.0.0
 image: Visual Studio 2017
 configuration: Release
-platform: Any CPU
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
