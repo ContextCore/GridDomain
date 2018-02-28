@@ -78,52 +78,39 @@ test_script:
     #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
     sqlcmd -S "(local)" -d AutoTestWrite -U "sa" -P "Password12!" -Q "SELECT * FROM [Snapshots]" 	
     	
-    	
+    exit 0
     function PushTestLogs($projectName)	
     {	
-    $name=$projectName+"_Logs_$env:APPVEYOR_BUILD_VERSION.zip"	
-    $logpath = "C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\	
-    etcoreapp2.0\\Logs\\*"	
-    7z a $name "$logpath"	
-    Push-AppveyorArtifact $name	
+        $name=$projectName+"_Logs_$env:APPVEYOR_BUILD_VERSION.zip"	
+        $logpath = "C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\	
+        etcoreapp2.0\\Logs\\*"	
+        7z a $name "$logpath"	
+        Push-AppveyorArtifact $name	
     }	
     	
     function OpenRdp()	
     {	
-    $blockRdp = $true;	
-    iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))	
+        $blockRdp = $true;	
+        iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))	
     }	
     	
-    	
-    cd C:\\projects\\griddomain\\GridDomain.Tests.Unit	
+    function RunTest($name, $addition="")
+    {	
+        cd C:\\projects\\griddomain\\GridDomain.Tests.$name	
+        	
+        dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -internaldiagnostics -nobuild	$additionParameters
+        	
+        if($LastExitCode -ne 0){	
+        PushTestLogs -projectName $name	
+        $host.SetShouldExit($LastExitCode)	
+        }	
+    }	
     	
     #OpenRdp	
     	
-    dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -internaldiagnostics  -usemsbuild -nobuild	
-    	
-    	
-    if($LastExitCode -ne 0){	
-    PushTestLogs -projectName "Unit"	
-    $host.SetShouldExit($LastExitCode)	
-    }	
-    	
-    cd C:\\projects\\griddomain\\GridDomain.Tests.Acceptance	
-    	
-    dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0 -noshadow -configuration Release -internaldiagnostics	
-    	
-    if($LastExitCode -ne 0){	
-    PushTestLogs -projectName "Acceptance"	
-    $host.SetShouldExit($LastExitCode)	
-    } 	
-    exit 1	
-    cd C:\\projects\\griddomain\\GridDomain.Tests.Stress	
-    	
-    dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0 -noshadow -configuration Release -internaldiagnostics -xml C:\\projects\\griddomain\\stress_results.xml 	
-    	
-    if($LastExitCode -ne 0){	
-    PushTestLogs -projectName "Stress"	
-    $host.SetShouldExit($LastExitCode)	
-    } 	
+    RunTest -name "Unit"
+    RunTest -name "Acceptance"
+    RunTest -name "Stress" -addition "-xml C:\\projects\\griddomain\\stress_results.xml"
     	
     Get-Content C:\\projects\\griddomain\\stress_results.xml
 artifacts:
