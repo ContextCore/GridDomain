@@ -1,0 +1,56 @@
+version: 2.2.{build}
+branches:
+  only:
+  - master
+  - /hotfix.*/
+  - 2.0.0
+image: Visual Studio 2017
+configuration: Release
+platform: Any CPU
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}-alfa'
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}-alfa'
+  package_version: '{version}-alfa'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}-alfa'
+environment:
+  WriteModel: Server=(local);Database=master;User ID=sa;Password=Password12!
+  ReadModel: Server=(local);Database=AutoTestRead;User ID=sa;Password=Password12!
+  APPVEYOR_RDP_PASSWORD:
+    secure: wdSMAMdS/O0zMUdCuf87Rw==
+  Quartz: Server=(local);Database=Quartz;User ID=sa;Password=Password12!
+services: mssql2016
+cache: packages  -> **\packages.config
+build_script:
+- ps: >-
+    nuget sources add -Name pro_nbench -Source "https://ci.appveyor.com/nuget/pro-nbench-xunit"
+
+    nuget sources add -Name autoFixture_Night -Source "https://www.myget.org/F/autofixture/api/v3/index.json"
+
+
+    nuget update -self
+
+    nuget restore -verbosity quiet GridDomain.sln
+
+
+    msbuild GridDomain.sln /p:Configuration=Release /v:Minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:GeneratePackageOnBuild=true /p:IncludeSymbols=true
+test_script:
+- ps: "[reflection.assembly]::LoadWithPartialName(\"Microsoft.SqlServer.Smo\") | Out-Null\n[reflection.assembly]::LoadWithPartialName(\"Microsoft.SqlServer.SqlWmiManagement\") | Out-Null\n\n$serverName = $env:COMPUTERNAME\n$instanceName = 'SQL2016'\n$smo = 'Microsoft.SqlServer.Management.Smo.'\n$wmi = new-object ($smo + 'Wmi.ManagedComputer')\n\n# Set Alias\nNew-Item HKLM:\\SOFTWARE\\Microsoft\\MSSQLServer\\Client -Name ConnectTo | Out-Null\nSet-ItemProperty -Path HKLM:\\SOFTWARE\\Microsoft\\MSSQLServer\\Client\\ConnectTo -Name '(local)' -Value \"DBMSSOCN,$serverName\\$instanceName\" | Out-Null\n\n# Start services\nSet-Service SQLBrowser -StartupType Manual\nStart-Service SQLBrowser\nStart-Service \"MSSQL`$$instanceName\"\n\nsqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -Q \"Use [master]; CREATE DATABASE [AutoTestRead];\"\n\nsqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Node\\Persistence.sql\"\n\nsqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Node\\Human_schema.sql\"\n\nsqlcmd -S \"(local)\" -U \"sa\" -P \"Password12!\" -i \"GridDomain.Scheduling\\CreateDatabase.sql\"\n#to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository\nsqlcmd -S \"(local)\" -d AutoTestWrite -U \"sa\" -P \"Password12!\" -Q \"SELECT * FROM [Snapshots]\" \n\n\nfunction PushTestLogs($projectName)\n{\n$name=$projectName+\"_Logs_$env:APPVEYOR_BUILD_VERSION.zip\"\n$logpath = \"C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\\netcoreapp2.0\\Logs\\*\"\n7z a $name \"$logpath\"\nPush-AppveyorArtifact $name\n}\n\nfunction OpenRdp()\n{\n$blockRdp = $true;\niex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))\n}\n\n\ncd C:\\projects\\griddomain\\GridDomain.Tests.Unit\n\nOpenRdp\n\ndotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -internaldiagnostics  -usemsbuild -nobuild\n\n\nif($LastExitCode -ne 0){\nPushTestLogs -projectName \"Unit\"\n$host.SetShouldExit($LastExitCode)\n}\n\ncd C:\\projects\\griddomain\\GridDomain.Tests.Acceptance\n\ndotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0 -noshadow -configuration Release -internaldiagnostics\n\nif($LastExitCode -ne 0){\nPushTestLogs -projectName \"Acceptance\"\n$host.SetShouldExit($LastExitCode)\n} \nexit 1\ncd C:\\projects\\griddomain\\GridDomain.Tests.Stress\n\ndotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0 -noshadow -configuration Release -internaldiagnostics -xml C:\\projects\\griddomain\\stress_results.xml \n\nif($LastExitCode -ne 0){\nPushTestLogs -projectName \"Stress\"\n$host.SetShouldExit($LastExitCode)\n} \n\nGet-Content C:\\projects\\griddomain\\stress_results.xml"
+artifacts:
+- path: '**\GridDomain.*.nupkg'
+  name: Packages
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/griddomain/api/v2/package
+  api_key:
+    secure: jF3VOqctqN9MK8lLs+Vlfs2Trv4Gs9BLV/R4HX6ZtC1JQaoezDssjjtP/28Ptkd7
+  skip_symbols: false
+  symbol_server: https://www.myget.org/F/griddomain/symbols/api/v2/package
