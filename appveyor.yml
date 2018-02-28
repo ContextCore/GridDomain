@@ -39,9 +39,9 @@ build_script:
 test_script:
 - ps: |    	
    
-    function ExecuteSQL($sql)
+    function ExecuteSQL($mode, $sql)
     {
-      sqlcmd -S "(local)\SQL2016" -U "sa" -P "Password12!" $sql
+      sqlcmd -S "(local)\SQL2016" -U "sa" -P "Password12!" $mode $sql
     }
     
     function PushTestLogs($projectName)	
@@ -70,12 +70,12 @@ test_script:
         }	
     }	
     
-    ExecuteSQL -sql '-Q Use [master]; CREATE DATABASE [AutoTestRead];'
-    ExecuteSQL -sql '-i GridDomain.Node\Persistence.sql'
-    ExecuteSQL -sql '-i GridDomain.Node\Human_schema.sql'	
-    ExecuteSQL -sql '-i GridDomain.Scheduling\CreateDatabase.sql'
+    ExecuteSQL -mode "-Q" -sql 'Use [master]; CREATE DATABASE [AutoTestRead];'
+    ExecuteSQL -mode "-i" -sql 'GridDomain.Node\Persistence.sql'
+    ExecuteSQL -mode "-i" -sql 'GridDomain.Node\Human_schema.sql'	
+    ExecuteSQL -mode "-i" -sql 'GridDomain.Scheduling\CreateDatabase.sql'
     #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
-    ExecuteSQL -sql '-Q SELECT * FROM [Snapshots]'	
+    ExecuteSQL -mode "-Q" -sql '-Q SELECT * FROM [Snapshots]'	
     	
     RunTest -name "Unit"
     RunTest -name "Acceptance"
