@@ -18,10 +18,17 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class Future_events_upgraded_by_object_adapter : NodeTestKit
     {
         public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
-            : base(
-                new BalanceFixture(output, new PersistedQuartzConfig()).UseSqlPersistence()
-                                                               .InitFastRecycle(TimeSpan.FromMilliseconds(500),TimeSpan.FromMilliseconds(400))
-                                                               .UseAdaper(new IncreaseBy100Adapter())) { }
+            : base(CreateFixture(output))
+        { }
+
+        private static NodeTestFixture CreateFixture(ITestOutputHelper output)
+        {
+            var cfg = new PersistedQuartzConfig();
+            return new BalanceFixture(output, cfg).UseSqlPersistence()
+                                                  .InitFastRecycle(TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(400))
+                                                  .UseAdaper(new IncreaseBy100Adapter())
+                                                  .ClearQuartzPersistence(cfg.ConnectionString);
+        }
 
         private class IncreaseBy100Adapter : ObjectAdapter<BalanceChangedEvent_V1, BalanceChangedEvent_V1>
         {
@@ -34,15 +41,20 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Fact]
         public async Task Future_event_is_upgraded_by_json_adapter()
         {
-            var cmd = new ChangeBalanceInFuture(1, Guid.NewGuid().ToString(), BusinessDateTime.Now.AddSeconds(2), false);
+            var cmd = new ChangeBalanceInFuture(1,
+                                                Guid.NewGuid()
+                                                    .ToString(),
+                                                BusinessDateTime.Now.AddSeconds(2),
+                                                false);
 
             var res = await Node.Prepare(cmd)
                                 .Expect<BalanceChangedEvent_V1>()
                                 .Execute(TimeSpan.FromSeconds(10));
 
             //event should be modified by json object adapter, changing its Amount
-            Assert.Equal(101, res.Message<BalanceChangedEvent_V1>()
-                  .AmountChange);
+            Assert.Equal(101,
+                         res.Message<BalanceChangedEvent_V1>()
+                            .AmountChange);
         }
     }
 }

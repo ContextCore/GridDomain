@@ -29,7 +29,10 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         public async Task It_fires_after_node_restart()
         {
 
-            var node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig()).UseSqlPersistence().CreateNode();
+            var node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig())
+                                  .UseSqlPersistence()
+                                  .CreateNode();
+            
             var cmd = new ScheduleEventInFutureCommand(BusinessDateTime.UtcNow.AddSeconds(5), Guid.NewGuid().ToString(), "test value");
 
             await node.Execute(cmd);

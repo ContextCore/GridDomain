@@ -28,15 +28,42 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             if (clearData)
                 fixture.OnNodePreparingEvent += (s, e) =>
                                                 {
-                                                    ClearData(persistence).Wait();
+                                                    ClearDomainData(persistence).Wait();
                                                 };
 
             fixture.ConfigBuilder = n => n.ToDebugStandAloneSystemConfig(persistence);
 
             return fixture;
         }
+        
+        public static T ClearQuartzPersistence<T>(this T fixture, string connection) where T : NodeTestFixture
+        {
+                fixture.OnNodePreparingEvent += (s, e) =>
+                                                {
+                                                    ClearQuartzData(connection).Wait();
+                                                };
 
-        public static async Task ClearData(ISqlNodeDbConfiguration nodeConf)
+            return fixture;
+        }
+
+        public static async Task ClearQuartzData(string connectionString)
+        {
+            await TestDbTools.Delete(connectionString,
+                                       "QRTZ_FIRED_TRIGGERS",
+                                       "QRTZ_SIMPLE_TRIGGERS",
+                                       "QRTZ_SIMPROP_TRIGGERS",
+                                       "QRTZ_CRON_TRIGGERS",
+                                       "QRTZ_BLOB_TRIGGERS",
+                                       "QRTZ_TRIGGERS",
+                                       "QRTZ_JOB_DETAILS",
+                                       "QRTZ_CALENDARS",
+                                       "QRTZ_PAUSED_TRIGGER_GRPS",
+                                       "QRTZ_LOCKS",
+                                       "QRTZ_SCHEDULER_STATE",
+                                       "QRTZ_JOB_LISTENERS",
+                                       "QRTZ_TRIGGER_LISTENERS");
+        } 
+        public static async Task ClearDomainData(ISqlNodeDbConfiguration nodeConf)
         {
             await TestDbTools.Truncate(nodeConf.SnapshotConnectionString.Replace("\\\\", "\\"), nodeConf.SnapshotTableName);
             await TestDbTools.Truncate(nodeConf.JournalConnectionString.Replace("\\\\", "\\"),

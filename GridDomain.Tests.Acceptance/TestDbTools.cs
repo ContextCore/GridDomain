@@ -12,6 +12,11 @@ namespace GridDomain.Tests.Acceptance
             await ExecuteSql(connection, tableNames.Select(t => $"IF OBJECT_ID('{t}') IS NOT NULL BEGIN  Truncate table {t} END ").ToArray());
         }
 
+        public static async Task Delete(string connection, params string[] tableNames)
+        {
+            await ExecuteSql(connection, tableNames.Select(t => $"IF OBJECT_ID('{t}') IS NOT NULL BEGIN  Delete from {t}  END").ToArray());
+        }
+        
         private static async Task ExecuteSql(string connection, params string[] sqlCommand)
         {
             using (var conn = new SqlConnection(connection))

@@ -63,10 +63,10 @@ test_script:
         cd C:\\projects\\griddomain\\GridDomain.Tests.$name	
         	
         dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -internaldiagnostics -nobuild	$additionParameters
+        PushTestLogs -projectName $name 
         	
         if($LastExitCode -ne 0){	
-        PushTestLogs -projectName $name	
-        exit $LastExitCode
+             exit $LastExitCode
         }	
     }	
     

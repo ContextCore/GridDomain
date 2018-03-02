@@ -22,8 +22,15 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 
         public Future_events_class_upgraded_by_object_adapter(ITestOutputHelper output)
             : base(
-                   new BalanceFixture(output,new PersistedQuartzConfig()).UseSqlPersistence()
-                                                                  .UseAdaper(new BalanceChanged_eventdapter1())) { }
+                   CreateFixture(output)) { }
+
+        private static NodeTestFixture CreateFixture(ITestOutputHelper output)
+        {
+            var persistedQuartzConfig = new PersistedQuartzConfig();
+            return new BalanceFixture(output,persistedQuartzConfig).UseSqlPersistence()
+                                                                   .UseAdaper(new BalanceChanged_eventdapter1())
+                                                                   .ClearQuartzPersistence(persistedQuartzConfig.ConnectionString);
+        }
 
         private class BalanceChanged_eventdapter1 : ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
         {

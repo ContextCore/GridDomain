@@ -19,6 +19,7 @@ using GridDomain.Tests.Unit;
 using GridDomain.Transport.Extension;
 using Moq;
 using Serilog;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 using IScheduler = Quartz.IScheduler;
@@ -30,7 +31,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public SchedulerActorTests(ITestOutputHelper helper)
         {
            var  containerBuilder = new ContainerBuilder();
-            var log = new XUnitAutoTestLoggerConfiguration(helper).CreateLogger();
+            var log = new XUnitAutoTestLoggerConfiguration(helper,LogEventLevel.Verbose, this.GetType().Name).CreateLogger();
             containerBuilder.RegisterInstance<ILogger>(log);
             var publisherMoq = new Mock<IPublisher>();
             containerBuilder.RegisterInstance(publisherMoq.Object);
