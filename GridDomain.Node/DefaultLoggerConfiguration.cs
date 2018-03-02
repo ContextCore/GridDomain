@@ -21,10 +21,14 @@ namespace GridDomain.Node
                                                  + "{NewLine} {Message}"
                                                  + "{NewLine} {Exception}";
 
-        public DefaultLoggerConfiguration(LogEventLevel level = LogEventLevel.Verbose)
+        public DefaultLoggerConfiguration(LogEventLevel level = LogEventLevel.Verbose, string fileName = null)
         {
             Enrich.FromLogContext();
-            WriteTo.RollingFile(".\\Logs\\log_{HalfHour}.txt", level,DefaultTemplate);
+            if(fileName != null)
+                WriteTo.File(fileName, level, DefaultTemplate);
+            else 
+                WriteTo.RollingFile(".\\Logs\\log_{HalfHour}.txt", level,DefaultTemplate);
+            
             MinimumLevel.Is(level);
             Destructure.ByTransforming<Money>(r => new { r.Amount, r.CurrencyCode });
             Destructure.ByTransforming<Exception>(r => new { Type = r.GetType(), r.StackTrace });

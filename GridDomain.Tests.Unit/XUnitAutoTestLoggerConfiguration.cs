@@ -20,12 +20,9 @@ namespace GridDomain.Tests.Unit
 {
     public class XUnitAutoTestLoggerConfiguration : DefaultLoggerConfiguration
     {
-        public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose, string logFileName = null):base(level)
+        public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose, string logFileName = null):base(level, logFileName)
         {
             WriteTo.XunitTestOutput(output,level,DefaultTemplate);
-            if(logFileName != null)
-                WriteTo.File(logFileName, level, DefaultTemplate);
-          //  var b = Environment.CurrentDirectory;
         }
     }
 }
