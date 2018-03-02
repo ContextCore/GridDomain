@@ -58,7 +58,6 @@ namespace GridDomain.Tests.Unit
             
             ConfigBuilder =  systemConfigFactorry ?? (n => n.ToStandAloneInMemorySystemConfig());
             SystemConfig = new Lazy<string>(() => ConfigBuilder(NodeConfig));
-           // Logger = new XUnitAutoTestLoggerConfiguration(helper, NodeConfig.LogLevel).CreateLogger();
             if (domainConfiguration == null)
                 return;
          
@@ -68,7 +67,6 @@ namespace GridDomain.Tests.Unit
         public GridDomainNode Node { get; private set; }
         public Func<NodeConfiguration,string> ConfigBuilder { get; set; }
         public Lazy<string> SystemConfig { get; }
-      //  public ILogger Logger { get; }
         public NodeConfiguration NodeConfig { get; }
         public string Name => NodeConfig.Name;
 
@@ -93,23 +91,39 @@ namespace GridDomain.Tests.Unit
             return this;
         }
 
-        public async Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider = null, ILogger logger = null)
+        public Task<GridDomainNode> CreateNode()
+        {
+           return StartNode(new GridDomainNode(_domainConfigurations, 
+                                      new DelegateActorSystemFactory(() => NodeConfig.CreateInMemorySystem()),
+                                      new XUnitAutoTestLoggerConfiguration(Output).CreateLogger(), 
+                                      DefaultTimeout));
+        }
+
+        private async Task<GridDomainNode> StartNode(GridDomainNode node)
         {
             OnNodePreparingEvent.Invoke(this, this);
-            Node = new GridDomainNode(_domainConfigurations, new DelegateActorSystemFactory(actorSystemProvider ?? (() => InitActorSystem(logger))), logger, DefaultTimeout);
-            Node.Initializing += (sender, node) => OnNodeCreatedEvent.Invoke(this, node);
+            Node = node;
+            Node.Initializing += (sender, n) => OnNodeCreatedEvent.Invoke(this, n);
             await Node.Start();
             OnNodeStartedEvent.Invoke(this, Node);
 
-            return Node;
+            return Node; 
+        }
+        
+        public Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
+        {
+            return StartNode(new GridDomainNode(_domainConfigurations, 
+                                                new DelegateActorSystemFactory(actorSystemProvider), 
+                                                logger, 
+                                                DefaultTimeout));
         }
       
-        private ActorSystem InitActorSystem(ILogger logger)
-        {
-            var system = NodeConfig.CreateInMemorySystem();
-            system.AttachSerilogLogging(logger);
-            return system;
-        }
+//        private ActorSystem InitActorSystem(ILogger logger)
+//        {
+//            var system = NodeConfig.CreateInMemorySystem();
+//            system.AttachSerilogLogging(logger);
+//            return system;
+//        }
 
         public event EventHandler<GridDomainNode>  OnNodeStartedEvent   = delegate { };
         public event EventHandler<NodeTestFixture> OnNodePreparingEvent = delegate { };

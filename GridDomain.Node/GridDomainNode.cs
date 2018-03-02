@@ -35,7 +35,7 @@ namespace GridDomain.Node
         internal CommandPipe Pipe;
 
         public GridDomainNode(IActorSystemFactory actorSystemFactory, params IDomainConfiguration[] domainConfigurations)
-            :this(domainConfigurations,actorSystemFactory)
+            :this(domainConfigurations,actorSystemFactory, new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>())
         { }
         public GridDomainNode(IActorSystemFactory actorSystemFactory, ILogger log, params IDomainConfiguration[] domainConfigurations)
             : this(domainConfigurations, actorSystemFactory, log)
@@ -44,14 +44,14 @@ namespace GridDomain.Node
             : this(domainConfigurations, actorSystemFactory, log, timeout)
         { }
 
-        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log = null, TimeSpan? defaultTimeout = null)
+        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan? defaultTimeout = null)
         {
             DomainConfigurations = domainConfigurations.ToList();
             if(!DomainConfigurations.Any())
                 throw new NoDomainConfigurationException();
 
             DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
-            Log = log ?? new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>(); 
+            Log = log;
             _actorSystemFactory = actorSystemFactory;
         }
 

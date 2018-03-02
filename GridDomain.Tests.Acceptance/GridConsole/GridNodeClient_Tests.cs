@@ -37,9 +37,9 @@ namespace GridDomain.Tests.Acceptance.GridConsole
 
             public ServerLauncher()
             {
-                _gridDomainNode = new GridDomainNode(new DelegateActorSystemFactory(() => new ServerConfiguration().CreateInMemorySystem()),
-                    new BalloonDomainConfiguration());
-                _gridDomainNode.Start().Wait();
+                //_gridDomainNode = new GridDomainNode(new DelegateActorSystemFactory(() => new ServerConfiguration().CreateInMemorySystem()),
+                //    new BalloonDomainConfiguration());
+                //_gridDomainNode.Start().Wait();
             }
 
             public void Dispose()
