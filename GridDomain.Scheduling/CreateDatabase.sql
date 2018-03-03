@@ -3,6 +3,7 @@
 -- SQL Server 2016 RTM (pre-SP1) you need Enterprise, Developer, or Evaluation edition.
 -- SQL Server 2016 SP1 (or later), any edition. 
 CREATE DATABASE [Quartz]
+GO
 USE [master];
 GO
 
