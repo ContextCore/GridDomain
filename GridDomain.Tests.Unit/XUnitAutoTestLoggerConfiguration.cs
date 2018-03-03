@@ -22,6 +22,10 @@ namespace GridDomain.Tests.Unit
     {
         public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose, string logFileName = null):base(level, logFileName)
         {
+            //dont want overload CI console output with logs 
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CI")))
+                level = LogEventLevel.Warning;
+            
             WriteTo.XunitTestOutput(output,level,DefaultTemplate);
         }
     }

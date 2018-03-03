@@ -55,12 +55,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Create()
                       .SendToProcessManagers(continueEvent, processId);
 
-            Log.Info("Enforced additional snapshot save & delete");
+            Log.Info("Testcase enforce additional snapshot save & delete, will kill process manager");
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 
-           // var id = EntityActorName.New<ProcessStateAggregate<SoftwareProgrammingState>>(processId)
-           //                         .Name;
-            
             var snapshots = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                   AggregateFactory.Default)
                                                              .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);

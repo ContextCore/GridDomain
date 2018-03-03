@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.GridConsole
 
         class ServerLauncher : MarshalByRefObject, IDisposable
         {
-            private readonly GridDomainNode _gridDomainNode;
+            private readonly GridDomainNode _gridDomainNode = null;
 
             public ServerLauncher()
             {

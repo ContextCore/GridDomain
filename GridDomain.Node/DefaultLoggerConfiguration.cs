@@ -11,6 +11,7 @@ using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using NMoneys;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace GridDomain.Node
