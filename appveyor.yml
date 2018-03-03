@@ -81,7 +81,7 @@ test_script:
     	
     RunTest -name "Unit"
 
-    OpenRdp()
+    OpenRdp
     RunTest -name "Acceptance"
 
     RunTest -name "Stress" -addition '-xml C:\projects\griddomain\stress_results.xml'
