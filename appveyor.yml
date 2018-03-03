@@ -68,7 +68,7 @@ test_script:
              PushTestLogs -projectName $name 
              exit $LastExitCode
         }	
-        
+
         PushTestLogs -projectName $name 
     }	
     
@@ -80,7 +80,10 @@ test_script:
     ExecuteSQL -mode "-Q" -sql '-Q SELECT * FROM [Snapshots]'	
     	
     RunTest -name "Unit"
+
+    OpenRdp()
     RunTest -name "Acceptance"
+
     RunTest -name "Stress" -addition '-xml C:\projects\griddomain\stress_results.xml'
     	
     Get-Content C:\\projects\\griddomain\\stress_results.xml
