@@ -35,7 +35,8 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             return new BalloonWithProjectionFixture(_testOutputHelper,
                                                     DbContextOptions,
                                                     new StressTestNodeConfiguration(), 
-                                                    cfg => cfg.ToStandAloneInMemorySystemConfig()).CreateNode().Result;
+                                                    cfg => cfg.ToStandAloneInMemorySystemConfig())
+                                   .CreateNode().Result;
         }
     }
 }

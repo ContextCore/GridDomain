@@ -14,44 +14,34 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Serializers;
+using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 using GridDomain.Transport.Extension;
+using Serilog.Events;
 
 namespace GridDomain.Tests.Stress.AggregateActor {
     //it is performance test, not pure xunit
 #pragma warning disable xUnit1013
     public abstract class AggregateActorPerf
     {
+        private readonly string _actorSystemConfig;
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
-        private readonly IActorRef _aggregateActor;
-        private readonly ICommand[] _commands;
-        private readonly string _aggregateId;
+        private IActorRef _aggregateActor;
+        private ICommand[] _commands;
+        private readonly ITestOutputHelper _testOutputHelper;
+        private ActorSystem _actorSystem;
 
         protected AggregateActorPerf(ITestOutputHelper output,string actorSystemConfig)
         {
+            _testOutputHelper = output;
+            _actorSystemConfig = actorSystemConfig;
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
-            _commands = Enumerable.Range(0, 20)
-                                  .SelectMany(n => CreateAggregatePlan(20))
-                                  .ToArray();
-
-            var sys = ActorSystem.Create("test",actorSystemConfig);
-            sys.InitLocalTransportExtension();
-            sys.InitDomainEventsSerialization(new EventsAdaptersCatalog());
-            var dummy = sys.ActorOf<CustomHandlersActorDummy>();
-            _aggregateId = Guid.NewGuid().ToString();
-            _aggregateActor = sys.ActorOf(Props.Create(
-                                                       () => new AggregateActor<Balloon>(new BalloonCommandHandler(), 
-                                                                                         new EachMessageSnapshotsPersistencePolicy(), 
-                                                                                         AggregateFactory.Default,
-                                                                                         AggregateFactory.Default,
-                                                                                         dummy)),
-                                          EntityActorName.New<Balloon>(_aggregateId).ToString());
         }
 
         class CustomHandlersActorDummy : ReceiveActor
@@ -62,18 +52,39 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             }
         }
 
-        private IEnumerable<ICommand> CreateAggregatePlan(int changeAmount)
+        private IEnumerable<ICommand> CreateAggregatePlan(int changeAmount, string aggregateId)
         {
             var random = new Random();
-            yield return new InflateNewBallonCommand(random.Next(), _aggregateId);
+            yield return new InflateNewBallonCommand(random.Next(), aggregateId);
             for (var num = 0; num < changeAmount; num++)
-                yield return new WriteTitleCommand(random.Next(), _aggregateId);
+                yield return new WriteTitleCommand(random.Next(), aggregateId);
         }
 
         [PerfSetup]
         public virtual void Setup(BenchmarkContext context)
         {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
+            var aggregateId = Guid.NewGuid().ToString();
+            
+            _commands = CreateAggregatePlan(100, aggregateId).ToArray();
+            
+             
+            _actorSystem = ActorSystem.Create("test",_actorSystemConfig);
+            _actorSystem.InitLocalTransportExtension();
+            _actorSystem.InitDomainEventsSerialization(new EventsAdaptersCatalog());
+            var log = new XUnitAutoTestLoggerConfiguration(_testOutputHelper,LogEventLevel.Warning,GetType().Name).CreateLogger();
+            
+            _actorSystem.AttachSerilogLogging(log);
+            
+            var dummy = _actorSystem.ActorOf<CustomHandlersActorDummy>();
+            
+            _aggregateActor = _actorSystem.ActorOf(Props.Create(
+                                                       () => new AggregateActor<Balloon>(new BalloonCommandHandler(), 
+                                                                                         new EachMessageSnapshotsPersistencePolicy(), 
+                                                                                         AggregateFactory.Default,
+                                                                                         AggregateFactory.Default,
+                                                                                         dummy)),
+                                          EntityActorName.New<Balloon>(aggregateId).ToString());
         }
 
         [NBenchFact]
@@ -81,7 +92,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             NumberOfIterations = 3,
             RunMode = RunMode.Iterations,
             TestMode = TestMode.Test)]
-        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 100)]
+        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 10)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         public void MeasureCommandExecution()
         {
@@ -93,6 +104,8 @@ namespace GridDomain.Tests.Stress.AggregateActor {
         [PerfCleanup]
         public void Cleanup()
         {
+            _actorSystem.Terminate()
+                        .Wait();
         }
     }
 }

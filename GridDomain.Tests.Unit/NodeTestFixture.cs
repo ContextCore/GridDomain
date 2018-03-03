@@ -13,6 +13,7 @@ using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
 using Serilog;
+using Serilog.Data;
 using Serilog.Events;
 using Xunit.Abstractions;
 
@@ -90,15 +91,7 @@ namespace GridDomain.Tests.Unit
             _domainConfigurations.Add(config);
             return this;
         }
-
-        public Task<GridDomainNode> CreateNode()
-        {
-           return StartNode(new GridDomainNode(_domainConfigurations, 
-                                      new DelegateActorSystemFactory(() => NodeConfig.CreateInMemorySystem()),
-                                      new XUnitAutoTestLoggerConfiguration(Output).CreateLogger(), 
-                                      DefaultTimeout));
-        }
-
+       
         private async Task<GridDomainNode> StartNode(GridDomainNode node)
         {
             OnNodePreparingEvent.Invoke(this, this);
@@ -109,21 +102,20 @@ namespace GridDomain.Tests.Unit
 
             return Node; 
         }
-        
+
+        public Task<GridDomainNode> CreateNode(ILogger logger=null)
+        {
+            return CreateNode(() => NodeConfig.CreateInMemorySystem(), logger ?? new XUnitAutoTestLoggerConfiguration(Output).CreateLogger());
+        }
+            
+
         public Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            return StartNode(new GridDomainNode(_domainConfigurations, 
+            return StartNode(new GridDomainNode(_domainConfigurations,
                                                 new DelegateActorSystemFactory(actorSystemProvider), 
                                                 logger, 
                                                 DefaultTimeout));
         }
-      
-//        private ActorSystem InitActorSystem(ILogger logger)
-//        {
-//            var system = NodeConfig.CreateInMemorySystem();
-//            system.AttachSerilogLogging(logger);
-//            return system;
-//        }
 
         public event EventHandler<GridDomainNode>  OnNodeStartedEvent   = delegate { };
         public event EventHandler<NodeTestFixture> OnNodePreparingEvent = delegate { };

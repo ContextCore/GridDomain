@@ -11,6 +11,7 @@ using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.FutureEvents;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -29,9 +30,11 @@ namespace GridDomain.Tests.Acceptance.FutureDomainEvents
         public async Task It_fires_after_node_restart()
         {
 
+            var logger = new XUnitAutoTestLoggerConfiguration(_testOutputHelper, LogEventLevel.Warning).CreateLogger();
+            
             var node = await new FutureEventsFixture(_testOutputHelper, new PersistedQuartzConfig())
                                   .UseSqlPersistence()
-                                  .CreateNode();
+                                  .CreateNode(logger);
             
             var cmd = new ScheduleEventInFutureCommand(BusinessDateTime.UtcNow.AddSeconds(5), Guid.NewGuid().ToString(), "test value");
 
