@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Akka.Event;
 using GridDomain.Common;
@@ -19,14 +20,17 @@ namespace GridDomain.Node
     public class DefaultLoggerConfiguration : LoggerConfiguration
     {
         public const string DefaultTemplate = "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{LogSource}"
-                                                 + "{NewLine} {Message}"
-                                                 + "{NewLine} {Exception}";
+                                                 + "{NewLine} {Message} {NewLine} {Exception} {NewLine}";
 
         public DefaultLoggerConfiguration(LogEventLevel level = LogEventLevel.Verbose, string fileName = null)
         {
             Enrich.FromLogContext();
-            if(fileName != null)
+            if (fileName != null)
+            {
+                if(File.Exists(fileName))
+                    File.Delete(fileName);
                 WriteTo.File(fileName, level, DefaultTemplate);
+            }
             else 
                 WriteTo.RollingFile(".\\Logs\\log_{HalfHour}.txt", level,DefaultTemplate);
             

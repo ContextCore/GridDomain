@@ -2,6 +2,7 @@ using System;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.EventSourced;
+using GridDomain.Node.Actors.EventSourced.SnapshotsPolicy;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
@@ -29,7 +30,7 @@ namespace GridDomain.Tests.Unit
         {
             var dependencyFactory = _balloonDomainConfiguration.BalloonDependencyFactory;
 
-            dependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, keep, maxSaveFrequency);
+            dependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, maxSaveFrequency, keep);
             var balloonAggregateFactory = new BalloonAggregateFactory();
 
             dependencyFactory.AggregateFactoryCreator = () => balloonAggregateFactory;

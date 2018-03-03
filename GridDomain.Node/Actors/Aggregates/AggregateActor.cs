@@ -36,7 +36,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly IPublisher _publisher;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
-        private PersistenceActorEventStore<EventsPersisted> EventStore;
+        private readonly PersistenceActorEventStore<EventsPersisted> EventStore;
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,

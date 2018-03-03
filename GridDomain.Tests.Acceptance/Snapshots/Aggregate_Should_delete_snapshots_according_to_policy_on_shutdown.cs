@@ -42,9 +42,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             await Node.Execute(new InflateNewBallonCommand(1, aggregateId));
 
-           await ChangeSeveralTimes(5, aggregateId);
+            await ChangeSeveralTimes(5, aggregateId);
 
-           await Node.KillAggregate<Balloon>(aggregateId,TimeSpan.FromSeconds(10));                                
+            await Node.KillAggregate<Balloon>(aggregateId,TimeSpan.FromSeconds(10));                                
 
             //sql server still need some time to commit deleted snapshots;
             await Task.Delay(TimeSpan.FromSeconds(3));

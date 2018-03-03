@@ -126,9 +126,17 @@ namespace GridDomain.Tests.Common
         public static async Task KillAggregate<TAggregate>(this GridDomainNode node, string id, TimeSpan? timeout = null)
             where TAggregate : Aggregate
         {
-            var aggregateHubActor = await node.LookupAggregateHubActor<TAggregate>(timeout);
-            var aggregateActor = await node.LookupAggregateActor<TAggregate>(id, timeout);
-
+            IActorRef aggregateHubActor;
+            IActorRef aggregateActor;
+            try
+            {
+                aggregateHubActor = await node.LookupAggregateHubActor<TAggregate>(timeout);
+                aggregateActor = await node.LookupAggregateActor<TAggregate>(id, timeout);
+            }
+            catch (ActorNotFoundException)
+            {
+                return;
+            }
             await ShutDownHubActor(node, id, aggregateActor, aggregateHubActor, timeout);
         }
 

@@ -12,35 +12,50 @@ using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.AkkaMessaging;
+using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotSelectionCriteria;
 using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
 {
+    public static class SnapshotSelectionCriteriaExtensions
+    {
+        public static SnapshotSelectionCriteria ToGridDomain(this Akka.Persistence.SnapshotSelectionCriteria c)
+        {
+            return new SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
 
+        }
+        public static Akka.Persistence.SnapshotSelectionCriteria ToGridDomain(this SnapshotSelectionCriteria c)
+        {
+            return new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
+        }
+
+    }
 
     public class DomainEventSourcedActor<T> : ReceivePersistentActor where T : class, IAggregate
     {
         private readonly List<IActorRef> _persistenceWatchers = new List<IActorRef>();
         private readonly ISnapshotsPersistencePolicy _snapshotsPolicy;
+        private readonly IOperationTracker<long> _snapshotsSaveTracker;
+        private readonly IOperationTracker<SnapshotSelectionCriteria> _snapshotsDeleteTracker;
+        
         protected readonly ActorMonitor Monitor;
 
         protected readonly BehaviorQueue Behavior;
         private readonly IConstructSnapshots _snapshotsConstructor;
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
-        private int _snapshotsDeleteInProgressCount;
-        private int _snapshotsSaveInProgressCount;
-
         protected DomainEventSourcedActor(IConstructAggregates aggregateConstructor, 
-                                       IConstructSnapshots snapshotsConstructor,
-                                       ISnapshotsPersistencePolicy policy)
+                                          IConstructSnapshots snapshotsConstructor,
+                                          ISnapshotsPersistencePolicy policy)
         {
             _snapshotsConstructor = snapshotsConstructor;
+            
             _snapshotsPolicy = policy;
-          
+            _snapshotsSaveTracker = (policy as ISnapshotsSavePolicy).Tracking;
+            _snapshotsDeleteTracker = (policy as ISnapshotsDeletePolicy).Tracking;
+            
             PersistenceId = Self.Path.Name;
-            Id = EntityActorName.Parse<T>(Self.Path.Name)
-                                   .Id;
+            Id = EntityActorName.Parse<T>(Self.Path.Name).Id;
             State = (T) aggregateConstructor.Build(typeof(T), Id, null);
 
             Monitor = new ActorMonitor(Context, typeof(T).Name);
@@ -67,16 +82,16 @@ namespace GridDomain.Node.Actors.EventSourced
         protected virtual bool CanShutdown(out string description)
         {
             description = "";
-            if (_snapshotsSaveInProgressCount != 0)
+            if (_snapshotsSaveTracker.InProgress != 0)
             {
-                description += $"{_snapshotsSaveInProgressCount} snapshots saving is in progress ";
+                description += $"{_snapshotsSaveTracker.InProgress} snapshots saving is in progress ";
             } 
-            if (_snapshotsDeleteInProgressCount != 0)
+            if (_snapshotsDeleteTracker.InProgress != 0)
             {
-                description += $"{_snapshotsDeleteInProgressCount} snapshots deleting is in progress";
+                description += $"{_snapshotsDeleteTracker.InProgress} snapshots deleting is in progress";
             }
 
-            return _snapshotsSaveInProgressCount == 0 && _snapshotsDeleteInProgressCount == 0;
+            return _snapshotsSaveTracker.InProgress == 0 && _snapshotsDeleteTracker.InProgress == 0;
         }
         protected void DefaultBehavior()
         {
@@ -93,11 +108,9 @@ namespace GridDomain.Node.Actors.EventSourced
                                                   
                                                   if (_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
                                                   {
-                                                      var criteria = new Akka.Persistence.SnapshotSelectionCriteria(c.MaxSequenceNr, c.MaxTimeStamp, c.MinSequenceNr, c.MinTimestamp);
-                                                      DeleteSnapshots(criteria);
-                                                      _snapshotsDeleteInProgressCount++;
+                                                      DeleteSnapshots(c.ToGridDomain());
+                                                      _snapshotsDeleteTracker.Start(c);
                                                   }
-                                                  
 
                                                   Log.Debug("Stopped");
                                                   Context.Stop(Self);
@@ -109,32 +122,32 @@ namespace GridDomain.Node.Actors.EventSourced
            
             Command<DeleteSnapshotsSuccess>(s =>
                                             {
-                                                _snapshotsDeleteInProgressCount--;
+                                                _snapshotsDeleteTracker.Complete(s.Criteria.ToGridDomain());
                                                 Log.Debug("Deleted snapshot bulk mode up to {reason}, in progress:{progress}",
-                                                          s.Criteria,_snapshotsDeleteInProgressCount);
+                                                          s.Criteria, _snapshotsDeleteTracker.InProgress);
                                                 NotifyPersistenceWatchers(s);
                                             });
             Command<DeleteSnapshotsFailure>(s =>
                                             {
-                                                _snapshotsDeleteInProgressCount--;
-                                                Log.Debug("Failed to delete snapshots in bulk mode {reason}, delete in progress: {progress}", s,_snapshotsDeleteInProgressCount);
+                                                _snapshotsDeleteTracker.Fail(s.Criteria.ToGridDomain());
+                                                Log.Debug("Failed to delete snapshots in bulk mode {reason}, delete in progress: {progress}", s,_snapshotsDeleteTracker.InProgress);
                                                 NotifyPersistenceWatchers(s);
                                             });
             Command<SaveSnapshotSuccess>(s =>
                                          {
-                                             _snapshotsSaveInProgressCount--;
+                                            
                                              NotifyPersistenceWatchers(s);
                                              Log.Debug("snapshot saved at {time}\r\n "
                                                        + "sequence number is {number} \r\n "
                                                        + "savings in progress: {progress} \r\n "
-                                                       , s.Metadata.Timestamp,s.Metadata.SequenceNr,_snapshotsSaveInProgressCount);
+                                                       , s.Metadata.Timestamp,s.Metadata.SequenceNr, _snapshotsSaveTracker.InProgress);
                                             
-                                             _snapshotsPolicy.MarkSnapshotSaved(s.Metadata.SequenceNr,
-                                                                                BusinessDateTime.UtcNow);
+                                             _snapshotsSaveTracker.Complete(s.Metadata.SequenceNr);
                                          });
             Command<SaveSnapshotFailure>(s =>
                                          {
-                                             _snapshotsSaveInProgressCount--;
+                                            
+                                             _snapshotsSaveTracker.Fail(s.Metadata.SequenceNr);
                                              NotifyPersistenceWatchers(s);
                                          });
         }
@@ -162,10 +175,10 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected void SaveSnapshot(IAggregate aggregate, object lastEventPersisted)
         {
-            if (!_snapshotsPolicy.ShouldSave(SnapshotSequenceNr, BusinessDateTime.UtcNow)) return;
+            if (!_snapshotsPolicy.ShouldSave(SnapshotSequenceNr)) return;
             Log.Debug("Started snapshot save, cased by persisted event {event}",lastEventPersisted);
             SaveSnapshot(_snapshotsConstructor.GetSnapshot(aggregate));
-            _snapshotsSaveInProgressCount++;
+            _snapshotsSaveTracker.Start(SnapshotSequenceNr);
         }
 
         protected void NotifyPersistenceWatchers(object msg)

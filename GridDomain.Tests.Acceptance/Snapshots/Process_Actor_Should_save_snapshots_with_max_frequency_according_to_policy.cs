@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     {
         public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
             : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
-                                                                       .InitSnapshots(2, TimeSpan.FromSeconds(10))
+                                                                       .InitSnapshots(5, TimeSpan.FromSeconds(60))
                                                                        .IgnorePipeCommands()) { }
 
        

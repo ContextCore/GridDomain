@@ -92,12 +92,12 @@ namespace GridDomain.Node
 
         private void OnSystemTermination()
         {
-            Log.Debug("grid node Actor system terminated");
+            Log.Information("grid node Actor system terminated");
         }
 
         public async Task Start()
         {
-            Log.Debug("Starting GridDomain node {Id}", Id);
+            Log.Information("Starting GridDomain node {Id}", Id);
 
             _stopping = false;
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
@@ -142,7 +142,7 @@ namespace GridDomain.Node
 
             await nodeController.Ask<GridNodeController.Alive>(GridNodeController.HeartBeat.Instance);
 
-            Log.Debug("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
+            Log.Information("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
 
         private async Task<ICommandExecutor> CreateCommandExecutor()
@@ -165,7 +165,7 @@ namespace GridDomain.Node
             if(_stopping)
                 return;
 
-            Log.Debug("GridDomain node {Id} is stopping", Id);
+            Log.Information("GridDomain node {Id} is stopping", Id);
             _stopping = true;
 
             if(System != null)
@@ -175,7 +175,7 @@ namespace GridDomain.Node
             }
             System = null;
             Container?.Dispose();
-            Log.Debug("GridDomain node {Id} stopped", Id);
+            Log.Information("GridDomain node {Id} stopped", Id);
         }
 
         public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)

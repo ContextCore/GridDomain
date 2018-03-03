@@ -9,6 +9,7 @@ using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.EventSourced;
+using GridDomain.Node.Actors.EventSourced.SnapshotsPolicy;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
@@ -66,7 +67,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new HandlersDefaultProcessor(), TestActor)));
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<ProgrammerAggregate>(CommandAggregateHandler.New<ProgrammerAggregate>(null),
-                                                                                         new SnapshotsPersistencePolicy(1, 5, null, null),
+                                                                                         new SnapshotsPersistencePolicy(1, null,5 , null),
                                                                                          AggregateFactory.Default,
                                                                                          AggregateFactory.Default,
                                                                                          handlersActor)),
