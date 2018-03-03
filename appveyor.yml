@@ -47,14 +47,14 @@ test_script:
     function PushTestLogs($projectName)	
     {	
         $name=$projectName+"_Logs_$env:APPVEYOR_BUILD_VERSION.zip"	
-        $logDirectory = "C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\\netcoreapp2.0\\Logs"
+        $logDirectory = "C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\\netcoreapp2.0\\Logs
 
         if(!(Test-Path -Path $logDirectory)){
           Write-Output "Logs directory not found at $logDirectory"
           return
         }
 
-        $logpath = $logDirectory\\*"	
+        $logpath = "$logDirectory\\*"	
         7z a $name "$logpath"	
         Push-AppveyorArtifact $name	
     }	
