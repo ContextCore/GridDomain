@@ -80,7 +80,7 @@ test_script:
     New-Item -ItemType directory -Path C:\GridDomainQuartz | Out-Null
     ExecuteSQL -mode "-i" -sql 'GridDomain.Scheduling\CreateDatabase.sql'
     #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
-    ExecuteSQL -mode "-Q" -sql 'SELECT * FROM [Snapshots]'	
+    ExecuteSQL -mode "-Q" -sql 'USE [AutoTestWrite]; SELECT * FROM [Snapshots]'	
     	
     RunTest -name "Unit"
 
