@@ -61,13 +61,15 @@ test_script:
     function RunTest($name, $addition="")
     {	
         cd C:\\projects\\griddomain\\GridDomain.Tests.$name	
-        	
-        dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -internaldiagnostics -nobuild	$additionParameters
-        PushTestLogs -projectName $name 
-        	
+
+        dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -nobuild $additionParameters
+
         if($LastExitCode -ne 0){	
+             PushTestLogs -projectName $name 
              exit $LastExitCode
         }	
+        
+        PushTestLogs -projectName $name 
     }	
     
     ExecuteSQL -mode "-Q" -sql 'Use [master]; CREATE DATABASE [AutoTestRead];'
