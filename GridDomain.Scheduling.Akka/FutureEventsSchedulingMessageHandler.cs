@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -17,9 +18,11 @@ namespace GridDomain.Scheduling.Akka
     {
         private readonly IActorRef _schedulerActorRef;
         private readonly ProcessEntry _schedulingFutureEventProcessEntry;
+        private readonly ILogger _logger;
 
-        public FutureEventsSchedulingMessageHandler(IActorRef schedulingActor)
+        public FutureEventsSchedulingMessageHandler(IActorRef schedulingActor, ILogger log)
         {
+            _logger = log;
             _schedulerActorRef = schedulingActor;
 
             _schedulingFutureEventProcessEntry = new ProcessEntry(GetType()
@@ -31,7 +34,24 @@ namespace GridDomain.Scheduling.Akka
         public Task Handle(FutureEventCanceledEvent evt, IMessageMetadata metadata)
         {
             var key = CreateScheduleKey(evt.FutureEventId, evt.SourceId, evt.SourceName);
-            return _schedulerActorRef.Ask<Unscheduled>(new Unschedule(key));
+            return _schedulerActorRef.Ask<object>(new Unschedule(key))
+                .ContinueWith(t =>
+                              {
+                                  switch (t.Result)
+                                  {
+                                      case Unscheduled unsched: break;
+                                      case Failure f:
+                                      {
+                                          _logger.Error(f.Exception, "Error occured during unscheduling event");
+                                          break;
+                                      }
+                                      default:
+                                      {
+                                          _logger.Error("Unexpected message received during unscheduling event confirmation wait: {msg}",t.Result);
+                                          break;
+                                      }
+                                  }
+                              });
         }
 
         public Task Handle(FutureEventScheduledEvent message, IMessageMetadata messageMetadata)
@@ -51,7 +71,23 @@ namespace GridDomain.Scheduling.Akka
                                                              ExecutionOptions.ForCommand(message.RaiseTime, succesEventType),
                                                              metadata);
 
-            return _schedulerActorRef.Ask<CommandExecutionScheduled>(scheduleEvent);
+            return _schedulerActorRef.Ask<object>(scheduleEvent).ContinueWith(t =>
+                                                                              {
+                                                                                  switch (t.Result)
+                                                                                  {
+                                                                                      case CommandExecutionScheduled sched: break;
+                                                                                      case Failure f:
+                                                                                      {
+                                                                                          _logger.Error(f.Exception, "Error occured during scheduling event");
+                                                                                          break;
+                                                                                      }
+                                                                                      default:
+                                                                                      {
+                                                                                          _logger.Error("Unexpected message received during scheduling event confirmation wait: {msg}",t.Result);
+                                                                                          break;
+                                                                                      }
+                                                                                  }
+                                                                              });
         }
 
         internal static ScheduleKey CreateScheduleKey(string scheduleId, string sourceId, string sourceName, string description = null)
