@@ -75,6 +75,9 @@ test_script:
     ExecuteSQL -mode "-Q" -sql 'Use [master]; CREATE DATABASE [AutoTestRead];'
     ExecuteSQL -mode "-i" -sql 'GridDomain.Node\Persistence.sql'
     ExecuteSQL -mode "-i" -sql 'GridDomain.Node\Human_schema.sql'	
+
+    #for memory-optimized Quartz tables 
+    New-Item -ItemType directory -Path C:\GridDomainQuartz | Out-Null
     ExecuteSQL -mode "-i" -sql 'GridDomain.Scheduling\CreateDatabase.sql'
     #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
     ExecuteSQL -mode "-Q" -sql '-Q SELECT * FROM [Snapshots]'	
