@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Common.Configuration
     public class AutoTestNodeConfiguration : NodeConfiguration
     {
         public static NodeConfiguration Default { get; } = new AutoTestNodeConfiguration();
-        public AutoTestNodeConfiguration(LogEventLevel verbosity = LogEventLevel.Information)
+        public AutoTestNodeConfiguration(LogEventLevel verbosity = LogEventLevel.Verbose)
             : base("AutoTest",new AutoTestNodeNetworkAddress(), verbosity) {}
     }
 }

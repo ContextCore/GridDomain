@@ -24,13 +24,7 @@ namespace GridDomain.Tests.Unit
     {
         public ITestOutputHelper Output { get; }
 
-        private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration(
-#if DEBUG
-             LogEventLevel.Debug
-#else
-             LogEventLevel.Information
-#endif
-            );
+        private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
 
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
 
