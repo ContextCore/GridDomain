@@ -27,8 +27,6 @@ namespace GridDomain.Node
             Enrich.FromLogContext();
             if (fileName != null)
             {
-                if(File.Exists(fileName))
-                    File.Delete(fileName);
                 WriteTo.File(fileName, level, DefaultTemplate);
             }
             else 
