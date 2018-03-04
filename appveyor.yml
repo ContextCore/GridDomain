@@ -93,9 +93,9 @@ test_script:
 
     RunTest -name "Acceptance"
 
-    RunTest -name "Stress" -addition '-xml C:\projects\griddomain\stress_results.xml'
+    #RunTest -name "Stress" -addition '-xml C:\projects\griddomain\stress_results.xml'
     	
-    Get-Content C:\\projects\\griddomain\\stress_results.xml
+    #Get-Content C:\\projects\\griddomain\\stress_results.xml
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
