@@ -1,9 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
-using GridDomain.Tools;
 
 namespace GridDomain.Tests.Unit.BalloonDomain
 {
@@ -13,7 +11,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
         public Balloon(string id, string title) : this(id)
         {
-            Produce(new BalloonCreated(title, id));
+            Emit(new BalloonCreated(title, id));
         }
 
         public string Title { get; private set; }
@@ -22,26 +20,25 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
         public void WriteNewTitle(int number)
         {
-            Produce(new BalloonTitleChanged(number.ToString(), Id));
+            Emit(new BalloonTitleChanged(number.ToString(), Id));
         }
 
         public void InflateNewBaloon(string value)
         {
-            Produce(new BalloonCreated(value, Id),
-                    new BalloonTitleChanged(value, Id));
+            Emit(new BalloonCreated(value, Id), new BalloonTitleChanged(value, Id));
         }
 
         public void IncreaseTitle(int value)
         {
-            Produce(new BalloonTitleChanged((value + int.Parse(Title)).ToString(), Id));
+            Emit(new BalloonTitleChanged((value + int.Parse(Title)).ToString(), Id));
         }
         //demo for actions depending on changed state after emit
-        public async Task DoubleIncreaseTitle(int value)
+        public void DoubleIncreaseTitle(int value)
         {
-            await Emit(new BalloonTitleChanged(value.ToString(), Id));
+            Emit(new BalloonTitleChanged(value.ToString(), Id));
             //should be changed value from previous emit
             var newValue = int.Parse(Title) + 1;
-            Produce(new BalloonTitleChanged((newValue).ToString(), Id));
+            Emit(new BalloonTitleChanged((newValue).ToString(), Id));
         }
         public async Task PlanTitleWrite(int sleepMiliseconds)
         {
@@ -54,17 +51,17 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         internal async Task PlanTitleWrite(int parameter, TimeSpan sleepTime)
         {
             await Task.Delay(sleepTime);
-            Produce(new BalloonTitleChanged(parameter.ToString(), Id));
+            Emit(new BalloonTitleChanged(parameter.ToString(), Id));
         }
 
         internal async Task PlanWriteTitleToBlow(int parameter, TimeSpan sleepTime)
         {
-            Produce(await Task.Delay(sleepTime)
-                                    .ContinueWith(t =>
-                                    {
-                                        Blow();
-                                        return new BalloonTitleChanged(parameter.ToString(), Id);
-                                    }));
+            Emit(await Task.Delay(sleepTime)
+                           .ContinueWith(t =>
+                                         {
+                                             Blow();
+                                             return new BalloonTitleChanged(parameter.ToString(), Id);
+                                         }));
         }
 
         protected override void OnAppyEvent(DomainEvent evt)
@@ -94,7 +91,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
         {
             await Task.Delay(callBackTime);
             Blow();
-            Produce(new BalloonTitleChanged("0", Id));
+            Emit(new BalloonTitleChanged("0", Id));
         }
 
       

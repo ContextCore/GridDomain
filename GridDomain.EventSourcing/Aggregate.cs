@@ -16,15 +16,6 @@ namespace GridDomain.EventSourcing
 
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
 
-        public void CommitAll()
-        {
-            foreach(var e in _uncommittedEvents)
-                ((IAggregate)this).ApplyEvent(e);
-
-            _uncommittedEvents.Clear();
-        }
-        protected IEventStore EventStore;
-
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
        
         protected Aggregate(string id)
@@ -47,12 +38,7 @@ namespace GridDomain.EventSourcing
         public string Id { get; protected set; }
         public int Version { get; protected set; }
 
-        public void InitEventStore(IEventStore store)
-        {
-            EventStore = store;
-        }
-
-        void IAggregate.ApplyEvent(DomainEvent @event)
+        void IAggregate.Apply(DomainEvent @event)
         {
             OnAppyEvent(@event);
             Version++;
@@ -60,9 +46,14 @@ namespace GridDomain.EventSourcing
 
         protected abstract void OnAppyEvent(DomainEvent evt);
 
-        IReadOnlyCollection<DomainEvent> IAggregate.GetUncommittedEvents()
+        public IReadOnlyCollection<DomainEvent> GetUncommittedEvents()
         {
             return  _uncommittedEvents;
+        }
+
+        public void ClearUncommitedEvents()
+        {
+            _uncommittedEvents.Clear();
         }
 
         public virtual bool Equals(IAggregate other)
@@ -72,29 +63,16 @@ namespace GridDomain.EventSourcing
 
         protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent
         {
-            await Emit(await evtTask);
-        }
-
-        public void Commit(DomainEvent e)
-        {
-            if (!_uncommittedEvents.Remove(e))
-                throw new EventIsNotBelongingToAggregateException();
-
-            ((IAggregate) this).ApplyEvent(e);
+             Emit(await evtTask);
         }
 
        
-        protected async Task Emit(params DomainEvent[] events)
+        protected void Emit(params DomainEvent[] events)
         {
-            Produce(events);
-            await EventStore.Persist(this);
-            CommitAll();
+            _uncommittedEvents.AddRange(events);
+            foreach (var e in events) ((IAggregate) this).Apply(e);
         }
 
-        protected void Produce(params DomainEvent[] events)
-        {
-           _uncommittedEvents.AddRange(events);
-        }
         public override int GetHashCode()
         {
             return Id.GetHashCode();

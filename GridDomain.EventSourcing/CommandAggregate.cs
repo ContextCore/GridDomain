@@ -22,11 +22,9 @@ namespace GridDomain.EventSourcing {
 
         protected abstract Task<IAggregate> Execute(ICommand cmd);
 
-        public async Task<CommandAggregate> ExecuteAsync(CommandAggregate aggregate, ICommand command, IEventStore eventStore)
+        public async Task<CommandAggregate> ExecuteAsync(CommandAggregate aggregate, ICommand command)
         {
-            aggregate = (CommandAggregate) await Execute(command);
-            await eventStore.Persist(aggregate);
-            return aggregate;
+            return (CommandAggregate) await Execute(command);
         }
     }
 }

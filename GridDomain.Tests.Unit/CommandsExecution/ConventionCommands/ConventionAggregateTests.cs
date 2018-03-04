@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ConventionCommands
         {
             var person = AggregateFactory.BuildEmpty<ProgrammerAggregate>();
             var personCreated = new PersonCreated(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            ((IAggregate)person).ApplyEvent(personCreated);
+            ((IAggregate)person).Apply(personCreated);
 
             Assert.Equal(personCreated.PersonId,person.PersonId);
         }

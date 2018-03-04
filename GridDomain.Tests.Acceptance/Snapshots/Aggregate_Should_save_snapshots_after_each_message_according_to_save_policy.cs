@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Expect<BalloonTitleChanged>()
                       .Execute();
 
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
 
             var aggregates = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                    BalloonAggregateFactory.Default)

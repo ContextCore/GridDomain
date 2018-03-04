@@ -10,6 +10,7 @@ using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
@@ -224,7 +225,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 Receive<Status.Failure>(f => FinishWithError(ExecutionContext.ProcessingMessage, ExecutionContext.ProcessingMessageSender, f.Cause));
 
                 //from state aggregate actor after persist
-                Receive<CommandExecuted>(c =>
+                Receive<AggregateActor.CommandExecuted>(c =>
                                          {
                                              _log.Debug("Process instance created by message {@processResult}", ExecutionContext.ProcessingMessage);
 
@@ -279,7 +280,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                    //will reply back with CommandExecuted
                                                    _stateAggregateActor.Tell(new MessageMetadataEnvelop<SaveStateCommand<TState>>(cmd, processingEnvelop.Metadata));
                                                });
-                Receive<CommandExecuted>(c =>
+                Receive<AggregateActor.CommandExecuted>(c =>
                                          {
                                              State = pendingState;
                                              processingMessageSender.Tell(new ProcessTransited(producedCommands,processingEnvelop.Metadata,

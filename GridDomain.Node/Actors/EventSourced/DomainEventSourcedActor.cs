@@ -63,7 +63,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
             DefaultBehavior();
 
-            Recover<DomainEvent>(e => { State.ApplyEvent(e); });
+            Recover<DomainEvent>(e => State.Apply(e));
 
             Recover<SnapshotOffer>(offer =>
                                    {

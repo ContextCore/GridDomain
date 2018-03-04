@@ -15,10 +15,9 @@ namespace GridDomain.EventSourcing {
                 throw new MissingRegisteredCommandsException();
         }
 
-        public async Task<T> ExecuteAsync(T aggregate, ICommand command, IEventStore eventStore)
+        public async Task<T> ExecuteAsync(T aggregate, ICommand command)
         {
-            aggregate.InitEventStore(eventStore);
-            return (T)await aggregate.ExecuteAsync(aggregate, command, eventStore);
+            return (T)await aggregate.ExecuteAsync(aggregate, command);
         }
 
         public IReadOnlyCollection<Type> RegisteredCommands { get; }

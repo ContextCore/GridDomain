@@ -18,8 +18,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers {
                                                         + typeof(BalloonSnapshot).Name);
 
                 var aggregate = new Balloon(snapshot.Id, snapshot.Value);
-                aggregate.CommitAll();
-                ((IMemento)aggregate).Version = snapshot.Version;
+            aggregate.ClearUncommitedEvents();
+            ((IMemento)aggregate).Version = snapshot.Version;
                 return aggregate;
         }
 

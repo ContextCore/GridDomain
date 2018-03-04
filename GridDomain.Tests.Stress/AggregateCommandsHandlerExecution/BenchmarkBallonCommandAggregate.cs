@@ -17,12 +17,12 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         }
         public BenchmarkBallonCommandAggregate(string id, string title):this(id)
         {
-            Produce(new BalloonCreated(title, id));
+            Emit(new[] {new BalloonCreated(title, id)});
         }
 
         public void WriteTitle(string newTitle)
         {
-            Produce(new BalloonTitleChanged(newTitle, Id));
+            Emit(new[] {new BalloonTitleChanged(newTitle, Id)});
         }
         
         public override IReadOnlyCollection<Type> RegisteredCommands => KnownCommands;

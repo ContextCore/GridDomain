@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
             processStateAggregate.ReceiveMessage(state, null);
-            processStateAggregate.CommitAll();
+            processStateAggregate.ClearUncommitedEvents();
 
             var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                        AggregateFactory.Default,

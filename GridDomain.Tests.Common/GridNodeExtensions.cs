@@ -99,7 +99,7 @@ namespace GridDomain.Tests.Common
 
             await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);
 
-            aggregate.CommitAll();
+            aggregate.ClearUncommitedEvents();
         }
 
         public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, string id, params DomainEvent[] messages)

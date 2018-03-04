@@ -27,13 +27,13 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
         public void Execute(int number, ITestDependency d)
         {
             var dependencyUseResult = d.Do(number);
-            Produce(new TestDomainEvent(dependencyUseResult, Id));
+            Emit(new[] {new TestDomainEvent(dependencyUseResult, Id)});
         }
 
         public void ExecuteWithOwnedDependency(int number)
         {
             var dependencyUseResult = _testDependency.Do(number);
-            Produce(new TestDomainEvent(dependencyUseResult, Id));
+            Emit(new[] {new TestDomainEvent(dependencyUseResult, Id)});
         }
 
         

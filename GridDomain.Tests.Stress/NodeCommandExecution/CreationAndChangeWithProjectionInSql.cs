@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
 
         protected override INodeScenario Scenario { get; } = new BalloonsCreationAndChangeScenario(10, 10);
 
-        internal override IGridDomainNode CreateNode()
+        protected override IGridDomainNode CreateNode()
         {
             return new BalloonWithProjectionFixture(_output, DbContextOptions, new StressTestNodeConfiguration())
                         .UseSqlPersistence()

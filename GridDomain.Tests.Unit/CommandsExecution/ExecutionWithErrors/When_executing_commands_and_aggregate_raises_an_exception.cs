@@ -23,10 +23,9 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public async Task When_aggregate_throws_fault_it_is_handled_without_implicit_registration()
         {
             //will throw exception in aggregate and in message handler
-            await Node.Prepare(new PlanTitleWriteAndBlowCommand(50, Guid.NewGuid()))
-                      .Expect<BalloonTitleChangedNotification>()
-                      .Execute()
-                      .CommandShouldThrow<BalloonException>();
+            await (Task<BalloonException>) Node.Prepare(new PlanTitleWriteAndBlowCommand(50, Guid.NewGuid()))
+                             .Expect<BalloonTitleChangedNotification>()
+                             .Execute().ShouldThrow((Predicate<BalloonException>) null);
         }
 
         [Fact]
@@ -56,20 +55,18 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public async Task When_fault_is_produced_when_publish_command_with_base_type()
         {
             var syncCommand = new PlanTitleWriteAndBlowCommand(100, Guid.NewGuid());
-            await Node.Prepare(syncCommand)
-                      .Expect<BalloonTitleChangedNotification>(e => e.BallonId == syncCommand.AggregateId)
-                      .Execute()
-                      .CommandShouldThrow<BalloonException>();
+            await (Task<BalloonException>) Node.Prepare(syncCommand)
+                             .Expect<BalloonTitleChangedNotification>(e => e.BallonId == syncCommand.AggregateId)
+                             .Execute().ShouldThrow((Predicate<BalloonException>) null);
         }
 
         [Fact]
         public async Task When_fault_was_received_and_failOnFaults_is_set_results_raised_an_error()
         {
             var syncCommand = new PlanTitleWriteAndBlowCommand(100, Guid.NewGuid());
-            await Node.Prepare(syncCommand)
-                      .Expect<BalloonTitleChangedNotification>()
-                      .Execute()
-                      .CommandShouldThrow<BalloonException>();
+            await (Task<BalloonException>) Node.Prepare(syncCommand)
+                             .Expect<BalloonTitleChangedNotification>()
+                             .Execute().ShouldThrow((Predicate<BalloonException>) null);
         }
     }
 }

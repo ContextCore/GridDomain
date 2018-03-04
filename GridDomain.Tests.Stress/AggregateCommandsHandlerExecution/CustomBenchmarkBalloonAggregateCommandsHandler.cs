@@ -10,7 +10,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
     class CustomBenchmarkBalloonAggregateCommandsHandler : IAggregateCommandsHandler<BenchmarkBalloonAggregate>
     {
-        public async Task<BenchmarkBalloonAggregate> ExecuteAsync(BenchmarkBalloonAggregate aggregate, ICommand command, IEventStore eventStore)
+        public Task<BenchmarkBalloonAggregate> ExecuteAsync(BenchmarkBalloonAggregate aggregate, ICommand command)
         {
             switch (command)
             {
@@ -19,14 +19,11 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
                     break;
                 case InflateNewBallonCommand c: 
                     aggregate = new BenchmarkBalloonAggregate(c.AggregateId, c.Title.ToString());
-                    aggregate.InitEventStore(eventStore);
                     break;
                 default:
-                return aggregate;
+                return Task.FromResult(aggregate);
             }
-
-            await eventStore.Persist(aggregate);
-            return aggregate;
+            return Task.FromResult(aggregate);
         }
 
         public IReadOnlyCollection<Type> RegisteredCommands => KnownCommands;

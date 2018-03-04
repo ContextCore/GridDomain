@@ -112,6 +112,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                    .ShouldThrow<ProducedEventsCountMismatchException>();
         }
 
+        
 
         [Fact]
         public async Task When_defined_scenario_try_execute_missing_command_on_default_handler_it_throws_exception()
@@ -121,10 +122,9 @@ namespace GridDomain.Tests.Unit.Scenario
             await AggregateScenario.New<Balloon, BalloonCommandHandler>()
                                    .When(new CreateBalanceCommand(42, aggregateId))
                                    .Then(new BalloonCreated("420", aggregateId),
-                                         new BalloonTitleChanged("42", aggregateId))
+                                       new BalloonTitleChanged("42", aggregateId))
                                    .Run()
-                                   .Check()
-                                   .CommandShouldThrow<CannotFindAggregateCommandHandlerExeption>();
+                                   .Check().CommandShouldThrow((Predicate<CannotFindAggregateCommandHandlerExeption>) null);
         }
 
         [Fact]
@@ -135,8 +135,8 @@ namespace GridDomain.Tests.Unit.Scenario
             await AggregateScenario.New<Balloon, BalloonCommandHandler>()
                                    .When(new PlanTitleWriteAndBlowCommand(43, aggregateId, TimeSpan.FromMilliseconds(50)))
                                    .Run()
-                                   .Check()
-                                   .CommandShouldThrow<BalloonException>();
+                                   .Check().CommandShouldThrow((Predicate<BalloonException>) null);
         }
     }
+    
 }

@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
 
         protected LocalMessagesWaiter Waiter { get; }
 
-        public TimeSpan DefaultTimeout { get; } = TimeSpan.FromMilliseconds(50);
+        public TimeSpan DefaultTimeout { get; } = TimeSpan.FromMilliseconds(150);
 
         public void Dispose()
         {

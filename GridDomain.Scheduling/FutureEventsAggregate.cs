@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Scheduling
 {
@@ -19,7 +17,7 @@ namespace GridDomain.Scheduling
         private readonly string _schedulingSourceName;
 
       
-        public async Task RaiseScheduledEvent(string futureEventId, string futureEventOccuredEventId)
+        public void RaiseScheduledEvent(string futureEventId, string futureEventOccuredEventId)
         {
             FutureEventScheduledEvent ev = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
             if (ev == null)
@@ -27,18 +25,14 @@ namespace GridDomain.Scheduling
 
             var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
 
-            await Emit(ev.Event);
+            Emit(ev.Event);
             //wait for event apply in case of errors; 
-            Produce(futureEventOccuredEvent);
+            Emit(futureEventOccuredEvent);
         }
 
-        protected void Produce(DomainEvent @event, DateTime raiseTime, string futureEventId = null)
+        protected void Emit(DomainEvent @event, DateTime raiseTime, string futureEventId = null)
         {
-             Produce(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid().ToString(), Id, raiseTime, @event, _schedulingSourceName));
-        }
-        protected Task Emit(DomainEvent @event, DateTime raiseTime, string futureEventId = null)
-        {
-            return Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid().ToString(), Id, raiseTime, @event, _schedulingSourceName));
+             Emit(new FutureEventScheduledEvent(futureEventId ?? Guid.NewGuid().ToString(), Id, raiseTime, @event, _schedulingSourceName));
         }
 
         protected void CancelScheduledEvents<TEvent>(Predicate<TEvent> criteia = null) where TEvent : DomainEvent
@@ -50,7 +44,7 @@ namespace GridDomain.Scheduling
             var domainEvents = eventsToCancel.Select(e => new FutureEventCanceledEvent(e.Id, Id, _schedulingSourceName))
                                              .Cast<DomainEvent>()
                                              .ToArray();
-            Produce(domainEvents);
+            Emit(domainEvents);
         }
 
         protected void Apply(FutureEventScheduledEvent e)

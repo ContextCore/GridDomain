@@ -7,6 +7,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tools.Repositories.AggregateRepositories;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,7 +16,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_Should_Not_save_snapshots_on_message_process_by_default : NodeTestKit
     {
         public Aggregate_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper output)
-            : base(new BalloonFixture(output).UseSqlPersistence()) {}
+            : base(new BalloonFixture(output).SetLogLevel(LogEventLevel.Debug).UseSqlPersistence()) {}
 
         [Fact]
         public async Task Given_timeout_only_default_policy()

@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain {
     {
         public CoffeMachineAggregate(string id, int maxCups):this(id)
         {
-            Produce(new CoffeMachineCreated(id,maxCups));
+            Emit(new[] {new CoffeMachineCreated(id,maxCups)});
         }
 
         public int CupsLeft;
@@ -22,9 +22,13 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain {
             Execute<MakeCoffeCommand>(c =>
                                       {
                                           if (CupsLeft <= 0)
-                                              Produce(new CoffeMakeFailedEvent(Id, c.PersonId));
+                                          {
+                                              Emit(new[] {new CoffeMakeFailedEvent(Id, c.PersonId)});
+                                          }
                                           else
-                                              Produce(new CoffeMadeEvent(Id, c.PersonId));
+                                          {
+                                              Emit(new[] {new CoffeMadeEvent(Id, c.PersonId)});
+                                          }
                                       });
         }
     }

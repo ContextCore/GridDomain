@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution
         }
 
         protected abstract INodeScenario Scenario { get; }
-        internal abstract IGridDomainNode CreateNode();
+        protected abstract IGridDomainNode CreateNode();
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions without projections in memory",

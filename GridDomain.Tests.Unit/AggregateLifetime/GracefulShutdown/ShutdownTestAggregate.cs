@@ -14,8 +14,8 @@ namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
                                    {
                                        if (c.Duration.HasValue)
                                            await Task.Delay(c.Duration.Value);
-                                           
-                                       Produce(new WorkDone(Id, c.Parameter));
+
+                                       Emit(new[] {new WorkDone(Id, c.Parameter)});
                                    });
             Apply<WorkDone>(e => ExecutedCommands.Add(e.Value));
         }

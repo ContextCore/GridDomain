@@ -14,7 +14,7 @@ namespace GridDomain.ProcessManagers.State
         public ProcessStateAggregate(TState state): this(state.Id)
         {
             Condition.NotNull(() => state);
-            Produce(new ProcessManagerCreated<TState>(state, state.Id));
+            Emit(new[] {new ProcessManagerCreated<TState>(state, state.Id)});
         }
         
         private ProcessStateAggregate(string id) : base(id)
@@ -25,7 +25,7 @@ namespace GridDomain.ProcessManagers.State
 
         public void ReceiveMessage(TState state, string messageId)
         {
-            Produce(new ProcessReceivedMessage<TState>(Id, state, messageId));
+            Emit(new[] {new ProcessReceivedMessage<TState>(Id, state, messageId)});
         }
 
         protected override void OnAppyEvent(DomainEvent evt)

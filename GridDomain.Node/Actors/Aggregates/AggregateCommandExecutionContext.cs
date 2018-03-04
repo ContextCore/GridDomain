@@ -16,10 +16,10 @@ namespace GridDomain.Node.Actors.Aggregates {
         public IMessageMetadata CommandMetadata;
         public IActorRef CommandSender;
         public Exception Exception;
-        public IActorRef PersistenceWaiter;
         public int MessagesToProject;
         public IActorRef Validator;
         public bool InProgress => Command != null;
+        public bool Projecting => MessagesToProject != 0;
 
         public void Clear()
         {
@@ -28,7 +28,6 @@ namespace GridDomain.Node.Actors.Aggregates {
             CommandMetadata = null;
             CommandSender = null;
             Exception = null;
-            PersistenceWaiter = null;
             MessagesToProject = 0;
             Validator = null;
         }

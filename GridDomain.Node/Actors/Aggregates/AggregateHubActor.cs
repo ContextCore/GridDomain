@@ -3,6 +3,7 @@ using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.AkkaMessaging;
 
@@ -28,6 +29,22 @@ namespace GridDomain.Node.Actors.Aggregates
         protected override string GetChildActorId(IMessageMetadataEnvelop message)
         {
             return (message.Message as ICommand)?.AggregateId;
+        }
+
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(ex =>
+                                         {
+                                             switch (ex)
+                                             {
+                                                     case CommandExecutionFailedException cf:
+                                                         return Directive.Restart;
+                                                     case CommandAlreadyExecutedException cae:
+                                                         return Directive.Resume;
+                                                     default:
+                                                         return Directive.Stop;
+                                             }
+                                         });
         }
 
         protected override Type ChildActorType { get; }

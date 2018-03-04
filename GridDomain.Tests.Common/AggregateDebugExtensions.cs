@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Common
 
         public static T ApplyEvent<T>(this Aggregate aggregate, T evt) where T:DomainEvent
         {
-            ((IAggregate)aggregate).ApplyEvent(evt);
+            ((IAggregate)aggregate).Apply(evt);
             return evt;
         }
 

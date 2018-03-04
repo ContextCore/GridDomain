@@ -25,14 +25,14 @@ namespace GridDomain.Tests.Unit.Serialization
         {
             _aggregate = new Balloon(Guid.NewGuid().ToString(), "test");
             _aggregate.WriteNewTitle(10);
-            _aggregate.CommitAll();
+            _aggregate.ClearUncommitedEvents();
 
             var jsonSerializerSettings = DomainSerializer.GetDefaultSettings();
             jsonSerializerSettings.TraceWriter = new XUnitTraceWriter(_testOutputHelper);
 
             var jsonString = JsonConvert.SerializeObject(_aggregate, jsonSerializerSettings);
             _restoredAggregate = JsonConvert.DeserializeObject<Balloon>(jsonString, jsonSerializerSettings);
-            _restoredAggregate.CommitAll();
+            _restoredAggregate.ClearUncommitedEvents();
             // Values_should_be_equal()
             Assert.Equal(_aggregate.Title, _restoredAggregate.Title);
             //Ids_should_be_equal()

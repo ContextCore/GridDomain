@@ -93,7 +93,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
 
             public AggregateWithDependency(string id, int value, IDependency dep):this(id,dep)
             {
-                Produce(new Created(id,value,dep.GetValue()));
+                Emit(new[] {new Created(id,value,dep.GetValue())});
             }
         }
 

@@ -15,12 +15,12 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         }
         public BenchmarkBallonConventionAggregate(string id, string title) : this(id)
         {
-            Produce(new BalloonCreated(title, id));
+            Emit(new[] {new BalloonCreated(title, id)});
         }
 
         public void WriteTitle(string newTitle)
         {
-            Produce(new BalloonTitleChanged(newTitle, Id));
+            Emit(new[] {new BalloonTitleChanged(newTitle, Id)});
         }
         //can change to Apply<T> call in constructor, left for testing
         public void Apply(BalloonCreated e)

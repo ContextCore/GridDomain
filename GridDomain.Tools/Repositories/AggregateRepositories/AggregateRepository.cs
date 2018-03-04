@@ -31,7 +31,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
         {
             var persistId = EntityActorName.New<T>(aggr.Id).ToString();
             await _eventRepository.Save(persistId, ((IAggregate) aggr).GetUncommittedEvents().ToArray());
-            aggr.CommitAll();
+            aggr.ClearUncommitedEvents();
         }
 
         public async Task<T> LoadAggregate<T>(string id, IConstructAggregates factory = null) where T : IAggregate
@@ -40,7 +40,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             var persistId = EntityActorName.New<T>(id).ToString();
             var events = await _eventRepository.Load(persistId);
             foreach (var e in events.SelectMany(e => _eventsAdaptersCatalog.Update(e).Cast<DomainEvent>()))
-                        agr.ApplyEvent(e);
+                        agr.Apply(e);
             return agr;
         }
 

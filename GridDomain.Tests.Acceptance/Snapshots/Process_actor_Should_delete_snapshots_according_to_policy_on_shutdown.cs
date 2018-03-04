@@ -56,26 +56,27 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                                    .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId)
                                                                    .Result;
                             Assert.Equal(2, snapshots.Length);
+                            
+                            // Restored_aggregates_should_have_same_ids()
+                            Assert.True(snapshots.All(s => s.Payload.Id == processId));
+
+                            // First_Snapshots_should_have_coding_state_from_first_event()
+                            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee),
+                                         snapshots.First()
+                                                  .Payload.State.CurrentStateName);
+
+                            //Last_Snapshots_should_have_coding_state_from_last_event()
+                            Assert.Equal(nameof(SoftwareProgrammingProcess.Sleeping),
+                                         snapshots.Last()
+                                                  .Payload.State.CurrentStateName);
+
+                            //All_snapshots_should_not_have_uncommited_events()
+                            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
                         },
                         TimeSpan.FromSeconds(10),
                         TimeSpan.FromSeconds(1));
 
-            Assert.Equal(2, snapshots.Length);
-            // Restored_aggregates_should_have_same_ids()
-            Assert.True(snapshots.All(s => s.Payload.Id == processId));
-
-            // First_Snapshots_should_have_coding_state_from_first_event()
-            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee),
-                         snapshots.First()
-                                  .Payload.State.CurrentStateName);
-
-            //Last_Snapshots_should_have_coding_state_from_last_event()
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Sleeping),
-                         snapshots.Last()
-                                  .Payload.State.CurrentStateName);
-
-            //All_snapshots_should_not_have_uncommited_events()
-            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+         
         }
     }
 }

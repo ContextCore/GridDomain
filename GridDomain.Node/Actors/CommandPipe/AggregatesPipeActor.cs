@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                                      c.Message.GetType());
 
                                                 Log.Debug("Received command {@c}",c);
-                                                aggregateProcessor.Tell(c, Sender);
+                                                aggregateProcessor.Forward(c);
                                             });
 
         }

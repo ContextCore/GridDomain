@@ -17,7 +17,7 @@ namespace GridDomain.EventSourcing {
 
         protected override async Task<IAggregate> Execute(ICommand cmd)
         {
-            return await _commandsRouter.ExecuteAsync(this, cmd, EventStore);
+            return await _commandsRouter.ExecuteAsync(this, cmd);
         }
         
         protected override void OnAppyEvent(DomainEvent evt)

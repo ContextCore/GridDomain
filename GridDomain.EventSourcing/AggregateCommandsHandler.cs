@@ -17,9 +17,9 @@ namespace GridDomain.EventSourcing
         public IReadOnlyCollection<Type> RegisteredCommands => Catalog.Keys.ToArray();
         public Type AggregateType { get; } = typeof(TAggregate);
 
-        public Task<TAggregate> ExecuteAsync(TAggregate aggregate, ICommand command, IEventStore eventStore)
+        public Task<TAggregate> ExecuteAsync(TAggregate aggregate, ICommand command)
         {
-            return Get(command).Invoke(aggregate, command, eventStore);
+            return Get(command).Invoke(aggregate, command);
         }
 
         public override CommandExecutionDelegate<TAggregate> Get(ICommand command)
@@ -37,11 +37,8 @@ namespace GridDomain.EventSourcing
         /// <param name="commandExecutor"></param>
         protected internal void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
         {
-            Add<TCommand>(async (a,c,p) => {
-                                a.InitEventStore(p);
+            Add<TCommand>(async (a,c) => {
                                 await commandExecutor((TCommand)c, a);
-                               //for cases when we call Produce and expect events persistence after aggregate methods invocation;
-                                await p.Persist(a);
                                 return a;
                           });
         }
@@ -53,13 +50,11 @@ namespace GridDomain.EventSourcing
         /// <param name="commandExecutor"></param>
         protected internal void Map<TCommand>(Action<TCommand, TAggregate> commandExecutor) where TCommand : ICommand
         {
-            Add<TCommand>(async (a, c, p) =>
+            Add<TCommand>( async (a, c) =>
                             {
-                                a.InitEventStore(p);
-                                commandExecutor((TCommand)c, a);
-                                //for cases when we call Produce and expect events persistence after aggregate methods invocation;
-                                await p.Persist(a);
-                                return a;
+                                commandExecutor((TCommand) c, a);
+                                //need async await for proper esception handling
+                                return await Task.FromResult(a);
                             });
         }
 
@@ -70,13 +65,7 @@ namespace GridDomain.EventSourcing
         /// <param name="aggregateCreator"></param>
         protected internal void Map<TCommand>(Func<TCommand, TAggregate> aggregateCreator) where TCommand : ICommand
         {
-            Add<TCommand>(async (a, c, p) =>
-                                          {
-                                              var aggregate = aggregateCreator((TCommand)c);
-                                              aggregate.InitEventStore(p);
-                                              await p.Persist(aggregate);
-                                              return aggregate;
-                                          });
+            Add<TCommand>( (a, c) => Task.FromResult(aggregateCreator((TCommand)c)));
         }
     }
 }

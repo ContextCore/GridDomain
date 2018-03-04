@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.EventSourcing;
 using GridDomain.Scheduling;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
@@ -12,7 +13,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 
         public TestFutureEventsAggregate(string id, string initialValue = "") : this(id)
         {
-            Produce(new ValueChangedSuccessfullyEvent(initialValue, 1, Id));
+            Emit(new[] {new ValueChangedSuccessfullyEvent(initialValue, 1, Id)});
         }
 
         public int? RetriesToSucceed { get; private set; }
@@ -20,7 +21,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 
         public void ScheduleInFuture(DateTime raiseTime, string testValue)
         {
-            Produce(new ValueChangedSuccessfullyEvent(testValue, 1, Id), raiseTime);
+            Emit(new ValueChangedSuccessfullyEvent(testValue, 1, Id),raiseTime,null);
         }
 
         public void Boom()
@@ -30,7 +31,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 
         public void PlanBoom(DateTime raiseTime)
         {
-            Produce(new BoomDomainEvent(Id), raiseTime);
+            Emit(new BoomDomainEvent(Id),raiseTime,null);
         }
 
         public void CancelFutureEvents(string likeValue)

@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 
         public BalanceAggregate(string id, decimal value) : this(id)
         {
-            Produce(new AggregateCreatedEvent(value, id));
+            Emit(new[] {new AggregateCreatedEvent(value, id)});
         }
         public BalanceAggregate(Guid id, decimal value) : this(id.ToString(), value)
         {
@@ -23,15 +23,19 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 
         public void ChangeState(int number)
         {
-             Produce(new BalanceChangedEvent_V1(number, Id));
+            Emit(new[] {new BalanceChangedEvent_V1(number, Id)});
         }
 
         public void ChangeStateInFuture(DateTime when, int number, bool oldVersion = false)
         {
             if (oldVersion)
-                Produce(new BalanceChangedEvent_V0(number, Id), when);
+            {
+                Emit(new BalanceChangedEvent_V0(number, Id),when,null);
+            }
             else
-                Produce(new BalanceChangedEvent_V1(number, Id), when);
+            {
+                Emit(new BalanceChangedEvent_V1(number, Id),when,null);
+            }
         }
 
         private void Apply(AggregateCreatedEvent e)

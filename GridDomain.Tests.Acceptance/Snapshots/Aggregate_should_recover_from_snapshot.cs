@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var aggregate = new Balloon(Guid.NewGuid().ToString(), "haha");
             aggregate.WriteNewTitle(10);
-            aggregate.CommitAll();
+            aggregate.ClearUncommitedEvents();
 
             var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                        new BalloonAggregateFactory(),

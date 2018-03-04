@@ -49,7 +49,6 @@ namespace GridDomain.Tests.Scenarios
         {
             CommandsHandler = handler ?? throw new ArgumentNullException(nameof(handler));
             Aggregate = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
-            Aggregate.InitEventStore(_eventStore);
             Log = log ?? Serilog.Log.Logger;
         }
 
@@ -60,7 +59,6 @@ namespace GridDomain.Tests.Scenarios
         public DomainEvent[] ProducedEvents { get; private set; } = {};
         public DomainEvent[] GivenEvents { get; private set; } = {};
         public Command[] GivenCommands { get; private set; } = {};
-        private readonly InMemoryEventStore _eventStore = new InMemoryEventStore();
         public AggregateScenario<TAggregate> Given(params DomainEvent[] events)
         {
             GivenEvents = events;
@@ -87,19 +85,17 @@ namespace GridDomain.Tests.Scenarios
             {
                 try
                 {
-                    Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd, _eventStore);
+                    Aggregate = await CommandsHandler.ExecuteAsync(Aggregate, cmd);
                 }
                 catch (Exception ex)
                 {
                     throw new CommandExecutionFailedException(cmd,ex);
                 }
-                Aggregate.CommitAll();
             }
 
             //Then
-            ProducedEvents = _eventStore.Events.ToArray();
-            _eventStore.Clear();
-
+            ProducedEvents = Aggregate.GetUncommittedEvents().ToArray();
+            Aggregate.ClearUncommitedEvents();
             return this;
         }
     }

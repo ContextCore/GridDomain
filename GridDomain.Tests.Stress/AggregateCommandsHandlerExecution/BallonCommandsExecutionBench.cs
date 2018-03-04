@@ -59,16 +59,12 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         {
             T aggregate = AggregateFactory.BuildEmpty<T>();
 
-            
-            aggregate.InitEventStore(_fakeEventStore);
-
             foreach (var cmd in _commndsToExecute)
             {
                
 
                 aggregate = CommandsHandler.ExecuteAsync(aggregate,
-                                                         cmd,
-                                                         _fakeEventStore)
+                                                         cmd)
                                            .Result;
                 _counter.Increment();
             }

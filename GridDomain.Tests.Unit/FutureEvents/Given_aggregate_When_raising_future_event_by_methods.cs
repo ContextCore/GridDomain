@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
             aggregate.ScheduleInFuture(testCommand.RaiseTime, testCommand.Value);
 
             var futureEventEnvelop = aggregate.GetEvent<FutureEventScheduledEvent>();
-            aggregate.Commit(futureEventEnvelop);
+            aggregate.ApplyEvent(futureEventEnvelop);
 
             //quite ugly, but it only safe way to run some logic after scheduled event persistence
             aggregate.RaiseScheduledEvent(futureEventEnvelop.Id, Guid.NewGuid().ToString());
@@ -33,10 +33,10 @@ namespace GridDomain.Tests.Unit.FutureEvents
         {
             var producedEvent = aggregate.GetEvent<ValueChangedSuccessfullyEvent>();
 
-            aggregate.Commit(producedEvent);
+            aggregate.ApplyEvent(producedEvent);
 
             var futureEventOccuredEvent = aggregate.GetEvent<FutureEventOccuredEvent>();
-            aggregate.Commit(futureEventOccuredEvent);
+            aggregate.ApplyEvent(futureEventOccuredEvent);
 
             //Future_event_occurance_has_same_id_as_future_event()
             Assert.Equal(futureEventEnvelop.Id, futureEventOccuredEvent.FutureEventId);

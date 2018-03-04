@@ -21,11 +21,8 @@ namespace GridDomain.EventSourcing
             if (!(snapshot is IAggregate aggregate))
                 throw new InvalidDefaultMementoException(type, id, snapshot);
 
-            //aggregate can produce events in constructor, need to apply them
-            aggregate.CommitAll();
-
             ((IMemento)aggregate).Version = snapshotVersion;
-
+            aggregate.ClearUncommitedEvents();
             return aggregate;
         }
 
@@ -43,7 +40,9 @@ namespace GridDomain.EventSourcing
             if (constructor == null)
                 throw new ConventionBasedConstructorNotFound();
 
-            return constructor.Invoke(new object[] {id}) as IAggregate;
+            var aggregate = (IAggregate)constructor.Invoke(new object[] {id});
+            aggregate.ClearUncommitedEvents();
+            return aggregate;
         }
 
         public virtual IAggregate Build(Type type, string id, IMemento snapshot=null)

@@ -23,14 +23,14 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                                             throw new CantFindSofaException();
 
                                         await Task.Delay(TimeSpan.FromMilliseconds(5));
-                                        await Emit(new Slept(sofaId));
+                                        Emit(new Slept(sofaId));
                                     });
             Execute<CreatePersonCommand>(c => new ProgrammerAggregate(c.AggregateId, c.AggregateId));
         }
 
         public ProgrammerAggregate(string id, string personId) : this(id)
         {
-            Produce(new PersonCreated(id, personId));
+            Emit(new[] {new PersonCreated(id, personId)});
         }
 
         public string PersonId { get; private set; }

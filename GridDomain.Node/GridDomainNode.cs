@@ -70,9 +70,9 @@ namespace GridDomain.Node
         public Guid Id { get; } = Guid.NewGuid();
         public event EventHandler<GridDomainNode> Initializing = delegate { };
 
-        public Task Execute(ICommand command, IMessageMetadata metadata = null)
+        public Task Execute(ICommand command, IMessageMetadata metadata = null, CommandConfirmationMode mode = CommandConfirmationMode.Projected)
         {
-            return _commandExecutor.Execute(command, metadata);
+            return _commandExecutor.Execute(command, metadata, mode);
         }
 
         public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)

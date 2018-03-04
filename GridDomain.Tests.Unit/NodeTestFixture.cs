@@ -99,7 +99,7 @@ namespace GridDomain.Tests.Unit
 
         public Task<GridDomainNode> CreateNode(ILogger logger=null)
         {
-            return CreateNode(() => NodeConfig.CreateInMemorySystem(), logger ?? new XUnitAutoTestLoggerConfiguration(Output).CreateLogger());
+            return CreateNode(() => NodeConfig.CreateInMemorySystem(), logger ?? new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger());
         }
             
 

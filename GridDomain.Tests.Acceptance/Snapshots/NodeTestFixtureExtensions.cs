@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Reflection;
 using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Node;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Persistence.Sql;
 using GridDomain.Scheduling.Quartz;
@@ -62,7 +63,12 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                        "QRTZ_SCHEDULER_STATE",
                                        "QRTZ_JOB_LISTENERS",
                                        "QRTZ_TRIGGER_LISTENERS");
-        } 
+        }
+
+        public static Task<GridDomainNode> CreateNode(this NodeTestFixture fixt, string logFile)
+        {
+            return fixt.CreateNode(new XUnitAutoTestLoggerConfiguration(fixt.Output, fixt.NodeConfig.LogLevel, logFile).CreateLogger());
+        }
         public static async Task ClearDomainData(ISqlNodeDbConfiguration nodeConf)
         {
             await TestDbTools.Truncate(nodeConf.SnapshotConnectionString.Replace("\\\\", "\\"), nodeConf.SnapshotTableName);

@@ -96,7 +96,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         public void MeasureCommandExecution()
         {
-            Task.WhenAll(_commands.Select(c => _aggregateActor.Ask<CommandExecuted>(new MessageMetadataEnvelop<ICommand>(c, MessageMetadata.Empty))
+            Task.WhenAll(_commands.Select(c => _aggregateActor.Ask<Node.Actors.Aggregates.AggregateActor.CommandProjected>(new MessageMetadataEnvelop<ICommand>(c, MessageMetadata.Empty))
                                                               .ContinueWith(t => _counter.Increment())))
                 .Wait();
         }

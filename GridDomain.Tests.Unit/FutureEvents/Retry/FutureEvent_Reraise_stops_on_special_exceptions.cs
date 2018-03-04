@@ -40,16 +40,12 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 
             public bool ShouldContinue(Exception ex)
             {
-                _log.Information("Should continue {code} called from Thread {thread} with stack trace {trace}",
-                                 GetHashCode(),
-                                 Thread.CurrentThread.ManagedThreadId,
-                                 Environment.CurrentManagedThreadId);
-
                 _policyCallNumber++;
                 _policyCallNumberChanged.SetResult(1);
 
                 var businessException = ex.UnwrapSingle();
-                if (businessException is CommandExecutionFailedException && businessException.InnerException is ScheduledEventNotFoundException)
+                if (businessException is TestScheduledException || 
+                    (businessException is CommandExecutionFailedException && businessException.InnerException is TestScheduledException))
                     return false;
 
                 return true;

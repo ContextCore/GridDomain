@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
             }
         }
 
-        internal override IGridDomainNode CreateNode()
+        protected override IGridDomainNode CreateNode()
         {
             var connector = new GridNodeConnector(new StressTestNodeConfiguration());
             connector.Connect()

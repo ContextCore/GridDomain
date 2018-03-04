@@ -50,10 +50,10 @@ namespace GridDomain.Tools.Connector {
             _consoleSystem?.Dispose();
         }
 
-        public async Task Execute(ICommand command, IMessageMetadata metadata = null)
+        public async Task Execute(ICommand command, IMessageMetadata metadata = null, CommandConfirmationMode mode = CommandConfirmationMode.Projected)
         {
             if (!IsConnected) throw new NotConnectedException();
-            await _commandExecutor.Execute(command, metadata);
+            await _commandExecutor.Execute(command, metadata, mode);
         }
 
 

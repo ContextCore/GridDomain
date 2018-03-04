@@ -26,7 +26,7 @@ namespace GridDomain.Node.Configuration.Hocon
         public LogConfig(LogEventLevel verbosity, Type logActorType=null, bool writeConfig = false)
         {
             _verbosity = verbosity;
-            _includeConfig = writeConfig || verbosity == LogEventLevel.Verbose || verbosity == LogEventLevel.Debug;
+            _includeConfig = writeConfig || verbosity == LogEventLevel.Verbose;
             _logActorType = logActorType ?? typeof(SerilogLoggerActor);
         }
 

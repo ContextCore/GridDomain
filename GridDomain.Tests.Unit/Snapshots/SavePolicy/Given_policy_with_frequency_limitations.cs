@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.Snapshots.SavePolicy
             }
         
             [Fact]
-            public async Task When_persist_fails_Then_should_not_count_it_as_save_attempt_and_reset_time_limitation()
+            public void When_persist_fails_Then_should_not_count_it_as_save_attempt_and_reset_time_limitation()
             {
                 var policy = Given();
                 Assert.True(policy.ShouldSave(1));
