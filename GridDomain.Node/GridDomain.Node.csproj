@@ -44,4 +44,9 @@
       <Version>1.1.1.7-beta</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Akka.Monitoring, Version=0.7.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\.nuget\packages\akka.monitoring\0.7.0\lib\net45\Akka.Monitoring.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

@@ -37,6 +37,8 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly IPublisher _publisher;
 
         private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
+        private ActorMonitor.ITimer _commandTotalExecutionTimer;
+        private ActorMonitor.ITimer _totalProjectionTimer;
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
@@ -58,21 +60,24 @@ namespace GridDomain.Node.Actors.Aggregates
         protected void ValidatingCommandBehavior()
         {
             DefaultBehavior();
-            
+            var validatingTimer = Monitor.StartMeasureTime("CommandValidation");
             Command<CommandStateActor.Accepted>(a =>
                                                 {
-                                                    Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
-
+                                                    var aggregateExecutionTimer = Monitor.StartMeasureTime("AggregateLogic");
+                                                    _commandTotalExecutionTimer = Monitor.StartMeasureTime("CommandTotalExecution");
+                                                    
                                                     Log.Debug("Executing command. {@m}", ExecutionContext);
                                                         _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                                ExecutionContext.Command)
                                                                                  .ContinueWith(t =>
                                                                                                {
+                                                                                                   aggregateExecutionTimer.Stop();
                                                                                                    ExecutionContext.ProducedState = t.Result;
                                                                                                    return ExecutionContext.ProducedState.GetUncommittedEvents();
                                                                                                })
                                                                                  .PipeTo(Self);
-                                                   
+                                                    validatingTimer.Stop();
+                                                    Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
                                                 });
             Command<CommandStateActor.Rejected>(a =>
                                                 {
@@ -81,6 +86,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                     Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
                                                    // throw commandAlreadyExecutedException;
                                                     Stash.UnstashAll();
+                                                    validatingTimer.Stop();
                                                 });
             CommandAny(StashMessage);
         }
@@ -91,7 +97,7 @@ namespace GridDomain.Node.Actors.Aggregates
             
             Command<IMessageMetadataEnvelop>(m =>
                                             {
-                                                Monitor.Increment(nameof(CQRS.Command));
+                                                Monitor.Increment("CommandsTotal");
                                                 var cmd = (ICommand)m.Message;
                                                 var name = cmd.Id.ToString();
                                                 Log.Debug($"Received command {cmd.Id}");
@@ -118,12 +124,10 @@ namespace GridDomain.Node.Actors.Aggregates
         private void ProcessingCommandBehavior()
         {
             var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
-            
             //just for catching Failures on events persist
             Command<IReadOnlyCollection<DomainEvent>>(domainEvents =>
                                    {
 
-                                       Monitor.Increment(nameof(PersistEventPack));
                                        if (!domainEvents.Any())
                                        {
                                            Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);
@@ -135,7 +139,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                            evt.ProcessId = ExecutionContext.Command.ProcessId;
                                        
                                        int messagesToPersistCount = domainEvents.Count;
-                                       
+                                       _totalProjectionTimer = Monitor.StartMeasureTime("ProjectionTotal");
                                        PersistAll(domainEvents,
                                                   persistedEvent =>
                                                   {
@@ -155,6 +159,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                               ExecutionContext.MessagesToProject--;
                                               if (ExecutionContext.Projecting) return;
                                               
+                                              _totalProjectionTimer.Stop();
                                               ExecutionContext.CommandSender.Tell(AggregateActor.CommandProjected.Instance);
                                               WaitForNewCommand();
 
@@ -207,6 +212,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
         private void WaitForNewCommand()
         {
+            _commandTotalExecutionTimer?.Stop();
             ExecutionContext.Clear();
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
             Stash.Unstash();

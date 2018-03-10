@@ -72,8 +72,10 @@ namespace GridDomain.Node.Actors.EventSourced
                                        Log.Debug("Built state from snapshot #{snapshotNum}", offer.Metadata.SequenceNr);
                                    });
 
+            var recoveryTimer = Monitor.StartMeasureTime("Recovery");
             Recover<RecoveryCompleted>(message =>
                                        {
+                                           recoveryTimer.Stop();
                                            Log.Debug("Recovery completed");
                                            NotifyPersistenceWatchers(message);
                                        });
