@@ -74,7 +74,7 @@ namespace GridDomain.Node.Actors.Aggregates
             var name = "Full_State_" + Self.Path.Name;
 
             var fullStateActor = Context.Child(name);
-            if (fullStateActor == null)
+            if (fullStateActor == ActorRefs.Nobody)
                 fullStateActor = Context.ActorOf(Props.Create(() => new CommandStateActor()),name);
             
             fullStateActor.Tell(CommandStateActor.AcceptCommandExecution.Instance, commandWaiter);
