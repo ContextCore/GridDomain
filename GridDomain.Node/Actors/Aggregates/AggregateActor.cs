@@ -108,31 +108,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                               Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);
                                                               return;
                                                           }
-                                                          validatingTimer = Monitor.StartMeasureTime("CommandValidation");
-                                                          try
-                                                          {
-                                                              var validatorName = "Command:" + ExecutionContext.Command.Id;
-                                                              ExecutionContext.Validator =
-                                                                  Context.ActorOf(Props.Create(() => new CommandStateActor(PersistenceId + ":" + validatorName)),
-                                                                                  validatorName);
-                                                          }
-                                                          catch (InvalidActorNameException)
-                                                          {
-                                                              var commandAlreadyExecutedException = new CommandAlreadyExecutedException();
-                                                              PublishError( commandAlreadyExecutedException);
-                                                              throw commandAlreadyExecutedException;
-                                                          }
-
-                                                          ExecutionContext.Validator.Tell(ExecutionContext.Command);
-                                                      });
-           
-            Command<CommandStateActor.Accepted>(a =>
-                                                {
-                                                
-                                                    validatingTimer.Stop();
-
-                                                    var domainEvents = ExecutionContext.ProducedState.GetUncommittedEvents();    
-                                                    //dirty hack, but we know nobody will modify domain events before us 
+                                                         
                                                     foreach (var evt in domainEvents)
                                                         evt.ProcessId = ExecutionContext.Command.ProcessId;
                                                     int messagesToPersistCount = domainEvents.Count;
@@ -149,13 +125,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                    CompleteExecution();
                                                                });
                                                 });
-            Command<CommandStateActor.Rejected>(a =>
-                                                {
-                                                    validatingTimer.Stop();
-                                                    var commandAlreadyExecutedException = new CommandAlreadyExecutedException();
-                                                    PublishError(commandAlreadyExecutedException);
-                                                    throw commandAlreadyExecutedException;
-                                                });
+          
             Command<AllHandlersCompleted>(c =>
                                           {
                                               ExecutionContext.MessagesToProject--;
@@ -200,7 +170,6 @@ namespace GridDomain.Node.Actors.Aggregates
 
             _publisher.Publish(AggregateActor.CommandExecuted.Instance, completedMetadata);
 
-            Context.Stop(ExecutionContext.Validator);
             ExecutionContext.CommandSender.Tell(AggregateActor.CommandExecuted.Instance);
             
             //waiting to some events been projecting
