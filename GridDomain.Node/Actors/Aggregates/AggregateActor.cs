@@ -55,15 +55,6 @@ namespace GridDomain.Node.Actors.Aggregates
             _commandCompletedProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.CommandExecutionFinished, AggregateActorConstants.ExecutedCommand);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
         }
-
-
-        protected void ValidatingCommandBehavior()
-        {
-            
-         
-            
-         
-        }
         
         protected virtual void AwaitingCommandBehavior()
         {
@@ -120,8 +111,10 @@ namespace GridDomain.Node.Actors.Aggregates
                                                           validatingTimer = Monitor.StartMeasureTime("CommandValidation");
                                                           try
                                                           {
+                                                              var validatorName = "Command:" + ExecutionContext.Command.Id;
                                                               ExecutionContext.Validator =
-                                                                  Context.ActorOf(Props.Create(() => new CommandStateActor(PersistenceId + ":Command:" + ExecutionContext.Command.Id)), ExecutionContext.Command.Id);
+                                                                  Context.ActorOf(Props.Create(() => new CommandStateActor(PersistenceId + ":" + validatorName)),
+                                                                                  validatorName);
                                                           }
                                                           catch (InvalidActorNameException)
                                                           {
@@ -161,9 +154,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                     validatingTimer.Stop();
                                                     var commandAlreadyExecutedException = new CommandAlreadyExecutedException();
                                                     PublishError(commandAlreadyExecutedException);
-                                                   // Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
                                                     throw commandAlreadyExecutedException;
-                                                    //Stash.UnstashAll();
                                                 });
             Command<AllHandlersCompleted>(c =>
                                           {
@@ -209,6 +200,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
             _publisher.Publish(AggregateActor.CommandExecuted.Instance, completedMetadata);
 
+            Context.Stop(ExecutionContext.Validator);
             ExecutionContext.CommandSender.Tell(AggregateActor.CommandExecuted.Instance);
             
             //waiting to some events been projecting

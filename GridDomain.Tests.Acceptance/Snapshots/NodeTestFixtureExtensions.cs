@@ -27,12 +27,17 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var persistence = dbConfig ?? new AutoTestNodeDbConfiguration();
             if (clearData)
-                fixture.OnNodePreparingEvent += (s, e) =>
-                                                {
-                                                    ClearDomainData(persistence).Wait();
-                                                };
+                fixture.ClearDomainData(dbConfig);
 
             fixture.ConfigBuilder = n => n.ToDebugStandAloneSystemConfig(persistence);
+
+            return fixture;
+        }
+
+        public static T ClearDomainData<T>(this T fixture, ISqlNodeDbConfiguration dbConfig = null) where T : NodeTestFixture
+        {
+            var persistence = dbConfig ?? new AutoTestNodeDbConfiguration();
+            fixture.OnNodePreparingEvent += (s, e) => ClearDomainData(persistence).Wait();
 
             return fixture;
         }

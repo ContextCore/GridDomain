@@ -16,6 +16,7 @@ namespace GridDomain.Node.Actors.Aggregates
         readonly string writerId = Guid.NewGuid().ToString();
         private static readonly AtomicCounter InstanceCounter = new AtomicCounter(1);
         private readonly string _persistenceId;
+        bool _notified;
 
         public CommandStateActor(string persistenceId)
         {
@@ -24,6 +25,7 @@ namespace GridDomain.Node.Actors.Aggregates
             Extension = Persistence.Instance.Apply(ActorBase.Context.System);
             Journal = Extension.JournalFor("");
             IActorRef commandWaiter = null;
+            
             //If current command state was not persisted into db, persist will succeed
             //otherwise we will get exception from journal 
 
@@ -33,31 +35,22 @@ namespace GridDomain.Node.Actors.Aggregates
                                         Persist(c, 1);
                                     });
             //it is default, fast path
-            Receive<WriteMessageSuccess>(s =>
-                                         {
-                                             //Command executed, and state actor will be need only in case of command 
-                                             //execution retry
-                                             commandWaiter.Tell(Accepted.Instance);
-                                             Context.Stop(Self);
-                                         },
+            Receive<WriteMessageSuccess>(s => NotifyOnce(commandWaiter, Accepted.Instance),
                                          s => s.ActorInstanceId == _instanceId);
 
             //if something went wrong, need to read data from db 
-            Receive<WriteMessageRejected>(s =>
-                                          {
-                                              commandWaiter.Tell(Rejected.Instance);
-                                              //dont stop self, as we have chances of futher errors during command execution 
-                                              //and it will require additionals fetches of command state
-                                          },
+            Receive<WriteMessageRejected>(s => NotifyOnce(commandWaiter, Rejected.Instance),
                                           s => s.ActorInstanceId == _instanceId);
 
-            Receive<WriteMessageFailure>(s =>
-                                         {
-                                             commandWaiter.Tell(Rejected.Instance);
-                                             //dont stop self, as we have chances of futher errors during command execution 
-                                             //and it will require additionals fetches of command state
-                                         },
+            Receive<WriteMessageFailure>(s => NotifyOnce(commandWaiter, Rejected.Instance),
                                          s => s.ActorInstanceId == _instanceId);
+        }
+
+        private void NotifyOnce(IActorRef commandWaiter, object instance)
+        {
+            if (_notified) return;
+            commandWaiter.Tell(instance);
+            _notified = true;
         }
 
         private void Persist(object commandState, int sequenceNr)

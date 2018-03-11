@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Acceptance
                                                                                    .SqlPersistence(new AutoTestNodeDbConfiguration())
                                                                                    .BuildHocon(),
                                        new []{new BalloonDomainConfiguration()})
-                   .UseSqlPersistence()) {}
+                   .ClearDomainData()) {}
         
         [Fact]
         public async Task Given_aggregate_When_executing_same_command_twice_Then_second_commands_fails()
