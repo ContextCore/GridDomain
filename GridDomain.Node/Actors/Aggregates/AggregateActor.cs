@@ -108,7 +108,7 @@ namespace GridDomain.Node.Actors.Aggregates
         private void ProcessingCommandBehavior()
         {
             var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
-          
+            ActorMonitor.ITimer validatingTimer = null;
             Command<IReadOnlyCollection<DomainEvent>>(domainEvents =>
                                                       {
 
@@ -117,12 +117,22 @@ namespace GridDomain.Node.Actors.Aggregates
                                                               Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);
                                                               return;
                                                           }
-                                                         
-                                                          ExecutionContext.Validator = Context.ActorOf<CommandStateFastActor>(ExecutionContext.Command.Id);
-                                                          ExecutionContext.Validator.Tell(CommandStateActor.AcceptCommandExecution.Instance);
-                                                       
+                                                          validatingTimer = Monitor.StartMeasureTime("CommandValidation");
+                                                          try
+                                                          {
+                                                              ExecutionContext.Validator =
+                                                                  Context.ActorOf(Props.Create(() => new CommandStateActor(PersistenceId + ":Command:" + ExecutionContext.Command.Id)), ExecutionContext.Command.Id);
+                                                          }
+                                                          catch (InvalidActorNameException)
+                                                          {
+                                                              var commandAlreadyExecutedException = new CommandAlreadyExecutedException();
+                                                              PublishError( commandAlreadyExecutedException);
+                                                              throw commandAlreadyExecutedException;
+                                                          }
+
+                                                          ExecutionContext.Validator.Tell(ExecutionContext.Command);
                                                       });
-            var validatingTimer = Monitor.StartMeasureTime("CommandValidation");
+           
             Command<CommandStateActor.Accepted>(a =>
                                                 {
                                                 
@@ -148,12 +158,12 @@ namespace GridDomain.Node.Actors.Aggregates
                                                 });
             Command<CommandStateActor.Rejected>(a =>
                                                 {
+                                                    validatingTimer.Stop();
                                                     var commandAlreadyExecutedException = new CommandAlreadyExecutedException();
                                                     PublishError(commandAlreadyExecutedException);
-                                                    Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
-                                                    // throw commandAlreadyExecutedException;
-                                                    Stash.UnstashAll();
-                                                    validatingTimer.Stop();
+                                                   // Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
+                                                    throw commandAlreadyExecutedException;
+                                                    //Stash.UnstashAll();
                                                 });
             Command<AllHandlersCompleted>(c =>
                                           {
@@ -169,7 +179,6 @@ namespace GridDomain.Node.Actors.Aggregates
             Command<Status.Failure>(f =>
                                     {
                                         ExecutionContext.Exception = f.Cause.UnwrapSingle();
-                                        ExecutionContext.Validator?.Tell(CommandStateActor.CommandFailed.Instance);
                                         PublishError(ExecutionContext.Exception);
 
                                         Behavior.Become(() =>
@@ -183,11 +192,6 @@ namespace GridDomain.Node.Actors.Aggregates
             DefaultBehavior();
 
             CommandAny(StashMessage);
-        }
-
-        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistFailure(cause, @event, sequenceNr);
         }
 
         private void CompleteExecution()
@@ -206,7 +210,6 @@ namespace GridDomain.Node.Actors.Aggregates
             _publisher.Publish(AggregateActor.CommandExecuted.Instance, completedMetadata);
 
             ExecutionContext.CommandSender.Tell(AggregateActor.CommandExecuted.Instance);
-            ExecutionContext.Validator.Tell(CommandStateActor.CommandSucceed.Instance);
             
             //waiting to some events been projecting
             if(ExecutionContext.Projecting)

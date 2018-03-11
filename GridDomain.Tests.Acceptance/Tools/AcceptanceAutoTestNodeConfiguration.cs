@@ -10,7 +10,7 @@ using Serilog.Events;
 namespace GridDomain.Tests.Acceptance.Tools {
     public class AcceptanceAutoTestNodeConfiguration : NodeConfiguration
     {
-        public AcceptanceAutoTestNodeConfiguration(LogEventLevel verbosity = LogEventLevel.Verbose)
+        public AcceptanceAutoTestNodeConfiguration(LogEventLevel verbosity = LogEventLevel.Debug)
             : base("TestSystem",new AutoTestNodeNetworkAddress(), verbosity)
         {
         }
