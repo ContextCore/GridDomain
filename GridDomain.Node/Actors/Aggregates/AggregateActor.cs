@@ -112,16 +112,19 @@ namespace GridDomain.Node.Actors.Aggregates
                                                     foreach (var evt in domainEvents)
                                                         evt.ProcessId = ExecutionContext.Command.ProcessId;
                                                     int messagesToPersistCount = domainEvents.Count;
-                                                    _totalProjectionTimer = Monitor.StartMeasureTime("ProjectionTotal");
+                                                    _totalProjectionTimer = null;
+                                                          
+                                                    var totalPersistenceTimer = Monitor.StartMeasureTime("AggregatePersistence");
                                                     PersistAll(domainEvents,
                                                                persistedEvent =>
                                                                {
                                                                    NotifyPersistenceWatchers(persistedEvent);
+                                                                   _totalProjectionTimer = _totalProjectionTimer ?? Monitor.StartMeasureTime("ProjectionTotal");
                                                                    Project(persistedEvent, producedEventsMetadata);
                                                                    SaveSnapshot(ExecutionContext.ProducedState, persistedEvent);
 
                                                                    if (--messagesToPersistCount != 0) return;
-
+                                                                   totalPersistenceTimer.Stop();
                                                                    CompleteExecution();
                                                                });
                                                 });
