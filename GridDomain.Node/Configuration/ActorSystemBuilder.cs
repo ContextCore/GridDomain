@@ -59,19 +59,5 @@ namespace GridDomain.Node.Configuration {
                                       new LocalFilesystemSnapshotConfig()));
             return this;
         }
-
-        public ActorSystemBuilder ClusterSeed(NodeConfiguration thisSeed, params INodeNetworkAddress[] otherSeeds)
-        {
-            Add(ClusterConfig.SeedNode(thisSeed, otherSeeds));
-            return this;
-        }
-
-        public ActorSystemBuilder ClusterNonSeed(NodeConfiguration thisSeed, params INodeNetworkAddress[] otherSeeds)
-        {
-            Add(ClusterConfig.NonSeedNode(thisSeed, otherSeeds));
-            return this;
-        }
-
-
     }
 }

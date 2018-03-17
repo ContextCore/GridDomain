@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Akka.Actor;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Cluster
 {
     public class AkkaCluster : IDisposable
     {

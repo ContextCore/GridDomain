@@ -3,8 +3,9 @@ using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
 using GridDomain.Common;
+using GridDomain.Transport;
 
-namespace GridDomain.Transport
+namespace GridDomain.Node.Cluster
 {
     public class DistributedPubSubTransport : IActorTransport
     {

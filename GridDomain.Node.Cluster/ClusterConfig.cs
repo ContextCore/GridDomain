@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Hocon;
 
-namespace GridDomain.Node.Configuration.Hocon
+namespace GridDomain.Node.Cluster
 {
     public class ClusterConfig : TransportConfig
     {
@@ -13,7 +15,6 @@ namespace GridDomain.Node.Configuration.Hocon
         {
             
         }
-
         public ClusterConfig(string name, INodeNetworkAddress address, params string[] seedNodes) : base(address)
         {
             _name = name;
