@@ -17,16 +17,18 @@ namespace GridDomain.Tests.Unit.Cluster
     /// GIVEN actor system builder
     /// WHEN building a cluster
     /// </summary>
-    public class ClusterConfigurationTests
+    public class ClusterConfigurationTests : IDisposable
     {
         private ITestOutputHelper _testOutputHelper;
+        private AkkaCluster _akkaCluster;
 
         public class SimpleClusterListener : UntypedActor
         {
-            public static List<Member> KnownMembers { get; } = new List<Member>();
+            public static IReadOnlyCollection<Member> KnownMemberList => _knownMembers;
 
             protected ILoggingAdapter Log = Context.GetLogger();
             protected Akka.Cluster.Cluster Cluster = Akka.Cluster.Cluster.Get(Context.System);
+            private static readonly List<Member> _knownMembers = new List<Member>();
 
             /// <summary>
             /// Need to subscribe to cluster changes
@@ -54,7 +56,7 @@ namespace GridDomain.Tests.Unit.Cluster
                     case ClusterEvent.MemberUp up:
                         var mem = up;
                         Log.Info("Member is Up: {0}", mem.Member);
-                        KnownMembers.Add(mem.Member);
+                        _knownMembers.Add(mem.Member);
                         break;
                     case ClusterEvent.UnreachableMember _:
                         var unreachable = (ClusterEvent.UnreachableMember) message;
@@ -74,36 +76,43 @@ namespace GridDomain.Tests.Unit.Cluster
             }
         }
 
-
         public ClusterConfigurationTests(ITestOutputHelper output)
         {
             _testOutputHelper = output;
         }
+
         [Fact]
         public async Task Cluster_can_start()
         {
             var logger = new XUnitAutoTestLoggerConfiguration(_testOutputHelper).CreateLogger();
 
-            var cluster = ActorSystemBuilder.New()
-                                            .Cluster("test")
-                                            .Seeds(10007,10008,10009)
-                                            .Workers(4)
-                                            .Build()
-                                            .CreateCluster(s => s.AttachSerilogLogging(logger));
+            _akkaCluster = ActorSystemBuilder.New()
+                                             .Cluster("test")
+                                             .Seeds(10011)
+                                             .Workers(1)
+                                             .Build()
+                                             .CreateCluster(s => s.AttachSerilogLogging(logger));
 
-            cluster.RandomNode()
-                   .ActorOf(Props.Create(() => new SimpleClusterListener()));
+            var diagnoseActor = _akkaCluster.RandomNode()
+                                            .ActorOf(Props.Create(() => new SimpleClusterListener()));
 
             //will give cluster time to form
             await Task.Delay(5000);
 
+            var initialSystemAddresses = _akkaCluster.All.Select(s => ((ExtendedActorSystem) s).Provider.DefaultAddress)
+                                                     .ToArray();
+
+            var knownClusterMembers = SimpleClusterListener.KnownMemberList;
+            var knownClusterAddresses = knownClusterMembers.Select(m => m.Address)
+                                                           .ToArray();
+
             //All members of cluster should be reachable
-            Assert.All(cluster.All, sys =>
-                                    {
-                                        var address = (sys as ExtendedActorSystem).Provider.DefaultAddress;
-                                        Assert.Contains(SimpleClusterListener.KnownMembers, m => m.Address == address);
-                                    });
-            cluster.Dispose();
+            Assert.Equal(initialSystemAddresses, knownClusterAddresses);
+        }
+
+        public void Dispose()
+        {
+            _akkaCluster?.Dispose();
         }
     }
 }

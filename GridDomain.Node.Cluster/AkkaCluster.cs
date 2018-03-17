@@ -9,16 +9,16 @@ namespace GridDomain.Node.Cluster
     {
         public ActorSystem[] NonSeedNodes { get; }
         public ActorSystem[] SeedNodes { get; }
-        private readonly IList<ActorSystem> _allNodes = new List<ActorSystem>();
+        private readonly ActorSystem[] _allNodes;
         public AkkaCluster(ActorSystem[] seedNodes, ActorSystem[] nonSeedNodes)
         {
             SeedNodes = seedNodes;
             NonSeedNodes = nonSeedNodes;
-            _allNodes = seedNodes.Concat(nonSeedNodes)
-                                 .ToList();
+            _allNodes = seedNodes.Concat(nonSeedNodes).ToArray();
+            All = _allNodes;
         }
 
-        public ActorSystem[] All => SeedNodes.Concat(NonSeedNodes).ToArray();
+        public IReadOnlyCollection<ActorSystem> All { get; } 
 
         public void Dispose()
         {
@@ -32,7 +32,7 @@ namespace GridDomain.Node.Cluster
         
         public ActorSystem RandomNode()
         {
-            var index = new Random().Next(_allNodes.Count-1);
+            var index = new Random().Next(_allNodes.Length-1);
             return _allNodes[index];
         }
     }
