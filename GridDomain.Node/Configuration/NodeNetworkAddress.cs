@@ -28,6 +28,11 @@ namespace GridDomain.Node.Configuration
             return  string.Equals(Host, other.Host) && PortNumber == other.PortNumber;
         }
 
+        public NodeNetworkAddress Copy(int? newPort = null)
+        {
+            return new NodeNetworkAddress(Host,newPort ?? PortNumber,PublicHost,EnforceIpVersion);
+        }
+        
         public override int GetHashCode()
         {
             unchecked
