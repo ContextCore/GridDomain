@@ -43,6 +43,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Akka.Cluster.Tools, Version=1.3.5.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\.nuget\packages\akka.cluster.tools\1.3.5\lib\netstandard1.6\Akka.Cluster.Tools.dll</HintPath>
+    </Reference>
     <Reference Include="Akka.Monitoring, Version=0.7.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\.nuget\packages\akka.monitoring\0.7.0\lib\net45\Akka.Monitoring.dll</HintPath>
     </Reference>

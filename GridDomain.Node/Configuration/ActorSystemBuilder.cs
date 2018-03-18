@@ -9,7 +9,7 @@ using Serilog.Events;
 namespace GridDomain.Node.Configuration {
     public class ActorSystemBuilder
     {
-        private List<IHoconConfig> _configs = new List<IHoconConfig>();
+        public List<IHoconConfig> Configs { get; private set; } = new List<IHoconConfig>();
 
         public static ActorSystemBuilder New()
         {
@@ -17,7 +17,7 @@ namespace GridDomain.Node.Configuration {
         }
         public void Add(IHoconConfig cfg)
         {
-            _configs.Add(cfg);
+            Configs.Add(cfg);
         }
 
         public ActorSystemBuilder Log(LogEventLevel verbosity, Type logActorType = null, bool writeConfig=false)
@@ -34,13 +34,13 @@ namespace GridDomain.Node.Configuration {
 
         public IActorSystemFactory BuildActorSystemFactory(string systemName)
         {
-            var hocon = new RootConfig(_configs.ToArray());
+            var hocon = new RootConfig(Configs.ToArray());
             var factory = new HoconActorSystemFactory(systemName, hocon.Build());
             return factory;
         }
         public string BuildHocon()
         {
-            var hocon = new RootConfig(_configs.ToArray());
+            var hocon = new RootConfig(Configs.ToArray());
             return hocon.Build();
         }
         public ActorSystemBuilder DomainSerialization(bool serializeMessagesAndProps = false)
@@ -63,7 +63,7 @@ namespace GridDomain.Node.Configuration {
 
         public ActorSystemBuilder Clone()
         {
-            return new ActorSystemBuilder {_configs = _configs.ToList()};
+            return new ActorSystemBuilder {Configs = Configs.ToList()};
         }
     }
 }

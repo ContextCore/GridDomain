@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Akka.Cluster" Version="1.3.5" />
+    <PackageReference Include="Akka.Cluster.Sharding" Version="1.3.5-beta60" />
+    <PackageReference Include="Akka.Cluster.Tools" Version="1.3.5" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj">
+      <Project>{06DAA3E0-3FD8-4D6D-9173-CA4EA1A60F53}</Project>
+      <Name>GridDomain.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node.Cluster\GridDomain.Node.Cluster.csproj">
+      <Project>{7C62FF2C-5BB2-4F91-B88B-48CAB967D95F}</Project>
+      <Name>GridDomain.Node.Cluster</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
+      <Project>{C2709993-D05E-49A8-950F-04A1F2A8BD87}</Project>
+      <Name>GridDomain.Node</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj" />
+    <ProjectReference Include="..\GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj" />
+  </ItemGroup>
+</Project>
