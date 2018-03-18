@@ -17,15 +17,22 @@ namespace GridDomain.Node.Cluster
         {
             var seeds = string.Join(Environment.NewLine, _seedNodeFullAddresses.Select(n => @"""" + n + @""""));
 
-            var clusterConfigString = @"actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""
-            cluster {
-                            seed-nodes = [" + seeds + @"]
-            }";
+            var clusterConfigString = @"actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""";
+            if (seeds.Any())
+            {
+                clusterConfigString +=
+                @"
+                cluster {
+                    seed-nodes =  [" + seeds + @"]
+                }
+                ";
+            }
 
             return clusterConfigString;
         }
      
     }
+    
 
     public class ClusterInternalMessagesSerializerConfig : IHoconConfig
     {

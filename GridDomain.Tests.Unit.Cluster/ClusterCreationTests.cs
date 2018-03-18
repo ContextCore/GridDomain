@@ -10,6 +10,7 @@ using Akka.Configuration;
 using Akka.Event;
 using Akka.Streams.Implementation.Fusing;
 using Akka.TestKit.Xunit2;
+using FluentAssertions;
 using GridDomain.Common;
 using GridDomain.Node;
 using GridDomain.Node.Cluster;
@@ -27,16 +28,18 @@ namespace GridDomain.Tests.Unit.Cluster
     /// </summary>
     public class ClusterConfigurationTests : IDisposable
     {
-        private AkkaCluster _akkaCluster;
+        private ClusterInfo _akkaCluster;
         private readonly Logger _logger;
 
         public class SimpleClusterListener : UntypedActor
         {
             public static IReadOnlyCollection<Member> KnownMemberList => _knownMembers;
+            public static IReadOnlyCollection<Member> KnownSeedsList => _knownSeedsMembers;
 
             protected ILoggingAdapter Log = Context.GetLogger();
             protected Akka.Cluster.Cluster Cluster = Akka.Cluster.Cluster.Get(Context.System);
             private static readonly List<Member> _knownMembers = new List<Member>();
+            private static readonly List<Member> _knownSeedsMembers = new List<Member>();
 
             /// <summary>
             /// Need to subscribe to cluster changes
@@ -46,7 +49,9 @@ namespace GridDomain.Tests.Unit.Cluster
                 // subscribe to IMemberEvent and UnreachableMember events
                 Cluster.Subscribe(Self,
                                   ClusterEvent.InitialStateAsEvents,
-                                  new[] {typeof(ClusterEvent.IMemberEvent), typeof(ClusterEvent.UnreachableMember)});
+                                  new[] {typeof(ClusterEvent.IMemberEvent), 
+                                         typeof(ClusterEvent.UnreachableMember),
+                                        });
             }
 
             /// <summary>
@@ -62,20 +67,20 @@ namespace GridDomain.Tests.Unit.Cluster
                 switch (message)
                 {
                     case ClusterEvent.MemberUp up:
-                        var mem = up;
-                        Log.Info("Member is Up: {0}", mem.Member);
-                        _knownMembers.Add(mem.Member);
+                        Log.Info("Member is Up: {0}", up.Member);
+                        _knownMembers.Add(up.Member);
                         break;
-                    case ClusterEvent.UnreachableMember _:
-                        var unreachable = (ClusterEvent.UnreachableMember) message;
+                    case ClusterEvent.UnreachableMember unreachable:
                         Log.Info("Member detected as unreachable: {0}", unreachable.Member);
                         break;
-                    case ClusterEvent.MemberRemoved _:
-                        var removed = (ClusterEvent.MemberRemoved) message;
+                    case ClusterEvent.MemberRemoved removed:
                         Log.Info("Member is Removed: {0}", removed.Member);
                         break;
-                    case ClusterEvent.IMemberEvent _:
-                        //IGNORE
+                    case ClusterEvent.IMemberEvent a:
+                        var evt = a;
+                        break;
+                    case ClusterEvent.CurrentClusterState state:
+                        _knownMembers.AddRange(state.Members);
                         break;
                     default:
                         Unhandled(message);
@@ -92,7 +97,7 @@ namespace GridDomain.Tests.Unit.Cluster
         public async Task Cluster_can_start_with_predefined_and_automatic_seed_nodes()
         {
             _akkaCluster = ActorSystemBuilder.New()
-                                             .Cluster("test")
+                                             .Cluster("testPredefined")
                                              .AutoSeeds(3)
                                              .Seeds(10010)
                                              .Workers(1)
@@ -106,7 +111,7 @@ namespace GridDomain.Tests.Unit.Cluster
         public async Task Cluster_can_start_with_automatic_seed_nodes()
         {
             _akkaCluster = ActorSystemBuilder.New()
-                                             .Cluster("test")
+                                             .Cluster("testAutoSeed")
                                              .AutoSeeds(3)
                                              .Workers(1)
                                              .Build()
@@ -119,7 +124,7 @@ namespace GridDomain.Tests.Unit.Cluster
         public async Task Cluster_can_start_with_static_seed_nodes()
         {
             _akkaCluster = ActorSystemBuilder.New()
-                                             .Cluster("test")
+                                             .Cluster("testSeed")
                                              .Seeds(10011)
                                              .Workers(1)
                                              .Build()
@@ -129,23 +134,20 @@ namespace GridDomain.Tests.Unit.Cluster
            await CheckClusterStarted(_akkaCluster);
         }
 
-        private async Task CheckClusterStarted(AkkaCluster akkaCluster)
+        private async Task CheckClusterStarted(ClusterInfo akkaCluster)
         {
-            var diagnoseActor = akkaCluster.RandomNode()
-                                            .ActorOf(Props.Create(() => new SimpleClusterListener()));
+            var diagnoseActor = akkaCluster.Cluster.System.ActorOf(Props.Create(() => new SimpleClusterListener()));
 
             //will give cluster time to form
             await Task.Delay(5000);
-
-            var initialSystemAddresses = akkaCluster.All.Select(s => ((ExtendedActorSystem) s).Provider.DefaultAddress)
-                                                     .ToArray();
 
             var knownClusterMembers = SimpleClusterListener.KnownMemberList;
             var knownClusterAddresses = knownClusterMembers.Select(m => m.Address)
                                                            .ToArray();
 
             //All members of cluster should be reachable
-            Assert.Equal(initialSystemAddresses, knownClusterAddresses);
+            knownClusterAddresses.Should().BeEquivalentTo(akkaCluster.Members);
+
         }
 
         class ShardedActor : ReceiveActor
@@ -190,7 +192,7 @@ namespace GridDomain.Tests.Unit.Cluster
             foreach(var cfg in configs)
                 _logger.Warning(cfg);
             
-            var actorSystem = _akkaCluster.RandomNode();
+            var actorSystem = _akkaCluster.Cluster.System;
             var region = await ClusterSharding.Get(actorSystem)
                                               .StartAsync(
                                                           typeName: "my-actor",
@@ -203,6 +205,7 @@ namespace GridDomain.Tests.Unit.Cluster
                                                     TimeSpan.FromSeconds(5));
 
             Assert.Equal(message.ToString(), response.ToString());
+            Dispose();
         }
         
         [Fact]
@@ -262,9 +265,9 @@ namespace GridDomain.Tests.Unit.Cluster
 
         public void Dispose()
         {
-            _akkaCluster?.Dispose();
+            if (_akkaCluster == null) return;
+            CoordinatedShutdown.Get(_akkaCluster?.Cluster.System)?.Run().Wait(TimeSpan.FromSeconds(1));
             _akkaCluster = null;
-
         }
     }
 }
