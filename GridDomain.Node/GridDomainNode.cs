@@ -70,7 +70,7 @@ namespace GridDomain.Node
         public Guid Id { get; } = Guid.NewGuid();
         public event EventHandler<GridDomainNode> Initializing = delegate { };
 
-        public Task Execute(ICommand command, IMessageMetadata metadata = null, CommandConfirmationMode mode = CommandConfirmationMode.Projected)
+        public Task Execute<T>(T command, IMessageMetadata metadata = null, CommandConfirmationMode mode = CommandConfirmationMode.Projected) where T : ICommand
         {
             return _commandExecutor.Execute(command, metadata, mode);
         }

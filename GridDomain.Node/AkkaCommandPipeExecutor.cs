@@ -34,7 +34,7 @@ namespace GridDomain.Node
             _commandExecutorActor = commandExecutorActor;
         }
 
-        public async Task Execute(ICommand command, IMessageMetadata metadata = null, CommandConfirmationMode confirmationMode = CommandConfirmationMode.Projected)
+        public async Task Execute<T>(T command, IMessageMetadata metadata = null, CommandConfirmationMode confirmationMode = CommandConfirmationMode.Projected) where T : ICommand
         {
             var envelopedCommand = new MessageMetadataEnvelop(command, metadata ?? CreateEmptyCommandMetadata(command));
 

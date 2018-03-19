@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using Akka.Actor;
+using Akka.DI.Core;
 using Automatonymous;
 using Google.Protobuf.WellKnownTypes;
 using GridDomain.Common;
@@ -23,6 +24,37 @@ namespace GridDomain.Node.Actors.Aggregates
 {
     public class CommandAlreadyExecutedException:Exception { }
 
+
+
+    public class AggregateActorCell<TAggregate>: ReceiveActor where TAggregate : class, IAggregate
+    {
+        public AggregateActorCell()
+        {
+            var props = Context.System.DI()
+                               .Props<AggregateActor<TAggregate>>();
+                               
+            var aggregate = Context.ActorOf(props, Self.Path.Name);
+            
+            ReceiveAny(o => aggregate.Forward(o));
+        }
+        
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(ex =>
+                                         {
+                                             switch (ex)
+                                             {
+                                                 case CommandExecutionFailedException cf:
+                                                     return Directive.Restart;
+                                                 case CommandAlreadyExecutedException cae:
+                                                     return Directive.Restart;
+                                                 default:
+                                                     return Directive.Stop;
+                                             }
+                                         });
+        }
+    }
+    
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>

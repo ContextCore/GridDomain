@@ -16,4 +16,14 @@ namespace GridDomain.Common
     {
         new T Message { get; }
     }
+
+    public interface IShardedMessageMetadataEnvelop : IMessageMetadataEnvelop<IHaveId> //where T : IHaveId
+    {
+        string ShardId { get; }
+    }
+    
+    public interface IShardedMessageMetadataEnvelop<T> : IMessageMetadataEnvelop<T> where T : IHaveId
+    {
+        string ShardId { get; }
+    }
 }
