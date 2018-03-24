@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit
 
         private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
 
-        private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
+        public readonly List<IDomainConfiguration> DomainConfigurations = new List<IDomainConfiguration>();
 
         public NodeTestFixture(ITestOutputHelper output, IDomainConfiguration domainConfiguration) : this(output, new[] {domainConfiguration}) { }
 
@@ -66,7 +66,7 @@ namespace GridDomain.Tests.Unit
 #if !DEBUG
             3;
 #endif
-        private TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
+        public TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
 
         public void Dispose()
         {
@@ -76,15 +76,15 @@ namespace GridDomain.Tests.Unit
 
         public NodeTestFixture Add(IDomainConfiguration config)
         {
-            _domainConfigurations.Add(config);
+            DomainConfigurations.Add(config);
             return this;
         }
 
-        private async Task<GridDomainNode> StartNode(GridDomainNode node)
+        public async Task<GridDomainNode> StartNode(GridDomainNode node)
         {
             OnNodePreparingEvent.Invoke(this, this);
             Node = node;
-            Node.Initializing += (sender, n) => OnNodeCreatedEvent.Invoke(this, n);
+           // Node.Initializing += (sender, n) => OnNodeCreatedEvent.Invoke(this, n);
             await Node.Start();
             OnNodeStartedEvent.Invoke(this, Node);
 
@@ -98,8 +98,8 @@ namespace GridDomain.Tests.Unit
 
         public Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            var node = new GridNodeBuilder().PipeFactory(new LocalCommadPipeFactory(new DelegateActorSystemFactory(actorSystemProvider)))
-                                            .DomainConfigurations(_domainConfigurations.ToArray())
+            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(actorSystemProvider))
+                                            .DomainConfigurations(DomainConfigurations.ToArray())
                                             .Log(logger)
                                             .Timeout(DefaultTimeout)
                                             .Build();

@@ -113,11 +113,15 @@ namespace GridDomain.Tools.Connector {
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
                                                                   eventBusForwarder,
                                                                   _defaultTimeout);
-                
-            _commandExecutor = new AkkaCommandExecutor(_consoleSystem,
-                                                           transportBridge,
-                                                           commandExecutionActor,
-                                                           _defaultTimeout);
+
+            var akkaCommandExecutor = new AkkaCommandExecutor(_consoleSystem,
+                                                              transportBridge,
+                                                           
+                                                              _defaultTimeout);
+            akkaCommandExecutor.Init(commandExecutionActor);
+            
+            _commandExecutor = akkaCommandExecutor;
+            
 
             _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }

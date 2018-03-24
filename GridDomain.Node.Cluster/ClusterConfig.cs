@@ -59,6 +59,7 @@ namespace GridDomain.Node.Cluster {
 
             var akkaCluster = Akka.Cluster.Cluster.Get(seedNodeActorSystems.FirstOrDefault() ?? autoSeedActorSystems.First());
             
+            if(autoSeedActorSystems.Any())
              akkaCluster.JoinSeedNodesAsync(autoSeedActorSystems.Select(s => ((ExtendedActorSystem)s).Provider.DefaultAddress)).Wait();
             
              foreach(var workerAddress in workerNodesActorSystems.Select(s => ((ExtendedActorSystem)s).Provider.DefaultAddress))

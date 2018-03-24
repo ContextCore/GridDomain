@@ -6,7 +6,7 @@ namespace GridDomain.Scheduling.Akka {
     public class FutureAggregateHandlersDomainConfiguration : IDomainConfiguration
     {
         private readonly IActorRef _schedulingActor;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public FutureAggregateHandlersDomainConfiguration(IActorRef schedulingActor, ILogger log)
         {

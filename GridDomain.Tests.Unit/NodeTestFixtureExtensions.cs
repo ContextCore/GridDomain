@@ -28,13 +28,12 @@ namespace GridDomain.Tests.Unit
 
             fixture.OnNodeCreatedEvent += (o, node) =>
                                                 {
-
                                                    var ext = node.System.InitSchedulingExtension(quartzConfig,
                                                                                                  node.Log,
                                                                                                  node.Transport,
                                                                                                  node);
 
-                                                   node.DomainConfigurations.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor, node.Log));
+                                                    fixture.DomainConfigurations.Add(new FutureAggregateHandlersDomainConfiguration(ext.SchedulingActor, node.Log));
                                                 };
             if(clearScheduledData)
                  fixture.OnNodeStartedEvent += (sender, args) => fixture.Node.System.GetExtension<SchedulingExtension>().Scheduler.Clear();

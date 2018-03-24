@@ -16,5 +16,7 @@ namespace GridDomain.Configuration.MessageRouting
                                                        where TMessage : class, IHaveProcessId, IHaveId;
         Task RegisterFireAndForgetHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
                                                                 where TMessage : class, IHaveProcessId, IHaveId;
+
+        Task BuildRoutes();
     }
 }

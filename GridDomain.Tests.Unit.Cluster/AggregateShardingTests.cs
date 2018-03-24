@@ -22,20 +22,29 @@ namespace GridDomain.Tests.Unit.Cluster
     {
         public static ClusterInfo CreateCluster(this ClusterConfig cfg, ILogger log)
         {
-            return cfg.CreateCluster(s => s.AttachSerilogLogging(log));
+            return cfg.CreateCluster(s =>
+                                     {
+                                         s.AttachSerilogLogging(log);
+                                         s.InitDistributedTransport();
+                                     });
         }
     }
-
 
     public static class NodeTestFixtureExtensions
     {
-        public static IGridDomainNode CreateClusterNode(this NodeTestFixture fxt, Func<Akka.Cluster.Cluster> clusterProducer, ILogger log)
+        public static async Task<IGridDomainNode> CreateClusterNode(this NodeTestFixture fxt, Func<Akka.Cluster.Cluster> clusterProducer, ILogger log)
         {
-            return null;
+            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(()=> clusterProducer().System))
+                                            .DomainConfigurations(fxt.DomainConfigurations.ToArray())
+                                            .Log(log)
+                                            .Timeout(fxt.DefaultTimeout)
+                                            .BuildCluster();
+
+            return await fxt.StartNode((GridDomainNode)node);
         }
     }
-    
-    public class AggregateShardingTests
+
+    public class AggregateShardingTests:IDisposable
     {
         private ClusterInfo _akkaCluster;
         private readonly Logger _logger;
@@ -43,7 +52,7 @@ namespace GridDomain.Tests.Unit.Cluster
 
         public AggregateShardingTests(ITestOutputHelper output)
         {
-            _testOutputHelper = output;
+            _logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
         }
 
         [Fact]
@@ -51,24 +60,38 @@ namespace GridDomain.Tests.Unit.Cluster
         {
             var domainFixture = new BalloonFixture(_testOutputHelper);
 
-
             _akkaCluster = ActorSystemBuilder.New()
                                              .DomainSerialization()
                                              .Cluster("test")
-                                             .Seeds(10100)
-                                             .AutoSeeds(2)
-                                             .Workers(2)
+                                             .Seeds(9001)
+                                             .Workers(1)
                                              .Build()
                                              .CreateCluster(_logger);
 
-
-            IGridDomainNode node = domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
+            IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
 
             var res = await node.Prepare(new BlowBalloonCommand("myBalloon"))
                                 .Expect<BalloonCreated>()
                                 .Execute();
             
              Assert.Equal("myBalloon",res.Received.SourceId);
+        }
+        [Fact]
+        public void Cluster_can_start_with_static_seed_nodes()
+        {
+            _akkaCluster = ActorSystemBuilder.New()
+                                             .Cluster("testSeed")
+                                             .Seeds(8000)
+                                             .Workers(1)
+                                             .Build()
+                                             .CreateCluster(s => s.AttachSerilogLogging(_logger));
+        }
+
+        public void Dispose()
+        {
+            if (_akkaCluster == null) return;
+            CoordinatedShutdown.Get(_akkaCluster?.Cluster.System)?.Run().Wait(TimeSpan.FromSeconds(2));
+            _akkaCluster = null;
         }
     }
 }

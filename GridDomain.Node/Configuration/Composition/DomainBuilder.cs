@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Akka.Util.Internal;
 using Autofac;
 using GridDomain.Common;
@@ -29,11 +30,10 @@ namespace GridDomain.Node.Configuration.Composition
 
         }
 
-        public void Configure(IMessagesRouter router)
+        public async Task Configure(IMessagesRouter router)
         {
             foreach (var m in _maps)
-                m.Register(router)
-                 .Wait();
+                await m.Register(router);
         }
 
         public void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory) where TState : class, IProcessState

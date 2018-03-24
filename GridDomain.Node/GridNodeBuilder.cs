@@ -6,46 +6,46 @@ using Serilog;
 namespace GridDomain.Node {
     public class GridNodeBuilder
     {
-        protected IActorCommandPipeFactory _actorCommandPipeFactory;
-        protected ILogger _logger;
-        protected IDomainConfiguration[] _domainConfigurations;
-        protected TimeSpan _timeout;
+        public IActorSystemFactory ActorCommandPipeFactory;
+        public ILogger Logger;
+        public IDomainConfiguration[] Configurations;
+        public TimeSpan DefaultTimeout;
         
         public GridNodeBuilder()
         {
-            _logger = new DefaultLoggerConfiguration().CreateLogger()
+            Logger = new DefaultLoggerConfiguration().CreateLogger()
                                                       .ForContext<GridDomainNode>();
-            _timeout = TimeSpan.FromSeconds(10);
-            _actorCommandPipeFactory = new LocalCommadPipeFactory(new HoconActorSystemFactory("system",""));
-            _domainConfigurations = new IDomainConfiguration[] { };
+            DefaultTimeout = TimeSpan.FromSeconds(10);
+            ActorCommandPipeFactory = new HoconActorSystemFactory("system","");
+            Configurations = new IDomainConfiguration[] { };
         }
         
         public IGridDomainNode Build()
         {
-            return new GridDomainNode(_domainConfigurations,_actorCommandPipeFactory,_logger,_timeout);
+            return new GridDomainLocalNode(Configurations,ActorCommandPipeFactory,Logger,DefaultTimeout);
         }
 
-        public GridNodeBuilder PipeFactory(IActorCommandPipeFactory factory)
+        public GridNodeBuilder PipeFactory(IActorSystemFactory factory)
         {
-            _actorCommandPipeFactory = factory;
+            ActorCommandPipeFactory = factory;
             return this;
         }
 
         public GridNodeBuilder Log(ILogger log)
         {
-            _logger = log;
+            Logger = log;
             return this;
         }
         
         public GridNodeBuilder DomainConfigurations(params IDomainConfiguration[] domainConfigurations)
         {
-            _domainConfigurations = domainConfigurations;
+            Configurations = domainConfigurations;
             return this;
         } 
 
         public GridNodeBuilder Timeout(TimeSpan timeout)
         {
-            this._timeout = timeout;
+            this.DefaultTimeout = timeout;
             return this;
         }
 

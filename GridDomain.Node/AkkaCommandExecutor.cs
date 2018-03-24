@@ -17,7 +17,7 @@ namespace GridDomain.Node
                                                                                      "sending command to executor actor",
                                                                                      "command is executing");
 
-        private readonly IActorRef _commandExecutorActor;
+        private  IActorRef _commandExecutorActor;
         private readonly TimeSpan _defaultTimeout;
 
         private readonly ActorSystem _system;
@@ -25,15 +25,17 @@ namespace GridDomain.Node
 
         public AkkaCommandExecutor(ActorSystem system,
                                    IActorTransport transport,
-                                   IActorRef commandExecutorActor,
                                    TimeSpan defaultTimeout)
         {
             _defaultTimeout = defaultTimeout;
             _transport = transport;
             _system = system;
-            _commandExecutorActor = commandExecutorActor;
         }
 
+        public void Init(IActorRef commandExecutorActor)
+        {
+            _commandExecutorActor = commandExecutorActor;
+        }
         public async Task Execute<T>(T command, IMessageMetadata metadata = null, CommandConfirmationMode confirmationMode = CommandConfirmationMode.Projected) where T : ICommand
         {
             var envelopedCommand = EnvelopeCommand(command, metadata);

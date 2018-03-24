@@ -17,39 +17,19 @@ using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.Actors.ProcessManagers;
+using GridDomain.Node.Configuration;
 using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node
 {
-    public interface IActorCommandPipe: IMessagesRouter, IDisposable
+    public interface IActorCommandPipe: IMessagesRouter, IDisposable, IContainerConfiguration
     {
         IActorRef ProcessesPipeActor { get; }
         IActorRef HandlersPipeActor { get; }
         IActorRef CommandExecutor { get; }
-        ActorSystem System { get; }
-
-        /// <summary>
-        /// </summary>
-        /// <returns>Reference to pipe actor for command execution</returns>
-        Task<IActorRef> Init(ContainerBuilder container);
     }
 
-    public class LocalCommadPipeFactory : IActorCommandPipeFactory
-    {
-        private readonly IActorSystemFactory _actorSystemFactory;
-
-        public LocalCommadPipeFactory(IActorSystemFactory systemFactory)
-        {
-            _actorSystemFactory = systemFactory;
-        }
-
-        public IActorCommandPipe CreatePipe()
-        {
-            return new LocalCommandPipe(_actorSystemFactory.CreateSystem());
-        }
-    }
-        
     public class LocalCommandPipe: IActorCommandPipe
     {
         private readonly TypeCatalog<IActorRef, object> _aggregatesCatalog = new TypeCatalog<IActorRef, object>();
@@ -67,6 +47,14 @@ namespace GridDomain.Node
             _log = system.Log;
             _handlersCatalog = handlersProcessor ?? new HandlersDefaultProcessor();
             _processCatalog = processProcessor ?? new ProcessesDefaultProcessor();
+            
+            ProcessesPipeActor = System.ActorOf(Props.Create(() => new ProcessesPipeActor(_processCatalog)), nameof(Actors.CommandPipe.ProcessesPipeActor));
+
+            HandlersPipeActor = System.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, ProcessesPipeActor)),
+                                               nameof(Actors.CommandPipe.HandlersPipeActor));
+
+            CommandExecutor = System.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
+                                             nameof(AggregatesPipeActor));
         }
 
         public IActorRef ProcessesPipeActor { get; private set; }
@@ -114,28 +102,9 @@ namespace GridDomain.Node
             return RegisterHandler<TMessage, THandler>(actor => new FireAndForgetActorMessageProcessor(actor));
         }
 
-        /// <summary>
-        /// </summary>
-        /// <returns>Reference to pipe actor for command execution</returns>
-        public async Task<IActorRef> Init(ContainerBuilder container)
+        public Task BuildRoutes()
         {
-            _log.Debug("Command pipe is starting");
-
-            ProcessesPipeActor = System.ActorOf(Props.Create(() => new ProcessesPipeActor(_processCatalog)), nameof(Actors.CommandPipe.ProcessesPipeActor));
-
-            HandlersPipeActor = System.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, ProcessesPipeActor)),
-                                                nameof(Actors.CommandPipe.HandlersPipeActor));
-
-            CommandExecutor = System.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
-                                              nameof(AggregatesPipeActor));
-
-            container.RegisterInstance(HandlersPipeActor)
-                     .Named<IActorRef>(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName);
-            container.RegisterInstance(ProcessesPipeActor)
-                     .Named<IActorRef>(Actors.CommandPipe.ProcessesPipeActor.ProcessManagersPipeActorRegistrationName);
-
-            await ProcessesPipeActor.Ask<Initialized>(new Initialize(CommandExecutor));
-            return CommandExecutor;
+            return ProcessesPipeActor.Ask<Initialized>(new Initialize(CommandExecutor));
         }
 
         private Task RegisterHandler<TMessage, THandler>(Func<IActorRef, IMessageProcessor> processorCreator) where THandler : IHandler<TMessage>
@@ -150,8 +119,9 @@ namespace GridDomain.Node
 
         private IActorRef CreateDIActor(Type actorType, string actorName, RouterConfig routeConfig = null)
         {
-            var actorProps = System.DI()
-                                    .Props(actorType);
+            var diActorSystemAdapter = System.DI();
+            
+            var actorProps = diActorSystemAdapter.Props(actorType);
             if (routeConfig != null)
                 actorProps = actorProps.WithRouter(routeConfig);
 
@@ -162,6 +132,14 @@ namespace GridDomain.Node
         public void Dispose()
         {
             System.Dispose();
+        }
+
+        public void Register(ContainerBuilder container)
+        {
+            container.RegisterInstance(HandlersPipeActor)
+                     .Named<IActorRef>(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName);
+            container.RegisterInstance(ProcessesPipeActor)
+                     .Named<IActorRef>(Actors.CommandPipe.ProcessesPipeActor.ProcessManagersPipeActorRegistrationName);
         }
     }
 }
