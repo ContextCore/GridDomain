@@ -19,7 +19,6 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
 {
-
     public class NodeTestFixture : IDisposable
     {
         public ITestOutputHelper Output { get; }
@@ -28,44 +27,38 @@ namespace GridDomain.Tests.Unit
 
         private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
 
-        public NodeTestFixture(ITestOutputHelper output, IDomainConfiguration domainConfiguration) : this(output, new[] {domainConfiguration})
-        {
-            
-        }
-       
-        public NodeTestFixture(ITestOutputHelper output, 
-                               IDomainConfiguration[] domainConfiguration = null, 
+        public NodeTestFixture(ITestOutputHelper output, IDomainConfiguration domainConfiguration) : this(output, new[] {domainConfiguration}) { }
+
+        public NodeTestFixture(ITestOutputHelper output,
+                               IDomainConfiguration[] domainConfiguration = null,
                                TimeSpan? defaultTimeout = null) :
-            this(output,null,null,domainConfiguration,defaultTimeout)
-                 {
-                    
-                 }
-        
-        public NodeTestFixture(ITestOutputHelper output, 
-                               NodeConfiguration cfg, 
-                               Func<NodeConfiguration, string> systemConfigFactorry=null, 
-                               IDomainConfiguration[] domainConfiguration = null, 
+            this(output, null, null, domainConfiguration, defaultTimeout) { }
+
+        public NodeTestFixture(ITestOutputHelper output,
+                               NodeConfiguration cfg,
+                               Func<NodeConfiguration, string> systemConfigFactorry = null,
+                               IDomainConfiguration[] domainConfiguration = null,
                                TimeSpan? defaultTimeout = null)
         {
             Output = output;
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             NodeConfig = cfg ?? DefaultNodeConfig;
-            
-            ConfigBuilder =  systemConfigFactorry ?? (n => n.ToStandAloneInMemorySystemConfig());
+
+            ConfigBuilder = systemConfigFactorry ?? (n => n.ToStandAloneInMemorySystemConfig());
             SystemConfig = new Lazy<string>(() => ConfigBuilder(NodeConfig));
             if (domainConfiguration == null)
                 return;
-         
-            foreach(var c in domainConfiguration)
+
+            foreach (var c in domainConfiguration)
                 Add(c);
         }
+
         public GridDomainNode Node { get; private set; }
-        public Func<NodeConfiguration,string> ConfigBuilder { get; set; }
+        public Func<NodeConfiguration, string> ConfigBuilder { get; set; }
         public Lazy<string> SystemConfig { get; }
         public NodeConfiguration NodeConfig { get; }
         public string Name => NodeConfig.Name;
 
-      
         private const int DefaultTimeOutSec =
 #if DEBUG
             10; //in debug mode all messages serialization is enabled, and it slows down all tests greatly
@@ -77,7 +70,8 @@ namespace GridDomain.Tests.Unit
 
         public void Dispose()
         {
-            Node.Stop().Wait();
+            Node.Stop()
+                .Wait();
         }
 
         public NodeTestFixture Add(IDomainConfiguration config)
@@ -85,7 +79,7 @@ namespace GridDomain.Tests.Unit
             _domainConfigurations.Add(config);
             return this;
         }
-       
+
         private async Task<GridDomainNode> StartNode(GridDomainNode node)
         {
             OnNodePreparingEvent.Invoke(this, this);
@@ -94,25 +88,27 @@ namespace GridDomain.Tests.Unit
             await Node.Start();
             OnNodeStartedEvent.Invoke(this, Node);
 
-            return Node; 
+            return Node;
         }
 
-        public Task<GridDomainNode> CreateNode(ILogger logger=null)
+        public Task<GridDomainNode> CreateNode(ILogger logger = null)
         {
             return CreateNode(() => NodeConfig.CreateInMemorySystem(), logger ?? new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger());
         }
-            
 
         public Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            return StartNode(new GridDomainNode(_domainConfigurations,
-                                                new DelegateActorSystemFactory(actorSystemProvider), 
-                                                logger, 
-                                                DefaultTimeout));
+            var node = new GridNodeBuilder().ActorFactory(new DelegateActorSystemFactory(actorSystemProvider))
+                                            .DomainConfigurations(_domainConfigurations.ToArray())
+                                            .Log(logger)
+                                            .Timeout(DefaultTimeout)
+                                            .Build();
+
+            return StartNode((GridDomainNode)node);
         }
 
-        public event EventHandler<GridDomainNode>  OnNodeStartedEvent   = delegate { };
+        public event EventHandler<GridDomainNode> OnNodeStartedEvent = delegate { };
         public event EventHandler<NodeTestFixture> OnNodePreparingEvent = delegate { };
-        public event EventHandler<GridDomainNode>  OnNodeCreatedEvent   = delegate { };
+        public event EventHandler<GridDomainNode> OnNodeCreatedEvent = delegate { };
     }
 }

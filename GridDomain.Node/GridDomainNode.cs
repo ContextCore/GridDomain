@@ -16,6 +16,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
 using GridDomain.Transport.Remote;
@@ -27,6 +28,60 @@ using ICommand = GridDomain.CQRS.ICommand;
 
 namespace GridDomain.Node
 {
+
+    public class GridNodeBuilder
+    {
+        protected IActorSystemFactory _actorSystemFactory;
+        protected ILogger _logger;
+        protected IDomainConfiguration[] _domainConfigurations;
+        protected Func<IActorCommandPipe> _commandPipe;
+        protected TimeSpan _timeout;
+        
+        public GridNodeBuilder()
+        {
+            _logger = new DefaultLoggerConfiguration().CreateLogger()
+                                                      .ForContext<GridDomainNode>();
+            _timeout = TimeSpan.FromSeconds(10);
+            _actorSystemFactory = new HoconActorSystemFactory("system","");
+            _commandPipe = new LocalCommandPipe(_actorSystemFactory.Create());
+        }
+        
+        public IGridDomainNode Build()
+        {
+            return new GridDomainNode(_domainConfigurations,_actorSystemFactory,_commandPipe,_logger,_timeout);
+        }
+
+        public GridNodeBuilder ActorFactory(IActorSystemFactory factory)
+        {
+            _actorSystemFactory = factory;
+            return this;
+        }
+
+        public GridNodeBuilder Log(ILogger log)
+        {
+            _logger = log;
+            return this;
+        }
+        
+        public GridNodeBuilder DomainConfigurations(params IDomainConfiguration[] domainConfigurations)
+        {
+            _domainConfigurations = domainConfigurations;
+            return this;
+        } 
+        
+        public GridNodeBuilder CommandPipeFactory(Func<IActorCommandPipe> commandPipe)
+        {
+            _commandPipe = commandPipe;
+            return this;
+        }
+
+        public GridNodeBuilder Timeout(TimeSpan timeout)
+        {
+            this._timeout = timeout;
+            return this;
+        }
+
+    }
     
     public class GridDomainNode : IGridDomainNode
     {
@@ -34,25 +89,20 @@ namespace GridDomain.Node
 
         private bool _stopping;
         private IMessageWaiterFactory _waiterFactory;
-        internal ICommandPipe Pipe;
+        internal IActorCommandPipe Pipe;
 
-        public GridDomainNode(IActorSystemFactory actorSystemFactory, params IDomainConfiguration[] domainConfigurations)
-            :this(domainConfigurations,actorSystemFactory, new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>())
-        { }
-        public GridDomainNode(IActorSystemFactory actorSystemFactory, ILogger log, params IDomainConfiguration[] domainConfigurations)
-            : this(domainConfigurations, actorSystemFactory, log)
-        { }
-        public GridDomainNode(IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan timeout, params IDomainConfiguration[] domainConfigurations)
-            : this(domainConfigurations, actorSystemFactory, log, timeout)
-        { }
-
-        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan? defaultTimeout = null)
+        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, 
+                              IActorSystemFactory actorSystemFactory,
+                              Func<IActorCommandPipe> commandPipeFactory,
+                              ILogger log, 
+                              TimeSpan defaultTimeout)
         {
+            _commandPipeFactory = commandPipeFactory;
             DomainConfigurations = domainConfigurations.ToList();
             if(!DomainConfigurations.Any())
                 throw new NoDomainConfigurationException();
 
-            DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
+            DefaultTimeout = defaultTimeout;
             Log = log;
             _actorSystemFactory = actorSystemFactory;
         }
@@ -67,7 +117,8 @@ namespace GridDomain.Node
         public ILogger Log { get; }
         internal readonly List<IDomainConfiguration> DomainConfigurations;
         private IActorRef _commandExecutorActor;
-        private LocalCommandPipe _messageRouter;
+        private IMessagesRouter _messageRouter;
+        private readonly Func<IActorCommandPipe> _commandPipeFactory;
         public TimeSpan DefaultTimeout { get; }
 
         public Guid Id { get; } = Guid.NewGuid();
@@ -117,13 +168,13 @@ namespace GridDomain.Node
 
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
 
-            var pipe = new LocalCommandPipe(System);
+            IActorCommandPipe pipe = _commandPipeFactory();
+            
             _commandExecutorActor = await pipe.Init(_containerBuilder);
             _messageRouter = pipe;
             Pipe = pipe;
             _commandExecutor = new AkkaCommandExecutor(System, Transport, _commandExecutorActor, DefaultTimeout);
             _containerBuilder.RegisterInstance(_commandExecutor);
-
 
             var domainBuilder = CreateDomainBuilder();
             domainBuilder.Configure(_containerBuilder);
