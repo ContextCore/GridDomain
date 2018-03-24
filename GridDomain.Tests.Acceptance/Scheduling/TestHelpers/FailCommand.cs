@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Acceptance.Scheduling.TestHelpers
 {
-    public class FailCommand : Command
+    public class FailCommand : Command<TestAggregate>
     {
         public FailCommand(TimeSpan timeout = default(TimeSpan)) : base(Guid.NewGuid().ToString())
         {

@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands
 {
-    public class CreateBalanceCommand : Command
+    public class CreateBalanceCommand : Command<BalanceAggregate>
     {
         public CreateBalanceCommand(int parameter, string aggregateId) : base(aggregateId)
         {

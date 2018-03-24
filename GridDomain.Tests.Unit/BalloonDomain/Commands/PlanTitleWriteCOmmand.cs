@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
-    public class PlanTitleWriteCommand : Command
+    public class PlanTitleWriteCommand : Command<Balloon>
     {
        
         public PlanTitleWriteCommand(int parameter, string aggregateId) : base(aggregateId)

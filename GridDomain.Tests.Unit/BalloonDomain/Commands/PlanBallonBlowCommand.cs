@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
-    public class PlanBallonBlowCommand : Command
+    public class PlanBallonBlowCommand : Command<Balloon>
     {
         public PlanBallonBlowCommand(string aggregateId, TimeSpan? sleepTime = null) : base(aggregateId)
         {

@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.BalloonDomain
 {
-    public class IncreaseTitleCommand : Command
+    public class IncreaseTitleCommand : Command<Balloon>
     {
         public IncreaseTitleCommand(int value, string aggregateId) : base(aggregateId)
         {

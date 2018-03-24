@@ -69,7 +69,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
             }
         }
 
-        class CreateCommand : Command
+        class CreateCommand : Command<AggregateWithDependency>
         {
             public int Value { get; }
 

@@ -2,7 +2,7 @@ using System;
 using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure {
-    public class PlanBoomCommand : Command
+    public class PlanBoomCommand : Command<TestFutureEventsAggregate>
     {
         public PlanBoomCommand(string aggregateId, DateTime boomTime):base(aggregateId)
         {

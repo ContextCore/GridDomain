@@ -2,7 +2,7 @@ using System;
 using GridDomain.CQRS;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
-    public class TestCommand : Command
+    public class TestCommand : Command<TestAggregate>
     {
         public TestCommand(int parameter, Guid aggregateId) : this(parameter,aggregateId.ToString())
         {
@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
         public int Parameter { get; }
     }
 
-    public class TestCommandB : Command
+    public class TestCommandB : Command<TestAggregate>
     {
         public TestCommandB(int parameter, Guid aggregateId) : this(parameter,aggregateId.ToString())
         {
