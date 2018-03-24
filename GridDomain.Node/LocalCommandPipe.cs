@@ -22,7 +22,18 @@ using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node
 {
-    public class LocalCommandPipe : IMessagesRouter
+    public interface ICommandPipe {
+        IActorRef ProcessesPipeActor { get; }
+        IActorRef HandlersPipeActor { get; }
+        IActorRef CommandExecutor { get; }
+
+        /// <summary>
+        /// </summary>
+        /// <returns>Reference to pipe actor for command execution</returns>
+        Task<IActorRef> Init(ContainerBuilder container);
+    }
+
+    public class LocalCommandPipe : IMessagesRouter, ICommandPipe
     {
         private readonly TypeCatalog<IActorRef, object> _aggregatesCatalog = new TypeCatalog<IActorRef, object>();
         private readonly ICompositeMessageProcessor _handlersCatalog;

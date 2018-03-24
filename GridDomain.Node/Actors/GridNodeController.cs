@@ -7,7 +7,7 @@ namespace GridDomain.Node.Actors
     {
         private readonly ActorMonitor _monitor;
 
-        public GridNodeController(IActorRef commandPipe, IActorRef transportProxy)
+        public GridNodeController(IActorRef commandPipe)
         {
             _monitor = new ActorMonitor(Context);
             Receive<HeartBeat>(m => {
@@ -16,7 +16,7 @@ namespace GridDomain.Node.Actors
                            });
             Receive<Connect>(m => {
                                    _monitor.IncrementMessagesReceived();
-                                   Sender.Tell(new Connected(commandPipe, transportProxy));
+                                   Sender.Tell(new Connected(commandPipe, null));
                                });
         }
 

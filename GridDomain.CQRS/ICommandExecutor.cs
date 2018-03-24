@@ -10,6 +10,7 @@ namespace GridDomain.CQRS
            Projected
     }
     
+    
     public interface ICommandExecutor
     {
         Task Execute<T>(T command, IMessageMetadata metadata = null,CommandConfirmationMode confirm = CommandConfirmationMode.Projected)

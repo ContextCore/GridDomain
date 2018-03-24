@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.TestKit.Xunit2;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Transport.Extension;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
@@ -15,6 +16,7 @@ namespace GridDomain.Tests.Unit
             var logger = new XUnitAutoTestLoggerConfiguration(fixture.Output, fixture.NodeConfig.LogLevel, testClassName)
                                     .CreateLogger();
             Sys.AttachSerilogLogging(logger);
+            Sys.InitLocalTransportExtension();
             Node = fixture.CreateNode(() => Sys,logger).Result;
         }
 

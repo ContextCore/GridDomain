@@ -11,10 +11,10 @@ namespace GridDomain.Tests.Common
 {
     public class AnyMessagePublisher
     {
-        private readonly LocalCommandPipe _commandPipe;
+        private readonly ICommandPipe _commandPipe;
         private readonly LocalMessagesWaiter<AnyMessagePublisher> _waiter;
 
-        public AnyMessagePublisher(LocalCommandPipe commandPipe, LocalMessagesWaiter<AnyMessagePublisher> waiter)
+        public AnyMessagePublisher(ICommandPipe commandPipe, LocalMessagesWaiter<AnyMessagePublisher> waiter)
         {
             _waiter = waiter;
             _commandPipe = commandPipe;

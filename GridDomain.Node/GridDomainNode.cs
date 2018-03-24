@@ -10,6 +10,7 @@ using Akka.Util.Internal;
 using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
@@ -26,13 +27,14 @@ using ICommand = GridDomain.CQRS.ICommand;
 
 namespace GridDomain.Node
 {
+    
     public class GridDomainNode : IGridDomainNode
     {
         private ICommandExecutor _commandExecutor;
 
         private bool _stopping;
         private IMessageWaiterFactory _waiterFactory;
-        internal LocalCommandPipe Pipe;
+        internal ICommandPipe Pipe;
 
         public GridDomainNode(IActorSystemFactory actorSystemFactory, params IDomainConfiguration[] domainConfigurations)
             :this(domainConfigurations,actorSystemFactory, new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>())
@@ -58,13 +60,14 @@ namespace GridDomain.Node
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; private set; }
         public IActorTransport Transport { get; private set; }
         public ActorSystem System { get; private set; }
-        private IActorRef ActorTransportProxy { get; set; }
 
         private IContainer Container { get; set; }
         private ContainerBuilder _containerBuilder;
         private readonly IActorSystemFactory _actorSystemFactory;
         public ILogger Log { get; }
         internal readonly List<IDomainConfiguration> DomainConfigurations;
+        private IActorRef _commandExecutorActor;
+        private LocalCommandPipe _messageRouter;
         public TimeSpan DefaultTimeout { get; }
 
         public Guid Id { get; } = Guid.NewGuid();
@@ -105,8 +108,6 @@ namespace GridDomain.Node
 
             System = _actorSystemFactory.Create();
             System.RegisterOnTermination(OnSystemTermination);
-
-            System.InitLocalTransportExtension();
             Transport = System.GetTransport();
 
             _containerBuilder.Register(new GridNodeContainerConfiguration(Transport, Log));
@@ -116,29 +117,26 @@ namespace GridDomain.Node
 
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
 
-            ActorTransportProxy = System.ActorOf(Props.Create(() => new LocalTransportProxyActor()), nameof(ActorTransportProxy));
-
-            _commandExecutor = await CreateCommandExecutor();
+            var pipe = new LocalCommandPipe(System);
+            _commandExecutorActor = await pipe.Init(_containerBuilder);
             _containerBuilder.RegisterInstance(_commandExecutor);
+            _messageRouter = pipe;
+            Pipe = pipe;
+            _commandExecutor = new AkkaCommandExecutor(System, Transport, _commandExecutorActor, DefaultTimeout);
 
             var domainBuilder = CreateDomainBuilder();
             domainBuilder.Configure(_containerBuilder);
 
             Container = _containerBuilder.Build();
             System.AddDependencyResolver(new AutoFacDependencyResolver(Container, System));
-            domainBuilder.Configure(Pipe);
-            var nodeController = System.ActorOf(Props.Create(() => new GridNodeController(Pipe.CommandExecutor,ActorTransportProxy)), nameof(GridNodeController));
+            
+            domainBuilder.Configure(_messageRouter);
+            
+            var nodeController = System.ActorOf(Props.Create(() => new GridNodeController(_commandExecutorActor)), nameof(GridNodeController));
 
             await nodeController.Ask<GridNodeController.Alive>(GridNodeController.HeartBeat.Instance);
 
             Log.Information("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
-        }
-
-        private async Task<ICommandExecutor> CreateCommandExecutor()
-        {
-            Pipe = new LocalCommandPipe(System);
-            var commandExecutorActor = await Pipe.Init(_containerBuilder);
-            return new AkkaCommandExecutor(System, Transport, commandExecutorActor, DefaultTimeout);
         }
 
         private DomainBuilder CreateDomainBuilder()

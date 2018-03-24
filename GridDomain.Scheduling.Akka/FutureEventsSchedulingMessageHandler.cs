@@ -63,7 +63,7 @@ namespace GridDomain.Scheduling.Akka
 
             var scheduleKey = CreateScheduleKey(scheduleId, message.SourceId, message.SourceName, description);
 
-            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid().ToString());
+            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid().ToString(), message.SourceName);
             var metadata = messageMetadata.CreateChild(command.Id, _schedulingFutureEventProcessEntry);
 
             var scheduleEvent = new ScheduleCommandExecution(command,
