@@ -30,6 +30,15 @@ namespace GridDomain.Tests.Unit.Cluster
         private ClusterInfo _akkaCluster;
         private readonly Logger _logger;
 
+        public sealed class MessageExtractor : IMessageExtractor
+        {
+            public string EntityId(object message) => (message as ShardEnvelope)?.EntityId;
+
+            public string ShardId(object message) => (message as ShardEnvelope)?.ShardId;
+
+            public object EntityMessage(object message) => (message as ShardEnvelope)?.Message;
+        }
+        
         public class SimpleClusterListener : UntypedActor
         {
             public static IReadOnlyCollection<Member> KnownMemberList => _knownMembers;

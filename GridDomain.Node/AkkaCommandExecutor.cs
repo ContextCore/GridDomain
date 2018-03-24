@@ -11,11 +11,11 @@ using TimeoutException = System.TimeoutException;
 
 namespace GridDomain.Node
 {
-    public class AkkaCommandPipeExecutor : ICommandExecutor
+    public class AkkaCommandExecutor : ICommandExecutor
     {
-        private static readonly ProcessEntry ExecuteMetadataEntry = new ProcessEntry(nameof(AkkaCommandPipeExecutor),
-            "sending command to executor actor",
-            "command is executing");
+        private static readonly ProcessEntry ExecuteMetadataEntry = new ProcessEntry(nameof(AkkaCommandExecutor),
+                                                                                     "sending command to executor actor",
+                                                                                     "command is executing");
 
         private readonly IActorRef _commandExecutorActor;
         private readonly TimeSpan _defaultTimeout;
@@ -23,10 +23,10 @@ namespace GridDomain.Node
         private readonly ActorSystem _system;
         private readonly IActorTransport _transport;
 
-        public AkkaCommandPipeExecutor(ActorSystem system,
-                                       IActorTransport transport,
-                                       IActorRef commandExecutorActor,
-                                       TimeSpan defaultTimeout)
+        public AkkaCommandExecutor(ActorSystem system,
+                                   IActorTransport transport,
+                                   IActorRef commandExecutorActor,
+                                   TimeSpan defaultTimeout)
         {
             _defaultTimeout = defaultTimeout;
             _transport = transport;
@@ -36,7 +36,7 @@ namespace GridDomain.Node
 
         public async Task Execute<T>(T command, IMessageMetadata metadata = null, CommandConfirmationMode confirmationMode = CommandConfirmationMode.Projected) where T : ICommand
         {
-            var envelopedCommand = new MessageMetadataEnvelop(command, metadata ?? CreateEmptyCommandMetadata(command));
+            var envelopedCommand = EnvelopeCommand(command, metadata);
 
             if (confirmationMode == CommandConfirmationMode.None)
             {
@@ -44,19 +44,24 @@ namespace GridDomain.Node
                 return;
             }
 
+            //TODO: improve performance here!!!!
             var inbox = Inbox.Create(_system);
             _commandExecutorActor.Tell(envelopedCommand, inbox.Receiver);
 
             var msg = await inbox.ReceiveAsync(_defaultTimeout);
 
-            if(CheckMessage(confirmationMode, msg)) return;
+            if (CheckMessage(confirmationMode, msg)) return;
 
             msg = await inbox.ReceiveAsync(_defaultTimeout);
 
             if (CheckMessage(confirmationMode, msg)) return;
-            
+
             throw new TimeoutException("Command execution took to long");
-            
+        }
+
+        protected virtual IMessageMetadataEnvelop EnvelopeCommand<T>(T command, IMessageMetadata metadata) where T : ICommand
+        {
+            return new MessageMetadataEnvelop(command, metadata ?? CreateEmptyCommandMetadata(command));
         }
 
         private static bool CheckMessage(CommandConfirmationMode confirmationMode, object msg)
@@ -83,20 +88,20 @@ namespace GridDomain.Node
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             return new CommandWaiter<T>(cmd,
-                metadata ?? CreateEmptyCommandMetadata(cmd),
-                _system,
-                _transport,
-                _commandExecutorActor,
-                _defaultTimeout);
+                                        metadata ?? CreateEmptyCommandMetadata(cmd),
+                                        _system,
+                                        _transport,
+                                        _commandExecutorActor,
+                                        _defaultTimeout);
         }
 
-        private static MessageMetadata CreateEmptyCommandMetadata<T>(T cmd) where T : ICommand
+        protected static MessageMetadata CreateEmptyCommandMetadata<T>(T cmd) where T : ICommand
         {
             return new MessageMetadata(cmd.Id,
-                Guid.NewGuid()
-                    .ToString(),
-                string.Empty,
-                new ProcessHistory(new[] {ExecuteMetadataEntry}));
+                                       Guid.NewGuid()
+                                           .ToString(),
+                                       string.Empty,
+                                       new ProcessHistory(new[] {ExecuteMetadataEntry}));
         }
     }
 }

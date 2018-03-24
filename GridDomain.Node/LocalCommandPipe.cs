@@ -32,8 +32,8 @@ namespace GridDomain.Node
         private readonly ActorSystem _system;
 
         public LocalCommandPipe(ActorSystem system,
-                           ICompositeMessageProcessor handlersProcessor = null,
-                           ICompositeMessageProcessor<ProcessesTransitComplete, IProcessCompleted> processProcessor = null)
+                                ICompositeMessageProcessor handlersProcessor = null,
+                                ICompositeMessageProcessor<ProcessesTransitComplete, IProcessCompleted> processProcessor = null)
         {
             _system = system;
             _log = system.Log;

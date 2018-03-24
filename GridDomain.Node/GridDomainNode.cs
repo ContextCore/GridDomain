@@ -138,7 +138,7 @@ namespace GridDomain.Node
         {
             Pipe = new LocalCommandPipe(System);
             var commandExecutorActor = await Pipe.Init(_containerBuilder);
-            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, DefaultTimeout);
+            return new AkkaCommandExecutor(System, Transport, commandExecutorActor, DefaultTimeout);
         }
 
         private DomainBuilder CreateDomainBuilder()

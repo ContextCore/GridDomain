@@ -114,7 +114,7 @@ namespace GridDomain.Tools.Connector {
                                                                   eventBusForwarder,
                                                                   _defaultTimeout);
                 
-            _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem,
+            _commandExecutor = new AkkaCommandExecutor(_consoleSystem,
                                                            transportBridge,
                                                            commandExecutionActor,
                                                            _defaultTimeout);

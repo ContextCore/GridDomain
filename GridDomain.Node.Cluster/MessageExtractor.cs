@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Akka.DI.Core;
@@ -13,14 +12,7 @@ using GridDomain.Node.Actors.Aggregates;
 
 namespace GridDomain.Node.Cluster
 {
-    public sealed class MessageExtractor : IMessageExtractor
-    {
-        public string EntityId(object message) => (message as ShardEnvelope)?.EntityId;
 
-        public string ShardId(object message) => (message as ShardEnvelope)?.ShardId;
-
-        public object EntityMessage(object message) => (message as ShardEnvelope)?.Message;
-    }
 
     public sealed class ShardedMessageMetadataExtractor : IMessageExtractor
     {
