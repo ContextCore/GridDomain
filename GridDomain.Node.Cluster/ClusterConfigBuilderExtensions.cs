@@ -1,5 +1,6 @@
 using System.Linq;
 using GridDomain.Node.Configuration;
+using Serilog;
 
 namespace GridDomain.Node.Cluster {
     public static class ClusterConfigBuilderExtensions
@@ -29,5 +30,6 @@ namespace GridDomain.Node.Cluster {
                                       .ToArray());
             return builder;
         }
+       
     }
 }

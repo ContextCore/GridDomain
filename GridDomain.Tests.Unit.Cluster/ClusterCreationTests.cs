@@ -12,7 +12,6 @@ using Akka.Streams.Implementation.Fusing;
 using Akka.TestKit.Xunit2;
 using FluentAssertions;
 using GridDomain.Common;
-using GridDomain.Node;
 using GridDomain.Node.Cluster;
 using GridDomain.Node.Configuration;
 using Serilog.Core;
@@ -150,31 +149,7 @@ namespace GridDomain.Tests.Unit.Cluster
 
         }
 
-        class ShardedActor : ReceiveActor
-        {
-            public ShardedActor()
-            {
-                var log = Context.GetSeriLogger();
-                Receive<IMessageMetadata>(m =>
-                                          {
-                                              log.Info("Got message {msg}", m);
-                                              Sender.Tell(m);
-                                          });
-               
-                Receive<ShardEnvelope>(m =>
-                                {
-                                    log.Info("Got message {msg}", m);
-                                    Sender.Tell(m);
-                                });
-                
-                Receive<object>(m =>
-                                {
-                                    log.Info("Got message {msg}", m);
-                                    Sender.Tell(m);
-                                });
-
-            }
-        }
+       
 
         [Fact(Skip="Cannot understand why systems have problems with serializer config")]
         public async Task Cluster_can_host_an_actor_with_shard_region_with_predefined_seeds()
@@ -196,7 +171,7 @@ namespace GridDomain.Tests.Unit.Cluster
             var region = await ClusterSharding.Get(actorSystem)
                                               .StartAsync(
                                                           typeName: "my-actor",
-                                                          entityProps: Props.Create<ShardedActor>(),
+                                                          entityProps: Props.Create<EchoShardedActor>(),
                                                           settings: ClusterShardingSettings.Create(actorSystem),
                                                           messageExtractor: new MessageExtractor());
 // send message to entity through shard region
@@ -219,7 +194,7 @@ namespace GridDomain.Tests.Unit.Cluster
             
             _akkaCluster = clusterConfig.CreateCluster(s => s.AttachSerilogLogging(_logger));
 
-// register actor type as a sharded entity
+            // register actor type as a sharded entity
             var configs = clusterConfig.CreateConfigs();
             foreach(var cfg in configs)
                 _logger.Warning(cfg);
@@ -228,16 +203,15 @@ namespace GridDomain.Tests.Unit.Cluster
             var region = await ClusterSharding.Get(actorSystem)
                                               .StartAsync(
                                                           typeName: "my-actor",
-                                                          entityProps: Props.Create<ShardedActor>(),
+                                                          entityProps: Props.Create<EchoShardedActor>(),
                                                           settings: ClusterShardingSettings.Create(actorSystem),
                                                           messageExtractor: new MessageExtractor());
-// send message to entity through shard region
+            // send message to entity through shard region
             var message = "hello";
             var response = await region.Ask<object>(new ShardEnvelope("1", "1", message, MessageMetadata.Empty),
                                                     TimeSpan.FromSeconds(5));
 
-            Assert.Equal(message.ToString(), response.ToString());
-            // Dispose();
+            Assert.Equal(message, response.ToString());
         }
         
         [Fact(Skip="Cannot make this example work")]
@@ -284,7 +258,7 @@ namespace GridDomain.Tests.Unit.Cluster
             var region = await ClusterSharding.Get(system)
                                               .StartAsync(
                                                           typeName: "my-actor",
-                                                          entityProps: Props.Create<ShardedActor>(),
+                                                          entityProps: Props.Create<EchoShardedActor>(),
                                                           settings: ClusterShardingSettings.Create(system),
                                                           messageExtractor: new MessageExtractor());
 // send message to entity through shard region

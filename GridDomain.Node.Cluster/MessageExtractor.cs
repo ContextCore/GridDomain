@@ -31,6 +31,45 @@ namespace GridDomain.Node.Cluster
         public object EntityMessage(object message) => (message as IMessageMetadataEnvelop);
     }
 
+    /// <summary>
+    /// Generates shardId as string from given seed and max shards number
+    /// ca be used to change names generation algorithm for shards
+    /// </summary>
+    public interface IShardIdGenerator
+    {
+        string Resolve(string seed, int? maxShards=null);
+    }
+
+    public class DefaultShardIdGenerator : IShardIdGenerator
+    {
+        private readonly string _shardGroupName;
+        private readonly int _maxShards;
+
+        public DefaultShardIdGenerator(string shardGroupName,int maxShards = 5)
+        {
+            _maxShards = maxShards;
+            _shardGroupName = shardGroupName;
+        }
+        public static IShardIdGenerator Instance = new DefaultShardIdGenerator("");
+        public string Resolve(string seed, int? maxShards=null)
+        {
+            var seedNumber = seed.Aggregate(0,
+                                            (s, c) =>
+                                            {
+                                                unchecked
+                                                {
+                                                    return s + (int) c;
+                                                }
+                                            });
+            //will return same shard for same pair (AggregateId, MaxShardsId)
+            //randomly distributed between values (1 .. MaxShardId)
+            //TODO: may be it is better to cache random per thread?
+            var variationPart = new Random(seedNumber).Next(maxShards ?? _maxShards)
+                                                      .ToString();
+            return _shardGroupName + "_" + variationPart;
+        }
+    }
+
     public class ShardedCommandMetadataEnvelop : IShardedMessageMetadataEnvelop<ICommand>
     {
         object IMessageMetadataEnvelop.Message => Message;
@@ -39,26 +78,16 @@ namespace GridDomain.Node.Cluster
         public IMessageMetadata Metadata { get; }
         public string ShardId { get; }
 
-        public ShardedCommandMetadataEnvelop(ICommand message, int maxShards = 5, IMessageMetadata metadata = null)
+        public ShardedCommandMetadataEnvelop(ICommand message, IMessageMetadata metadata = null, IShardIdGenerator generator=null)
         {
             Message = message;
             Metadata = metadata ?? MessageMetadata.Empty;
-            var seed = message.AggregateId.Aggregate(0,
-                                                     (s, c) =>
-                                                     {
-                                                         unchecked
-                                                         {
-                                                             return s + (int) c;
-                                                         }
-                                                     });
-            //will return same shard for same pair (AggregateId, MaxShardsId)
-            //randomly distributed between values (0 .. MaxShardId)
-            ShardId = new Random(seed).Next(maxShards)
-                                      .ToString();
+            generator = generator ?? DefaultShardIdGenerator.Instance;
+            ShardId = generator.Resolve(message.AggregateId);
         }
     }
 
-    public class CommandClusterExecutor //: ICommandExecutor
+    public class CommandClusterExecutor
     {
         private readonly ActorSystem _actorSystem;
 
@@ -73,7 +102,7 @@ namespace GridDomain.Node.Cluster
         private readonly ClusterSharding _clusterSharding;
 
         private readonly IMessageExtractor _messageExtractor = new ShardedMessageMetadataExtractor();
-       
+
         public void Execute<T>(IAggregateCommand<T> command, IMessageMetadata metadata = null, CommandConfirmationMode confirm = CommandConfirmationMode.Projected, int maxShards = 10) where T : class, IAggregate
 
         {
@@ -83,8 +112,9 @@ namespace GridDomain.Node.Cluster
                                                                                ClusterShardingSettings.Create(_actorSystem),
                                                                                _messageExtractor));
             _clusterSharding.ShardRegion("");
-            
-            shardGroup.Tell(new ShardedCommandMetadataEnvelop(command,maxShards,metadata));
+
+            var a = shardGroup.Ask<object>(new ShardedCommandMetadataEnvelop(command, metadata))
+                              .Result;
         }
 
         public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand

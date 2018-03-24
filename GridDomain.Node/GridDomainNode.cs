@@ -32,7 +32,7 @@ namespace GridDomain.Node
 
         private bool _stopping;
         private IMessageWaiterFactory _waiterFactory;
-        internal CommandPipe Pipe;
+        internal LocalCommandPipe Pipe;
 
         public GridDomainNode(IActorSystemFactory actorSystemFactory, params IDomainConfiguration[] domainConfigurations)
             :this(domainConfigurations,actorSystemFactory, new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>())
@@ -118,17 +118,6 @@ namespace GridDomain.Node
 
             ActorTransportProxy = System.ActorOf(Props.Create(() => new LocalTransportProxyActor()), nameof(ActorTransportProxy));
 
-            //var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
-            //var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
-            //
-            //if(appInsightsConfig.IsEnabled)
-            //{
-            //    var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
-            //    ActorMonitoringExtension.RegisterMonitor(System, monitor);
-            //}
-            //if(perfCountersConfig.IsEnabled)
-            //    ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
-
             _commandExecutor = await CreateCommandExecutor();
             _containerBuilder.RegisterInstance(_commandExecutor);
 
@@ -147,7 +136,7 @@ namespace GridDomain.Node
 
         private async Task<ICommandExecutor> CreateCommandExecutor()
         {
-            Pipe = new CommandPipe(System);
+            Pipe = new LocalCommandPipe(System);
             var commandExecutorActor = await Pipe.Init(_containerBuilder);
             return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, DefaultTimeout);
         }

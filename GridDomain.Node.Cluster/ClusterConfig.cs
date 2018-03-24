@@ -66,8 +66,6 @@ namespace GridDomain.Node.Cluster {
             
             return new ClusterInfo(akkaCluster,actorSystems.Select(s => ((ExtendedActorSystem)s).Provider.DefaultAddress).ToArray());
         }
-
-     
     }
     public class ClusterInfo
     {
