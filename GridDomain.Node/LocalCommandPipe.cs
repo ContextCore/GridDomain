@@ -22,32 +22,48 @@ using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node
 {
-    public interface IActorCommandPipe:IMessagesRouter
+    public interface IActorCommandPipe: IMessagesRouter, IDisposable
     {
         IActorRef ProcessesPipeActor { get; }
         IActorRef HandlersPipeActor { get; }
         IActorRef CommandExecutor { get; }
+        ActorSystem System { get; }
 
         /// <summary>
         /// </summary>
         /// <returns>Reference to pipe actor for command execution</returns>
         Task<IActorRef> Init(ContainerBuilder container);
     }
-    
-    public class LocalCommandPipe : IActorCommandPipe
+
+    public class LocalCommadPipeFactory : IActorCommandPipeFactory
+    {
+        private readonly IActorSystemFactory _actorSystemFactory;
+
+        public LocalCommadPipeFactory(IActorSystemFactory systemFactory)
+        {
+            _actorSystemFactory = systemFactory;
+        }
+
+        public IActorCommandPipe CreatePipe()
+        {
+            return new LocalCommandPipe(_actorSystemFactory.CreateSystem());
+        }
+    }
+        
+    public class LocalCommandPipe: IActorCommandPipe
     {
         private readonly TypeCatalog<IActorRef, object> _aggregatesCatalog = new TypeCatalog<IActorRef, object>();
         private readonly ICompositeMessageProcessor _handlersCatalog;
 
         private readonly ILoggingAdapter _log;
         private readonly ICompositeMessageProcessor<ProcessesTransitComplete, IProcessCompleted> _processCatalog;
-        private readonly ActorSystem _system;
+        public ActorSystem System { get; }
 
         public LocalCommandPipe(ActorSystem system,
                                 ICompositeMessageProcessor handlersProcessor = null,
                                 ICompositeMessageProcessor<ProcessesTransitComplete, IProcessCompleted> processProcessor = null)
         {
-            _system = system;
+            System = system;
             _log = system.Log;
             _handlersCatalog = handlersProcessor ?? new HandlersDefaultProcessor();
             _processCatalog = processProcessor ?? new ProcessesDefaultProcessor();
@@ -105,12 +121,12 @@ namespace GridDomain.Node
         {
             _log.Debug("Command pipe is starting");
 
-            ProcessesPipeActor = _system.ActorOf(Props.Create(() => new ProcessesPipeActor(_processCatalog)), nameof(Actors.CommandPipe.ProcessesPipeActor));
+            ProcessesPipeActor = System.ActorOf(Props.Create(() => new ProcessesPipeActor(_processCatalog)), nameof(Actors.CommandPipe.ProcessesPipeActor));
 
-            HandlersPipeActor = _system.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, ProcessesPipeActor)),
+            HandlersPipeActor = System.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, ProcessesPipeActor)),
                                                 nameof(Actors.CommandPipe.HandlersPipeActor));
 
-            CommandExecutor = _system.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
+            CommandExecutor = System.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
                                               nameof(AggregatesPipeActor));
 
             container.RegisterInstance(HandlersPipeActor)
@@ -134,13 +150,18 @@ namespace GridDomain.Node
 
         private IActorRef CreateDIActor(Type actorType, string actorName, RouterConfig routeConfig = null)
         {
-            var actorProps = _system.DI()
+            var actorProps = System.DI()
                                     .Props(actorType);
             if (routeConfig != null)
                 actorProps = actorProps.WithRouter(routeConfig);
 
-            var actorRef = _system.ActorOf(actorProps, actorName);
+            var actorRef = System.ActorOf(actorProps, actorName);
             return actorRef;
+        }
+
+        public void Dispose()
+        {
+            System.Dispose();
         }
     }
 }

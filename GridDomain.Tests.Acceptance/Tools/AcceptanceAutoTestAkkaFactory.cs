@@ -13,11 +13,9 @@ namespace GridDomain.Tests.Acceptance.Tools {
         {
             _verbosity = verbosity;
         }
-        public ActorSystem Create()
+        public ActorSystem CreateSystem()
         {
             return new AcceptanceAutoTestNodeConfiguration(_verbosity).CreateSystem(AutoTestNodeDbConfiguration.Default);
         }
-
-
     }
 }

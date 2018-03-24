@@ -10,7 +10,7 @@ namespace GridDomain.Node.Configuration {
         {
             _creator = creator;
         }
-        public ActorSystem Create()
+        public ActorSystem CreateSystem()
         {
             return _creator();
         }

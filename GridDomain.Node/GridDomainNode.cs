@@ -16,7 +16,6 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
-using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
 using GridDomain.Transport.Remote;
@@ -28,61 +27,6 @@ using ICommand = GridDomain.CQRS.ICommand;
 
 namespace GridDomain.Node
 {
-
-    public class GridNodeBuilder
-    {
-        protected IActorSystemFactory _actorSystemFactory;
-        protected ILogger _logger;
-        protected IDomainConfiguration[] _domainConfigurations;
-        protected Func<IActorCommandPipe> _commandPipe;
-        protected TimeSpan _timeout;
-        
-        public GridNodeBuilder()
-        {
-            _logger = new DefaultLoggerConfiguration().CreateLogger()
-                                                      .ForContext<GridDomainNode>();
-            _timeout = TimeSpan.FromSeconds(10);
-            _actorSystemFactory = new HoconActorSystemFactory("system","");
-            _commandPipe = new LocalCommandPipe(_actorSystemFactory.Create());
-        }
-        
-        public IGridDomainNode Build()
-        {
-            return new GridDomainNode(_domainConfigurations,_actorSystemFactory,_commandPipe,_logger,_timeout);
-        }
-
-        public GridNodeBuilder ActorFactory(IActorSystemFactory factory)
-        {
-            _actorSystemFactory = factory;
-            return this;
-        }
-
-        public GridNodeBuilder Log(ILogger log)
-        {
-            _logger = log;
-            return this;
-        }
-        
-        public GridNodeBuilder DomainConfigurations(params IDomainConfiguration[] domainConfigurations)
-        {
-            _domainConfigurations = domainConfigurations;
-            return this;
-        } 
-        
-        public GridNodeBuilder CommandPipeFactory(Func<IActorCommandPipe> commandPipe)
-        {
-            _commandPipe = commandPipe;
-            return this;
-        }
-
-        public GridNodeBuilder Timeout(TimeSpan timeout)
-        {
-            this._timeout = timeout;
-            return this;
-        }
-
-    }
-    
     public class GridDomainNode : IGridDomainNode
     {
         private ICommandExecutor _commandExecutor;
@@ -92,12 +36,10 @@ namespace GridDomain.Node
         internal IActorCommandPipe Pipe;
 
         public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, 
-                              IActorSystemFactory actorSystemFactory,
-                              Func<IActorCommandPipe> commandPipeFactory,
+                              IActorCommandPipeFactory actorSystemFactory,
                               ILogger log, 
                               TimeSpan defaultTimeout)
         {
-            _commandPipeFactory = commandPipeFactory;
             DomainConfigurations = domainConfigurations.ToList();
             if(!DomainConfigurations.Any())
                 throw new NoDomainConfigurationException();
@@ -113,12 +55,11 @@ namespace GridDomain.Node
 
         private IContainer Container { get; set; }
         private ContainerBuilder _containerBuilder;
-        private readonly IActorSystemFactory _actorSystemFactory;
+        private readonly IActorCommandPipeFactory _actorSystemFactory;
         public ILogger Log { get; }
         internal readonly List<IDomainConfiguration> DomainConfigurations;
         private IActorRef _commandExecutorActor;
         private IMessagesRouter _messageRouter;
-        private readonly Func<IActorCommandPipe> _commandPipeFactory;
         public TimeSpan DefaultTimeout { get; }
 
         public Guid Id { get; } = Guid.NewGuid();
@@ -157,7 +98,11 @@ namespace GridDomain.Node
             EventsAdaptersCatalog = new EventsAdaptersCatalog();
             _containerBuilder = new ContainerBuilder();
 
-            System = _actorSystemFactory.Create();
+            IActorCommandPipe pipe = _actorSystemFactory.CreatePipe();
+            System = pipe.System;
+            _messageRouter = pipe;
+            Pipe = pipe;
+            
             System.RegisterOnTermination(OnSystemTermination);
             Transport = System.GetTransport();
 
@@ -167,12 +112,9 @@ namespace GridDomain.Node
             Initializing.Invoke(this, this);
 
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
-
-            IActorCommandPipe pipe = _commandPipeFactory();
             
             _commandExecutorActor = await pipe.Init(_containerBuilder);
-            _messageRouter = pipe;
-            Pipe = pipe;
+          
             _commandExecutor = new AkkaCommandExecutor(System, Transport, _commandExecutorActor, DefaultTimeout);
             _containerBuilder.RegisterInstance(_commandExecutor);
 

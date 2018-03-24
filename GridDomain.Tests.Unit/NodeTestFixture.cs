@@ -98,7 +98,7 @@ namespace GridDomain.Tests.Unit
 
         public Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            var node = new GridNodeBuilder().ActorFactory(new DelegateActorSystemFactory(actorSystemProvider))
+            var node = new GridNodeBuilder().PipeFactory(new LocalCommadPipeFactory(new DelegateActorSystemFactory(actorSystemProvider)))
                                             .DomainConfigurations(_domainConfigurations.ToArray())
                                             .Log(logger)
                                             .Timeout(DefaultTimeout)

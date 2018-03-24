@@ -3,7 +3,7 @@ using Akka.Cluster.Tools.Singleton;
 using Akka.Configuration;
 
 namespace GridDomain.Node.Configuration
-{
+{    
     public class HoconActorSystemFactory : IActorSystemFactory
     {
         private readonly Config _hoconConfig;
@@ -15,7 +15,7 @@ namespace GridDomain.Node.Configuration
             _hoconConfig = hoconConfig;
         }
 
-        public ActorSystem Create()
+        public ActorSystem CreateSystem()
         {
             return ActorSystem.Create(_name, _hoconConfig);
         }

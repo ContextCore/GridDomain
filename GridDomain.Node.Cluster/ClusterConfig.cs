@@ -46,9 +46,9 @@ namespace GridDomain.Node.Cluster {
             if(_autoSeedNodes.Count + _seedNodes.Count == 0)
                 throw new InvalidOperationException("Specify at least one seed node");
             
-            var seedNodeActorSystems = SeedNodes.Select(b => b.BuildClusterSystemFactory(Name).Create()).ToArray();
-            var workerNodesActorSystems = WorkerNodes.Select(b => b.BuildClusterSystemFactory(Name).Create()).ToArray();
-            var autoSeedActorSystems = AutoSeedNodes.Select(b => b.BuildClusterSystemFactory(Name).Create()).ToArray();
+            var seedNodeActorSystems = SeedNodes.Select(b => b.BuildClusterSystemFactory(Name).CreateSystem()).ToArray();
+            var workerNodesActorSystems = WorkerNodes.Select(b => b.BuildClusterSystemFactory(Name).CreateSystem()).ToArray();
+            var autoSeedActorSystems = AutoSeedNodes.Select(b => b.BuildClusterSystemFactory(Name).CreateSystem()).ToArray();
             var actorSystems = seedNodeActorSystems.Concat(workerNodesActorSystems)
                                                    .Concat(autoSeedActorSystems).ToArray();
             if(additionalInit != null)
