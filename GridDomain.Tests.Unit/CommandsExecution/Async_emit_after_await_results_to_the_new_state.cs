@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
 using Xunit.Abstractions;
 

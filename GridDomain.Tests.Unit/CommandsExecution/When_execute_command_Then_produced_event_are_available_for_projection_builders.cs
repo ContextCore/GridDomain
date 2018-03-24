@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
 using Xunit.Abstractions;
 

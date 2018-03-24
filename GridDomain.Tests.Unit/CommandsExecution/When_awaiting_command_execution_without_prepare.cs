@@ -11,6 +11,7 @@ using GridDomain.Tools.Repositories.EventRepositories;
 using GridDomain.CQRS;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
 using Xunit.Abstractions;
 

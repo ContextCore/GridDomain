@@ -1,4 +1,4 @@
-namespace GridDomain.Node
+namespace GridDomain.Tests.Unit
 {
     public enum TransportMode
     {

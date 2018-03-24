@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GridDomain.Configuration {
+namespace GridDomain.Configuration.SnapshotPolicies {
     public class SnapshotSelectionCriteria
     {
         public long MaxSequenceNr { get; }

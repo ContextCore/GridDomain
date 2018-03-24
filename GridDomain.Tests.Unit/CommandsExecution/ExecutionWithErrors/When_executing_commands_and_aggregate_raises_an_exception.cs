@@ -6,12 +6,11 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
-using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
 {
     //different fixtures from static method ? 
     public class When_executing_commands_and_aggregate_raises_an_exception : NodeTestKit

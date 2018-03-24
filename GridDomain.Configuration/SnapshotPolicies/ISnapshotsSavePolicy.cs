@@ -1,4 +1,4 @@
-﻿namespace GridDomain.Configuration {
+﻿namespace GridDomain.Configuration.SnapshotPolicies {
     public interface ISnapshotsSavePolicy 
     {
         bool ShouldSave(long snapshotSequenceNr);

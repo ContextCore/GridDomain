@@ -1,6 +1,4 @@
-using System;
-
-namespace GridDomain.Configuration
+namespace GridDomain.Configuration.SnapshotPolicies
 {
             
     public class NoSnapshotsPersistencePolicy : ISnapshotsPersistencePolicy

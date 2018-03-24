@@ -6,6 +6,7 @@ using Autofac.Core;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
+using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;

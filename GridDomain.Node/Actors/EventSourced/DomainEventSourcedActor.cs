@@ -6,13 +6,14 @@ using Akka.Event;
 using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.AkkaMessaging;
-using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotSelectionCriteria;
+using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotPolicies.SnapshotSelectionCriteria;
 using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
@@ -108,7 +109,7 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       return;
                                                   }
                                                   
-                                                  if (_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
+                                                  if (_snapshotsPolicy.ShouldDelete(out SnapshotSelectionCriteria c))
                                                   {
                                                       DeleteSnapshots(c.ToGridDomain());
                                                       _snapshotsDeleteTracker.Start(c);

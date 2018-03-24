@@ -1,6 +1,7 @@
 ﻿using System;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.Node.Actors.EventSourced.SnapshotsPolicy;
 using Xunit;
 

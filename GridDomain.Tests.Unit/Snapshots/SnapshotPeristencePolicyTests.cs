@@ -1,5 +1,6 @@
 ﻿using Akka.Util.Internal;
 using GridDomain.Configuration;
+using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.Node.Actors.EventSourced.SnapshotsPolicy;
 using GridDomain.Tests.Common;
 using Xunit;

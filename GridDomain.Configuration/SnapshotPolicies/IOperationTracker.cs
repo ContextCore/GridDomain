@@ -1,4 +1,4 @@
-﻿namespace GridDomain.Configuration {
+﻿namespace GridDomain.Configuration.SnapshotPolicies {
     public interface IOperationTracker<T>
     {
         int  InProgress { get; }

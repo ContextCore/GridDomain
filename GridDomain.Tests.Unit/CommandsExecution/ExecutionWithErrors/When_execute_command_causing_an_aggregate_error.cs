@@ -9,7 +9,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
 {
     public class When_execute_command_causing_an_aggregate_error : BalloonDomainCommandExecutionTests
     {

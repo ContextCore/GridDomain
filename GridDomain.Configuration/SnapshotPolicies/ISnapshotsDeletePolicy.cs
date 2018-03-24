@@ -1,4 +1,4 @@
-﻿namespace GridDomain.Configuration {
+﻿namespace GridDomain.Configuration.SnapshotPolicies {
     public interface ISnapshotsDeletePolicy
     {
         bool ShouldDelete(long lastSpanshotSaved, out SnapshotSelectionCriteria selection);
