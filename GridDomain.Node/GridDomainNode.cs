@@ -119,10 +119,11 @@ namespace GridDomain.Node
 
             var pipe = new LocalCommandPipe(System);
             _commandExecutorActor = await pipe.Init(_containerBuilder);
-            _containerBuilder.RegisterInstance(_commandExecutor);
             _messageRouter = pipe;
             Pipe = pipe;
             _commandExecutor = new AkkaCommandExecutor(System, Transport, _commandExecutorActor, DefaultTimeout);
+            _containerBuilder.RegisterInstance(_commandExecutor);
+
 
             var domainBuilder = CreateDomainBuilder();
             domainBuilder.Configure(_containerBuilder);
