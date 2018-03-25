@@ -20,22 +20,23 @@ namespace GridDomain.Scheduling.Akka
         private readonly ProcessEntry _schedulingFutureEventProcessEntry;
         private readonly ILogger _logger;
 
-        public FutureEventsSchedulingMessageHandler(IActorRef schedulingActor, ILogger log)
+        public FutureEventsSchedulingMessageHandler(IActorRef actor, ILogger log)
         {
+            _schedulerActorRef = actor;
             _logger = log;
-            _schedulerActorRef = schedulingActor;
-
             _schedulingFutureEventProcessEntry = new ProcessEntry(GetType()
                                                                       .Name,
                                                                   "Scheduling raise future event command",
                                                                   "FutureEventScheduled event occured");
         }
+       
 
         public Task Handle(FutureEventCanceledEvent evt, IMessageMetadata metadata)
         {
+
             var key = CreateScheduleKey(evt.FutureEventId, evt.SourceId, evt.SourceName);
             return _schedulerActorRef.Ask<object>(new Unschedule(key))
-                .ContinueWith(t =>
+                                     .ContinueWith(t =>
                               {
                                   switch (t.Result)
                                   {

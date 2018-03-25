@@ -24,15 +24,16 @@ namespace GridDomain.Configuration {
             Register(builder, maps.ToArray());
         }
 
-        public static HandlerRegistrator<TMessage, THandler> RegisterHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandler<TMessage>, new()
+        public static HandlerRegistrator<IMessageProcessContext,TMessage, THandler> RegisterHandler<TMessage, THandler>(this IDomainBuilder builder) where THandler : IHandler<TMessage>, new()
                                                                                             where TMessage : class, IHaveProcessId, IHaveId
         {
-            return new HandlerRegistrator<TMessage, THandler>(c => new THandler(), builder);
+            return new HandlerRegistrator<IMessageProcessContext,TMessage, THandler>(c => new THandler(), builder);
         }
-        public static HandlerRegistrator<TMessage, THandler> RegisterHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer) where THandler : IHandler<TMessage>
+        public static HandlerRegistrator<IMessageProcessContext,TMessage, THandler> RegisterHandler<TMessage, THandler>(this IDomainBuilder builder, Func<IMessageProcessContext, THandler> producer) where THandler : IHandler<TMessage>
                                                                                                                                 where TMessage : class, IHaveProcessId, IHaveId
         {
-            return new HandlerRegistrator<TMessage, THandler>(producer, builder);
+            return new HandlerRegistrator<IMessageProcessContext,TMessage, THandler>(producer, builder);
         }
+        
     }
 }

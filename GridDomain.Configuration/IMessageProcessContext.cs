@@ -1,5 +1,6 @@
 using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
+using GridDomain.CQRS;
 using Serilog;
 
 namespace GridDomain.Configuration

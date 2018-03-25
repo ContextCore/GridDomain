@@ -22,6 +22,7 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly List<IMessageRouteMap> _maps = new List<IMessageRouteMap>();
 
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
+     
         public IReadOnlyCollection<IContainerConfiguration> ContainerConfigurations => _containerConfigurations;
 
         public void Configure(ContainerBuilder container)
@@ -30,6 +31,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         }
 
+        
         public async Task Configure(IMessagesRouter router)
         {
             foreach (var m in _maps)
@@ -40,14 +42,6 @@ namespace GridDomain.Node.Configuration.Composition
         {
             _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(processDependenciesfactory));
             _maps.Add(processDependenciesfactory.CreateRouteMap());
-
-
-            //   RegisterStateAggregate<ProcessStateActor<TState>>(container);
-            //    container.Register<ProcessStateActor<TState>>(c => new ProcessStateActor<TState>(persistentChildsRecycleConfiguration, process.GetType().BeautyName()));
-            //var persistentChildsRecycleConfiguration = _processDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration();
-            //container.Register<ProcessManagerHubActor<TState>>(c => new ProcessManagerHubActor<TState>(persistentChildsRecycleConfiguration, process.GetType().BeautyName()));
-            //for direct access to process state from repositories and for generalization
-            //RegisterAggregate<ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencyFactory);
 
             var stateConfig = new ProcessStateAggregateConfiguration<TState>(processDependenciesfactory.StateDependencyFactory);
             _containerConfigurations.Add(stateConfig);
@@ -64,9 +58,9 @@ namespace GridDomain.Node.Configuration.Composition
 
         }
         
-        public void RegisterHandler<TMessage, THandler>(IMessageHandlerFactory<TMessage, THandler> factory) where THandler : IHandler<TMessage> where TMessage : class, IHaveProcessId, IHaveId
+        public void RegisterHandler<TContext,TMessage, THandler>(IMessageHandlerFactory<TContext,TMessage, THandler> factory) where THandler : IHandler<TMessage> where TMessage : class, IHaveProcessId, IHaveId
         {
-            var cfg = new ContainerConfiguration(c => c.Register<THandler>(ctx => factory.Create(ctx.Resolve<IMessageProcessContext>())),
+            var cfg = new ContainerConfiguration(c => c.Register<THandler>(ctx => factory.Create(ctx.Resolve<TContext>())),
                                                  c => c.RegisterType<MessageHandleActor<TMessage, THandler>>());
             _containerConfigurations.Add(cfg);
             _maps.Add(factory.CreateRouteMap());

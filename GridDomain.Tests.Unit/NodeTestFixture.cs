@@ -84,7 +84,7 @@ namespace GridDomain.Tests.Unit
         {
             OnNodePreparingEvent.Invoke(this, this);
             Node = node;
-           // Node.Initializing += (sender, n) => OnNodeCreatedEvent.Invoke(this, n);
+            OnNodeCreatedEvent.Invoke(this, node);
             await Node.Start();
             OnNodeStartedEvent.Invoke(this, Node);
 
@@ -98,7 +98,7 @@ namespace GridDomain.Tests.Unit
 
         public Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(actorSystemProvider))
+            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(actorSystemProvider, sys => OnSystemCreatedEvent.Invoke(this, sys)))
                                             .DomainConfigurations(DomainConfigurations.ToArray())
                                             .Log(logger)
                                             .Timeout(DefaultTimeout)
@@ -110,5 +110,6 @@ namespace GridDomain.Tests.Unit
         public event EventHandler<GridDomainNode> OnNodeStartedEvent = delegate { };
         public event EventHandler<NodeTestFixture> OnNodePreparingEvent = delegate { };
         public event EventHandler<GridDomainNode> OnNodeCreatedEvent = delegate { };
+        public event EventHandler<ActorSystem> OnSystemCreatedEvent = delegate { };
     }
 }

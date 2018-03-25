@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.AutoFac;
@@ -10,6 +11,7 @@ using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Configuration.Composition;
@@ -36,10 +38,45 @@ namespace GridDomain.Node {
             return new LocalCommandPipe(System);
         }
     }
+
+    public interface INodeContext :IMessageProcessContext
+    {
+           ActorSystem System { get;}
+           IActorTransport Transport { get; }
+           ICommandExecutor Executor { get; }
+    }
+
+    public static class DomainBuilderExtensions
+    {
+        public static HandlerRegistrator<INodeContext,TMessage, THandler> RegisterNodeHandler<TMessage, THandler>(this IDomainBuilder builder, Func<INodeContext, THandler> producer) where THandler : IHandler<TMessage>
+                                                                                                                                                                               where TMessage : class, IHaveProcessId, IHaveId
+        {
+            return new HandlerRegistrator<INodeContext,TMessage, THandler>(producer, builder);
+        }
+    }
+    
+    public interface IWithContext
+    {
+        Task Initialize(INodeContext context);
+    }
+    
+    public class DefaultNodeContext : INodeContext
+    {
+        public ICommandExecutor Executor { get; set; }
+        public ActorSystem System { get;  set;}
+        public IActorTransport Transport { get;  set;}
+        public IPublisher Publisher => Transport;
+        public ILogger Log { get;  set;}
+    }
     
     public abstract class GridDomainNode : IGridDomainNode
     {
-        private ICommandExecutor _commandExecutor;
+        private ICommandExecutor _commandExecutor
+        {
+            get => _context.Executor;
+            set => _context.Executor = value;
+        }
+        
         private IMessageWaiterFactory _waiterFactory;
         protected internal IActorCommandPipe Pipe;
 
@@ -79,19 +116,37 @@ namespace GridDomain.Node {
             DefaultTimeout = defaultTimeout;
             Log = log;
             _actorSystemFactory = actorSystemFactory;
+            EventsAdaptersCatalog = new EventsAdaptersCatalog();
+            Initialize();
         }
 
         public EventsAdaptersCatalog EventsAdaptersCatalog { get; private set; }
-        public IActorTransport Transport { get; private set; }
-        public ActorSystem System { get; private set; }
+        
+        public IActorTransport Transport { get => _context.Transport;
+            private set => _context.Transport = value;
+        }
+
+        public ActorSystem System
+        {
+            get => _context.System;
+            private set => _context.System = value;
+        }
+
         private IContainer Container { get; set; }
         private readonly IActorSystemFactory _actorSystemFactory;
-        public ILogger Log { get; }
+        public ILogger Log
+        {
+            get => _context.Log;
+            private set => _context.Log = value;
+        }
+        
         private readonly List<IDomainConfiguration> _domainConfigurations;
         public TimeSpan DefaultTimeout { get; }
         public Guid Id { get; } = Guid.NewGuid();
-        public event EventHandler<GridDomainNode> Initializing = delegate { };
 
+        readonly DefaultNodeContext _context = new DefaultNodeContext();
+        private INodeContext Context => _context;
+        
         public void Dispose()
         {
             Stop().Wait();
@@ -105,8 +160,6 @@ namespace GridDomain.Node {
         public async Task Start()
         {
             Log.Information("Starting GridDomain node {Id}", Id);
-           
-            Initialize();
             
             var domainBuilder = CreateDomainBuilder();
 
@@ -135,9 +188,7 @@ namespace GridDomain.Node {
         private void ConfigureContainer(DomainBuilder domainBuilder)
         {
             var containerBuilder = new ContainerBuilder();
-            containerBuilder.Register(new GridNodeContainerConfiguration(Transport, Log));
-
-            Initializing.Invoke(this, this);
+            containerBuilder.Register(new GridNodeContainerConfiguration(Context));
 
             System.InitDomainEventsSerialization(EventsAdaptersCatalog);
 
@@ -154,7 +205,6 @@ namespace GridDomain.Node {
         private void Initialize()
         {
             _stopping = false;
-            EventsAdaptersCatalog = new EventsAdaptersCatalog();
 
             System = _actorSystemFactory.CreateSystem();
             Pipe = CreateCommandPipe();

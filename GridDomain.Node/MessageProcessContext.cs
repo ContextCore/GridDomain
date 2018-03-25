@@ -1,6 +1,7 @@
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
+using GridDomain.CQRS;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Transport;
 using Serilog;

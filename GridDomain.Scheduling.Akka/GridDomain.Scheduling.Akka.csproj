@@ -26,6 +26,10 @@
     <ProjectReference Include="..\GridDomain.Configuration\GridDomain.Configuration.csproj" />
     <ProjectReference Include="..\GridDomain.CQRS\GridDomain.CQRS.csproj" />
     <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj">
+      <Project>{C2709993-D05E-49A8-950F-04A1F2A8BD87}</Project>
+      <Name>GridDomain.Node</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Scheduling\GridDomain.Scheduling.csproj" />
     <ProjectReference Include="..\GridDomain.Transport\GridDomain.Transport.csproj" />
   </ItemGroup>
