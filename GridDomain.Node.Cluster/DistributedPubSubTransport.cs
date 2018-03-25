@@ -47,7 +47,6 @@ namespace GridDomain.Node.Cluster
             var topic = messageType.FullName;
             //TODO: replace wait with actor call
            var subscribe = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout).Result;
-         //  _transport.Tell(new Subscribe(topic, actor), subscribeNotificationWaiter);
             subscribeNotificationWaiter?.Tell(subscribe);
            _log.Debug("Subscribing handler actor {Path} to topic {Topic}", actor.Path, topic);
         }
@@ -60,7 +59,9 @@ namespace GridDomain.Node.Cluster
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
+            //TODO:think about more performant solution
             _transport.Tell(new Publish(msg.GetType().FullName, new MessageMetadataEnvelop(msg, metadata)));
+            _transport.Tell(new Publish(typeof(MessageMetadataEnvelop).FullName, new MessageMetadataEnvelop(msg, metadata)));
         }
     }
 }

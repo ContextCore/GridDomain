@@ -64,7 +64,6 @@ namespace GridDomain.Tests.Unit.Cluster
             _akkaCluster = ActorSystemBuilder.New()
                                             // .DomainSerialization()
                                              .Cluster("test")
-                                             //.Seeds(9001)
                                              .AutoSeeds(1)
                                              .Workers(1)
                                              .Build()

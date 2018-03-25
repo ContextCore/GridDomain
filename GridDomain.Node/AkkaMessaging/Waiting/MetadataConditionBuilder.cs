@@ -17,8 +17,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         protected override bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter)
         {
-            var msg = (receivedMessage as IMessageMetadataEnvelop)?.Message as TMsg;
-            return msg != null && domainMessageFilter(msg);
+            return (receivedMessage as IMessageMetadataEnvelop)?.Message is TMsg msg && domainMessageFilter(msg);
         }
 
         protected override void AddFilter(Type type, Func<object, bool> filter)
