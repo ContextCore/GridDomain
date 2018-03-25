@@ -13,6 +13,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
+using GridDomain.Node.Configuration.Composition;
 using GridDomain.ProcessManagers.DomainBind;
 using Serilog;
 
@@ -29,15 +30,23 @@ namespace GridDomain.Node.Cluster
     
     public class GridClusterNode : GridDomainNode
     {
+        private ClusterCommandExecutor _clusterCommandExecutor;
         public GridClusterNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan defaultTimeout) : base(domainConfigurations, actorSystemFactory, log, defaultTimeout) { }
         protected override ICommandExecutor CreateCommandExecutor()
         {
-            return new ClusterCommandExecutor(System,Transport,DefaultTimeout);
+            _clusterCommandExecutor = new ClusterCommandExecutor(System,Transport,DefaultTimeout);
+            return _clusterCommandExecutor;
         }
 
         protected override IActorCommandPipe CreateCommandPipe()
         {
             return new ClusterCommandPipe(System,Log);
+        }
+
+        protected override async Task ConfigurePipe(DomainBuilder domainBuilder)
+        {
+            await base.ConfigurePipe(domainBuilder);
+            _clusterCommandExecutor.Init(Pipe.CommandExecutor);
         }
     }
 
@@ -75,7 +84,6 @@ namespace GridDomain.Node.Cluster
             ProcessesPipeActor = System.ActorOf(Props.Create(() => new DummyProcessActor()), nameof(Actors.CommandPipe.ProcessesPipeActor));
 
             HandlersPipeActor = System.ActorOf(Props.Create(() => new DummyHandlersActor()), nameof(Actors.CommandPipe.HandlersPipeActor));
-
         }
 
         readonly List<string> _shardRegionPaths = new List<string>();
@@ -90,22 +98,23 @@ namespace GridDomain.Node.Cluster
                                                           Props.Create(actorType),
                                                           ClusterShardingSettings.Create(System),
                                                           new ShardedMessageMetadataExtractor());
+            
             _shardRegionPaths.Add(region.Path.ToString());
         }
 
         public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task RegisterSyncHandler<TMessage, THandler>() where TMessage : class, IHaveProcessId, IHaveId where THandler : IHandler<TMessage>
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task RegisterFireAndForgetHandler<TMessage, THandler>() where TMessage : class, IHaveProcessId, IHaveId where THandler : IHandler<TMessage>
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task BuildRoutes()

@@ -4,15 +4,15 @@ using GridDomain.Common;
 namespace GridDomain.CQRS
 {
     /// <summary>
-    /// Marker interface just to simplify navigation from command to its Aggregate
+    /// Marker interface just to simplify navigation from command to its Aggregate or handler
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IForAggregate<T>
+    public interface IFor<T>
     {
         
     }
     
-    public class Command<T> : Command
+    public class Command<T> : Command 
     {
         protected Command(string id, string aggregateId, string processId, DateTime time) : base(id, aggregateId, processId, time,typeof(T).Name) { }
         protected Command(string id, string aggregateId, string processId) : base(id, aggregateId, processId,typeof(T).Name) { }

@@ -18,8 +18,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                              IMessageMetadata commandMetadata,
                              ActorSystem system,
                              IActorTransport transport,
-                             IActorRef executorActor,
-                             TimeSpan defaultTimeout) : this(system, transport, defaultTimeout, new CommandConditionBuilder<TCommand>(command, commandMetadata, executorActor)) { }
+                             ICommandExecutor executor,
+                             TimeSpan defaultTimeout) : this(system, transport, defaultTimeout, new CommandConditionBuilder<TCommand>(command, commandMetadata, executor)) { }
 
         private CommandWaiter(ActorSystem system,
                              IActorSubscriber subscriber,

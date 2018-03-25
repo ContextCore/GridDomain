@@ -13,11 +13,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         private readonly TCommand _command;
         private readonly IMessageMetadata _commandMetadata;
-        private readonly IActorRef _executorActorRef;
+        private readonly ICommandExecutor _executorActorRef;
 
         public CommandConditionBuilder(TCommand command,
                                        IMessageMetadata commandMetadata,
-                                       IActorRef executorActorRef)
+                                       ICommandExecutor executorActorRef)
         {
             _commandMetadata = commandMetadata;
             _executorActorRef = executorActorRef;
@@ -33,7 +33,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             var task = Create(timeout);
 
-            _executorActorRef.Tell(new MessageMetadataEnvelop<ICommand>(_command, _commandMetadata));
+            //will wait later in task; 
+#pragma warning disable 4014
+            _executorActorRef.Execute(_command, _commandMetadata,CommandConfirmationMode.None);
+#pragma warning restore 4014
 
             var res = await task;
 

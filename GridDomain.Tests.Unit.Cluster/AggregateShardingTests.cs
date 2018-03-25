@@ -13,6 +13,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Serilog;
 using Serilog.Core;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -52,7 +53,7 @@ namespace GridDomain.Tests.Unit.Cluster
 
         public AggregateShardingTests(ITestOutputHelper output)
         {
-            _logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
+            _logger = new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Information, GetType().Name).CreateLogger();
         }
 
         [Fact]
@@ -61,32 +62,23 @@ namespace GridDomain.Tests.Unit.Cluster
             var domainFixture = new BalloonFixture(_testOutputHelper);
 
             _akkaCluster = ActorSystemBuilder.New()
-                                             .DomainSerialization()
+                                            // .DomainSerialization()
                                              .Cluster("test")
-                                             .Seeds(9001)
+                                             //.Seeds(9001)
+                                             .AutoSeeds(1)
                                              .Workers(1)
                                              .Build()
                                              .CreateCluster(_logger);
 
             IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
 
-            var res = await node.Prepare(new BlowBalloonCommand("myBalloon"))
+            var res = await node.Prepare(new InflateNewBallonCommand(123,"myBalloon"))
                                 .Expect<BalloonCreated>()
                                 .Execute();
             
              Assert.Equal("myBalloon",res.Received.SourceId);
         }
-        [Fact]
-        public void Cluster_can_start_with_static_seed_nodes()
-        {
-            _akkaCluster = ActorSystemBuilder.New()
-                                             .Cluster("testSeed")
-                                             .Seeds(8000)
-                                             .Workers(1)
-                                             .Build()
-                                             .CreateCluster(s => s.AttachSerilogLogging(_logger));
-        }
-
+      
         public void Dispose()
         {
             if (_akkaCluster == null) return;

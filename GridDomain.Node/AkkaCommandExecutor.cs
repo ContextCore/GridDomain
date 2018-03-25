@@ -36,29 +36,33 @@ namespace GridDomain.Node
         {
             _commandExecutorActor = commandExecutorActor;
         }
+        
         public async Task Execute<T>(T command, IMessageMetadata metadata = null, CommandConfirmationMode confirmationMode = CommandConfirmationMode.Projected) where T : ICommand
         {
             var envelopedCommand = EnvelopeCommand(command, metadata);
 
-            if (confirmationMode == CommandConfirmationMode.None)
-            {
-                _commandExecutorActor.Tell(envelopedCommand);
-                return;
+            switch (confirmationMode) {
+                case CommandConfirmationMode.None:
+                    _commandExecutorActor.Tell(envelopedCommand);
+                    return;
+                case CommandConfirmationMode.Executed:
+                    await _commandExecutorActor.Ask<AggregateActor.CommandExecuted>(envelopedCommand);
+                    return;
+                case CommandConfirmationMode.Projected:
+                    //TODO: improve performance here!!!!
+                    var inbox = Inbox.Create(_system);
+                    _commandExecutorActor.Tell(envelopedCommand, inbox.Receiver);
+
+                    var msg = await inbox.ReceiveAsync(_defaultTimeout);
+
+                    if (CheckMessage(confirmationMode, msg)) return;
+
+                    msg = await inbox.ReceiveAsync(_defaultTimeout);
+
+                    if (CheckMessage(confirmationMode, msg)) return;
+
+                    throw new TimeoutException("Command execution took to long");
             }
-
-            //TODO: improve performance here!!!!
-            var inbox = Inbox.Create(_system);
-            _commandExecutorActor.Tell(envelopedCommand, inbox.Receiver);
-
-            var msg = await inbox.ReceiveAsync(_defaultTimeout);
-
-            if (CheckMessage(confirmationMode, msg)) return;
-
-            msg = await inbox.ReceiveAsync(_defaultTimeout);
-
-            if (CheckMessage(confirmationMode, msg)) return;
-
-            throw new TimeoutException("Command execution took to long");
         }
 
         protected virtual IMessageMetadataEnvelop EnvelopeCommand<T>(T command, IMessageMetadata metadata) where T : ICommand
@@ -93,7 +97,7 @@ namespace GridDomain.Node
                                         metadata ?? CreateEmptyCommandMetadata(cmd),
                                         _system,
                                         _transport,
-                                        _commandExecutorActor,
+                                        this,
                                         _defaultTimeout);
         }
 

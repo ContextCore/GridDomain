@@ -55,11 +55,6 @@ namespace GridDomain.Node {
         }
     }
     
-    public interface IWithContext
-    {
-        Task Initialize(INodeContext context);
-    }
-    
     public class DefaultNodeContext : INodeContext
     {
         public ICommandExecutor Executor { get; set; }
@@ -172,7 +167,7 @@ namespace GridDomain.Node {
             Log.Information("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
 
-        private async Task ConfigurePipe(DomainBuilder domainBuilder)
+        protected virtual async Task ConfigurePipe(DomainBuilder domainBuilder)
         {
             await domainBuilder.Configure(Pipe);
             await Pipe.BuildRoutes();
@@ -185,7 +180,7 @@ namespace GridDomain.Node {
             await nodeController.Ask<GridNodeController.Alive>(GridNodeController.HeartBeat.Instance);
         }
 
-        private void ConfigureContainer(DomainBuilder domainBuilder)
+        protected virtual void ConfigureContainer(DomainBuilder domainBuilder)
         {
             var containerBuilder = new ContainerBuilder();
             containerBuilder.Register(new GridNodeContainerConfiguration(Context));
@@ -202,7 +197,7 @@ namespace GridDomain.Node {
             System.AddDependencyResolver(new AutoFacDependencyResolver(Container, System));
         }
 
-        private void Initialize()
+        protected virtual void Initialize()
         {
             _stopping = false;
 
@@ -215,7 +210,7 @@ namespace GridDomain.Node {
             _waiterFactory = new MessageWaiterFactory(System, Transport, DefaultTimeout);
         }
 
-        private DomainBuilder CreateDomainBuilder()
+        protected virtual DomainBuilder CreateDomainBuilder()
         {
             var domainBuilder = new DomainBuilder();
             _domainConfigurations.ForEach(c => domainBuilder.Register(c));

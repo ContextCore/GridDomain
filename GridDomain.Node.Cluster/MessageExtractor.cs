@@ -9,6 +9,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.Aggregates;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Node.Cluster
 {
@@ -16,7 +17,7 @@ namespace GridDomain.Node.Cluster
 
     public sealed class ShardedMessageMetadataExtractor : IMessageExtractor
     {
-        public string EntityId(object message) => (message as IShardedMessageMetadataEnvelop)?.Message?.Id;
+        public string EntityId(object message) => (message as IShardedMessageMetadataEnvelop)?.EntityId;
 
         public string ShardId(object message) => (message as IShardedMessageMetadataEnvelop)?.ShardId;
 
@@ -62,58 +63,22 @@ namespace GridDomain.Node.Cluster
         }
     }
 
-    public class ShardedCommandMetadataEnvelop : IShardedMessageMetadataEnvelop<ICommand>
+    public class ShardedCommandMetadataEnvelop : IShardedMessageMetadataEnvelop
     {
-        object IMessageMetadataEnvelop.Message => Message;
+        private readonly IHaveId _command;
+        public object Message => _command;
 
-        public ICommand Message { get; }
         public IMessageMetadata Metadata { get; }
+        public string EntityId { get; }
         public string ShardId { get; }
 
         public ShardedCommandMetadataEnvelop(ICommand message, IMessageMetadata metadata = null, IShardIdGenerator generator=null)
         {
-            Message = message;
+            _command = message;
             Metadata = metadata ?? MessageMetadata.Empty;
             generator = generator ?? DefaultShardIdGenerator.Instance;
             ShardId = generator.Resolve(message.AggregateId);
+            EntityId = EntityActorName.GetFullName(message.AggregateType, message.AggregateId);
         }
     }
-
-    public class CommandClusterExecutor
-    {
-        private readonly ActorSystem _actorSystem;
-
-        public CommandClusterExecutor(ActorSystem system)
-        {
-            _actorSystem = system;
-            _clusterSharding = ClusterSharding.Get(_actorSystem);
-        }
-
-        private readonly ConcurrentDictionary<string, IActorRef> _shardGroups = new ConcurrentDictionary<string, IActorRef>();
-
-        private readonly ClusterSharding _clusterSharding;
-
-        private readonly IMessageExtractor _messageExtractor = new ShardedMessageMetadataExtractor();
-
-        public void Execute<T>(IAggregateCommand<T> command, IMessageMetadata metadata = null, CommandConfirmationMode confirm = CommandConfirmationMode.Projected, int maxShards = 10) where T : class, IAggregate
-
-        {
-            var shardGroup = _shardGroups.GetOrAdd(typeof(T).Name,
-                                                   n => _clusterSharding.Start(typeof(T).Name,
-                                                                               Props.Create<AggregateActorCell<T>>(),
-                                                                               ClusterShardingSettings.Create(_actorSystem),
-                                                                               _messageExtractor));
-            _clusterSharding.ShardRegion("");
-
-            var a = shardGroup.Ask<object>(new ShardedCommandMetadataEnvelop(command, metadata))
-                              .Result;
-        }
-
-        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public interface IAggregateCommand<T> : ICommand, IForAggregate<T> { }
 }

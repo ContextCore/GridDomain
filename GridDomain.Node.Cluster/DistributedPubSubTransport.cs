@@ -46,9 +46,10 @@ namespace GridDomain.Node.Cluster
         {
             var topic = messageType.FullName;
             //TODO: replace wait with actor call
-            var ack = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout).Result;
-            subscribeNotificationWaiter.Tell(ack);
-            _log.Debug("Subscribing handler actor {Path} to topic {Topic}", actor.Path, topic);
+           var subscribe = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout).Result;
+         //  _transport.Tell(new Subscribe(topic, actor), subscribeNotificationWaiter);
+            subscribeNotificationWaiter?.Tell(subscribe);
+           _log.Debug("Subscribing handler actor {Path} to topic {Topic}", actor.Path, topic);
         }
 
         public void Publish(object msg)
