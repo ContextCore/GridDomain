@@ -6,13 +6,13 @@ using GridDomain.Transport;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class LocalExplicitMessagesWaiter : LocalMessagesWaiter<Task<IWaitResult>>
+    public class ExplicitMessagesWaiter : MessagesWaiter<Task<IWaitResult>>
     {
-        public LocalExplicitMessagesWaiter(ActorSystem system,
+        public ExplicitMessagesWaiter(ActorSystem system,
                                            IActorSubscriber subscriber,
                                            TimeSpan defaultTimeout) : this(system, subscriber, defaultTimeout, new ConditionBuilder<Task<IWaitResult>>()) {}
 
-        public LocalExplicitMessagesWaiter(ActorSystem system, 
+        public ExplicitMessagesWaiter(ActorSystem system, 
                                            IActorSubscriber subscriber,
                                            TimeSpan defaultTimeout, 
                                            ConditionBuilder<Task<IWaitResult>> conditionBuilder) : base(system, subscriber, defaultTimeout, conditionBuilder)
