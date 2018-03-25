@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
@@ -12,6 +13,8 @@ namespace GridDomain.Node.Cluster
         private readonly ILoggingAdapter _log;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(5);
         private readonly IActorRef _transport;
+        public readonly IDictionary<Type, List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
+
 
         public DistributedPubSubTransport(ActorSystem system)
         {
@@ -45,6 +48,14 @@ namespace GridDomain.Node.Cluster
         public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
             var topic = messageType.FullName;
+            
+            if (!Subscribers.TryGetValue(messageType, out var subcribers))
+            {
+                subcribers = new List<IActorRef>();
+                Subscribers[messageType] = subcribers;
+            }
+            subcribers.Add(actor);
+
             //TODO: replace wait with actor call
            var subscribe = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout).Result;
             subscribeNotificationWaiter?.Tell(subscribe);
@@ -59,8 +70,8 @@ namespace GridDomain.Node.Cluster
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            //TODO:think about more performant solution
-            _transport.Tell(new Publish(msg.GetType().FullName, new MessageMetadataEnvelop(msg, metadata)));
+            var type = msg.GetType();
+            _transport.Tell(new Publish(type.FullName, new MessageMetadataEnvelop(msg, metadata)));
             _transport.Tell(new Publish(typeof(MessageMetadataEnvelop).FullName, new MessageMetadataEnvelop(msg, metadata)));
         }
     }

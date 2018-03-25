@@ -9,13 +9,11 @@ namespace GridDomain.Transport
     public class LocalAkkaEventBusTransport : IActorTransport
     {
         private readonly EventStream _bus;
-        private readonly ILoggingAdapter _log;
         public readonly IDictionary<Type, List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
 
         public LocalAkkaEventBusTransport(ActorSystem system)
         {
             _bus = system.EventStream;
-            _log = system.Log;
         }
 
         public void Subscribe<TMessage>(IActorRef actor)

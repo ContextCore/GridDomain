@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Akka.DI.Core;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Cluster;
@@ -57,7 +58,7 @@ namespace GridDomain.Tests.Unit.Cluster
         }
 
         [Fact]
-        public async Task Cluster_Node_can_execute_commands()
+        public async Task Cluster_Node_can_execute_commands_and_wait_for_events()
         {
             var domainFixture = new BalloonFixture(_testOutputHelper);
 
@@ -71,13 +72,35 @@ namespace GridDomain.Tests.Unit.Cluster
 
             IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
 
-            var res = await node.Prepare(new InflateNewBallonCommand(123,"myBalloon"))
-                                .Expect<BalloonCreated>()
+            var commandConditionBuilder = node.Prepare(new InflateNewBallonCommand(123,"myBalloon"))
+                                              .Expect<BalloonCreated>();
+            
+            var res = await commandConditionBuilder
                                 .Execute();
             
              Assert.Equal("myBalloon",res.Received.SourceId);
         }
       
+        
+        [Fact]
+        public async Task Cluster_Node_can_execute_commands()
+        {
+            var domainFixture = new BalloonFixture(_testOutputHelper);
+
+            _akkaCluster = ActorSystemBuilder.New()
+                                             // .DomainSerialization()
+                                             .Cluster("test")
+                                             .AutoSeeds(1)
+                                             .Workers(1)
+                                             .Build()
+                                             .CreateCluster(_logger);
+
+            IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
+
+           await node.Execute(new InflateNewBallonCommand(123, "myBalloon"));
+        }
+
+        
         public void Dispose()
         {
             if (_akkaCluster == null) return;

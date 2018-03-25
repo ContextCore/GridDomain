@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             
             var startMessageA = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var resA = await Node.NewDebugWaiter()
+            var resA = await Node.NewLocalDebugWaiter()
                                  .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                                  .Create()
                                  .SendToProcessManagers(startMessageA);
@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 
             var secondStartMessageB = new SleptWellEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var resB = await Node.NewDebugWaiter()
+            var resB = await Node.NewLocalDebugWaiter()
                                  .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                                  .Create()
                                  .SendToProcessManagers(secondStartMessageB);

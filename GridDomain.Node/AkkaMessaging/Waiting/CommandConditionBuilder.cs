@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Akka;
 using Akka.Actor;
@@ -8,17 +9,20 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class CommandConditionBuilder<TCommand> : MetadataConditionBuilder<Task<IWaitResult>>,
-                                                     ICommandConditionBuilder where TCommand : ICommand
+
+    public class CommandConditionBuilder<TCommand> : ICommandConditionBuilder where TCommand : ICommand
     {
         private readonly TCommand _command;
         private readonly IMessageMetadata _commandMetadata;
         private readonly ICommandExecutor _executorActorRef;
+        public readonly ConditionBuilder<Task<IWaitResult>> ConditionaBuilder;
 
         public CommandConditionBuilder(TCommand command,
                                        IMessageMetadata commandMetadata,
-                                       ICommandExecutor executorActorRef)
+                                       ICommandExecutor executorActorRef,
+                                       ConditionBuilder<Task<IWaitResult>> conditionaBuilder = null)
         {
+            ConditionaBuilder = conditionaBuilder ?? new LocalCorrelationConditionBuilder<Task<IWaitResult>>(commandMetadata.CorrelationId);
             _commandMetadata = commandMetadata;
             _executorActorRef = executorActorRef;
             _command = command;
@@ -29,9 +33,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             //we can launch any command with CommandConditionBuilder<ICommand>
             //and TCommand will resolve to ICommand leading to incorect subscription
             if(failOnAnyFault)
-                Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
+                ConditionaBuilder.Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
 
-            var task = Create(timeout);
+            var task = ConditionaBuilder.Create(timeout);
 
             //will wait later in task; 
 #pragma warning disable 4014
@@ -54,22 +58,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == _command.Id;
         }
 
-        ICommandConditionBuilder ICommandConditionBuilder.And<TMsg>(Predicate<TMsg> filter)
+        public ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter) where TMsg : class
         {
-            base.And(filter);
+            ConditionaBuilder.And(filter);
             return this;
         }
 
-        ICommandConditionBuilder ICommandConditionBuilder.Or<TMsg>(Predicate<TMsg> filter)
+        public ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter) where TMsg : class
         {
-            base.Or(filter);
+            ConditionaBuilder.Or(filter);
             return this;
-        }
-
-        protected override bool DefaultFilter<TMsg>(object received)
-        {
-            var msg = received as IMessageMetadataEnvelop;
-            return msg?.Message is TMsg && msg.Metadata?.CorrelationId == _commandMetadata.CorrelationId;
         }
     }
 }

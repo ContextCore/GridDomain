@@ -9,7 +9,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
 
 
-    public class CommandWaiter<TCommand> : LocalMessagesWaiter<Task<IWaitResult>>,
+    public class CommandWaiter<TCommand> : MessagesWaiter<Task<IWaitResult>>,
                                            ICommandWaiter where TCommand : ICommand
     {
         private readonly CommandConditionBuilder<TCommand> _conditionBuilder;
@@ -19,15 +19,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                              ActorSystem system,
                              IActorTransport transport,
                              ICommandExecutor executor,
-                             TimeSpan defaultTimeout) : this(system, transport, defaultTimeout, new CommandConditionBuilder<TCommand>(command, commandMetadata, executor)) { }
+                             TimeSpan defaultTimeout) : this(system, transport, defaultTimeout, 
+                                                             new CommandConditionBuilder<TCommand>(command, commandMetadata, executor)) { }
 
-        private CommandWaiter(ActorSystem system,
+        public CommandWaiter(ActorSystem system,
                              IActorSubscriber subscriber,
                              TimeSpan defaultTimeout,
-                             CommandConditionBuilder<TCommand> conditionBuilder) : base(system, subscriber, defaultTimeout, conditionBuilder)
+                             CommandConditionBuilder<TCommand> conditionBuilder) : base(system, subscriber, defaultTimeout, conditionBuilder.ConditionaBuilder)
         {
             _conditionBuilder = conditionBuilder;
-            _conditionBuilder.CreateResultFunc = Start;
+            _conditionBuilder.ConditionaBuilder.CreateResultFunc = Start;
         }
 
 

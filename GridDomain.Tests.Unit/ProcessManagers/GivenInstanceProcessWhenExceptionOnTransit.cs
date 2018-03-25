@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             var procesStateEvent = new ProcessManagerCreated<SoftwareProgrammingState>(processState, processId);
             await Node.SaveToJournal<ProcessStateAggregate<SoftwareProgrammingState>>(processId, procesStateEvent);
 
-            var results = await Node.NewDebugWaiter()
+            var results = await Node.NewLocalDebugWaiter()
                                     .Expect<Fault<CoffeMakeFailedEvent>>()
                                     .Create()
                                     .SendToProcessManagers(new CoffeMakeFailedEvent(null, processState.PersonId), processId);

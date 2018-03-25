@@ -12,9 +12,9 @@ namespace GridDomain.Tests.Common
     public class AnyMessagePublisher
     {
         private readonly IActorCommandPipe _commandPipe;
-        private readonly LocalMessagesWaiter<AnyMessagePublisher> _waiter;
+        private readonly MessagesWaiter<AnyMessagePublisher> _waiter;
 
-        public AnyMessagePublisher(IActorCommandPipe commandPipe, LocalMessagesWaiter<AnyMessagePublisher> waiter)
+        public AnyMessagePublisher(IActorCommandPipe commandPipe, MessagesWaiter<AnyMessagePublisher> waiter)
         {
             _waiter = waiter;
             _commandPipe = commandPipe;

@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                                                 BusinessDateTime.UtcNow,
                                                                 givenProcessStateAggregate.Id);
 
-            await Node.NewDebugWaiter()
+            await Node.NewLocalDebugWaiter()
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(m => m.State.CurrentStateName == nameof(SoftwareProgrammingProcess.Coding))
                       .Create()
                       .SendToProcessManagers(coffeMakeFailedEvent, MessageMetadata.New(coffeMakeFailedEvent.SourceId, null, null));

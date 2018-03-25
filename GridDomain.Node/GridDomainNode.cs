@@ -207,7 +207,7 @@ namespace GridDomain.Node {
             System.RegisterOnTermination(OnSystemTermination);
             Transport = System.GetTransport();
 
-            _waiterFactory = new MessageWaiterFactory(System, Transport, DefaultTimeout);
+            _waiterFactory = new LocalMessageWaiterFactory(System, Transport, DefaultTimeout);
         }
 
         protected virtual DomainBuilder CreateDomainBuilder()

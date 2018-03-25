@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             var evt = new SleptWellEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var metadata = MessageMetadata.New(evt.Id, Guid.NewGuid().ToString(), null);
             var res = await
-                Node.NewDebugWaiter()
+                Node.NewLocalDebugWaiter()
                     .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
                     .Create()
                     .SendToProcessManagers(evt, metadata);

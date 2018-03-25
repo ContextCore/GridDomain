@@ -18,9 +18,9 @@ namespace GridDomain.Common
 
             var typeName = type.Name.Split('`')[0];
 
-            var parameters = string.Join("_", type.GenericTypeArguments.Select(t => t.BeautyName()));
+            var parameters = string.Join("-", type.GenericTypeArguments.Select(t => t.BeautyName()));
 
-            return $"{typeName}_{parameters}";
+            return $"{typeName}-{parameters}";
         }
     }
 }

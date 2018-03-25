@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Common
 
         public static async Task<TExpect> SendToProcessManager<TExpect>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
         {
-            var res = await node.NewDebugWaiter(timeout)
+            var res = await node.NewLocalDebugWaiter(timeout)
                                 .Expect<TExpect>()
                                 .Create()
                                 .SendToProcessManagers(msg);
@@ -58,10 +58,10 @@ namespace GridDomain.Tests.Common
             return res.State;
         }
 
-        public static IMessageWaiter<AnyMessagePublisher> NewDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
+        public static IMessageWaiter<AnyMessagePublisher> NewLocalDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
         {
-            var conditionBuilder = new MetadataConditionBuilder<AnyMessagePublisher>();
-            var waiter = new LocalMessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionBuilder);
+            var conditionBuilder = new LocalMetadataConditionBuilder<AnyMessagePublisher>();
+            var waiter = new MessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionBuilder);
             conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
             return waiter;
         }

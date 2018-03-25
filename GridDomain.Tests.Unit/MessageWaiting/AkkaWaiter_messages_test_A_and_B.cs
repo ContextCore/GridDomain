@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         private readonly MessageMetadataEnvelop<string> _messageEnvelopeA = new MessageMetadataEnvelop<string>("et", MessageMetadata.Empty);
         private readonly MessageMetadataEnvelop<B> _messageEnvelopeB = new MessageMetadataEnvelop<B>(new B(), MessageMetadata.Empty);
 
-        protected override Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter)
+        protected override Task<IWaitResult> ConfigureWaiter(MessagesWaiter waiter)
         {
             var task = Waiter.Expect<string>().And<B>().Create();
 

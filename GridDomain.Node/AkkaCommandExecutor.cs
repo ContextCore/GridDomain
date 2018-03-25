@@ -17,11 +17,11 @@ namespace GridDomain.Node
                                                                                      "sending command to executor actor",
                                                                                      "command is executing");
 
-        private  IActorRef _commandExecutorActor;
-        private readonly TimeSpan _defaultTimeout;
+        protected  IActorRef _commandExecutorActor;
+        protected readonly TimeSpan _defaultTimeout;
 
-        private readonly ActorSystem _system;
-        private readonly IActorTransport _transport;
+        protected readonly ActorSystem _system;
+        protected readonly IActorTransport _transport;
 
         public AkkaCommandExecutor(ActorSystem system,
                                    IActorTransport transport,
@@ -91,7 +91,7 @@ namespace GridDomain.Node
             return false;
         }
 
-        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public virtual ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             return new CommandWaiter<T>(cmd,
                                         metadata ?? CreateEmptyCommandMetadata(cmd),

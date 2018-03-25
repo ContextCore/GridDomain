@@ -25,7 +25,7 @@ namespace GridDomain.Tools.Connector {
 
         private ICommandExecutor _commandExecutor;
         private ActorSystem _consoleSystem;
-        private MessageWaiterFactory _waiterFactory;
+        private LocalMessageWaiterFactory _waiterFactory;
         private readonly ILogger _logger;
 
         public GridNodeConnector New(string nodeName, string host, int port)
@@ -123,7 +123,7 @@ namespace GridDomain.Tools.Connector {
             _commandExecutor = akkaCommandExecutor;
             
 
-            _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
+            _waiterFactory = new LocalMessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }
 
         public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)

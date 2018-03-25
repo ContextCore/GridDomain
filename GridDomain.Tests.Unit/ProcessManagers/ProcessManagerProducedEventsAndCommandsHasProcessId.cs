@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         {
             Node.Pipe.ProcessesPipeActor.Tell(new Initialize(TestActor));
 
-            var processCreatedMsg = await Node.NewDebugWaiter()
+            var processCreatedMsg = await Node.NewLocalDebugWaiter()
                                               .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
                                               .Create()
                                               .SendToProcessManagers(new GotTiredEvent(Guid.NewGuid().ToString()));
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         {
             var domainEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var waitResults = await Node.NewDebugWaiter()
+            var waitResults = await Node.NewLocalDebugWaiter()
                                         .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
                                         .Create()
                                         .SendToProcessManagers(domainEvent);

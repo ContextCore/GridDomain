@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         private readonly Message _messageC = new Message("C");
         private readonly Message _messageD = new Message("D");
 
-        protected override Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter)
+        protected override Task<IWaitResult> ConfigureWaiter(MessagesWaiter waiter)
         {
             return
                 waiter.Expect<Message>(m => m.Id == _messageA.Id)

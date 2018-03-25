@@ -31,7 +31,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return Create(null);
         }
 
-        protected T Create(TimeSpan? timeout)
+        public T Create(TimeSpan? timeout)
         {
             return CreateResultFunc.Invoke(timeout);
         }
@@ -45,14 +45,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             return filter == null
                        ? And(typeof(TMsg), DefaultFilter<TMsg>)
-                       : And(typeof(TMsg), o => FilterDecorator(o, filter));
+                       : And(typeof(TMsg), o => DomainFilterAdapter(o, filter));
         }
 
         public IConditionBuilder<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return filter == null
                        ? Or(typeof(TMsg), DefaultFilter<TMsg>)
-                       : Or(typeof(TMsg), o => FilterDecorator(o, filter));
+                       : Or(typeof(TMsg), o => DomainFilterAdapter(o, filter));
         }
 
         public IConditionBuilder<T> And(Type type, Func<object, bool> filter = null)
@@ -65,7 +65,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return this;
         }
 
-        protected IConditionBuilder<T> Or(Type type, Func<object, bool> filter = null)
+        public IConditionBuilder<T> Or(Type type, Func<object, bool> filter = null)
         {
             var messageFilter = filter ?? DefaultFilter<object>;
             StopExpression = StopExpression.Or(c => c != null && c.Any(messageFilter));
@@ -80,7 +80,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return message is TMsg;
         }
 
-        protected virtual bool FilterDecorator<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter) where TMsg : class
+        protected virtual bool DomainFilterAdapter<TMsg>(object receivedMessage, Predicate<TMsg> domainMessageFilter) where TMsg : class
         {
             return receivedMessage is TMsg msg && domainMessageFilter(msg);
         }

@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         public AkkaWaiter_message_test_filtered_message()
         {
             _transport = new LocalAkkaEventBusTransport(Sys);
-            var waiter = new LocalMessagesWaiter(Sys,_transport,TimeSpan.FromSeconds(2));
+            var waiter = new MessagesWaiter(Sys,_transport,TimeSpan.FromSeconds(2));
 
             waiter.Expect<string>(m => m.Like("Msg"));
             _results = waiter.Start(TimeSpan.FromSeconds(10));
