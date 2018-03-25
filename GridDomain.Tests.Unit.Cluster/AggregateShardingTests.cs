@@ -22,13 +22,15 @@ namespace GridDomain.Tests.Unit.Cluster
 {
     public static class ClusterConfigExtensions
     {
-        public static ClusterInfo CreateCluster(this ClusterConfig cfg, ILogger log)
+        public static Task<ClusterInfo> CreateCluster(this ClusterConfig cfg, ILogger log, TimeSpan? timeout = null)
         {
+            timeout = timeout ?? TimeSpan.FromSeconds(15);
+            
             return cfg.CreateCluster(s =>
                                      {
                                          s.AttachSerilogLogging(log);
                                          s.InitDistributedTransport();
-                                     });
+                                     }).TimeoutAfter(timeout.Value,"Cluster was not formed in time");
         }
     }
 
@@ -36,17 +38,18 @@ namespace GridDomain.Tests.Unit.Cluster
     {
         public static async Task<IGridDomainNode> CreateClusterNode(this NodeTestFixture fxt, Func<Akka.Cluster.Cluster> clusterProducer, ILogger log)
         {
-            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(()=> clusterProducer().System))
+            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(() => clusterProducer()
+                                                                                            .System))
                                             .DomainConfigurations(fxt.DomainConfigurations.ToArray())
                                             .Log(log)
                                             .Timeout(fxt.DefaultTimeout)
                                             .BuildCluster();
 
-            return await fxt.StartNode((GridDomainNode)node);
+            return await fxt.StartNode((GridDomainNode) node);
         }
     }
 
-    public class AggregateShardingTests:IDisposable
+    public class AggregateShardingTests : IDisposable
     {
         private ClusterInfo _akkaCluster;
         private readonly Logger _logger;
@@ -54,7 +57,10 @@ namespace GridDomain.Tests.Unit.Cluster
 
         public AggregateShardingTests(ITestOutputHelper output)
         {
-            _logger = new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Information, GetType().Name).CreateLogger();
+            _logger = new XUnitAutoTestLoggerConfiguration(output,
+                                                           LogEventLevel.Information,
+                                                           GetType()
+                                                               .Name).CreateLogger();
         }
 
         [Fact]
@@ -62,49 +68,47 @@ namespace GridDomain.Tests.Unit.Cluster
         {
             var domainFixture = new BalloonFixture(_testOutputHelper);
 
-            _akkaCluster = ActorSystemBuilder.New()
-                                            // .DomainSerialization()
-                                             .Cluster("test")
-                                             .AutoSeeds(1)
-                                             .Workers(1)
-                                             .Build()
-                                             .CreateCluster(_logger);
+            _akkaCluster = await ActorSystemBuilder.New()
+                                                   .DomainSerialization()
+                                                   .Cluster("test")
+                                                   .AutoSeeds(1)
+                                                   .Workers(1)
+                                                   .Build()
+                                                   .CreateCluster(_logger);
 
             IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
 
-            var commandConditionBuilder = node.Prepare(new InflateNewBallonCommand(123,"myBalloon"))
-                                              .Expect<BalloonCreated>();
-            
-            var res = await commandConditionBuilder
+            var res = await node.Prepare(new InflateNewBallonCommand(123, "myBalloon"))
+                                .Expect<BalloonCreated>()
                                 .Execute();
-            
-             Assert.Equal("myBalloon",res.Received.SourceId);
+
+            Assert.Equal("myBalloon", res.Received.SourceId);
         }
-      
-        
+
         [Fact]
         public async Task Cluster_Node_can_execute_commands()
         {
             var domainFixture = new BalloonFixture(_testOutputHelper);
 
-            _akkaCluster = ActorSystemBuilder.New()
-                                             // .DomainSerialization()
-                                             .Cluster("test")
-                                             .AutoSeeds(1)
-                                             .Workers(1)
-                                             .Build()
-                                             .CreateCluster(_logger);
+            _akkaCluster = await ActorSystemBuilder.New()
+                                                   // .DomainSerialization()
+                                                   .Cluster("test")
+                                                   .AutoSeeds(1)
+                                                   .Workers(1)
+                                                   .Build()
+                                                   .CreateCluster(_logger);
 
             IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
 
-           await node.Execute(new InflateNewBallonCommand(123, "myBalloon"));
+            await node.Execute(new InflateNewBallonCommand(123, "myBalloon"));
         }
 
-        
         public void Dispose()
         {
             if (_akkaCluster == null) return;
-            CoordinatedShutdown.Get(_akkaCluster?.Cluster.System)?.Run().Wait(TimeSpan.FromSeconds(2));
+            CoordinatedShutdown.Get(_akkaCluster?.Cluster.System)
+                               ?.Run()
+                               .Wait(TimeSpan.FromSeconds(2));
             _akkaCluster = null;
         }
     }

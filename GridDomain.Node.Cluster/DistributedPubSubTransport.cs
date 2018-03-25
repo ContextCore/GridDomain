@@ -8,16 +8,22 @@ using GridDomain.Transport;
 
 namespace GridDomain.Node.Cluster
 {
+    public interface ITopicExtractor
+    {
+        string GetTopic(object message);
+    }
+    
     public class DistributedPubSubTransport : IActorTransport
     {
         private readonly ILoggingAdapter _log;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(5);
         private readonly IActorRef _transport;
-        public readonly IDictionary<Type, List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
+        private readonly IDictionary<string, List<IActorRef>> _subscribers = new Dictionary<string, List<IActorRef>>();
+        private readonly ITopicExtractor _topicExtractor;
 
-
-        public DistributedPubSubTransport(ActorSystem system)
+        public DistributedPubSubTransport(ActorSystem system,ITopicExtractor topicExtractor)
         {
+            _topicExtractor = topicExtractor;
             _log = system.Log;
 
             DistributedPubSub distributedPubSub;
@@ -47,12 +53,12 @@ namespace GridDomain.Node.Cluster
 
         public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
-            var topic = messageType.FullName;
+            var topic = _topicExtractor.GetTopic(messageType);
             
-            if (!Subscribers.TryGetValue(messageType, out var subcribers))
+            if (!_subscribers.TryGetValue(topic, out var subcribers))
             {
                 subcribers = new List<IActorRef>();
-                Subscribers[messageType] = subcribers;
+                _subscribers[topic] = subcribers;
             }
             subcribers.Add(actor);
 
@@ -64,15 +70,13 @@ namespace GridDomain.Node.Cluster
 
         public void Publish(object msg)
         {
-            var topic = msg.GetType().FullName;
-            _transport.Tell(new Publish(topic, msg));
+            Publish(msg,MessageMetadata.Empty);
         }
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            var type = msg.GetType();
-            _transport.Tell(new Publish(type.FullName, new MessageMetadataEnvelop(msg, metadata)));
-            _transport.Tell(new Publish(typeof(MessageMetadataEnvelop).FullName, new MessageMetadataEnvelop(msg, metadata)));
+            var topic = _topicExtractor.GetTopic(msg);
+            _transport.Tell(new Publish(topic, new MessageMetadataEnvelop(msg, metadata)));
         }
     }
 }

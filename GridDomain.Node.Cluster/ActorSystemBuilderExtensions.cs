@@ -20,7 +20,7 @@ namespace GridDomain.Node.Cluster {
 
         public static ClusterConfigBuilder Cluster(this ActorSystemBuilder builder, string name)
         {
-           // builder.Add(new ClusterInternalMessagesSerializerConfig());
+            builder.Add(new PubSubConfig());
             return new ClusterConfigBuilder(name, builder);
         }  
         
@@ -29,6 +29,14 @@ namespace GridDomain.Node.Cluster {
             Config hocon = new RootConfig(builder.Configs.ToArray()).Build();
             var factory = new HoconActorSystemFactory(name,  hocon.WithFallback(ClusterSingletonManager.DefaultConfig()));
             return factory;
+        }
+    }
+
+    public class PubSubConfig : IHoconConfig 
+    {
+        public string Build()
+        {
+           return @"extensions = [""Akka.Cluster.Tools.PublishSubscribe.DistributedPubSubExtensionProvider,Akka.Cluster.Tools""]";
         }
     }
 }
