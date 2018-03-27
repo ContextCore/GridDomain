@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.Cluster
         public static Task<ClusterInfo> CreateCluster(this ClusterConfig cfg, ILogger log, TimeSpan? timeout = null)
         {
             timeout = timeout ?? TimeSpan.FromSeconds(15);
-            
+
             return cfg.CreateCluster(s =>
                                      {
                                          s.AttachSerilogLogging(log);

@@ -27,10 +27,10 @@ namespace GridDomain.Node
             Enrich.FromLogContext();
             if (fileName != null)
             {
-                WriteTo.File(fileName, level, DefaultTemplate);
+                WriteTo.File(fileName, level, DefaultTemplate,null,null,null,false,false,TimeSpan.FromMilliseconds(10));
             }
             else 
-                WriteTo.RollingFile(".\\Logs\\log_{HalfHour}.txt", level,DefaultTemplate);
+                WriteTo.RollingFile("./Logs/log_{HalfHour}.txt", level,DefaultTemplate);
             
             MinimumLevel.Is(level);
             Destructure.ByTransforming<Money>(r => new { r.Amount, r.CurrencyCode });

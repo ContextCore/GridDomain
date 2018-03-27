@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Cluster.Tools.Singleton;
 using Akka.Configuration;
 using GridDomain.Node.Configuration;
+using Serilog;
 
 namespace GridDomain.Node.Cluster
 {
@@ -34,7 +35,13 @@ namespace GridDomain.Node.Cluster
 
         public ClusterConfig Build()
         {
-            var clusterConfig = new ClusterConfig(_clusterName);
+            var clusterConfig = new ClusterConfig(_clusterName, _actorSystemBuilder.Logger);
+            if (_seedNodeNetworkAddresses.All(a => a.PortNumber == 0))
+            {
+                _seedNodeNetworkAddresses.Add(((NodeNetworkAddress) _seedNodeNetworkAddresses.First()).Copy(10000));
+                _seedNodeNetworkAddresses.RemoveAt(0);
+            }
+            
             var preconfiguredSeeds = _seedNodeNetworkAddresses.Where(a => a.PortNumber != 0)
                                                               .ToArray();
 

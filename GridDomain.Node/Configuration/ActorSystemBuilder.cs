@@ -4,16 +4,24 @@ using System.Linq;
 using Akka.Event;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Configuration.Hocon;
+using Serilog;
 using Serilog.Events;
 
 namespace GridDomain.Node.Configuration {
     public class ActorSystemBuilder
     {
+        public ILogger Logger;
+
+        public ActorSystemBuilder(ILogger log=null)
+        {
+            Logger = log ?? Serilog.Log.Logger;
+        }
+
         public List<IHoconConfig> Configs { get; private set; } = new List<IHoconConfig>();
 
-        public static ActorSystemBuilder New()
+        public static ActorSystemBuilder New(ILogger log=null)
         {
-            return new ActorSystemBuilder();
+            return new ActorSystemBuilder(log);
         }
         public void Add(IHoconConfig cfg)
         {
@@ -63,7 +71,7 @@ namespace GridDomain.Node.Configuration {
 
         public ActorSystemBuilder Clone()
         {
-            return new ActorSystemBuilder {Configs = Configs.ToList()};
+            return new ActorSystemBuilder(Logger) {Configs = Configs.ToList()};
         }
     }
 }

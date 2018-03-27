@@ -24,7 +24,7 @@ namespace GridDomain.Node.Cluster {
         } 
         public static ClusterConfigBuilder AutoSeeds(this ClusterConfigBuilder builder, int number)
         {
-            builder.Seeds(Enumerable.Range(0,number)
+           builder.Seeds(Enumerable.Range(0, number)
                                       .Select(p => new NodeNetworkAddress())
                                       .Cast<INodeNetworkAddress>()
                                       .ToArray());

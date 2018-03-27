@@ -1,28 +1,41 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Hocon;
+using Serilog;
+using Serilog.Events;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster
+{
+
+    public static class ActorSystemExtensions
+    {
+        public static Address GetAddress(this ActorSystem sys)
+        {
+            return ((ExtendedActorSystem) sys).Provider.DefaultAddress;
+        }
+    }
     public class ClusterConfig
     {
         private readonly List<ActorSystemBuilder> _seedNodes = new List<ActorSystemBuilder>();
         private readonly List<ActorSystemBuilder> _autoSeedNodes = new List<ActorSystemBuilder>();
         private readonly List<ActorSystemBuilder> _workerNodes = new List<ActorSystemBuilder>();
-
-        public ClusterConfig(string name)
+        private ILogger _logger;
+        public ClusterConfig(string name, ILogger log)
         {
+            _logger = log;
             Name = name;
         }
-        
+
         public string Name { get; }
         public IReadOnlyCollection<ActorSystemBuilder> SeedNodes => _seedNodes;
         public IReadOnlyCollection<ActorSystemBuilder> AutoSeedNodes => _autoSeedNodes;
         public IReadOnlyCollection<ActorSystemBuilder> WorkerNodes => _workerNodes;
-        
+
         public string[] CreateConfigs()
         {
             return SeedNodes.Concat(WorkerNodes)
@@ -34,53 +47,85 @@ namespace GridDomain.Node.Cluster {
         {
             _autoSeedNodes.AddRange(builder);
         }
+
         public void AddSeed(params ActorSystemBuilder[] builder)
         {
             _seedNodes.AddRange(builder);
         }
+
         public void AddWorker(params ActorSystemBuilder[] builder)
         {
             _workerNodes.AddRange(builder);
         }
-        
+
         public async Task<ClusterInfo> CreateCluster(Action<ActorSystem> additionalInit = null)
         {
-            if(_autoSeedNodes.Count + _seedNodes.Count == 0)
-                throw new InvalidOperationException("Specify at least one seed node");
+            var actorSystemBuilders = SeedNodes.Concat(WorkerNodes)
+                                               .Concat(AutoSeedNodes)
+                                               .ToArray();
 
-            var actorSystemBuilders = SeedNodes.Concat(WorkerNodes).Concat(AutoSeedNodes).ToArray();
-            foreach(var builder in actorSystemBuilders)
-                builder.Add(new MinMembersInCluster(actorSystemBuilders.Length));
-                    
-                    
-            var seedNodeActorSystems = SeedNodes.Select(b => b.BuildClusterSystemFactory(Name).CreateSystem()).ToArray();
-            var workerNodesActorSystems = WorkerNodes.Select(b => b.BuildClusterSystemFactory(Name).CreateSystem()).ToArray();
-            var autoSeedActorSystems = AutoSeedNodes.Select(b => b.BuildClusterSystemFactory(Name).CreateSystem()).ToArray();
-            var actorSystems = seedNodeActorSystems.Concat(workerNodesActorSystems)
-                                                   .Concat(autoSeedActorSystems).ToArray();
-            if(additionalInit != null)
+            foreach (var cfg in actorSystemBuilders)
             {
-                foreach (var s in actorSystems)
-                    additionalInit(s);
+                cfg.Add(new MinMembersInCluster(actorSystemBuilders.Length));
             }
 
+
+            Func<ActorSystem, ActorSystem> init = additionalInit == null
+                                                      ? (Func<ActorSystem, ActorSystem>) (s => s)
+                                                      : (s =>
+                                                         {
+                                                             additionalInit(s);
+                                                             return s;
+                                                         });
+
+
+            var seedSystems = CreateSystems(SeedNodes, init);
+            var seedSystemAddresses = seedSystems.Select(s => s.GetAddress())
+                                                 .ToArray();
+
+            var autoSeedSystems = CreateSystems(AutoSeedNodes, init);
+            var autoSeedAddresses = autoSeedSystems.Select(s => s.GetAddress()).ToArray();
+
+            var workerSystems = CreateSystems(WorkerNodes, init);
+            var workerSystemAddresses = workerSystems.Select(s => s.GetAddress()).ToArray();
+
+            var leader = seedSystems.FirstOrDefault() ?? throw new CannotDetermineLeaderException();
+
             bool clusterReady = false;
-            var akkaCluster = Akka.Cluster.Cluster.Get(seedNodeActorSystems.FirstOrDefault() ?? autoSeedActorSystems.First());
-              akkaCluster.RegisterOnMemberUp(() =>clusterReady = true);
+          
+            var akkaCluster = Akka.Cluster.Cluster.Get(leader);
+            akkaCluster.RegisterOnMemberUp(() => clusterReady = true);
+
+            foreach (var address in autoSeedAddresses)
+                await akkaCluster.JoinSeedNodesAsync(new[] {address});
+
+            foreach (var address in workerSystemAddresses)
+                await akkaCluster.JoinAsync(address);
+
+            foreach (var cfg in seedSystems.Concat(autoSeedSystems).Concat(workerSystems))
+            {
+                _logger.Information(cfg.Settings.ToString());
+            }
             
-           
-            foreach(var workerAddress in workerNodesActorSystems.Select(s => ((ExtendedActorSystem)s).Provider.DefaultAddress))
-                 await akkaCluster.JoinAsync(workerAddress);
-
-            if(autoSeedActorSystems.Any())
-                await akkaCluster.JoinSeedNodesAsync(autoSeedActorSystems.Select(s => ((ExtendedActorSystem)s).Provider.DefaultAddress));
-
             while (!clusterReady)
                 await Task.Delay(500);
-            
-            return new ClusterInfo(akkaCluster,actorSystems.Select(s => ((ExtendedActorSystem)s).Provider.DefaultAddress).ToArray());
+
+            return new ClusterInfo(akkaCluster,
+                                   seedSystemAddresses.Concat(autoSeedAddresses)
+                                                      .Concat(workerSystemAddresses)
+                                                      .ToArray());
+        }
+
+        private ActorSystem[] CreateSystems(IReadOnlyCollection<ActorSystemBuilder> actorSystemBuilders, Func<ActorSystem, ActorSystem> init)
+        {
+            return actorSystemBuilders.Select(s => s.BuildClusterSystemFactory(Name)
+                                                    .CreateSystem())
+                                      .Select(init)
+                                      .ToArray();
         }
     }
+
+    public class CannotDetermineLeaderException : Exception { }
 
     public class MinMembersInCluster : IHoconConfig
     {
@@ -104,6 +149,7 @@ namespace GridDomain.Node.Cluster {
             Cluster = cluster;
             Members = members;
         }
+
         public Akka.Cluster.Cluster Cluster { get; }
         public IReadOnlyCollection<Address> Members { get; }
     }

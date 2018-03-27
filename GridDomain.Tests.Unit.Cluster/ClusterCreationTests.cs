@@ -12,6 +12,7 @@ using Akka.Streams.Implementation.Fusing;
 using Akka.TestKit.Xunit2;
 using FluentAssertions;
 using GridDomain.Common;
+using GridDomain.Node;
 using GridDomain.Node.Cluster;
 using GridDomain.Node.Configuration;
 using Serilog.Core;
@@ -29,6 +30,7 @@ namespace GridDomain.Tests.Unit.Cluster
     {
         private ClusterInfo _akkaCluster;
         private readonly Logger _logger;
+        private bool _clusterUp;
 
         public sealed class MessageExtractor : IMessageExtractor
         {
@@ -44,7 +46,7 @@ namespace GridDomain.Tests.Unit.Cluster
             public static IReadOnlyCollection<Member> KnownMemberList => _knownMembers;
             public static IReadOnlyCollection<Member> KnownSeedsList => _knownSeedsMembers;
 
-            protected ILoggingAdapter Log = Context.GetLogger();
+            protected ILoggingAdapter Log = Context.GetSeriLogger();
             protected Akka.Cluster.Cluster Cluster = Akka.Cluster.Cluster.Get(Context.System);
             private static readonly List<Member> _knownMembers = new List<Member>();
             private static readonly List<Member> _knownSeedsMembers = new List<Member>();
@@ -99,9 +101,11 @@ namespace GridDomain.Tests.Unit.Cluster
             }
         }
 
+        
         public ClusterConfigurationTests(ITestOutputHelper output)
         {
-            _logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
+            var file = $"./Logs/{GetType().Name}.log";
+            _logger = new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Information,file).CreateLogger();
         }
 
         [Fact]
@@ -118,7 +122,7 @@ namespace GridDomain.Tests.Unit.Cluster
             await CheckClusterStarted(_akkaCluster);
         }
 
-        [Fact(Skip = "Cannot make automatic nodes to register in diagnose actor")]
+        [Fact]
         public async Task Cluster_can_start_with_automatic_seed_nodes()
         {
             _akkaCluster = await ActorSystemBuilder.New()
@@ -141,7 +145,6 @@ namespace GridDomain.Tests.Unit.Cluster
                                                    .Build()
                                                    .CreateCluster(s => s.AttachSerilogLogging(_logger));
 
-
             await CheckClusterStarted(_akkaCluster);
         }
 
@@ -149,9 +152,7 @@ namespace GridDomain.Tests.Unit.Cluster
         {
             var diagnoseActor = akkaCluster.Cluster.System.ActorOf(Props.Create(() => new SimpleClusterListener()));
 
-            //will give cluster time to form
-            await Task.Delay(5000);
-
+            await Task.Delay(1000);//to allow diagnose actor to gather info
             var knownClusterMembers = SimpleClusterListener.KnownMemberList;
             var knownClusterAddresses = knownClusterMembers.Select(m => m.Address)
                                                            .ToArray();
@@ -160,22 +161,17 @@ namespace GridDomain.Tests.Unit.Cluster
             knownClusterAddresses.Should()
                                  .BeEquivalentTo(akkaCluster.Members);
         }
-
-        [Fact(Skip = "Cannot understand why systems have problems with serializer config")]
+        
+        [Fact]//(Skip = "Cannot understand why systems have problems with serializer config")]
         public async Task Cluster_can_host_an_actor_with_shard_region_with_predefined_seeds()
         {
-            var clusterConfig = ActorSystemBuilder.New()
-                                                  .Cluster("test")
-                                                  .Seeds(10020)
-                                                  .Workers(1)
-                                                  .Build();
-
-            _akkaCluster = await clusterConfig.CreateCluster(s => s.AttachSerilogLogging(_logger));
-
-// register actor type as a sharded entity
-            var configs = clusterConfig.CreateConfigs();
-            foreach (var cfg in configs)
-                _logger.Warning(cfg);
+            _akkaCluster = await ActorSystemBuilder.New(_logger)
+                                                   .Log(LogEventLevel.Verbose)
+                                                   .Cluster("test")
+                                                   .Seeds(10020)
+                                                   .Workers(1)
+                                                   .Build()
+                                                   .CreateCluster(s => s.AttachSerilogLogging(_logger));
 
             var actorSystem = _akkaCluster.Cluster.System;
             var region = await ClusterSharding.Get(actorSystem)
@@ -196,18 +192,16 @@ namespace GridDomain.Tests.Unit.Cluster
         [Fact]
         public async Task Cluster_can_host_an_actor_with_shard_region_with_auto_seeds()
         {
-            var clusterConfig = ActorSystemBuilder.New()
-                                                  .Cluster("test")
+            var clusterConfig = ActorSystemBuilder.New(_logger)
+                                                  .Log(LogEventLevel.Information)
+                                                  .Cluster("testABC")
                                                   .AutoSeeds(2)
                                                   .Workers(2)
                                                   .Build();
-
+            
             _akkaCluster = await clusterConfig.CreateCluster(s => s.AttachSerilogLogging(_logger));
 
-            // register actor type as a sharded entity
-            var configs = clusterConfig.CreateConfigs();
-            foreach (var cfg in configs)
-                _logger.Warning(cfg);
+        
 
             var actorSystem = _akkaCluster.Cluster.System;
             var region = await ClusterSharding.Get(actorSystem)
