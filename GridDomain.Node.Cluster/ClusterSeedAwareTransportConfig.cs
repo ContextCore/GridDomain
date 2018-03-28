@@ -34,7 +34,7 @@ namespace GridDomain.Node.Cluster
     }
     
 
-    public class ClusterInternalMessagesSerializerConfig : IHoconConfig
+    public class ClusterShardingInternalMessagesSerializerConfig : IHoconConfig
     {
         public string Build()
         {
@@ -46,7 +46,23 @@ namespace GridDomain.Node.Cluster
                                      ""Akka.Cluster.Tools.Singleton.IClusterSingletonMessage, Akka.Cluster.Tools"" : akka-singleton-my
                                  }
                                  serialization-identifiers : {
-                                     ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools"" : 13
+                                     ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools"" : 1100
+                                 }
+                             }
+                    ";
+        }
+    }
+    
+    public class HyperionForAll : IHoconConfig
+    {
+        public string Build()
+        {
+            return @"actor : {
+                                 serializers : {
+                                     hyperion = ""Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion""
+                                 }
+                                 serialization-bindings : {
+                                     ""System.Object"" = hyperion
                                  }
                              }
                     ";

@@ -24,10 +24,10 @@ namespace GridDomain.Node.Cluster
         private readonly List<ActorSystemBuilder> _seedNodes = new List<ActorSystemBuilder>();
         private readonly List<ActorSystemBuilder> _autoSeedNodes = new List<ActorSystemBuilder>();
         private readonly List<ActorSystemBuilder> _workerNodes = new List<ActorSystemBuilder>();
-        private ILogger _logger;
+        public readonly ILogger Logger;
         public ClusterConfig(string name, ILogger log)
         {
-            _logger = log;
+            Logger = log;
             Name = name;
         }
 
@@ -58,7 +58,7 @@ namespace GridDomain.Node.Cluster
             _workerNodes.AddRange(builder);
         }
 
-        public async Task<ClusterInfo> CreateCluster(Action<ActorSystem> additionalInit = null)
+        public async Task<ClusterInfo> Create(Action<ActorSystem> additionalInit)
         {
             var actorSystemBuilders = SeedNodes.Concat(WorkerNodes)
                                                .Concat(AutoSeedNodes)
@@ -102,9 +102,9 @@ namespace GridDomain.Node.Cluster
             foreach (var address in workerSystemAddresses)
                 await akkaCluster.JoinAsync(address);
 
-            foreach (var cfg in seedSystems.Concat(autoSeedSystems).Concat(workerSystems))
+            foreach (var systemn in seedSystems.Concat(autoSeedSystems).Concat(workerSystems))
             {
-                _logger.Information(cfg.Settings.ToString());
+                Logger.Information(systemn.Settings.ToString());
             }
             
             while (!clusterReady)

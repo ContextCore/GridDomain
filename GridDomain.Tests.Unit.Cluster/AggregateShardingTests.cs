@@ -22,14 +22,15 @@ namespace GridDomain.Tests.Unit.Cluster
 {
     public static class ClusterConfigExtensions
     {
-        public static Task<ClusterInfo> CreateCluster(this ClusterConfig cfg, ILogger log, TimeSpan? timeout = null)
+        public static Task<ClusterInfo> Create(this ClusterConfig cfg, TimeSpan? timeout = null)
         {
             timeout = timeout ?? TimeSpan.FromSeconds(15);
-
-            return cfg.CreateCluster(s =>
+            return cfg.Create(s =>
                                      {
-                                         s.AttachSerilogLogging(log);
-                                         s.InitDistributedTransport();
+                                         if(cfg.Logger!=null)
+                                             s.AttachSerilogLogging(cfg.Logger);
+                                         
+                                        // s.InitDistributedTransport();
                                      }).TimeoutAfter(timeout.Value,"Cluster was not formed in time");
         }
     }
@@ -68,13 +69,12 @@ namespace GridDomain.Tests.Unit.Cluster
         {
             var domainFixture = new BalloonFixture(_testOutputHelper);
 
-            _akkaCluster = await ActorSystemBuilder.New()
-                                                   .DomainSerialization()
-                                                   .Cluster("test")
-                                                   .AutoSeeds(1)
-                                                   .Workers(1)
-                                                   .Build()
-                                                   .CreateCluster(_logger);
+            _akkaCluster = await ClusterConfigExtensions.Create(ActorSystemBuilder.New()
+                                                                                    .DomainSerialization()
+                                                                                    .Cluster("test")
+                                                                                    .AutoSeeds(1)
+                                                                                    .Workers(1)
+                                                                                    .Build());
 
             IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
 
@@ -90,13 +90,12 @@ namespace GridDomain.Tests.Unit.Cluster
         {
             var domainFixture = new BalloonFixture(_testOutputHelper);
 
-            _akkaCluster = await ActorSystemBuilder.New()
-                                                   // .DomainSerialization()
-                                                   .Cluster("test")
-                                                   .AutoSeeds(1)
-                                                   .Workers(1)
-                                                   .Build()
-                                                   .CreateCluster(_logger);
+            _akkaCluster = await ClusterConfigExtensions.Create(ActorSystemBuilder.New()
+                                                                                    // .DomainSerialization()
+                                                                                    .Cluster("test")
+                                                                                    .AutoSeeds(1)
+                                                                                    .Workers(1)
+                                                                                    .Build());
 
             IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
 

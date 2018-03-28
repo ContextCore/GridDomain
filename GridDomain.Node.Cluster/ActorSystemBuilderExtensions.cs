@@ -19,8 +19,9 @@ namespace GridDomain.Node.Cluster {
 
         public static ClusterConfigBuilder Cluster(this ActorSystemBuilder builder, string name)
         {
-            builder.Add(new PubSubConfig());
-            builder.Add(new ClusterInternalMessagesSerializerConfig());
+            //builder.Add(new PubSubConfig());
+           // builder.Add(new ClusterShardingInternalMessagesSerializerConfig());
+            builder.Add(new HyperionForAll());
             builder.Add(new AutoTerminateProcessOnClusterShutdown());
 
             return new ClusterConfigBuilder(name, builder);
@@ -29,7 +30,7 @@ namespace GridDomain.Node.Cluster {
         public static IActorSystemFactory BuildClusterSystemFactory(this ActorSystemBuilder builder, string name)
         {
             Config hocon = new RootConfig(builder.Configs.ToArray()).Build();
-            var factory = new HoconActorSystemFactory(name, hocon);//.WithFallback(ClusterSingletonManager.DefaultConfig()));
+            var factory = new HoconActorSystemFactory(name, hocon.WithFallback(ClusterSingletonManager.DefaultConfig()));
             return factory;
         }
     }

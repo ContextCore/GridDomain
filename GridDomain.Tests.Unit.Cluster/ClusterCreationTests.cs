@@ -101,11 +101,10 @@ namespace GridDomain.Tests.Unit.Cluster
             }
         }
 
-        
         public ClusterConfigurationTests(ITestOutputHelper output)
         {
-            var file = $"./Logs/{GetType().Name}.log";
-            _logger = new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Information,file).CreateLogger();
+            var file = $"./Logs/{GetType() .Name}.log";
+            _logger = new XUnitAutoTestLoggerConfiguration(output, LogEventLevel.Verbose, file).CreateLogger();
         }
 
         [Fact]
@@ -117,7 +116,7 @@ namespace GridDomain.Tests.Unit.Cluster
                                                    .Seeds(10010)
                                                    .Workers(1)
                                                    .Build()
-                                                   .CreateCluster(s => s.AttachSerilogLogging(_logger));
+                                                   .Create(s => s.AttachSerilogLogging(_logger));
 
             await CheckClusterStarted(_akkaCluster);
         }
@@ -125,12 +124,12 @@ namespace GridDomain.Tests.Unit.Cluster
         [Fact]
         public async Task Cluster_can_start_with_automatic_seed_nodes()
         {
-            _akkaCluster = await ActorSystemBuilder.New()
+            _akkaCluster = await ActorSystemBuilder.New(_logger)
                                                    .Cluster("testAutoSeed")
                                                    .AutoSeeds(3)
                                                    .Workers(1)
                                                    .Build()
-                                                   .CreateCluster(s => s.AttachSerilogLogging(_logger));
+                                                   .Create();
 
             await CheckClusterStarted(_akkaCluster);
         }
@@ -138,12 +137,12 @@ namespace GridDomain.Tests.Unit.Cluster
         [Fact]
         public async Task Cluster_can_start_with_static_seed_nodes()
         {
-            _akkaCluster = await ActorSystemBuilder.New()
+            _akkaCluster = await ActorSystemBuilder.New(_logger)
                                                    .Cluster("testSeed")
                                                    .Seeds(10011)
                                                    .Workers(1)
                                                    .Build()
-                                                   .CreateCluster(s => s.AttachSerilogLogging(_logger));
+                                                   .Create();
 
             await CheckClusterStarted(_akkaCluster);
         }
@@ -152,7 +151,7 @@ namespace GridDomain.Tests.Unit.Cluster
         {
             var diagnoseActor = akkaCluster.Cluster.System.ActorOf(Props.Create(() => new SimpleClusterListener()));
 
-            await Task.Delay(1000);//to allow diagnose actor to gather info
+            await Task.Delay(1000); //to allow diagnose actor to gather info
             var knownClusterMembers = SimpleClusterListener.KnownMemberList;
             var knownClusterAddresses = knownClusterMembers.Select(m => m.Address)
                                                            .ToArray();
@@ -161,55 +160,46 @@ namespace GridDomain.Tests.Unit.Cluster
             knownClusterAddresses.Should()
                                  .BeEquivalentTo(akkaCluster.Members);
         }
-        
-        [Fact]//(Skip = "Cannot understand why systems have problems with serializer config")]
+
+        [Fact] //(Skip = "Cannot understand why systems have problems with serializer config")]
         public async Task Cluster_can_host_an_actor_with_shard_region_with_predefined_seeds()
         {
             _akkaCluster = await ActorSystemBuilder.New(_logger)
-                                                   .Log(LogEventLevel.Verbose)
+                                                   .Log(LogEventLevel.Information)
+                                                  // .DomainSerialization()
                                                    .Cluster("test")
                                                    .Seeds(10020)
+                                                   .AutoSeeds(1)
                                                    .Workers(1)
                                                    .Build()
-                                                   .CreateCluster(s => s.AttachSerilogLogging(_logger));
+                                                   .Create();
 
-            var actorSystem = _akkaCluster.Cluster.System;
-            var region = await ClusterSharding.Get(actorSystem)
-                                              .StartAsync(
-                                                          typeName: "my-actor",
-                                                          entityProps: Props.Create<EchoShardedActor>(),
-                                                          settings: ClusterShardingSettings.Create(actorSystem),
-                                                          messageExtractor: new MessageExtractor());
-// send message to entity through shard region
-            var message = "hello";
-            var response = await region.Ask<object>(new ShardEnvelope("1", "1", message, MessageMetadata.Empty),
-                                                    TimeSpan.FromSeconds(5));
-
-            Assert.Equal(message.ToString(), response.ToString());
-            // Dispose();
+            await CheckClusterCanHostAnActor(_akkaCluster);
         }
 
         [Fact]
         public async Task Cluster_can_host_an_actor_with_shard_region_with_auto_seeds()
         {
-            var clusterConfig = ActorSystemBuilder.New(_logger)
-                                                  .Log(LogEventLevel.Information)
-                                                  .Cluster("testABC")
-                                                  .AutoSeeds(2)
-                                                  .Workers(2)
-                                                  .Build();
-            
-            _akkaCluster = await clusterConfig.CreateCluster(s => s.AttachSerilogLogging(_logger));
+            _akkaCluster = await ActorSystemBuilder.New(_logger)
+                                                   .Log(LogEventLevel.Verbose)
+                                                   .Cluster("testABC")
+                                                   .AutoSeeds(2)
+                                                   .Workers(2)
+                                                   .Build()
+                                                   .Create();
 
-        
+            await CheckClusterCanHostAnActor(_akkaCluster);
+        }
 
-            var actorSystem = _akkaCluster.Cluster.System;
+        private async Task CheckClusterCanHostAnActor(ClusterInfo akkaCluster)
+        {
+            var actorSystem = akkaCluster.Cluster.System;
             var region = await ClusterSharding.Get(actorSystem)
                                               .StartAsync(
-                                                          typeName: "my-actor",
-                                                          entityProps: Props.Create<EchoShardedActor>(),
-                                                          settings: ClusterShardingSettings.Create(actorSystem),
-                                                          messageExtractor: new MessageExtractor());
+                                                          "my-actor",
+                                                          Props.Create<EchoShardedActor>(),
+                                                          ClusterShardingSettings.Create(actorSystem),
+                                                          new MessageExtractor());
             // send message to entity through shard region
             var message = "hello";
             var response = await region.Ask<object>(new ShardEnvelope("1", "1", message, MessageMetadata.Empty),
@@ -261,8 +251,8 @@ namespace GridDomain.Tests.Unit.Cluster
 
             var region = await ClusterSharding.Get(system)
                                               .StartAsync(
-                                                          typeName: "my-actor",
-                                                          entityProps: Props.Create<EchoShardedActor>(),
+                                                          "my-actor",
+                                                          Props.Create<EchoShardedActor>(),
                                                           settings: ClusterShardingSettings.Create(system),
                                                           messageExtractor: new MessageExtractor());
 // send message to entity through shard region
