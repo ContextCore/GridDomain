@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster;
@@ -167,7 +168,7 @@ namespace GridDomain.Tests.Unit.Cluster
             _akkaCluster = await ActorSystemBuilder.New(_logger)
                                                    .Log(LogEventLevel.Information)
                                                   // .DomainSerialization()
-                                                   .Cluster("test")
+                                                   .Cluster("testNext")
                                                    .Seeds(10020)
                                                    .AutoSeeds(1)
                                                    .Workers(1)
@@ -208,10 +209,11 @@ namespace GridDomain.Tests.Unit.Cluster
             Assert.Equal(message, response.ToString());
         }
 
-        [Fact(Skip = "Cannot make this example work")]
+        [Fact]
         public async Task Cluster_can_host_an_actor_with_shard_region_simple()
         {
-            Config config = @"
+            Func<int,string> configForPort = (port =>
+            @"
             akka {
               actor {
                 provider = cluster
@@ -226,41 +228,37 @@ namespace GridDomain.Tests.Unit.Cluster
                 dot-netty.tcp {
                   public-hostname = ""localhost""
                   hostname = ""localhost""
-                  port = 0
+                  port = "+port+@"
                 }
               }
               cluster {
-                #auto-down-unreachable-after = 5s
-                sharding {
-                  least-shard-allocation-strategy.rebalance-threshold = 3
+                 seed-nodes : [""akka.tcp://mySystem@localhost:10100""]
                 }
               }
-            }";
+            }");
 
-            var system = ActorSystem.Create("sharded-cluster-system", config.WithFallback(ClusterSingletonManager.DefaultConfig()));
+            Config config = configForPort(10100);
+            var system = ActorSystem.Create("mySystem", config.WithFallback(ClusterSingletonManager.DefaultConfig()));
             var cluster = Akka.Cluster.Cluster.Get(system);
-            cluster.JoinSeedNodes(new[] {cluster.SelfAddress});
+            system.AttachSerilogLogging(_logger);
 
-            for (int i = 0; i < 5; i++)
-            {
-                system = ActorSystem.Create("sharded-cluster-system", config.WithFallback(ClusterSingletonManager.DefaultConfig()));
-                system.AttachSerilogLogging(_logger);
-                cluster.JoinSeedNodes(new[] {((ExtendedActorSystem) system).Provider.DefaultAddress});
-            }
+            config = configForPort(0);
+            system = ActorSystem.Create("mySystem", config.WithFallback(ClusterSingletonManager.DefaultConfig()));
+            system.AttachSerilogLogging(_logger);
 
 
             var region = await ClusterSharding.Get(system)
                                               .StartAsync(
                                                           "my-actor",
                                                           Props.Create<EchoShardedActor>(),
-                                                          settings: ClusterShardingSettings.Create(system),
-                                                          messageExtractor: new MessageExtractor());
+                                                          ClusterShardingSettings.Create(system),
+                                                          new MessageExtractor());
 // send message to entity through shard region
             var message = "hello";
             var response = await region.Ask<object>(new ShardEnvelope("1", "1", message, MessageMetadata.Empty),
                                                     TimeSpan.FromSeconds(5));
 
-            Assert.Equal(message.ToString(), response.ToString());
+            Assert.Equal(message, response.ToString());
         }
 
         public void Dispose()
