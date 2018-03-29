@@ -64,10 +64,10 @@ namespace GridDomain.Node.Cluster
                                                .Concat(AutoSeedNodes)
                                                .ToArray();
 
-            foreach (var cfg in actorSystemBuilders)
-            {
-                cfg.Add(new MinMembersInCluster(actorSystemBuilders.Length));
-            }
+            //foreach (var cfg in actorSystemBuilders)
+            //{
+            //    cfg.Add(new MinMembersInCluster(actorSystemBuilders.Length));
+            //}
 
 
             Func<ActorSystem, ActorSystem> init = additionalInit == null

@@ -34,19 +34,38 @@ namespace GridDomain.Node.Cluster
     }
     
 
-    public class ClusterShardingInternalMessagesSerializerConfig : IHoconConfig
+    public class ClusterSingletonInternalMessagesSerializerConfig : IHoconConfig
     {
         public string Build()
         {
             return @"actor : {
                                  serializers : {
-                                     akka-singleton-my : ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools""
+                                     akka-singleton : ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools""
                                  }
                                  serialization-bindings : {
-                                     ""Akka.Cluster.Tools.Singleton.IClusterSingletonMessage, Akka.Cluster.Tools"" : akka-singleton-my
+                                     ""Akka.Cluster.Tools.Singleton.IClusterSingletonMessage, Akka.Cluster.Tools"" : akka-singleton
                                  }
                                  serialization-identifiers : {
-                                     ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools"" : 1100
+                                     ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools"" : 13
+                                 }
+                             }
+                    ";
+        }
+    } 
+    
+    public class ClusterShardingMessagesSerializerConfig : IHoconConfig
+    {
+        public string Build()
+        {
+            return @"actor : {
+                                 serializers : {
+                                      akka-sharding = ""Akka.Cluster.Sharding.Serialization.ClusterShardingMessageSerializer, Akka.Cluster.Sharding""
+                                 }
+                                 serialization-bindings : {
+                                     ""Akka.Cluster.Sharding.IClusterShardingSerializable, Akka.Cluster.Sharding"" = akka-sharding
+                                 }
+                                 serialization-identifiers : {
+                                     ""Akka.Cluster.Sharding.Serialization.ClusterShardingMessageSerializer, Akka.Cluster.Sharding"" = 13
                                  }
                              }
                     ";

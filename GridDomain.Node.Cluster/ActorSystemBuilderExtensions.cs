@@ -20,7 +20,8 @@ namespace GridDomain.Node.Cluster {
         public static ClusterConfigBuilder Cluster(this ActorSystemBuilder builder, string name)
         {
             //builder.Add(new PubSubConfig());
-           // builder.Add(new ClusterShardingInternalMessagesSerializerConfig());
+           // builder.Add(new ClusterSingletonInternalMessagesSerializerConfig());
+            builder.Add(new ClusterShardingMessagesSerializerConfig());
             builder.Add(new HyperionForAll());
             builder.Add(new AutoTerminateProcessOnClusterShutdown());
 

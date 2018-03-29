@@ -166,12 +166,12 @@ namespace GridDomain.Tests.Unit.Cluster
         public async Task Cluster_can_host_an_actor_with_shard_region_with_predefined_seeds()
         {
             _akkaCluster = await ActorSystemBuilder.New(_logger)
-                                                   .Log(LogEventLevel.Information)
+                                                   .Log(LogEventLevel.Verbose)
                                                   // .DomainSerialization()
-                                                   .Cluster("testNext")
+                                                   .Cluster("testNexta")
                                                    .Seeds(10020)
                                                    .AutoSeeds(1)
-                                                   .Workers(1)
+                                                   .Workers(2)
                                                    .Build()
                                                    .Create();
 
@@ -202,61 +202,11 @@ namespace GridDomain.Tests.Unit.Cluster
                                                           ClusterShardingSettings.Create(actorSystem),
                                                           new MessageExtractor());
             // send message to entity through shard region
+           // await Task.Delay(5000);
+            
             var message = "hello";
             var response = await region.Ask<object>(new ShardEnvelope("1", "1", message, MessageMetadata.Empty),
-                                                    TimeSpan.FromSeconds(5));
-
-            Assert.Equal(message, response.ToString());
-        }
-
-        [Fact]
-        public async Task Cluster_can_host_an_actor_with_shard_region_simple()
-        {
-            Func<int,string> configForPort = (port =>
-            @"
-            akka {
-              actor {
-                provider = cluster
-                serializers {
-                  hyperion = ""Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion""
-                }
-                serialization-bindings {
-                  ""System.Object"" = hyperion
-                }
-              }
-              remote {
-                dot-netty.tcp {
-                  public-hostname = ""localhost""
-                  hostname = ""localhost""
-                  port = "+port+@"
-                }
-              }
-              cluster {
-                 seed-nodes : [""akka.tcp://mySystem@localhost:10100""]
-                }
-              }
-            }");
-
-            Config config = configForPort(10100);
-            var system = ActorSystem.Create("mySystem", config.WithFallback(ClusterSingletonManager.DefaultConfig()));
-            var cluster = Akka.Cluster.Cluster.Get(system);
-            system.AttachSerilogLogging(_logger);
-
-            config = configForPort(0);
-            system = ActorSystem.Create("mySystem", config.WithFallback(ClusterSingletonManager.DefaultConfig()));
-            system.AttachSerilogLogging(_logger);
-
-
-            var region = await ClusterSharding.Get(system)
-                                              .StartAsync(
-                                                          "my-actor",
-                                                          Props.Create<EchoShardedActor>(),
-                                                          ClusterShardingSettings.Create(system),
-                                                          new MessageExtractor());
-// send message to entity through shard region
-            var message = "hello";
-            var response = await region.Ask<object>(new ShardEnvelope("1", "1", message, MessageMetadata.Empty),
-                                                    TimeSpan.FromSeconds(5));
+                                                    TimeSpan.FromSeconds(50));
 
             Assert.Equal(message, response.ToString());
         }
