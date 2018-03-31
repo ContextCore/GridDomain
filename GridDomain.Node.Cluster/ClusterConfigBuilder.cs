@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
@@ -20,6 +21,7 @@ namespace GridDomain.Node.Cluster
             _clusterName = clusterName;
             _actorSystemBuilder = systemBuilder;
         }
+
 
         public ClusterConfigBuilder Seeds(params INodeNetworkAddress[] addresses)
         {
