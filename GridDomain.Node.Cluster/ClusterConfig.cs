@@ -135,19 +135,13 @@ namespace GridDomain.Node.Cluster
                 Logger.Information(systemn.Settings.ToString());
             }
 
-
-            await WaitForClusterStart(clusterReady);
+            while (!clusterReady)
+                await Task.Delay(500);
 
             return new ClusterInfo(akkaCluster,
                                    seedSystemAddresses.Concat(autoSeedAddresses)
                                                       .Concat(workerSystemAddresses)
                                                       .ToArray());
-        }
-
-        private static async Task WaitForClusterStart(bool clusterReady)
-        {
-            while (!clusterReady)
-                await Task.Delay(500);
         }
 
         private async Task<ActorSystem[]> CreateSystems(IReadOnlyCollection<ActorSystemBuilder> actorSystemBuilders, Func<ActorSystem, Task<ActorSystem>> init)
@@ -192,10 +186,9 @@ namespace GridDomain.Node.Cluster
 
         public void Dispose()
         {
-            var a = CoordinatedShutdown.Get(Cluster.System)
-                                       .Run()
-                                       .TimeoutAfter(TimeSpan.FromSeconds(20))
-                                       .Result;
+            CoordinatedShutdown.Get(Cluster.System)
+                               .Run()
+                               .Wait(TimeSpan.FromSeconds(10));
         }
     }
 }
