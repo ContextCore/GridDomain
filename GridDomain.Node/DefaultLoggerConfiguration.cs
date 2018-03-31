@@ -27,7 +27,7 @@ namespace GridDomain.Node
             Enrich.FromLogContext();
             if (fileName != null)
             {
-                WriteTo.File(fileName, level, DefaultTemplate,null,null,null,false,false,TimeSpan.FromMilliseconds(10));
+                WriteTo.File($"./Logs/{fileName}.log", level, DefaultTemplate);
             }
             else 
                 WriteTo.RollingFile("./Logs/log_{HalfHour}.txt", level,DefaultTemplate);

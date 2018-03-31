@@ -132,7 +132,6 @@ namespace GridDomain.Node.Actors.Aggregates
         private void ProcessingCommandBehavior()
         {
             var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
-            ActorMonitor.ITimer validatingTimer = null;
             Command<IReadOnlyCollection<DomainEvent>>(domainEvents =>
                                                       {
 

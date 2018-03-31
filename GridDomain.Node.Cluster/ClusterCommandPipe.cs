@@ -25,7 +25,7 @@ namespace GridDomain.Node.Cluster
     {
         public static IGridDomainNode BuildCluster(this GridNodeBuilder builder)
         {
-             return new GridClusterNode(builder.Configurations,builder.ActorCommandPipeFactory,builder.Logger,builder.DefaultTimeout);
+             return new GridClusterNode(builder.Configurations,builder.ActorSystemFactory,builder.Logger,builder.DefaultTimeout);
         }
     }
     

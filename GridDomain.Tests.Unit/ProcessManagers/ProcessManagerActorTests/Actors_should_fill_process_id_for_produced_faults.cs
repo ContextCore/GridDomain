@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using GridDomain.Common;
@@ -35,12 +36,12 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         [Theory]
         [InlineData("test")] //, Description = "unplanned exception from message processor")]
         [InlineData("10")] //, Description = "planned exception from message processor")]
-        public void Message_process_actor_produce_fault_with_processId_from_incoming_message(string payload)
+        public async Task Message_process_actor_produce_fault_with_processId_from_incoming_message(string payload)
         {
             var message = new BalloonTitleChanged(payload, Guid.NewGuid().ToString(), DateTime.Now, Guid.NewGuid().ToString());
 
             var transport = new LocalAkkaEventBusTransport(Sys);
-            transport.Subscribe<IMessageMetadataEnvelop>(TestActor);
+            await transport.Subscribe<IMessageMetadataEnvelop>(TestActor);
 
             var actor =
                 Sys.ActorOf(Props.Create(
@@ -58,12 +59,12 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
         }
 
         [Fact]
-        public void Aggregate_actor_produce_fault_with_processId_from_command()
+        public async Task Aggregate_actor_produce_fault_with_processId_from_command()
         {
             var command = new GoSleepCommand(null, null).CloneForProcess(Guid.NewGuid().ToString());
 
             var transport = Sys.InitLocalTransportExtension().Transport;
-            transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
+            await transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
             var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new HandlersDefaultProcessor(), TestActor)));
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<ProgrammerAggregate>(CommandAggregateHandler.New<ProgrammerAggregate>(null),

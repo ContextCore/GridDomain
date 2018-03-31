@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Node;
@@ -22,7 +23,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 
 
         [Fact]
-        public void Should_retry_on_exception()
+        public async Task Should_retry_on_exception()
         {
             var scheduler = Node.System.GetExtension<SchedulingExtension>()
                                 .SchedulingActor;
@@ -33,7 +34,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
 
             var scheduleCommandExecution = new ScheduleCommandExecution(command, new ScheduleKey("test", "test"), executionOptions);
             scheduler.Tell(scheduleCommandExecution);
-            Node.Transport.Subscribe<MessageMetadataEnvelop>(TestActor);
+            await Node.Transport.Subscribe<MessageMetadataEnvelop>(TestActor);
 
             //job will be retried one time, but aggregate will fail permanently due to error on apply method
             FishForMessage<MessageMetadataEnvelop>(m => m.Message is JobFailed, TimeSpan.FromSeconds(10));

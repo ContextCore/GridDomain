@@ -7,7 +7,7 @@ namespace GridDomain.Node
 {
     public class GridNodeBuilder
     {
-        public IActorSystemFactory ActorCommandPipeFactory;
+        public IActorSystemFactory ActorSystemFactory;
         public ILogger Logger;
         public IDomainConfiguration[] Configurations;
         public TimeSpan DefaultTimeout;
@@ -17,18 +17,18 @@ namespace GridDomain.Node
             Logger = new DefaultLoggerConfiguration().CreateLogger()
                                                      .ForContext<GridDomainNode>();
             DefaultTimeout = TimeSpan.FromSeconds(10);
-            ActorCommandPipeFactory = new HoconActorSystemFactory("system", "");
+            ActorSystemFactory = new HoconActorSystemFactory("system", "");
             Configurations = new IDomainConfiguration[] { };
         }
 
         public IGridDomainNode Build()
         {
-            return new GridDomainLocalNode(Configurations, ActorCommandPipeFactory, Logger, DefaultTimeout);
+            return new GridDomainLocalNode(Configurations, ActorSystemFactory, Logger, DefaultTimeout);
         }
 
         public GridNodeBuilder PipeFactory(IActorSystemFactory factory)
         {
-            ActorCommandPipeFactory = factory;
+            ActorSystemFactory = factory;
             return this;
         }
 

@@ -2,7 +2,6 @@
 using GridDomain.Node.Cluster;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,15 +9,6 @@ namespace GridDomain.Tests.Unit.Cluster
 {
     public class ShardIdGenerationTests
     {
-        private ClusterInfo _akkaCluster;
-        private readonly Logger _logger;
-        private readonly ITestOutputHelper _testOutputHelper;
-
-        public ShardIdGenerationTests(ITestOutputHelper output)
-        {
-            _testOutputHelper = output;
-        }
-
         [Fact]
         public void TestRandom_from_seed()
         {

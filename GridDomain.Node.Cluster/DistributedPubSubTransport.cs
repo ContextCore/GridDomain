@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Tools.PublishSubscribe;
 using Akka.Event;
@@ -41,17 +42,17 @@ namespace GridDomain.Node.Cluster
             _transport = distributedPubSub.Mediator;
         }
 
-        public void Subscribe<TMessage>(IActorRef actor)
+        public Task Subscribe<TMessage>(IActorRef actor)
         {
-            Subscribe(typeof(TMessage), actor, actor);
+            return Subscribe(typeof(TMessage), actor, actor);
         }
 
-        public void Unsubscribe(IActorRef actor, Type topic)
+        public Task Unsubscribe(IActorRef actor, Type topic)
         {
-            _transport.Ask<UnsubscribeAck>(new Unsubscribe(topic.FullName, actor), _timeout);
+           return _transport.Ask<UnsubscribeAck>(new Unsubscribe(topic.FullName, actor), _timeout);
         }
 
-        public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
+        public Task Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
             var topic = _topicExtractor.GetTopic(messageType);
             
@@ -62,21 +63,18 @@ namespace GridDomain.Node.Cluster
             }
             subcribers.Add(actor);
 
-            //TODO: replace wait with actor call
-           var subscribe = _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout).Result;
-            subscribeNotificationWaiter?.Tell(subscribe);
-           _log.Debug("Subscribing handler actor {Path} to topic {Topic}", actor.Path, topic);
+            return _transport.Ask<SubscribeAck>(new Subscribe(topic, actor), _timeout);
         }
 
         public void Publish(object msg)
         {
-            Publish(msg,MessageMetadata.Empty);
+            var topic = _topicExtractor.GetTopic(msg);
+            _transport.Tell(new Publish(topic, msg));
         }
 
         public void Publish(object msg, IMessageMetadata metadata)
         {
-            var topic = _topicExtractor.GetTopic(msg);
-            _transport.Tell(new Publish(topic, new MessageMetadataEnvelop(msg, metadata)));
+            Publish(new MessageMetadataEnvelop(msg,metadata));
         }
     }
 }

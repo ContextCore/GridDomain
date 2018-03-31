@@ -53,14 +53,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             using (var inbox = Inbox.Create(_system))
             {
                 foreach (var type in ConditionBuilder.MessageFilters.Keys)
-                    _subscriber.Subscribe(type, inbox.Receiver);
+                    await _subscriber.Subscribe(type, inbox.Receiver);
 
                 var finalTimeout = timeout ?? _defaultTimeout;
 
                 await WaitForMessages(inbox, finalTimeout).TimeoutAfter(finalTimeout);
 
                 foreach (var type in ConditionBuilder.MessageFilters.Keys)
-                    _subscriber.Unsubscribe(inbox.Receiver, type);
+                    await _subscriber.Unsubscribe(inbox.Receiver, type);
 
                 return new WaitResult(_allExpectedMessages);
             }

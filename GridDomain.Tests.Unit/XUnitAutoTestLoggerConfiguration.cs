@@ -18,6 +18,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
 {
+
     public class XUnitAutoTestLoggerConfiguration : DefaultLoggerConfiguration
     {
         public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose, string logFileName = null):base(level, logFileName)

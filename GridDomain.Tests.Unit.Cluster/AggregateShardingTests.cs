@@ -20,7 +20,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Cluster
 {
-    public class AggregateShardingTests 
+    public class AggregateShardingTests
     {
         private readonly Logger _logger;
         private readonly ITestOutputHelper _testOutputHelper;
@@ -30,7 +30,8 @@ namespace GridDomain.Tests.Unit.Cluster
             _testOutputHelper = output;
             _logger = new XUnitAutoTestLoggerConfiguration(output,
                                                            LogEventLevel.Information,
-                                                           GetType().Name).CreateLogger();
+                                                           GetType()
+                                                               .Name).CreateLogger();
         }
 
         [Fact]
@@ -40,10 +41,12 @@ namespace GridDomain.Tests.Unit.Cluster
             List<IGridDomainNode> nodes = new List<IGridDomainNode>();
             using (var cluster = await CreateClusterNodes(domainFixture, nodes))
             {
-                var res = await nodes.First()
-                                     .Prepare(new InflateNewBallonCommand(123, "myBalloon"))
-                                     .Expect<BalloonCreated>()
-                                     .Execute();
+                var node = nodes.First();
+
+                var res = await node
+                                .Prepare(new InflateNewBallonCommand(123, "myBalloon"))
+                                .Expect<BalloonCreated>()
+                                .Execute();
 
                 Assert.Equal("myBalloon", res.Received.SourceId);
             }
@@ -57,8 +60,8 @@ namespace GridDomain.Tests.Unit.Cluster
             using (var cluster = await CreateClusterNodes(domainFixture, nodes))
             {
                 var gridDomainNode = nodes.First();
-                
-                await gridDomainNode.Execute(new InflateNewBallonCommand(123, "myBalloon"),CommandConfirmationMode.Executed);
+
+                await gridDomainNode.Execute(new InflateNewBallonCommand(123, "myBalloon"), CommandConfirmationMode.Executed);
             }
         }
 
@@ -80,4 +83,3 @@ namespace GridDomain.Tests.Unit.Cluster
         }
     }
 }
-
