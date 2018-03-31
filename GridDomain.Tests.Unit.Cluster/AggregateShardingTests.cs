@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
@@ -18,67 +20,64 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Cluster
 {
-    public class AggregateShardingTests : IDisposable
+    public class AggregateShardingTests 
     {
-        private ClusterInfo _akkaCluster;
         private readonly Logger _logger;
         private readonly ITestOutputHelper _testOutputHelper;
 
         public AggregateShardingTests(ITestOutputHelper output)
         {
+            _testOutputHelper = output;
             _logger = new XUnitAutoTestLoggerConfiguration(output,
                                                            LogEventLevel.Information,
-                                                           GetType()
-                                                               .Name).CreateLogger();
+                                                           GetType().Name).CreateLogger();
         }
 
         [Fact]
         public async Task Cluster_Node_can_execute_commands_and_wait_for_events()
         {
             var domainFixture = new BalloonFixture(_testOutputHelper);
+            List<IGridDomainNode> nodes = new List<IGridDomainNode>();
+            using (var cluster = await CreateClusterNodes(domainFixture, nodes))
+            {
+                var res = await nodes.First()
+                                     .Prepare(new InflateNewBallonCommand(123, "myBalloon"))
+                                     .Expect<BalloonCreated>()
+                                     .Execute();
 
-            _akkaCluster = await ActorSystemBuilder.New()
-                                                   .DomainSerialization()
-                                                   .Cluster("test")
-                                                   .AutoSeeds(1)
-                                                   .Workers(1)
-                                                   .Build()
-                                                   .CreateInTime();
-
-            IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
-
-            var res = await node.Prepare(new InflateNewBallonCommand(123, "myBalloon"))
-                                .Expect<BalloonCreated>()
-                                .Execute();
-
-            Assert.Equal("myBalloon", res.Received.SourceId);
+                Assert.Equal("myBalloon", res.Received.SourceId);
+            }
         }
 
         [Fact]
         public async Task Cluster_Node_can_execute_commands()
         {
             var domainFixture = new BalloonFixture(_testOutputHelper);
-
-            _akkaCluster = await ActorSystemBuilder.New()
-                                                   // .DomainSerialization()
-                                                   .Cluster("test")
-                                                   .AutoSeeds(1)
-                                                   .Workers(1)
-                                                   .Build()
-                                                   .CreateInTime();
-
-            IGridDomainNode node = await domainFixture.CreateClusterNode(() => _akkaCluster.Cluster, _logger);
-
-            await node.Execute(new InflateNewBallonCommand(123, "myBalloon"));
+            List<IGridDomainNode> nodes = new List<IGridDomainNode>();
+            using (var cluster = await CreateClusterNodes(domainFixture, nodes))
+            {
+                var gridDomainNode = nodes.First();
+                
+                await gridDomainNode.Execute(new InflateNewBallonCommand(123, "myBalloon"),CommandConfirmationMode.Executed);
+            }
         }
 
-        public void Dispose()
+        private async Task<ClusterInfo> CreateClusterNodes(BalloonFixture domainFixture, List<IGridDomainNode> nodes)
         {
-            if (_akkaCluster == null) return;
-            CoordinatedShutdown.Get(_akkaCluster?.Cluster.System)
-                               ?.Run()
-                               .Wait(TimeSpan.FromSeconds(2));
-            _akkaCluster = null;
+            return await ActorSystemBuilder.New(_logger)
+                                           .Log(LogEventLevel.Information)
+                                           .DomainSerialization()
+                                           .Cluster("test")
+                                           .AutoSeeds(1)
+                                           .Workers(2)
+                                           .Build()
+                                           .OnClusterUp(async s =>
+                                                        {
+                                                            var node = await domainFixture.CreateClusterNode(() => s, _logger);
+                                                            nodes.Add(node);
+                                                        })
+                                           .CreateInTime();
         }
     }
 }
+

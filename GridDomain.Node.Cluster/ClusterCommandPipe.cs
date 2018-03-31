@@ -15,6 +15,7 @@ using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.ProcessManagers.DomainBind;
+using GridDomain.Transport;
 using Serilog;
 
 namespace GridDomain.Node.Cluster
@@ -47,6 +48,12 @@ namespace GridDomain.Node.Cluster
         {
             await base.ConfigurePipe(domainBuilder);
             _clusterCommandExecutor.Init(Pipe.CommandExecutor);
+        }
+
+        protected override IActorTransport CreateTransport()
+        {
+           var ext =  System.InitDistributedTransport();
+           return ext.Transport;
         }
     }
 

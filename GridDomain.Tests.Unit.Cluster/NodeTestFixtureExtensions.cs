@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Cluster;
 using GridDomain.Node.Configuration;
@@ -8,10 +9,9 @@ using Serilog;
 namespace GridDomain.Tests.Unit.Cluster {
     public static class NodeTestFixtureExtensions
     {
-        public static async Task<IGridDomainNode> CreateClusterNode(this NodeTestFixture fxt, Func<Akka.Cluster.Cluster> clusterProducer, ILogger log)
+        public static async Task<IGridDomainNode> CreateClusterNode(this NodeTestFixture fxt, Func<ActorSystem> systemFactory, ILogger log)
         {
-            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(() => clusterProducer()
-                                                                                            .System))
+            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(() => systemFactory()))
                                             .DomainConfigurations(fxt.DomainConfigurations.ToArray())
                                             .Log(log)
                                             .Timeout(fxt.DefaultTimeout)

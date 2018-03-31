@@ -26,6 +26,7 @@ namespace GridDomain.Node {
     public class GridDomainLocalNode : GridDomainNode
     {
         public GridDomainLocalNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan defaultTimeout) : base(domainConfigurations, actorSystemFactory, log, defaultTimeout) { }
+        
         protected override ICommandExecutor CreateCommandExecutor()
         {
             var executor = new AkkaCommandExecutor(System,Transport,DefaultTimeout);
@@ -36,6 +37,11 @@ namespace GridDomain.Node {
         protected override IActorCommandPipe CreateCommandPipe()
         {
             return new LocalCommandPipe(System);
+        }
+
+        protected override IActorTransport CreateTransport()
+        {
+            return System.InitLocalTransportExtension().Transport;
         }
     }
 
@@ -77,6 +83,7 @@ namespace GridDomain.Node {
 
         protected abstract ICommandExecutor CreateCommandExecutor();
         protected abstract IActorCommandPipe CreateCommandPipe();
+        protected abstract IActorTransport CreateTransport();
         
         public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
@@ -172,6 +179,7 @@ namespace GridDomain.Node {
             await domainBuilder.Configure(Pipe);
             await Pipe.BuildRoutes();
         }
+        
 
         private async Task CreateControllerActor()
         {
@@ -205,10 +213,12 @@ namespace GridDomain.Node {
             Pipe = CreateCommandPipe();
 
             System.RegisterOnTermination(OnSystemTermination);
-            Transport = System.GetTransport();
+            Transport = CreateTransport();
 
             _waiterFactory = new LocalMessageWaiterFactory(System, Transport, DefaultTimeout);
         }
+
+     
 
         protected virtual DomainBuilder CreateDomainBuilder()
         {
