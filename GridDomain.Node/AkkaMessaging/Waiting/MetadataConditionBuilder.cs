@@ -36,8 +36,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public static bool IsEnvelopedOfTypeWithCorrelation<TMsg>(this object message, string correlation)
         {
-            var msg = message as IMessageMetadataEnvelop;
-            return msg?.Message is TMsg && msg?.Metadata?.CorrelationId == correlation;
+            if (message is IMessageMetadataEnvelop envelop)
+                return envelop.Message is TMsg && envelop.Metadata.CorrelationId == correlation;
+            return false;
         }
     }
     
@@ -59,8 +60,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         
         protected override bool DefaultFilter<TMsg>(object message)
         {
-            //var msg = message as IMessageMetadataEnvelop;
-            //return msg?.Message is TMsg && msg?.Metadata?.CorrelationId == _correlationId;
             return message.IsEnvelopedOfTypeWithCorrelation<TMsg>(_correlationId);
         }
     }

@@ -22,10 +22,16 @@ namespace GridDomain.Node.Cluster {
 
         protected override IMessageMetadataEnvelop EnvelopeCommand<T>(T command, IMessageMetadata metadata)
         {
-            return new ShardedCommandMetadataEnvelop(command, metadata ?? CreateEmptyCommandMetadata(command));
+            if(metadata == null)
+                throw new ArgumentNullException(nameof(metadata));
+
+            return new ShardedCommandMetadataEnvelop(command, metadata );
         }
-        public override ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null)  
+        
+        public override ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null)
         {
+            metadata = metadata ?? CreateEmptyCommandMetadata(cmd);
+            
             return new CommandWaiter<T>(
                                         _system,
                                         _transport,
@@ -33,7 +39,7 @@ namespace GridDomain.Node.Cluster {
                                         new CommandConditionBuilder<T>(cmd, 
                                                                        metadata,
                                                                        this,
-                                                                       new ClusterCorrelationConditionBuilder<Task<IWaitResult>>(metadata?.CorrelationId))
+                                                                       new ClusterCorrelationConditionBuilder<Task<IWaitResult>>(metadata.CorrelationId))
                                         );
         }
     }

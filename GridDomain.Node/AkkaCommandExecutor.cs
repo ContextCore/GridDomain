@@ -67,7 +67,10 @@ namespace GridDomain.Node
 
         protected virtual IMessageMetadataEnvelop EnvelopeCommand<T>(T command, IMessageMetadata metadata) where T : ICommand
         {
-            return new MessageMetadataEnvelop(command, metadata ?? CreateEmptyCommandMetadata(command));
+            if(metadata == null)
+                throw new ArgumentNullException(nameof(metadata));
+            
+            return new MessageMetadataEnvelop(command, metadata);
         }
 
         private static bool CheckMessage(CommandConfirmationMode confirmationMode, object msg)

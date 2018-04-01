@@ -239,8 +239,9 @@ namespace GridDomain.Node.Actors.Aggregates
         private void Project(object evt, IMessageMetadata commandMetadata)
         {
             ExecutionContext.MessagesToProject++;
-            _customHandlersActor.Tell(new MessageMetadataEnvelop(evt, commandMetadata));
-            _publisher.Publish(evt,commandMetadata);
+            var messageMetadataEnvelop = new MessageMetadataEnvelop(evt, commandMetadata);
+            _customHandlersActor.Tell(messageMetadataEnvelop);
+            _publisher.Publish(messageMetadataEnvelop);
         }
     }
     

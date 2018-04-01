@@ -19,8 +19,7 @@ namespace GridDomain.Node.Cluster {
         {
             switch (message) {
                 case IMessageMetadataEnvelop env:
-                    return env.Message.GetType()
-                              .FullName;
+                    return GetTopic(env.Message);
                 case Type t:
                     return t.FullName;
             }

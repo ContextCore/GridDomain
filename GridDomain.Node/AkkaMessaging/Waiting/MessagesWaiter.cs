@@ -35,7 +35,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return Expect(filter);
         }
 
-        public IConditionBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg:class
+        public IConditionBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return ConditionBuilder.And(filter);
         }
@@ -57,7 +57,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
                 var finalTimeout = timeout ?? _defaultTimeout;
 
-                await WaitForMessages(inbox, finalTimeout).TimeoutAfter(finalTimeout);
+                await WaitForMessages(inbox, finalTimeout)
+                    .TimeoutAfter(finalTimeout);
 
                 foreach (var type in ConditionBuilder.MessageFilters.Keys)
                     await _subscriber.Unsubscribe(inbox.Receiver, type);
@@ -70,7 +71,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             do
             {
-                var message = await inbox.ReceiveAsync(timeoutPerMessage).ConfigureAwait(false);
+                var message = await inbox.ReceiveAsync(timeoutPerMessage)
+                                         .ConfigureAwait(false);
                 CheckExecutionError(message);
                 if (IsExpected(message))
                     _allExpectedMessages.Add(message);
@@ -101,20 +103,19 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     public class MessagesWaiter : MessagesWaiter<Task<IWaitResult>>
     {
         public MessagesWaiter(ActorSystem system,
-                                   IActorSubscriber subscriber,
-                                   TimeSpan defaultTimeout) : this(system,
-                                                                   subscriber,
-                                                                   defaultTimeout,
-                                                                   new LocalMetadataConditionBuilder<Task<IWaitResult>>())
-        { }
+                              IActorSubscriber subscriber,
+                              TimeSpan defaultTimeout) : this(system,
+                                                              subscriber,
+                                                              defaultTimeout,
+                                                              new LocalMetadataConditionBuilder<Task<IWaitResult>>()) { }
 
         private MessagesWaiter(ActorSystem system,
-                                    IActorSubscriber subscriber,
-                                    TimeSpan defaultTimeout,
-                                    ConditionBuilder<Task<IWaitResult>> conditionBuilder) : base(system,
-                                                                                                 subscriber,
-                                                                                                 defaultTimeout,
-                                                                                                 conditionBuilder)
+                               IActorSubscriber subscriber,
+                               TimeSpan defaultTimeout,
+                               ConditionBuilder<Task<IWaitResult>> conditionBuilder) : base(system,
+                                                                                            subscriber,
+                                                                                            defaultTimeout,
+                                                                                            conditionBuilder)
         {
             conditionBuilder.CreateResultFunc = Start;
         }
