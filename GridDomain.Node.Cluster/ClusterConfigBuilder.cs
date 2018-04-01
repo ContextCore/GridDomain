@@ -38,7 +38,7 @@ namespace GridDomain.Node.Cluster
         public ClusterConfig Build()
         {
             var clusterConfig = new ClusterConfig(_clusterName, _actorSystemBuilder.Logger);
-            if (_seedNodeNetworkAddresses.All(a => a.PortNumber == 0))
+            if (_seedNodeNetworkAddresses.Any() && _seedNodeNetworkAddresses.All(a => a.PortNumber == 0))
             {
                 _seedNodeNetworkAddresses.Add(((NodeNetworkAddress) _seedNodeNetworkAddresses.First()).Copy(10000));
                 _seedNodeNetworkAddresses.RemoveAt(0);

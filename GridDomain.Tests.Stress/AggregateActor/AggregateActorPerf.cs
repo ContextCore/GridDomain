@@ -40,11 +40,16 @@ namespace GridDomain.Tests.Stress.AggregateActor {
 
         protected AggregateActorPerf(ITestOutputHelper output,string actorSystemConfig)
         {
-            _testOutputHelper = output;
             _actorSystemConfig = actorSystemConfig;
+            _testOutputHelper = output;
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
             
+        }
+
+        protected virtual ActorSystem CreateActorSystem()
+        {
+             return ActorSystem.Create("PerfTest",_actorSystemConfig);
         }
 
         class CustomHandlersActorDummy : ReceiveActor
@@ -70,9 +75,9 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             var aggregateId = Guid.NewGuid().ToString();
             
             _commands = CreateAggregatePlan(100, aggregateId).ToArray();
-            
-             
-            _actorSystem = ActorSystem.Create("perfSys",_actorSystemConfig);
+
+
+            _actorSystem = CreateActorSystem();
             
             var statsDmonitor = new ActorStatsDMonitor("localhost",32768,GetType().Name);
             
@@ -98,21 +103,23 @@ namespace GridDomain.Tests.Stress.AggregateActor {
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions directly by aggregate actor",
-            NumberOfIterations = 3,
+            NumberOfIterations = 100,
             RunMode = RunMode.Iterations,
             TestMode = TestMode.Test)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 10)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         public void MeasureCommandExecution_until_projection()
         {
-            Task.WhenAll(_commands.Select(c => _aggregateActor.Ask<Node.Actors.Aggregates.AggregateActor.CommandProjected>(new MessageMetadataEnvelop<ICommand>(c, MessageMetadata.Empty))
-                                                              .ContinueWith(t => _counter.Increment())))
-                .Wait();
+            foreach (var command in _commands)
+            {
+                _aggregateActor.Ask<Node.Actors.Aggregates.AggregateActor.CommandProjected>(new MessageMetadataEnvelop<ICommand>(command, MessageMetadata.Empty))
+                               .ContinueWith(c =>   _counter.Increment()).Wait();
+            }
         }
         
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions directly by aggregate actor, without projection",
-            NumberOfIterations = 3,
+            NumberOfIterations = 10,
             RunMode = RunMode.Iterations,
             TestMode = TestMode.Test)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 10)]
