@@ -39,7 +39,7 @@ namespace GridDomain.Node
         
         public async Task Execute<T>(T command, IMessageMetadata metadata = null, CommandConfirmationMode confirmationMode = CommandConfirmationMode.Projected) where T : ICommand
         {
-            var envelopedCommand = EnvelopeCommand(command, metadata);
+            var envelopedCommand = EnvelopeCommand(command, metadata ?? MessageMetadata.New(command.Id));
 
             switch (confirmationMode) {
                 case CommandConfirmationMode.None:

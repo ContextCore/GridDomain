@@ -18,7 +18,8 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ConventionCommands
 
     public class ConventionAggregateTests:NodeTestKit
     {
-        public ConventionAggregateTests(ITestOutputHelper output) : base(new NodeTestFixture(output,new SoftwareDomainConfiguration())) { }
+        public ConventionAggregateTests(ITestOutputHelper output) : this(new NodeTestFixture(output,new SoftwareDomainConfiguration())) { }
+        protected ConventionAggregateTests(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task ConventionRegisteredCommands_are_executed()

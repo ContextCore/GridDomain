@@ -23,6 +23,21 @@ namespace GridDomain.Node.Cluster
                                      .Build()
                                      .Create();
         }
+        
+        public static string ToClusterConfig(this NodeConfiguration conf, int workerNodes = 0,
+                                                  params INodeNetworkAddress[] otherSeeds)
+        {
+            return ActorSystemBuilder.New()
+                                     .Log(conf.LogLevel)
+                                     .DomainSerialization()
+                                     .Cluster(conf.Name)
+                                     .Seeds(otherSeeds)
+                                     .AutoSeeds(1)
+                                     .Workers(workerNodes)
+                                     .Build()
+                                     .CreateConfigs()
+                                     .First();
+        }
       
     }
 }
