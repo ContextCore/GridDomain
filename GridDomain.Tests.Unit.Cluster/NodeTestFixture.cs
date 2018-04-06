@@ -4,7 +4,7 @@ using GridDomain.Node.Cluster;
 using GridDomain.Node.Configuration;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.Cluster.Tests
+namespace GridDomain.Tests.Unit.Cluster
 {
     public class ClusterNodeTestFixture : NodeTestFixture
     {

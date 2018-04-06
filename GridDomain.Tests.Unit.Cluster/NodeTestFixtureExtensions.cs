@@ -19,5 +19,6 @@ namespace GridDomain.Tests.Unit.Cluster {
 
             return await fxt.StartNode((GridDomainNode) node);
         }
+        
     }
 }

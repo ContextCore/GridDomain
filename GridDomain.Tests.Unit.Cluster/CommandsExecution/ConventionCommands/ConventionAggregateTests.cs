@@ -5,7 +5,7 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using Serilog;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.Cluster.Tests.CommandsExecution.ConventionCommands
+namespace GridDomain.Tests.Unit.Cluster.CommandsExecution.ConventionCommands
 {
 
     public class ClusterConventionAggregateTests:ConventionAggregateTests

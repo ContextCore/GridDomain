@@ -4,7 +4,7 @@ using Akka.Cluster;
 using Akka.Event;
 using GridDomain.Node;
 
-namespace GridDomain.Tests.Unit.Cluster {
+namespace GridDomain.Tests.Unit.Cluster.ClusterConf {
     public class SimpleClusterListener : UntypedActor
     {
         public static IReadOnlyCollection<Member> KnownMemberList => _knownMembers;
