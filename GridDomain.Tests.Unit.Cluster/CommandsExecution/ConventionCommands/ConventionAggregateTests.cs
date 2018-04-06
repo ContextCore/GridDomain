@@ -10,12 +10,6 @@ namespace GridDomain.Tests.Unit.Cluster.CommandsExecution.ConventionCommands
 
     public class ClusterConventionAggregateTests:ConventionAggregateTests
     {
-        public ClusterConventionAggregateTests(ITestOutputHelper output) : base(new ClusterNodeTestFixture(output,new SoftwareDomainConfiguration())) { }
-
-        protected override GridDomainNode CreateNode(NodeTestFixture fixture, ILogger logger)
-        {
-            Sys.InitDistributedTransport();
-            return (GridDomainNode)fixture.CreateClusterNode(() => Sys,logger).Result;
-        }
+        public ClusterConventionAggregateTests(ITestOutputHelper output) : base(new NodeTestFixture(output,new SoftwareDomainConfiguration()).Clustered()) { }
     }
 }

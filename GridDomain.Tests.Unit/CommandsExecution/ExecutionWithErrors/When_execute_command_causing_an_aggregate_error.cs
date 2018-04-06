@@ -14,6 +14,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
     public class When_execute_command_causing_an_aggregate_error : BalloonDomainCommandExecutionTests
     {
         public When_execute_command_causing_an_aggregate_error(ITestOutputHelper output) : base(output) {}
+        protected When_execute_command_causing_an_aggregate_error(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public async Task Given_async_aggregate_method_Then_execute_throws_exception_from_aggregate()

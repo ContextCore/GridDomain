@@ -12,6 +12,7 @@ using GridDomain.Scheduling.Quartz;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
+using GridDomain.Transport.Extension;
 using Serilog;
 using Serilog.Data;
 using Serilog.Events;
@@ -45,17 +46,16 @@ namespace GridDomain.Tests.Unit
             NodeConfig = cfg ?? DefaultNodeConfig;
 
             ConfigBuilder = systemConfigFactorry ?? (n => n.ToStandAloneInMemorySystemConfig());
-            SystemConfig = new Lazy<string>(() => ConfigBuilder(NodeConfig));
-            if (domainConfiguration == null)
-                return;
-
-            foreach (var c in domainConfiguration)
-                Add(c);
+            NodeBuilder = BuildInMemoryStandAloneNode;
+            
+            if (domainConfiguration != null)
+                foreach (var c in domainConfiguration)
+                    Add(c);
         }
 
         public GridDomainNode Node { get; private set; }
         public Func<NodeConfiguration, string> ConfigBuilder { get; set; }
-        public Lazy<string> SystemConfig { get; }
+        public Func<Func<ActorSystem>, ILogger, GridDomainNode> NodeBuilder { get; set; }
         public NodeConfiguration NodeConfig { get; }
         public string Name => NodeConfig.Name;
 
@@ -98,13 +98,25 @@ namespace GridDomain.Tests.Unit
 
         public Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(actorSystemProvider, sys => OnSystemCreatedEvent.Invoke(this, sys)))
+            var gridDomainNode = NodeBuilder(actorSystemProvider, logger);
+            
+            return StartNode(gridDomainNode);
+        }
+
+        private GridDomainNode BuildInMemoryStandAloneNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
+        {
+            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(actorSystemProvider,
+                                                                                        sys =>
+                                                                                        {
+                                                                                            sys.AttachSerilogLogging(logger);
+                                                                                            sys.InitLocalTransportExtension();
+                                                                                            OnSystemCreatedEvent.Invoke(this, sys);
+                                                                                        }))
                                             .DomainConfigurations(DomainConfigurations.ToArray())
                                             .Log(logger)
                                             .Timeout(DefaultTimeout)
                                             .Build();
-
-            return StartNode((GridDomainNode)node);
+            return (GridDomainNode)node;
         }
 
         public event EventHandler<GridDomainNode> OnNodeStartedEvent = delegate { };

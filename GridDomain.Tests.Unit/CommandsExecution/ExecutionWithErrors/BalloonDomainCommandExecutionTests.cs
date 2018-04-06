@@ -5,7 +5,10 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
 {
     public class BalloonDomainCommandExecutionTests : NodeTestKit
     {
-        public BalloonDomainCommandExecutionTests(ITestOutputHelper output)
+        protected BalloonDomainCommandExecutionTests(ITestOutputHelper output)
             : base(new NodeTestFixture(output,new BalloonDomainConfiguration())) {}
+        
+        public BalloonDomainCommandExecutionTests(NodeTestFixture fixture)
+            : base(fixture) {}
     }
 }

@@ -12,21 +12,15 @@ namespace GridDomain.Tests.Unit
     
     public class NodeTestKit : TestKit
     {
-        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.SystemConfig.Value, fixture.Name)
+        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.ConfigBuilder(fixture.NodeConfig), fixture.Name)
         {
             var testClassName = $"Logs/{GetType().Name}.log"; 
             var logger = new XUnitAutoTestLoggerConfiguration(fixture.Output, fixture.NodeConfig.LogLevel, testClassName)
-                .CreateLogger();
+                                                            .CreateLogger();
             
-            Sys.AttachSerilogLogging(logger);
-            Node = CreateNode(fixture, logger);
+            Node = fixture.CreateNode(() => Sys,logger).Result; 
         }
 
-        protected virtual GridDomainNode CreateNode(NodeTestFixture fixture, ILogger logger)
-        {
-            Sys.InitLocalTransportExtension();
-            return (GridDomainNode)fixture.CreateNode(() => Sys,logger).Result;
-        }
         protected GridDomainNode Node { get; }
     }
 }

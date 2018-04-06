@@ -15,6 +15,11 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
     //different fixtures from static method ? 
     public class When_executing_commands_and_aggregate_raises_an_exception : NodeTestKit
     {
+        protected When_executing_commands_and_aggregate_raises_an_exception(NodeTestFixture fixture):base(fixture)
+        {
+            
+        }
+        
         public When_executing_commands_and_aggregate_raises_an_exception(ITestOutputHelper helper)
             : base(new BalloonFixture(helper)) { }
 

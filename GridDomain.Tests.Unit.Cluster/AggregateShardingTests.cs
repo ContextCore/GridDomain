@@ -76,7 +76,7 @@ namespace GridDomain.Tests.Unit.Cluster
                                            .Build()
                                            .OnClusterUp(async s =>
                                                         {
-                                                            var node = await domainFixture.CreateClusterNode(() => s, _logger);
+                                                            var node = await domainFixture.CreateNode(() => s, _logger);
                                                             nodes.Add(node);
                                                         })
                                            .CreateInTime();

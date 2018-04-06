@@ -13,6 +13,8 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
 {
     public class Given_executing_commands_with_faulty_from_projection_builder : NodeTestKit
     {
+        protected Given_executing_commands_with_faulty_from_projection_builder(NodeTestFixture fixture) :base(fixture){}
+            
         public Given_executing_commands_with_faulty_from_projection_builder(ITestOutputHelper output)
             : base(new NodeTestFixture(output,new FaultyBalloonProjectionDomainConfiguration())) {}
 
