@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public async Task When_async_method_is_called_other_commands_can_be_executed_before_async_results()
         {
             var aggregateId = Guid.NewGuid().ToString();
-            var asyncCommand = new PlanTitleChangeCommand(43, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), TimeSpan.FromSeconds(1));
+            var asyncCommand = new PlanTitleChangeCommand(Guid.NewGuid().ToString(), 43);
             var syncCommand = new WriteTitleCommand(42, aggregateId);
 
             var asyncCommandTask = Node.Prepare(asyncCommand)

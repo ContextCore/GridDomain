@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task When_async_method_is_called_domainEvents_are_persisted()
         {
-            var cmd = new PlanTitleChangeCommand(43, Guid.NewGuid(), Guid.Empty, TimeSpan.FromMilliseconds(50));
+            var cmd = new PlanTitleChangeCommand(Guid.NewGuid().ToString(), 43, TimeSpan.FromMilliseconds(50));
 
             await Node.Prepare(cmd).Expect<BalloonTitleChanged>().Execute();
 

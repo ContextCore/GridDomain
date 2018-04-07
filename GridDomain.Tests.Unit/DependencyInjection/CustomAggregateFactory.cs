@@ -7,6 +7,7 @@ using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
+using GridDomain.ProcessManagers;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.CommandsExecution;
 using Xunit;

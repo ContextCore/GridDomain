@@ -21,8 +21,6 @@ using GridDomain.Transport.Extension;
 using Serilog;
 
 namespace GridDomain.Node {
-
-
     public class GridDomainLocalNode : GridDomainNode
     {
         public GridDomainLocalNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan defaultTimeout) : base(domainConfigurations, actorSystemFactory, log, defaultTimeout) { }

@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task After_wait_of_async_command_aggregate_should_be_changed()
         {
-            var cmd = new PlanTitleChangeCommand(42, Guid.NewGuid(), Guid.NewGuid(), TimeSpan.FromMilliseconds(50));
+            var cmd = new PlanTitleChangeCommand(Guid.NewGuid().ToString(), 42);
             var res = await Node.Prepare(cmd)
                                 .Expect<BalloonTitleChanged>(e => e.SourceId == cmd.AggregateId)
                                 .Execute();

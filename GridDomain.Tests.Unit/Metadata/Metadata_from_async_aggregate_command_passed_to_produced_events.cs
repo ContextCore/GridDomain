@@ -30,8 +30,8 @@ namespace GridDomain.Tests.Unit.Metadata
         [Fact]
         public async Task When_execute_aggregate_command_with_metadata()
         {
-            _command = new PlanTitleChangeCommand(1, Guid.NewGuid().ToString());
-            _commandMetadata = MessageMetadata.New(_command.Id, Guid.NewGuid().ToString(), null);
+            _command = new PlanTitleChangeCommand(Guid.NewGuid().ToString(),1);
+            _commandMetadata = MessageMetadata.New(_command.Id, Guid.NewGuid().ToString());
 
             var res = await Node.Prepare(_command, _commandMetadata)
                                 .Expect<BalloonTitleChanged>()

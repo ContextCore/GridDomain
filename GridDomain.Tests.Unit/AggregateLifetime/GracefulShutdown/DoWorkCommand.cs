@@ -1,5 +1,6 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
     public class DoWorkCommand : Command<ShutdownTestAggregate>

@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task Async_method_should_change_aggregate()
         {
-            var syncCommand = new PlanTitleChangeCommand(42, Guid.NewGuid());
+            var syncCommand = new PlanTitleChangeCommand(Guid.NewGuid().ToString(),42);
 
             await Node.Prepare(syncCommand).Expect<BalloonTitleChanged>().Execute();
 

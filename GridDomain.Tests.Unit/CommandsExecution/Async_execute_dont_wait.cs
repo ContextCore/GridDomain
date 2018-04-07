@@ -17,7 +17,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task Async_execute_dont_wait_for_command_finish()
         {
-            var syncCommand = new PlanTitleChangeCommand(42, Guid.NewGuid().ToString());
+            var syncCommand = new PlanTitleChangeCommand(Guid.NewGuid().ToString(),42);
             //intentionally dont wait for command execution finish
 #pragma warning disable 4014
             Node.Execute(syncCommand);

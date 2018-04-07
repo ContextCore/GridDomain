@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task When_async_method_finished_produced_events_has_processId_from_command()
         {
-            var externalCallCommand = new PlanTitleChangeCommand(43, Guid.NewGuid(), Guid.NewGuid());
+            var externalCallCommand = new PlanTitleChangeCommand(Guid.NewGuid().ToString(), 43);
 
             var waitResults = await Node.Prepare(externalCallCommand).Expect<BalloonTitleChanged>().Execute();
 

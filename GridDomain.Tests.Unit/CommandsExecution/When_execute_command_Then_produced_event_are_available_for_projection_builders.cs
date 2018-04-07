@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task Async_method_should_produce_messages_for_projection_builders()
         {
-            var cmd = new PlanTitleChangeCommand(42, Guid.NewGuid());
+            var cmd = new PlanTitleChangeCommand(Guid.NewGuid().ToString(),42);
 
             await Node.Prepare(cmd)
                       .Expect<BalloonTitleChangedNotification>()
