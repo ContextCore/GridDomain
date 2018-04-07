@@ -5,6 +5,7 @@ using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
@@ -12,9 +13,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class Execute_command_waiting_aggregate_event : BalloonDomainCommandExecutionTests
+    public class Execute_command_waiting_aggregate_event : NodeTestKit
     {
-        public Execute_command_waiting_aggregate_event(ITestOutputHelper output) : base(output) {}
+        public Execute_command_waiting_aggregate_event(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
+        protected Execute_command_waiting_aggregate_event(NodeTestFixture fixture) : base(fixture.Add(new BalloonDomainConfiguration())) {}
 
         [Fact]
         public async Task After_wait_ends_aggregate_should_be_changed()

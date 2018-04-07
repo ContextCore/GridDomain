@@ -10,7 +10,7 @@ namespace GridDomain.Node.Configuration {
         public INodeNetworkAddress Address { get; }
         public string Name { get;}
 
-        public NodeConfiguration(string name, INodeNetworkAddress addressConf, LogEventLevel logLevel = LogEventLevel.Debug)
+        public NodeConfiguration(string name, INodeNetworkAddress addressConf, LogEventLevel logLevel = LogEventLevel.Information)
         {
             Address = addressConf;
             LogLevel = logLevel;

@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
@@ -13,9 +14,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.SyncProjection
 {
-    public class SynchronizedProjectionBuildersTests : BalloonDomainCommandExecutionTests
+    public class SynchronizedProjectionBuildersTests : NodeTestKit
     {
-        public SynchronizedProjectionBuildersTests(ITestOutputHelper output) : base(output) {}
+        public SynchronizedProjectionBuildersTests(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
+        protected SynchronizedProjectionBuildersTests(NodeTestFixture fixture) : base(fixture.Add(new BalloonDomainConfiguration())) {}
 
         [Fact]
         public async Task When_execute_many_commands_for_create_and_update()

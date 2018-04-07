@@ -10,6 +10,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tools.Repositories.EventRepositories;
 using GridDomain.CQRS;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
@@ -17,9 +18,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class When_awaiting_command_execution_without_prepare : BalloonDomainCommandExecutionTests
+    public class When_awaiting_command_execution_without_prepare : NodeTestKit
     {
-        public When_awaiting_command_execution_without_prepare(ITestOutputHelper output) : base(output) { }
+        public When_awaiting_command_execution_without_prepare(ITestOutputHelper output) : this(new NodeTestFixture(output)) { }
+        protected When_awaiting_command_execution_without_prepare(NodeTestFixture fixture) : base(fixture.Add(new BalloonDomainConfiguration())) { }
 
         [Fact]
         public async Task Then_command_executed_aggregate_is_persisted()

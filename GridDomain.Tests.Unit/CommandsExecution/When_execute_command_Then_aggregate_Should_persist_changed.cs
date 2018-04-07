@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
@@ -10,9 +12,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class When_execute_command_Then_aggregate_Should_persist_changed : BalloonDomainCommandExecutionTests
+    public class When_execute_command_Then_aggregate_Should_persist_changed : NodeTestKit
     {
-        public When_execute_command_Then_aggregate_Should_persist_changed(ITestOutputHelper output) : base(output) {}
+        public When_execute_command_Then_aggregate_Should_persist_changed(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
+        protected When_execute_command_Then_aggregate_Should_persist_changed(NodeTestFixture output) : base(output.Add(new BalloonDomainConfiguration())) {}
 
         [Fact]
         public async Task Async_method_should_change_aggregate()

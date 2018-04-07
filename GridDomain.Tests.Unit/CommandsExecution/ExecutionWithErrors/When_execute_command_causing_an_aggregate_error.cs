@@ -5,16 +5,20 @@ using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
 {
-    public class When_execute_command_causing_an_aggregate_error : BalloonDomainCommandExecutionTests
+    public class When_execute_command_causing_an_aggregate_error : NodeTestKit
     {
-        public When_execute_command_causing_an_aggregate_error(ITestOutputHelper output) : base(output) {}
-        protected When_execute_command_causing_an_aggregate_error(NodeTestFixture fixture) : base(fixture) {}
+        public When_execute_command_causing_an_aggregate_error(ITestOutputHelper output) :
+            this(new NodeTestFixture(output)) {}
+        
+        protected When_execute_command_causing_an_aggregate_error(NodeTestFixture fixture) : 
+            base(fixture.Add(new BalloonDomainConfiguration())) {}
 
         [Fact]
         public async Task Given_async_aggregate_method_Then_execute_throws_exception_from_aggregate()
