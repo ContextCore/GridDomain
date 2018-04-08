@@ -9,7 +9,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     /// <typeparam name="T"></typeparam>
     //really important will we wait for envelop types with local waiting and EventBus
     //or it will be distributed pub sub with exact topics
-    public abstract class MetadataConditionBuilder<T> : ConditionBuilder<T>
+    public class MetadataConditionBuilder<T> : ConditionBuilder<T>
     {
         protected override bool DefaultFilter<TMsg>(object received)
         {

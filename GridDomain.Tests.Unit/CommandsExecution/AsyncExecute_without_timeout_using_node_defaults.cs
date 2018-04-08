@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         public AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output) : this(
             new NodeTestFixture(output,
                                 null,
-                                TimeSpan.FromMilliseconds(100))) {}
+                                TimeSpan.FromMilliseconds(1))) {}
 
         [Fact]
         public async Task SyncExecute_throw_exception_according_to_node_default_timeout()

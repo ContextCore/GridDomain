@@ -24,7 +24,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         //message filter should be able to proceed message with type from filter key
         public readonly IDictionary<Type, List<Func<object, bool>>> MessageFilters = new Dictionary<Type, List<Func<object, bool>>>();
-        internal Func<TimeSpan?, T> CreateResultFunc;
+        public Func<TimeSpan?, T> CreateResultFunc;
 
         public T Create()
         {

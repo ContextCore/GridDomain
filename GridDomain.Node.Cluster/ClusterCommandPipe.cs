@@ -13,6 +13,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.Transport;
@@ -21,6 +22,33 @@ using Serilog;
 namespace GridDomain.Node.Cluster
 {
 
+    public class ClusterMessageWaiterFactory : IMessageWaiterFactory
+    {
+        public ClusterMessageWaiterFactory(ActorSystem system, IActorTransport transport, TimeSpan defaultTimeout)
+        {
+            System = system;
+            DefaultTimeout = defaultTimeout;
+            Transport = transport;
+        }
+
+        public IActorTransport Transport { get; }
+        public TimeSpan DefaultTimeout { get; }
+        public ActorSystem System { get; }
+
+        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
+        {
+            var conditionBuilder = new MetadataConditionBuilder<Task<IWaitResult>>();
+            var waiter = new MessagesWaiter<Task<IWaitResult>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
+            conditionBuilder.CreateResultFunc = waiter.Start;
+            return waiter;
+        }
+
+        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        {
+           throw new NotSupportedException("Cluster cannot wait explicit messages due to topic-based pub-sub");
+        }
+    }
+    
     public static class GridNodeBuilderExtensions
     {
         public static IGridDomainNode BuildCluster(this GridNodeBuilder builder)
@@ -54,6 +82,10 @@ namespace GridDomain.Node.Cluster
         {
            var ext =  System.InitDistributedTransport();
            return ext.Transport;
+        }
+        protected override IMessageWaiterFactory CreateMessageWaiterFactory()
+        {
+            return new ClusterMessageWaiterFactory(System, Transport, DefaultTimeout);
         }
     }
 
@@ -105,8 +137,12 @@ namespace GridDomain.Node.Cluster
                                                           Props.Create(actorType),
                                                           ClusterShardingSettings.Create(System),
                                                           new ShardedMessageMetadataExtractor());
+            var path = region.Path.ToString();
+
+            if(_shardRegionPaths.Contains(path))
+                throw new InvalidOperationException("Cannot add dublicate region path: " + path);  
             
-            _shardRegionPaths.Add(region.Path.ToString());
+            _shardRegionPaths.Add(path);
         }
 
         public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)

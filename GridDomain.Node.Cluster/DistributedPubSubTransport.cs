@@ -11,7 +11,8 @@ namespace GridDomain.Node.Cluster
 {
     public interface ITopicExtractor
     {
-        string GetTopic(object message);
+        string GetPublishTopic(object message);
+        string GetSubscribeTopic(Type topic);
     }
     
     public class DistributedPubSubTransport : IActorTransport
@@ -47,14 +48,15 @@ namespace GridDomain.Node.Cluster
             return Subscribe(typeof(TMessage), actor, actor);
         }
 
-        public Task Unsubscribe(IActorRef actor, Type topic)
+        public Task Unsubscribe(IActorRef actor, Type topicType)
         {
-           return _transport.Ask<UnsubscribeAck>(new Unsubscribe(topic.FullName, actor), _timeout);
+           var topic = _topicExtractor.GetSubscribeTopic(topicType);
+           return _transport.Ask<UnsubscribeAck>(new Unsubscribe(topic, actor), _timeout);
         }
 
         public Task Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
-            var topic = _topicExtractor.GetTopic(messageType);
+            var topic = _topicExtractor.GetSubscribeTopic(messageType);
             
             if (!_subscribers.TryGetValue(topic, out var subcribers))
             {
@@ -68,7 +70,7 @@ namespace GridDomain.Node.Cluster
 
         public void Publish(object msg)
         {
-            var topic = _topicExtractor.GetTopic(msg);
+            var topic = _topicExtractor.GetPublishTopic(msg);
             _transport.Tell(new Publish(topic, msg));
         }
 

@@ -213,10 +213,13 @@ namespace GridDomain.Node {
             System.RegisterOnTermination(OnSystemTermination);
             Transport = CreateTransport();
 
-            _waiterFactory = new LocalMessageWaiterFactory(System, Transport, DefaultTimeout);
+            _waiterFactory = CreateMessageWaiterFactory();
         }
 
-     
+        protected virtual IMessageWaiterFactory CreateMessageWaiterFactory()
+        {
+            return new LocalMessageWaiterFactory(System, Transport, DefaultTimeout);
+        }
 
         protected virtual DomainBuilder CreateDomainBuilder()
         {

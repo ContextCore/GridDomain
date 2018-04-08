@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
@@ -23,7 +24,8 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
         [Fact]
         public async Task Given_async_aggregate_method_Then_execute_throws_exception_from_aggregate()
         {
-            await Node.Execute(new PlanBallonBlowCommand(Guid.NewGuid().ToString())).ShouldThrow((Predicate<BalloonException>) null);
+            await Node.Execute(new PlanBallonBlowCommand(Guid.NewGuid().ToString()))
+                      .ShouldThrow<BalloonException>();
         }
 
         [Fact]
@@ -33,14 +35,14 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
                                                                 Guid.NewGuid().ToString(),
                                                                 TimeSpan.FromMilliseconds(500));
 
-            await Node.Execute(syncCommand).ShouldThrow((Predicate<BalloonException>) (ex => ex.StackTrace.Contains(typeof(Balloon).Name) || 
+            await Node.Execute(syncCommand).ShouldThrow<BalloonException>((ex => ex.StackTrace.Contains(typeof(Balloon).Name) || 
                                                                                              ex.Message.Contains(typeof(Balloon).Name)));
         }
 
         [Fact]
         public async Task Given_sync_aggregate_method_Then_execute_throws_exception_from_aggregate_with_stack_trace()
         {
-            await Node.Execute(new BlowBalloonCommand(Guid.NewGuid().ToString())).ShouldThrow((Predicate<BalloonException>) (ex => ex.StackTrace.Contains(typeof(Balloon).Name) ||
+            await Node.Execute(new BlowBalloonCommand(Guid.NewGuid().ToString())).ShouldThrow<BalloonException>( (ex => ex.StackTrace.Contains(typeof(Balloon).Name) ||
                                                                                                                                    ex.Message.Contains(typeof(Balloon).Name)));
         }
         
@@ -54,10 +56,14 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
             var aggregateId = "test_balloon";
             //aggregate should fail after blow command
             //and restores after write title, no loosing write title command
+            // intentionally not waiting for command result, allowing aggregate actor take care of command managment and 
+            // storage
             
-            await Node.Execute(new InflateNewBallonCommand(1, aggregateId),CommandConfirmationMode.None); 
-            await Node.Execute(new BlowBalloonCommand(aggregateId),CommandConfirmationMode.None); 
-            await Node.Execute(new WriteTitleCommand(2,aggregateId),CommandConfirmationMode.None); 
+#pragma warning disable 4014
+            Node.Execute(new InflateNewBallonCommand(1, aggregateId),CommandConfirmationMode.None); 
+            Node.Execute(new BlowBalloonCommand(aggregateId),CommandConfirmationMode.None); 
+            Node.Execute(new WriteTitleCommand(2,aggregateId),CommandConfirmationMode.None); 
+#pragma warning restore 4014
 
             var evt = await waiter;
             Assert.Equal("2",evt.Message<BalloonTitleChanged>().Value);

@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
     public class Cluster_AsyncExecute_without_timeout_using_node_defaults : AsyncExecute_without_timeout_using_node_defaults
     {
         public Cluster_AsyncExecute_without_timeout_using_node_defaults(ITestOutputHelper output) : base(
-            new NodeTestFixture(output).Clustered()) {}
+            new NodeTestFixture(output,null, TimeSpan.FromMilliseconds(1)).Clustered()) {}
 
     }
 }

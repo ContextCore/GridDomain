@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
@@ -69,20 +68,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                       .ShouldThrow<TimeoutException>();
         }
         
-        [Fact]
-        public async Task MessageWaiter_after_cmd_execute_should_waits_until_aggregate_event()
-        {
-            var cmd = new PlanTitleWriteCommand(100, Guid.NewGuid());
-            var waiter = Node.NewExplicitWaiter()
-                             .Expect<MessageMetadataEnvelop>(e => (e.Message as BalloonTitleChanged)?.SourceId == cmd.AggregateId)
-                             .Create();
-
-            await Node.Execute(cmd);
-
-            var res = await waiter;
-
-            Assert.Equal(cmd.Parameter.ToString(), res.Message<BalloonTitleChanged>().Value);
-        }
+       
 
         [Fact]
         public async Task Wait_for_timeout_command_throws_excpetion()
