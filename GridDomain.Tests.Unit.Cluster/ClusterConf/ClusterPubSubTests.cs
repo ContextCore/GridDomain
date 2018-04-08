@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node.Cluster;
+using GridDomain.Node.Cluster.Configuration;
+using GridDomain.Node.Cluster.Transport;
 using GridDomain.Node.Configuration;
 using Serilog.Core;
 using Serilog.Events;

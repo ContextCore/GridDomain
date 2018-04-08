@@ -4,6 +4,8 @@ using System.Linq;
 using Akka.Cluster.Tools.Singleton;
 using Akka.Configuration;
 using GridDomain.Node.Actors.Logging;
+using GridDomain.Node.Cluster.Configuration;
+using GridDomain.Node.Cluster.Configuration.Hocon;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Hocon;
 using Serilog.Events;

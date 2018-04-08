@@ -1,13 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Akka.Actor;
-using Akka.Cluster.Tools.Singleton;
-using Akka.Configuration;
 using GridDomain.Node.Configuration;
-using Serilog;
 
-namespace GridDomain.Node.Cluster
+namespace GridDomain.Node.Cluster.Configuration
 {
     public class ClusterConfigBuilder
     {

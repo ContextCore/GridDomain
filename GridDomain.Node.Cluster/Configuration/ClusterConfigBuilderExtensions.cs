@@ -1,11 +1,7 @@
-using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Akka.Actor;
 using GridDomain.Node.Configuration;
-using Serilog;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.Configuration {
 
 
     public static class ClusterConfigBuilderExtensions

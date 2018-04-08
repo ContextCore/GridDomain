@@ -1,5 +1,6 @@
 ﻿using System;
 using GridDomain.Node.Cluster;
+using GridDomain.Node.Cluster.CommandPipe;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Microsoft.Extensions.Logging;
 using Xunit;

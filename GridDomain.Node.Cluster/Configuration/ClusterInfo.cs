@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Akka.Actor;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.Configuration {
     public class ClusterInfo : IDisposable
     {
         public ClusterInfo(Akka.Cluster.Cluster cluster, IReadOnlyCollection<Address> members)

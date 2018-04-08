@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.CommandPipe {
     public class DefaultShardIdGenerator : IShardIdGenerator
     {
         private readonly string _shardGroupName;

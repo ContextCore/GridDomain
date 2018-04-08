@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Dispatch.SysMsg;
+using GridDomain.Node.Cluster.Configuration;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Persistence.Sql;
 

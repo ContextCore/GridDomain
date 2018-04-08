@@ -6,6 +6,8 @@ using Akka.Cluster.Sharding;
 using FluentAssertions;
 using GridDomain.Common;
 using GridDomain.Node.Cluster;
+using GridDomain.Node.Cluster.CommandPipe;
+using GridDomain.Node.Cluster.Configuration;
 using GridDomain.Node.Configuration;
 using Serilog.Core;
 using Serilog.Events;

@@ -1,6 +1,6 @@
 using GridDomain.Node.Configuration.Hocon;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.Configuration.Hocon {
     public class PubSubConfig : IHoconConfig 
     {
         public string Build()

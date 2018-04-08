@@ -5,7 +5,7 @@ using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Transport;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.MessageWaiting {
     public class ClusterMessageWaiterFactory : IMessageWaiterFactory
     {
         public ClusterMessageWaiterFactory(ActorSystem system, IActorTransport transport, TimeSpan defaultTimeout)

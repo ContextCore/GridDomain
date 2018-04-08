@@ -2,7 +2,7 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.CommandPipe {
     public class ShardedCommandMetadataEnvelop : IShardedMessageMetadataEnvelop
     {
         private readonly IHaveId _command;

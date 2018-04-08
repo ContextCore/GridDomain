@@ -9,6 +9,7 @@ using GridDomain.CQRS;
 using GridDomain.Node;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Cluster;
+using GridDomain.Node.Cluster.Configuration;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;

@@ -3,7 +3,7 @@ using System.Linq;
 using GridDomain.Common;
 using GridDomain.CQRS;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.Transport {
     public class MetadataAwareTopicAsTypeFullNameExtractor : ITopicExtractor
     {
         public string GetPublishTopic(object message)

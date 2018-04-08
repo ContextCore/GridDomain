@@ -2,6 +2,7 @@
 using GridDomain.Common;
 using GridDomain.Node;
 using GridDomain.Node.Cluster;
+using GridDomain.Node.Cluster.CommandPipe;
 
 namespace GridDomain.Tests.Unit.Cluster {
     class EchoShardedActor : ReceiveActor

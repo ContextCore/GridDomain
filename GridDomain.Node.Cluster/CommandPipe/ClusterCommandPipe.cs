@@ -6,15 +6,13 @@ using Akka.Cluster.Sharding;
 using Akka.Routing;
 using Autofac;
 using GridDomain.Common;
-using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.Aggregates;
-using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.ProcessManagers.DomainBind;
 using Serilog;
 
-namespace GridDomain.Node.Cluster
+namespace GridDomain.Node.Cluster.CommandPipe
 {
     public class ClusterCommandPipe : IActorCommandPipe
     {

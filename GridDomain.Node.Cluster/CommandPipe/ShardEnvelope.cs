@@ -1,6 +1,6 @@
 using GridDomain.Common;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.CommandPipe {
     public sealed class ShardEnvelope:IMessageMetadataEnvelop
     {
         public readonly string ShardId;

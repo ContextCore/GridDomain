@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
-using GridDomain.Common;
+using GridDomain.Node.Cluster.Configuration.Hocon;
 using GridDomain.Node.Configuration;
 using Serilog;
-using Serilog.Events;
 
-namespace GridDomain.Node.Cluster
+namespace GridDomain.Node.Cluster.Configuration
 {
     public class ClusterConfig
     {

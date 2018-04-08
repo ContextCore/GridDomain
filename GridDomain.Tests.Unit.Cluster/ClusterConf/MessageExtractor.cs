@@ -1,5 +1,6 @@
 ﻿using Akka.Cluster.Sharding;
 using GridDomain.Node.Cluster;
+using GridDomain.Node.Cluster.CommandPipe;
 
 namespace GridDomain.Tests.Unit.Cluster.ClusterConf {
     public sealed class MessageExtractor : IMessageExtractor

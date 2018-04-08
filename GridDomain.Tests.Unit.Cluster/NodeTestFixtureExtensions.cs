@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Cluster;
+using GridDomain.Node.Cluster.Transport;
 using GridDomain.Node.Configuration;
 using Serilog;
 

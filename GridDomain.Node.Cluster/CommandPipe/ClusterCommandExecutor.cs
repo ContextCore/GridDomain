@@ -1,17 +1,13 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Akka;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
+using GridDomain.Node.Cluster.MessageWaiting;
 using GridDomain.Transport;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Cluster.CommandPipe {
     
     public class ClusterCommandExecutor : AkkaCommandExecutor
     {

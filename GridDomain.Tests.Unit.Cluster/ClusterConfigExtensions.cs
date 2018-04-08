@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.Node.Cluster;
+using GridDomain.Node.Cluster.Configuration;
 
 namespace GridDomain.Tests.Unit.Cluster
 {

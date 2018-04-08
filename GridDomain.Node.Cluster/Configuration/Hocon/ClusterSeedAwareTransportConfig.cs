@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using GridDomain.Node.Configuration.Hocon;
 
-namespace GridDomain.Node.Cluster
+namespace GridDomain.Node.Cluster.Configuration.Hocon
 {
     public class ClusterSeedAwareTransportConfig : IHoconConfig
     {
