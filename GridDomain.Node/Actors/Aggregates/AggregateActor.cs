@@ -15,6 +15,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.Aggregates.Messages;
+using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.EventSourced.Messages;
@@ -240,7 +241,7 @@ namespace GridDomain.Node.Actors.Aggregates
         {
             ExecutionContext.MessagesToProject++;
             var messageMetadataEnvelop = new MessageMetadataEnvelop(evt, commandMetadata);
-            _customHandlersActor.Tell(messageMetadataEnvelop);
+            _customHandlersActor.Tell(new HandlersPipeActor.Project(new []{messageMetadataEnvelop},Self));
             _publisher.Publish(messageMetadataEnvelop);
         }
     }

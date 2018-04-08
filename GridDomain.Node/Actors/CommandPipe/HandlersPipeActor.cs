@@ -27,21 +27,33 @@ namespace GridDomain.Node.Actors.CommandPipe
         public HandlersPipeActor(IMessageProcessor handlersCatalog, IActorRef processManagerPipeActor)
         {
             var publisher = Context.System.GetTransport();
-            ReceiveAsync<IMessageMetadataEnvelop>(envelop =>
+            ReceiveAsync<Project>(async envelop =>
                                                            {
                                                                  Log.Debug("Received messages to project. {project}",envelop);
                                                                
-                                                                 return handlersCatalog.Process(envelop)
-                                                                                       .ContinueWith(t =>
-                                                                                                     {
-                                                                                                         processManagerPipeActor.Tell(envelop);
-                                                                                                         publisher.Publish(envelop);
-                                                                                                         return AllHandlersCompleted.Instance;
-                                                                                        })
-                                                                                       .PipeTo(Sender);
+                                                                 foreach(var e in envelop.Messages)
+                                                                   await handlersCatalog.Process(e)
+                                                                                   .ContinueWith(t =>
+                                                                                                 {
+                                                                                                     processManagerPipeActor.Tell(e);
+                                                                                                     publisher.Publish(e);
+                                                                                                     return AllHandlersCompleted.Instance;
+                                                                                    })
+                                                                                   .PipeTo(envelop.ProjectionWaiter);
                                                            });
             Receive<ProcessesTransitComplete>(t => {//just ignore 
             });
+        }
+
+        public class Project
+        {
+            public Project(IReadOnlyCollection<MessageMetadataEnvelop> messages, IActorRef projectionWaiter)
+            {
+                Messages = messages;
+                ProjectionWaiter = projectionWaiter;
+            }
+            public IActorRef ProjectionWaiter { get; }
+            public IReadOnlyCollection<MessageMetadataEnvelop> Messages { get; }
         }
     }
 }
