@@ -6,108 +6,16 @@ using Akka.Cluster.Sharding;
 using Akka.Routing;
 using Autofac;
 using GridDomain.Common;
-using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
-using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Node.Configuration.Composition;
 using GridDomain.ProcessManagers.DomainBind;
-using GridDomain.Transport;
 using Serilog;
 
 namespace GridDomain.Node.Cluster
 {
-
-    public class ClusterMessageWaiterFactory : IMessageWaiterFactory
-    {
-        public ClusterMessageWaiterFactory(ActorSystem system, IActorTransport transport, TimeSpan defaultTimeout)
-        {
-            System = system;
-            DefaultTimeout = defaultTimeout;
-            Transport = transport;
-        }
-
-        public IActorTransport Transport { get; }
-        public TimeSpan DefaultTimeout { get; }
-        public ActorSystem System { get; }
-
-        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
-        {
-            var conditionBuilder = new MetadataConditionBuilder<Task<IWaitResult>>();
-            var waiter = new MessagesWaiter<Task<IWaitResult>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
-            conditionBuilder.CreateResultFunc = waiter.Start;
-            return waiter;
-        }
-
-        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
-        {
-           throw new NotSupportedException("Cluster cannot wait explicit messages due to topic-based pub-sub");
-        }
-    }
-    
-    public static class GridNodeBuilderExtensions
-    {
-        public static IGridDomainNode BuildCluster(this GridNodeBuilder builder)
-        {
-             return new GridClusterNode(builder.Configurations,builder.ActorSystemFactory,builder.Logger,builder.DefaultTimeout);
-        }
-    }
-    
-    public class GridClusterNode : GridDomainNode
-    {
-        private ClusterCommandExecutor _clusterCommandExecutor;
-        public GridClusterNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan defaultTimeout) : base(domainConfigurations, actorSystemFactory, log, defaultTimeout) { }
-        protected override ICommandExecutor CreateCommandExecutor()
-        {
-            _clusterCommandExecutor = new ClusterCommandExecutor(System,Transport,DefaultTimeout);
-            return _clusterCommandExecutor;
-        }
-
-        protected override IActorCommandPipe CreateCommandPipe()
-        {
-            return new ClusterCommandPipe(System,Log);
-        }
-
-        protected override async Task ConfigurePipe(DomainBuilder domainBuilder)
-        {
-            await base.ConfigurePipe(domainBuilder);
-            _clusterCommandExecutor.Init(Pipe.CommandExecutor);
-        }
-
-        protected override IActorTransport CreateTransport()
-        {
-           var ext =  System.InitDistributedTransport();
-           return ext.Transport;
-        }
-        protected override IMessageWaiterFactory CreateMessageWaiterFactory()
-        {
-            return new ClusterMessageWaiterFactory(System, Transport, DefaultTimeout);
-        }
-    }
-
-    
-    internal class DummyProcessActor : ReceiveActor
-    {
-        public DummyProcessActor()
-        {
-            Receive<IMessageMetadataEnvelop<DomainEvent>>(
-                                                          m => Sender.Tell(new ProcessTransited(null, null, null, null)));
-        }
-    }
-
-    public class DummyHandlersActor : ReceiveActor
-    {
-        public DummyHandlersActor()
-        {
-            Receive<IMessageMetadataEnvelop>(envelop => Sender.Tell(AllHandlersCompleted.Instance));
-            Receive<ProcessesTransitComplete>(t => { });
-        }
-    }
-
     public class ClusterCommandPipe : IActorCommandPipe
     {
         public  ActorSystem System { get; }

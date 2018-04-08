@@ -7,20 +7,11 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Node.Configuration;
-using GridDomain.Node.Configuration.Hocon;
 using Serilog;
 using Serilog.Events;
 
 namespace GridDomain.Node.Cluster
 {
-    public static class ActorSystemClusterExtensions
-    {
-        public static Address GetAddress(this ActorSystem sys)
-        {
-            return ((ExtendedActorSystem) sys).Provider.DefaultAddress;
-        }
-    }
-
     public class ClusterConfig
     {
         private readonly List<ActorSystemBuilder> _seedNodes = new List<ActorSystemBuilder>();
@@ -153,42 +144,6 @@ namespace GridDomain.Node.Cluster
                 await init(s);
 
             return systems;
-        }
-    }
-
-    public class CannotDetermineLeaderException : Exception { }
-
-    public class MinMembersInCluster : IHoconConfig
-    {
-        private int _length;
-
-        public MinMembersInCluster(int length)
-        {
-            _length = length;
-        }
-
-        public string Build()
-        {
-            return $"cluster.min-nr-of-members = {_length}";
-        }
-    }
-
-    public class ClusterInfo : IDisposable
-    {
-        public ClusterInfo(Akka.Cluster.Cluster cluster, IReadOnlyCollection<Address> members)
-        {
-            Cluster = cluster;
-            Members = members;
-        }
-
-        public Akka.Cluster.Cluster Cluster { get; }
-        public IReadOnlyCollection<Address> Members { get; }
-
-        public void Dispose()
-        {
-            CoordinatedShutdown.Get(Cluster.System)
-                               .Run()
-                               .Wait(TimeSpan.FromSeconds(10));
         }
     }
 }

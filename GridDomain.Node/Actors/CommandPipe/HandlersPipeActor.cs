@@ -40,6 +40,7 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                                                      return AllHandlersCompleted.Instance;
                                                                                     })
                                                                                    .PipeTo(envelop.ProjectionWaiter);
+                                                               
                                                            });
             Receive<ProcessesTransitComplete>(t => {//just ignore 
             });

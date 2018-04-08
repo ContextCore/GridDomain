@@ -9,12 +9,6 @@ using GridDomain.Transport;
 
 namespace GridDomain.Node.Cluster
 {
-    public interface ITopicExtractor
-    {
-        string GetPublishTopic(object message);
-        string GetSubscribeTopic(Type topic);
-    }
-    
     public class DistributedPubSubTransport : IActorTransport
     {
         private readonly ILoggingAdapter _log;
