@@ -23,10 +23,10 @@ namespace GridDomain.Node.Cluster.Transport {
         {
             if (typeof(IFault).IsAssignableFrom(topic))
             {
-                if (topic.ContainsGenericParameters && topic.GenericTypeArguments.Length == 1)
+                if (topic.IsConstructedGenericType && topic.GenericTypeArguments.Length == 1)
                     return "Fault_" + GetSubscribeTopic(topic.GenericTypeArguments.First());
                 
-                throw new NotSupportedException("Distributed pub-sub can support only Generic Faults for subscription");       
+                throw new NotSupportedException("Distributed pub-sub can support only Generic Faults for subscription. Topic subscribed:" + topic.FullName);       
             }
                 
             return topic.BeautyName();

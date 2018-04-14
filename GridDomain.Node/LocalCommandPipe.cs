@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.DI.Core;
@@ -60,19 +61,36 @@ namespace GridDomain.Node
         public IActorRef ProcessesPipeActor { get; private set; }
         public IActorRef HandlersPipeActor { get; private set; }
         public IActorRef CommandExecutor { get; private set; }
-
+        private List<Action> _postponedRegistrations = new List<Action>();
+        
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
+        {
+            _postponedRegistrations.Add(() =>
+                                        {
+                                            StartAggregate(descriptor);
+                                        });
+            return Task.CompletedTask;
+        }
+
+        private void StartAggregate(IAggregateCommandsHandlerDescriptor descriptor)
         {
             var aggregateHubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);
             var aggregateActor = CreateDIActor(aggregateHubType, descriptor.AggregateType.BeautyName() + "_Hub");
 
             foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
                 _aggregatesCatalog.Add(aggregateCommandInfo, aggregateActor);
-
-            return Task.CompletedTask;
         }
 
         public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
+        {
+            _postponedRegistrations.Add(() =>
+                                        {
+                                            StartProcess(processDescriptor,name);
+                                        });
+            return Task.CompletedTask;
+        }
+
+        private void StartProcess(IProcessDescriptor processDescriptor, string name)
         {
             var processHubActorType = typeof(ProcessHubActor<>).MakeGenericType(processDescriptor.StateType);
             var processHubActor = CreateDIActor(processHubActorType, name ?? processDescriptor.ProcessType.BeautyName() + "_Hub");
@@ -86,8 +104,6 @@ namespace GridDomain.Node
 
             foreach (var acceptMsg in processDescriptor.AcceptMessages)
                 _processCatalog.Add(acceptMsg.MessageType, processor);
-
-            return Task.CompletedTask;
         }
 
         public Task RegisterSyncHandler<TMessage, THandler>() where THandler : IHandler<TMessage>
@@ -104,16 +120,23 @@ namespace GridDomain.Node
 
         public Task BuildRoutes()
         {
+            foreach (var postponed in _postponedRegistrations)
+                postponed();
+
             return ProcessesPipeActor.Ask<Initialized>(new Initialize(CommandExecutor));
         }
 
         private Task RegisterHandler<TMessage, THandler>(Func<IActorRef, IMessageProcessor> processorCreator) where THandler : IHandler<TMessage>
                                                                                                               where TMessage : class, IHaveProcessId, IHaveId
         {
-            var handlerActorType = typeof(MessageHandleActor<TMessage, THandler>);
-            var handlerActor = CreateDIActor(handlerActorType, handlerActorType.BeautyName());
+            _postponedRegistrations.Add(() =>
+                                        {
+                                            var handlerActorType = typeof(MessageHandleActor<TMessage, THandler>);
+                                            var handlerActor = CreateDIActor(handlerActorType, handlerActorType.BeautyName());
 
-            _handlersCatalog.Add<TMessage>(processorCreator(handlerActor));
+                                            _handlersCatalog.Add<TMessage>(processorCreator(handlerActor));
+                                        });
+            
             return Task.CompletedTask;
         }
 

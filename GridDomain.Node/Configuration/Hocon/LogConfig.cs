@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Akka.Event;
 using GridDomain.Node.Actors.Logging;
+using GridDomain.Node.Logging;
 using Serilog.Events;
 
 namespace GridDomain.Node.Configuration.Hocon

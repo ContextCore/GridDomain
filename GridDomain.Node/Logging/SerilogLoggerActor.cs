@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.Dispatch;
 using Akka.Event;
 using Serilog;
 using LogEvent = Akka.Event.LogEvent;
 
-namespace GridDomain.Node.Actors.Logging
+namespace GridDomain.Node.Logging
 {
     public class SerilogLoggerActor : ReceiveActor,
                                       IRequiresMessageQueue<ILoggerMessageQueueSemantics>

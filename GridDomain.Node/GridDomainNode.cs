@@ -23,13 +23,13 @@ using Serilog;
 namespace GridDomain.Node {
     public class GridDomainLocalNode : GridDomainNode
     {
+        private AkkaCommandExecutor _akkaCommandExecutor;
         public GridDomainLocalNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan defaultTimeout) : base(domainConfigurations, actorSystemFactory, log, defaultTimeout) { }
         
         protected override ICommandExecutor CreateCommandExecutor()
         {
-            var executor = new AkkaCommandExecutor(System,Transport,DefaultTimeout);
-            executor.Init(Pipe.CommandExecutor);
-            return executor;
+            _akkaCommandExecutor = new AkkaCommandExecutor(System,Transport,DefaultTimeout);
+            return _akkaCommandExecutor;
         }
 
         protected override IActorCommandPipe CreateCommandPipe()
@@ -40,6 +40,12 @@ namespace GridDomain.Node {
         protected override IActorTransport CreateTransport()
         {
             return System.InitLocalTransportExtension().Transport;
+        }
+
+        protected override async Task StartMessageRouting()
+        {
+            await base.StartMessageRouting();
+            _akkaCommandExecutor.Init(Pipe.CommandExecutor);
         }
     }
 
@@ -163,19 +169,27 @@ namespace GridDomain.Node {
             
             var domainBuilder = CreateDomainBuilder();
 
-            ConfigureContainer(domainBuilder);
+            await ConfigureDomain(domainBuilder);
+            
+            _commandExecutor = CreateCommandExecutor();
 
-            await ConfigurePipe(domainBuilder);
+            BuildContainer(domainBuilder);
+            
+            await StartMessageRouting();
 
             await CreateControllerActor();
 
             Log.Information("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
 
-        protected virtual async Task ConfigurePipe(DomainBuilder domainBuilder)
+        protected virtual async Task StartMessageRouting()
+        {
+            await Pipe.BuildRoutes();
+        }
+
+        protected virtual async Task ConfigureDomain(DomainBuilder domainBuilder)
         {
             await domainBuilder.Configure(Pipe);
-            await Pipe.BuildRoutes();
         }
         
 
@@ -186,7 +200,7 @@ namespace GridDomain.Node {
             await nodeController.Ask<GridNodeController.Alive>(GridNodeController.HeartBeat.Instance);
         }
 
-        protected virtual void ConfigureContainer(DomainBuilder domainBuilder)
+        protected void BuildContainer(DomainBuilder domainBuilder)
         {
             var containerBuilder = new ContainerBuilder();
             containerBuilder.Register(new GridNodeContainerConfiguration(Context));
@@ -195,7 +209,6 @@ namespace GridDomain.Node {
 
             domainBuilder.Configure(containerBuilder);
 
-            _commandExecutor = CreateCommandExecutor();
             containerBuilder.RegisterInstance(_commandExecutor);
             containerBuilder.Register(Pipe);
             

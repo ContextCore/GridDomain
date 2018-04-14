@@ -8,6 +8,7 @@ using GridDomain.Node.Cluster.MessageWaiting;
 using GridDomain.Node.Cluster.Transport;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Transport;
+using GridDomain.Transport.Extension;
 using Serilog;
 
 namespace GridDomain.Node.Cluster {
@@ -26,17 +27,17 @@ namespace GridDomain.Node.Cluster {
             return new ClusterCommandPipe(System,Log);
         }
 
-        protected override async Task ConfigurePipe(DomainBuilder domainBuilder)
+        protected override IActorTransport CreateTransport()
         {
-            await base.ConfigurePipe(domainBuilder);
+            return System.InitDistributedTransport().Transport;
+        }
+
+        protected override async Task StartMessageRouting()
+        {
+            await base.StartMessageRouting();
             _clusterCommandExecutor.Init(Pipe.CommandExecutor);
         }
 
-        protected override IActorTransport CreateTransport()
-        {
-            var ext =  System.InitDistributedTransport();
-            return ext.Transport;
-        }
         protected override IMessageWaiterFactory CreateMessageWaiterFactory()
         {
             return new ClusterMessageWaiterFactory(System, Transport, DefaultTimeout);

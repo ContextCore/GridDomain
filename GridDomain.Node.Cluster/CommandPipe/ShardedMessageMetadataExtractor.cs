@@ -3,8 +3,6 @@ using GridDomain.Common;
 
 namespace GridDomain.Node.Cluster.CommandPipe
 {
-
-
     public sealed class ShardedMessageMetadataExtractor : IMessageExtractor
     {
         public string EntityId(object message) => (message as IShardedMessageMetadataEnvelop)?.EntityId;

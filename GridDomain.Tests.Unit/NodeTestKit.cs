@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit
     {
         protected NodeTestKit(NodeTestFixture fixture) : base(fixture.ConfigBuilder(fixture.NodeConfig), fixture.Name)
         {
-            var testClassName = $"Logs/{GetType().Name}.log"; 
+            var testClassName = GetType().Name; 
             var logger = new XUnitAutoTestLoggerConfiguration(fixture.Output, fixture.NodeConfig.LogLevel, testClassName)
                                                             .CreateLogger();
             

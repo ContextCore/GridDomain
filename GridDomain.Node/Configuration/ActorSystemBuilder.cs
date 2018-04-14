@@ -4,6 +4,7 @@ using System.Linq;
 using Akka.Event;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Configuration.Hocon;
+using GridDomain.Node.Logging;
 using Serilog;
 using Serilog.Events;
 
