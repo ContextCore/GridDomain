@@ -15,9 +15,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class ProcessManagerProducedEventsAndCommandsHasProcessId : SoftwareProgrammingProcessTest
+    public class ProcessManagerProducedEventsAndCommandsHasProcessId : NodeTestKit
     {
-        public ProcessManagerProducedEventsAndCommandsHasProcessId(ITestOutputHelper helper) : base(helper) { }
+        protected ProcessManagerProducedEventsAndCommandsHasProcessId(NodeTestFixture fixture) : base(fixture) { }
+        public ProcessManagerProducedEventsAndCommandsHasProcessId(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) { }
 
         [Fact]
         public async Task When_dispatch_command_than_command_should_have_right_processId()

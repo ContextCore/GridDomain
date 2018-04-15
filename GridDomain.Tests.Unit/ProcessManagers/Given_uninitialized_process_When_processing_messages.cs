@@ -8,9 +8,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class Given_uninitialized_process_When_processing_messages : SoftwareProgrammingProcessTest
+    public class Given_uninitialized_process_When_processing_messages : NodeTestKit
     {
-        public Given_uninitialized_process_When_processing_messages(ITestOutputHelper helper) : base(helper) {}
+        public Given_uninitialized_process_When_processing_messages(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) {}
+        protected Given_uninitialized_process_When_processing_messages(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public async Task Process_state_should_not_be_changed()

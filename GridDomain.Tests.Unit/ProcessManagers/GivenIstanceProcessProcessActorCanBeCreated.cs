@@ -15,9 +15,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class GivenIstanceProcessProcessActorCanBeCreated : SoftwareProgrammingProcessTest
+    public class GivenIstanceProcessProcessActorCanBeCreated : NodeTestKit
     {
-        public GivenIstanceProcessProcessActorCanBeCreated(ITestOutputHelper helper) : base(helper) {}
+        public GivenIstanceProcessProcessActorCanBeCreated(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) {}
+        protected GivenIstanceProcessProcessActorCanBeCreated(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public void Instance_process_actor_can_be_created()

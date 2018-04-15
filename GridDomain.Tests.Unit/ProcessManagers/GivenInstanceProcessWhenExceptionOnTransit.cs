@@ -14,9 +14,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class GivenInstanceProcessWhenExceptionOnTransit : SoftwareProgrammingProcessTest
+    public class GivenInstanceProcessWhenExceptionOnTransit : NodeTestKit
     {
-        public GivenInstanceProcessWhenExceptionOnTransit(ITestOutputHelper helper) : base(helper) {}
+        public GivenInstanceProcessWhenExceptionOnTransit(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) {}
+        protected GivenInstanceProcessWhenExceptionOnTransit(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public async Task When_process_receives_a_message_that_case_process_exception()

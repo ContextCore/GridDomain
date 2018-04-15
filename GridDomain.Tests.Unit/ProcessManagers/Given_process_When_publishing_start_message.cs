@@ -8,9 +8,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class Given_process_When_publishing_start_message : SoftwareProgrammingProcessTest
+    public class Given_process_When_publishing_start_message : NodeTestKit
     {
-        public Given_process_When_publishing_start_message(ITestOutputHelper helper) : base(helper) {}
+        public Given_process_When_publishing_start_message(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) {}
+        protected Given_process_When_publishing_start_message(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public async Task When_publishing_start_message_A()
