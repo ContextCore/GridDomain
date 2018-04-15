@@ -4,7 +4,7 @@ using Akka.DI.Core;
 using Autofac;
 using Xunit;
 
-namespace GridDomain.Tests.Unit.CommandsExecution {
+namespace GridDomain.Tests.Unit {
     public class Wire_DI_test
     {
         [Fact]

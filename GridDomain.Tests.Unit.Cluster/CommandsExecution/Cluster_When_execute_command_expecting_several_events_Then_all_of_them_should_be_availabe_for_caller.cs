@@ -1,17 +1,7 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using GridDomain.Common;
-using GridDomain.CQRS;
-using GridDomain.Tests.Unit.BalloonDomain.Commands;
-using GridDomain.Tests.Unit.BalloonDomain.Configuration;
-using GridDomain.Tests.Unit.BalloonDomain.Events;
-using GridDomain.Tests.Unit.Cluster;
-using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
-using Xunit;
+using GridDomain.Tests.Unit.CommandsExecution;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.Unit.Cluster.CommandsExecution
 {
     public class Cluster_When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller:When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller
     {

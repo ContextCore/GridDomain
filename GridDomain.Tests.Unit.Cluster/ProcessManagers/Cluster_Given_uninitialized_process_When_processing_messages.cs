@@ -1,13 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using GridDomain.ProcessManagers.State;
-using GridDomain.Tests.Unit.Cluster;
-using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
-using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
-using Xunit;
+using GridDomain.Tests.Unit.ProcessManagers;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.ProcessManagers
+namespace GridDomain.Tests.Unit.Cluster.ProcessManagers
 {
     public class Cluster_Given_uninitialized_process_When_processing_messages : Given_uninitialized_process_When_processing_messages
     {

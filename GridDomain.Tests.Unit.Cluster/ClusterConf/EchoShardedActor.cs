@@ -1,10 +1,9 @@
 ﻿using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.Node;
-using GridDomain.Node.Cluster;
 using GridDomain.Node.Cluster.CommandPipe;
 
-namespace GridDomain.Tests.Unit.Cluster {
+namespace GridDomain.Tests.Unit.Cluster.ClusterConf {
     class EchoShardedActor : ReceiveActor
     {
         public EchoShardedActor()

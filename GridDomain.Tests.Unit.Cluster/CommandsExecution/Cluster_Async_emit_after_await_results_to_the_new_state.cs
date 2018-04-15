@@ -1,17 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Tests.Unit.BalloonDomain;
-using GridDomain.Tests.Unit.BalloonDomain.Configuration;
-using GridDomain.Tests.Unit.BalloonDomain.Events;
-using GridDomain.Tests.Unit.Cluster;
-using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
+using GridDomain.Tests.Unit.CommandsExecution;
 using Serilog.Events;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.CommandsExecution
+namespace GridDomain.Tests.Unit.Cluster.CommandsExecution
 {
     public class Cluster_Async_emit_after_await_results_to_the_new_state : Async_emit_after_await_results_to_the_new_state
     {
