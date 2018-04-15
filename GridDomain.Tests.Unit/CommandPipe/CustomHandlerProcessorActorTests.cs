@@ -31,14 +31,14 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid().ToString());
             var sampleAggregateChangedEvent = new BalloonTitleChanged("1", Guid.NewGuid().ToString());
 
-            actor.Tell(new HandlersPipeActor.Project(new []{new MessageMetadataEnvelop(sampleAggregateCreatedEvent)},TestActor));
+            actor.Tell(new HandlersPipeActor.Project(TestActor,new MessageMetadataEnvelop(sampleAggregateCreatedEvent)));
 
             //HandlersProcessActor should notify next step - process actor that work is done
             ExpectMsg<IMessageMetadataEnvelop>(m => m.Message is DomainEvent);
             ExpectMsg<AllHandlersCompleted>();
             //but handlers will finish their work later in undefined sequence
 
-            actor.Tell(new HandlersPipeActor.Project(new []{new MessageMetadataEnvelop(sampleAggregateChangedEvent)},TestActor));
+            actor.Tell(new HandlersPipeActor.Project(TestActor,MessageMetadata.Empty,sampleAggregateChangedEvent));
 
             ExpectMsg<IMessageMetadataEnvelop>(m => m.Message is DomainEvent);
             //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
@@ -56,7 +56,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid().ToString());
 
-            actor.Tell(new HandlersPipeActor.Project(new []{MessageMetadataEnvelop.New(sampleAggregateCreatedEvent)},TestActor));
+            actor.Tell(new HandlersPipeActor.Project(TestActor,MessageMetadataEnvelop.New(sampleAggregateCreatedEvent)));
 
 
             //HandlersPipeActor should notify next step - process actor that work is done
@@ -80,7 +80,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
 
             var messageMetadataEnvelop = MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString()));
-            actor.Tell(new HandlersPipeActor.Project(new []{messageMetadataEnvelop},TestActor));
+            actor.Tell(new HandlersPipeActor.Project(TestActor,messageMetadataEnvelop));
 
             //in sync process we should wait for handlers execution
             //in same order as they were sent to handlers process actor
@@ -91,7 +91,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var metadataEnvelop = MessageMetadataEnvelop.New(new BalloonTitleChanged("2", Guid.NewGuid().ToString()));
             
-            actor.Tell(new HandlersPipeActor.Project(new []{metadataEnvelop},TestActor));
+            actor.Tell(new HandlersPipeActor.Project(TestActor,metadataEnvelop));
 
             ExpectMsg<MarkedHandlerExecutedMessage>();
             ExpectMsg<MarkedHandlerExecutedMessage>();
@@ -119,7 +119,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var msg = MessageMetadataEnvelop.New(new Inherited());
 
-            actor.Tell(new HandlersPipeActor.Project(new []{msg},TestActor));
+            actor.Tell(new HandlersPipeActor.Project(TestActor,msg));
             //processor did not run, but we pass message to process after
             ExpectMsg<MessageMetadataEnvelop<Inherited>>();
             //processor did not run, but we received processing complete message
@@ -136,7 +136,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
             var messageMetadataEnvelop = MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString()));
-            actor.Tell(new HandlersPipeActor.Project(new []{messageMetadataEnvelop},TestActor));
+            actor.Tell(new HandlersPipeActor.Project(TestActor,messageMetadataEnvelop));
            
             //TestActor as processor receives message for work
             ExpectMsg<MessageMetadataEnvelop<BalloonCreated>>();
@@ -166,8 +166,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
 
-            actor.Tell(new HandlersPipeActor.Project(new []{MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString()))},TestActor));
-            actor.Tell(new HandlersPipeActor.Project(new []{MessageMetadataEnvelop.New(new BalloonTitleChanged("1", Guid.NewGuid().ToString()))},TestActor));
+            actor.Tell(new HandlersPipeActor.Project(TestActor, MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString()))));
+            actor.Tell(new HandlersPipeActor.Project(TestActor, MessageMetadataEnvelop.New(new BalloonTitleChanged("1", Guid.NewGuid().ToString()))));
 
             ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonCreated && s == fastHandler);
             ExpectMsg<IMessageMetadataEnvelop<BalloonCreated>>();

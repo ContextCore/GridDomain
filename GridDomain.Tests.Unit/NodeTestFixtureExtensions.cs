@@ -11,6 +11,7 @@ using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
+using Serilog.Events;
 
 namespace GridDomain.Tests.Unit
 {
@@ -19,6 +20,12 @@ namespace GridDomain.Tests.Unit
         public static NodeTestFixture EnableScheduling(this NodeTestFixture fixture, IRetrySettings config)
         {
             return EnableScheduling(fixture, new InMemoryQuartzConfig(config));
+        }
+
+        public static T LogLevel<T>(this T fixture, LogEventLevel value)where T:NodeTestFixture
+        {
+            fixture.NodeConfig.LogLevel = value;
+            return fixture;
         }
 
         public static NodeTestFixture EnableScheduling(this NodeTestFixture fixture, IQuartzConfig config = null, bool clearScheduledData = true)

@@ -48,12 +48,13 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
             var syncCommand = new PlanTitleWriteCommand(101, Guid.NewGuid());
             var res = await Node.Prepare(syncCommand)
                                 .Expect<BalloonTitleChangedNotification>(e => e.BallonId == syncCommand.AggregateId)
-                                .Or<Fault>(f => (f.Message as DomainEvent)?.SourceId == syncCommand.AggregateId)
+                                .Or<Fault<DomainEvent>>(f => f.Message.SourceId == syncCommand.AggregateId)
                                 .Execute();
 
             var evt = res.Message<BalloonTitleChangedNotification>();
             Assert.Equal(syncCommand.AggregateId, evt.BallonId);
         }
+
 
         [Fact]
         public async Task When_fault_is_produced_when_publish_command_with_base_type()

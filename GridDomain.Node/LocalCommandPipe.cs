@@ -118,7 +118,7 @@ namespace GridDomain.Node
             return RegisterHandler<TMessage, THandler>(actor => new FireAndForgetActorMessageProcessor(actor));
         }
 
-        public Task BuildRoutes()
+        public Task StartRoutes()
         {
             foreach (var postponed in _postponedRegistrations)
                 postponed();

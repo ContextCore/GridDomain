@@ -26,7 +26,7 @@ namespace GridDomain.Node.Actors.Hadlers
         public MessageHandleActor(THandler handler, IPublisher publisher)
         {
             Publisher = publisher;
-            _monitor = new ActorMonitor(Context, typeof(THandler).Name);
+            _monitor = new ActorMonitor(Context, typeof(THandler).BeautyName());
             //to avoid creation of generic types in senders
             Receive<IMessageMetadataEnvelop>(envelop =>
                                              {

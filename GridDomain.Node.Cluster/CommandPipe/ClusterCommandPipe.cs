@@ -28,36 +28,21 @@ using Serilog;
 
 namespace GridDomain.Node.Cluster.CommandPipe
 {
-    public class HandlerPipeActorCell : ReceiveActor
-    {
-        public HandlerPipeActorCell()
-        {
-            var actorProps = Context.System.DI()
-                                    .Props(typeof(ClusterHandlersPipeActor));
-
-            var actor = Context.ActorOf(actorProps);
-
-            ReceiveAny(m => actor.Forward(m));
-        }
-    }
-
     public class ClusterHandlersPipeActor : HandlersPipeActor
     {
-        public ClusterHandlersPipeActor(MessageMap map, IActorRef processActor) : base(CreateRoutess(Context, map), processActor)
-        { }
+        public ClusterHandlersPipeActor(MessageMap map, IActorRef processActor) : base(CreateRoutess(Context, map), processActor) { }
 
         private static IMessageProcessor CreateRoutess(IUntypedActorContext system, MessageMap messageRouteMap)
         {
             var catalog = new HandlersDefaultProcessor();
             foreach (var reg in messageRouteMap.Registratios)
             {
-                var handlerActorType = typeof(MessageHandleActor<,>);
-                handlerActorType.MakeGenericType(reg.Message, reg.Handler);
+                var handlerActorType = typeof(MessageHandleActor<,>).MakeGenericType(reg.Message, reg.Handler);
 
                 var props = system.DI()
                                   .Props(handlerActorType);
 
-                var actor = system.ActorOf(props);
+                var actor = system.ActorOf(props, handlerActorType.BeautyName());
 
                 IMessageProcessor processor;
                 switch (reg.ProcesType)
@@ -174,7 +159,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
             return messageMap.RegisterFireAndForgetHandler<TMessage, THandler>();
         }
 
-        public async Task BuildRoutes()
+        public async Task StartRoutes()
         {
             BuildMessageHandlers();
 
@@ -186,7 +171,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
         private void BuildMessageHandlers()
         {
             var routingPool = new ConsistentHashingPool(10)
-                .WithHashMapping(m =>
+                                  .WithHashMapping(m =>
                                  {
                                      if (m is IMessageMetadataEnvelop env)
                                      {
@@ -198,10 +183,11 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
             var clusterRouterPool = new ClusterRouterPool(routingPool, new ClusterRouterPoolSettings(10, 1, true));
 
-            var withRouter = Props.Create(() => new HandlerPipeActorCell())
-                                  .WithRouter(clusterRouterPool);
+            var handlerActorProps = System.DI()
+                                          .Props(typeof(ClusterHandlersPipeActor))
+                                          .WithRouter(clusterRouterPool);
 
-            HandlersPipeActor = System.ActorOf(withRouter);
+            HandlersPipeActor = System.ActorOf(handlerActorProps, nameof(ClusterHandlersPipeActor));
         }
 
         private void BuildAggregateCommandingRoutes()
@@ -237,7 +223,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
             container.RegisterInstance(ProcessesPipeActor)
                      .Named<IActorRef>(Actors.CommandPipe.ProcessesPipeActor.ProcessManagersPipeActorRegistrationName);
 
-            container.RegisterInstance(HandlersPipeActor)
+            container.Register((c, p) => HandlersPipeActor)
                      .Named<IActorRef>(Actors.CommandPipe.HandlersPipeActor.CustomHandlersProcessActorRegistrationName);
         }
     }

@@ -184,7 +184,7 @@ namespace GridDomain.Node {
 
         protected virtual async Task StartMessageRouting()
         {
-            await Pipe.BuildRoutes();
+            await Pipe.StartRoutes();
         }
 
         protected virtual async Task ConfigureDomain(DomainBuilder domainBuilder)

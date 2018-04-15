@@ -21,7 +21,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             if(metadata == null)
                 throw new ArgumentNullException(nameof(metadata));
 
-            return new ShardedCommandMetadataEnvelop(command, metadata );
+            return new ShardedCommandMetadataEnvelop(command, metadata);
         }
         
         public override ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null)

@@ -241,7 +241,7 @@ namespace GridDomain.Node.Actors.Aggregates
         {
             ExecutionContext.MessagesToProject++;
             var messageMetadataEnvelop = new MessageMetadataEnvelop(evt, commandMetadata);
-            _customHandlersActor.Tell(new HandlersPipeActor.Project(new []{messageMetadataEnvelop},Self));
+            _customHandlersActor.Tell(new HandlersPipeActor.Project(Self,commandMetadata,evt));
             _publisher.Publish(messageMetadataEnvelop);
         }
     }
