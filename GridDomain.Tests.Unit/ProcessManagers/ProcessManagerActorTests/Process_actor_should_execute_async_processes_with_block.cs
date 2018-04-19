@@ -53,7 +53,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             //for process state retrival
             var processStateActor = Sys.ActorOf(Props.Create(() => new ProcessStateHubActor<TestState>(new DefaultRecycleConfiguration())), typeof(TestState).BeautyName() + "_Hub");
             var name = EntityActorName.New<ProcessStateAggregate<TestState>>(_processId).Name;
-            _processActor = ActorOfAsTestActorRef(() => new ProcessActor<TestState>(new AsyncLongRunningProcess(), creator),
+            _processActor = ActorOfAsTestActorRef(() => new ProcessActor<TestState>(new AsyncLongRunningProcess(), creator, ProcessHubActor.GetProcessStateActorSelection(typeof(TestState))),
                                                   name);
         }
 

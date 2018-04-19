@@ -42,7 +42,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
         private BehaviorQueue Behavior { get; }
         private ActorMonitor Monitor { get; }
         private IActorRef _stateAggregateActor;
-        private static readonly string ProcessStateActorSelection = "user/" + typeof(TState).BeautyName() + "_Hub";
+      //  private static readonly string ProcessStateActorSelection = "user/" + typeof(TState).BeautyName() + "_Hub";
         private readonly ActorSelection _stateActorSelection;
         public IProcess<TState> Process { get; private set; }
         public TState State { get; private set; }
@@ -80,7 +80,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
         }
 
         private ProcessExecutionContext ExecutionContext { get; } = new ProcessExecutionContext();
-        public ProcessActor(IProcess<TState> process, IProcessStateFactory<TState> processStateFactory)
+        public ProcessActor(IProcess<TState> process, IProcessStateFactory<TState> processStateFactory, string stateActorPath)
 
         {
             Process = process;
@@ -98,7 +98,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             _exceptionOnTransit = ProcessManagerActorConstants.ExceptionOnTransit(Self.Path.Name);
             _producedCommand = ProcessManagerActorConstants.ProcessProduceCommands(Self.Path.Name);
-            _stateActorSelection = Context.System.ActorSelection(ProcessStateActorSelection);
+            _stateActorSelection = Context.System.ActorSelection(stateActorPath);
 
             Behavior.Become(InitializingBehavior, nameof(InitializingBehavior));
         }
@@ -117,7 +117,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             _stateActorSelection.ResolveOne(TimeSpan.FromSeconds(10))
                                 .PipeTo(Self);
 
-            Receive<Status.Failure>(f => throw new CannotFindProcessStatePersistenceActor(ProcessStateActorSelection));
+            Receive<Status.Failure>(f => throw new CannotFindProcessStatePersistenceActor(f.Cause.ToString()));
             Receive<IActorRef>(r =>
                               {
                                   _stateAggregateActor = r;

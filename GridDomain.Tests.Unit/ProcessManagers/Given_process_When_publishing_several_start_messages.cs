@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 {
     public class Given_process_When_publishing_several_start_messages : NodeTestKit
     {
-        public Given_process_When_publishing_several_start_messages(NodeTestFixture fixture):base(fixture){} 
+        protected Given_process_When_publishing_several_start_messages(NodeTestFixture fixture):base(fixture){} 
         
         public Given_process_When_publishing_several_start_messages(ITestOutputHelper helper): 
             this(new SoftwareProgrammingProcessManagerFixture(helper).IgnorePipeCommands()) {}

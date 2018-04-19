@@ -22,9 +22,15 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly List<IMessageRouteMap> _maps = new List<IMessageRouteMap>();
 
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
-     
+        private Func<Type, string> _processManagersStateActorPath;
+
         public IReadOnlyCollection<IContainerConfiguration> ContainerConfigurations => _containerConfigurations;
 
+        public DomainBuilder(Func<Type,string> ProcessManagersStateActorPath)
+        {
+            _processManagersStateActorPath = ProcessManagersStateActorPath;
+        }
+        
         public void Configure(ContainerBuilder container)
         {
             ContainerConfigurations.ForEach(container.Register);
@@ -40,7 +46,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         public void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory) where TState : class, IProcessState
         {
-            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(processDependenciesfactory));
+            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(processDependenciesfactory,_processManagersStateActorPath(typeof(TState))));
             _maps.Add(processDependenciesfactory.CreateRouteMap());
 
             var stateConfig = new ProcessStateAggregateConfiguration<TState>(processDependenciesfactory.StateDependencyFactory);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.Node.Cluster.CommandPipe;
@@ -41,6 +42,11 @@ namespace GridDomain.Node.Cluster {
         protected override IMessageWaiterFactory CreateMessageWaiterFactory()
         {
             return new ClusterMessageWaiterFactory(System, Transport, DefaultTimeout);
+        }
+
+        protected override DomainBuilder CreateDomainBuilder()
+        {
+            return new DomainBuilder(t=>"system/sharding/"+t.BeautyName());
         }
     }
 }

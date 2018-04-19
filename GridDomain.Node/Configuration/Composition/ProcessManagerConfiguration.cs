@@ -21,19 +21,13 @@ namespace GridDomain.Node.Configuration.Composition
     internal class ProcessManagerConfiguration<TState> : IContainerConfiguration where TState : class, IProcessState
     {
         private readonly IProcessDependencyFactory<TState> _processDependencyFactory;
+        private string _statePath;
 
-        internal ProcessManagerConfiguration(IProcessDependencyFactory<TState> factory)
+        internal ProcessManagerConfiguration(IProcessDependencyFactory<TState> factory, string statePath)
         {
+            _statePath = statePath;
             _processDependencyFactory = factory;
         }
-
-        //private void RegisterStateAggregate<TStateActorType>(ContainerBuilder container)
-        //{
-        //    container.Register(new AggregateConfiguration<TStateActorType, ProcessStateAggregate<TState>>(CommandAggregateHandler.New<ProcessStateAggregate<TState>>(),
-        //                                                                                                  _processDependencyFactory.StateDependencyFactory.CreatePersistencePolicy,
-        //                                                                                                  _processDependencyFactory.StateDependencyFactory.CreateAggregateFactory(),
-        //                                                                                                  _processDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration()));
-        //}
 
         public void Register(ContainerBuilder container)
         {
@@ -46,17 +40,14 @@ namespace GridDomain.Node.Configuration.Composition
                      .WithParameters(new Parameter[] {
                                                          new TypedParameter(typeof(IProcess<TState>),  _processDependencyFactory.CreateProcess()),
                                                          new TypedParameter(typeof(IProcessStateFactory<TState>),  _processDependencyFactory.CreateStateFactory()),
-                                                         new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
-                                                                               (pi, ctx) => ctx.ResolveNamed<IActorRef>(_processDependencyFactory.ProcessName))
+                                                         new TypedParameter(typeof(string),  _statePath),
+                                                         
                                                      });
 
             var persistentChildsRecycleConfiguration = _processDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration();
             container.Register<ProcessHubActor<TState>>(c => new ProcessHubActor<TState>(persistentChildsRecycleConfiguration, _processDependencyFactory.ProcessName));
 
 
-            //for direct access to process state from repositories and for generalization
-           // RegisterStateAggregate<AggregateActor<ProcessStateAggregate<TState>>>(container);
-           // container.Register<AggregateHubActor<ProcessStateAggregate<TState>>>(c => new AggregateHubActor<ProcessStateAggregate<TState>>(persistentChildsRecycleConfiguration));
         }
     }
 }

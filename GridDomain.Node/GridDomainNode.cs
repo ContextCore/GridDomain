@@ -14,6 +14,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
 using GridDomain.Transport;
@@ -46,6 +47,11 @@ namespace GridDomain.Node {
         {
             await base.StartMessageRouting();
             _akkaCommandExecutor.Init(Pipe.CommandExecutor);
+        }
+
+        protected override DomainBuilder CreateDomainBuilder()
+        {
+            return new DomainBuilder(ProcessHubActor.GetProcessStateActorSelection);
         }
     }
 
@@ -167,7 +173,7 @@ namespace GridDomain.Node {
         {
             Log.Information("Starting GridDomain node {Id}", Id);
             
-            var domainBuilder = CreateDomainBuilder();
+            var domainBuilder = InitDomainBuilder();
 
             await ConfigureDomain(domainBuilder);
             
@@ -234,9 +240,11 @@ namespace GridDomain.Node {
             return new LocalMessageWaiterFactory(System, Transport, DefaultTimeout);
         }
 
-        protected virtual DomainBuilder CreateDomainBuilder()
+        protected abstract DomainBuilder CreateDomainBuilder();
+        
+        protected virtual DomainBuilder InitDomainBuilder()
         {
-            var domainBuilder = new DomainBuilder();
+            var domainBuilder = CreateDomainBuilder();
             _domainConfigurations.ForEach(c => domainBuilder.Register(c));
             return domainBuilder;
         }
