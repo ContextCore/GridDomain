@@ -12,15 +12,15 @@ namespace GridDomain.Node.Cluster.CommandPipe
     {
         public ClusterAggregateActor(IAggregateCommandsHandler<TAggregate> handler, ISnapshotsPersistencePolicy snapshotsPersistencePolicy, IConstructAggregates aggregateConstructor, IConstructSnapshots snapshotsConstructor, IActorRef customHandlersActor) : base(handler, snapshotsPersistencePolicy, aggregateConstructor, snapshotsConstructor, customHandlersActor) { }
 
-        protected override void Project(IMessageMetadata metadata, DomainEvent[] events)
-        {
-            foreach (var evt in events)
-                Project(new ShardedProcessMessageMetadataEnvelop(evt, evt.ProcessId, metadata));
-        }
-
-        protected override void Project(IMessageMetadata metadata, IFault fault)
-        {
-            Project(new ShardedProcessMessageMetadataEnvelop(fault, fault.ProcessId, metadata));
-        }
+        //protected override void Project(IMessageMetadata metadata, DomainEvent[] events)
+        //{
+        //    foreach (var evt in events)
+        //        Project(new ShardedProcessMessageMetadataEnvelop(evt, evt.ProcessId, metadata));
+        //}
+        //
+        //protected override void Project(IMessageMetadata metadata, IFault fault)
+        //{
+        //    Project(new ShardedProcessMessageMetadataEnvelop(fault, fault.ProcessId, metadata));
+        //}
     }
 }

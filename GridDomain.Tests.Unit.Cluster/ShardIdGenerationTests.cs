@@ -17,16 +17,16 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Unit.Cluster
 {
     
-    public class AnyMessageClusterPublisher:AnyMessagePublisher
-    {
-        public AnyMessageClusterPublisher(IActorCommandPipe commandPipe, MessagesWaiter<AnyMessagePublisher> waiter) : base(commandPipe, waiter) { }
-        
-        protected override object EnvelopeProcessMessage(DomainEvent message, IMessageMetadata metadata)
-        {
-            return new ShardedProcessMessageMetadataEnvelop(message,message.ProcessId,metadata ?? MessageMetadata.Empty);
-        }
-
-    }
+    //public class AnyMessageClusterPublisher:AnyMessagePublisher
+    //{
+    //    public AnyMessageClusterPublisher(IActorCommandPipe commandPipe, MessagesWaiter<AnyMessagePublisher> waiter) : base(commandPipe, waiter) { }
+    //    
+    //    protected override object EnvelopeProcessMessage(DomainEvent message, IMessageMetadata metadata)
+    //    {
+    //        return new ShardedProcessMessageMetadataEnvelop(message,message.ProcessId,metadata ?? MessageMetadata.Empty);
+    //    }
+    //
+    //}
     
     public class ShardIdGenerationTests
     {

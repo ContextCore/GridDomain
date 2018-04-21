@@ -43,6 +43,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
         private readonly MessageMap _processMessageMap = new MessageMap();
 
         private readonly List<Func<Task>> _delayedRegistrations = new List<Func<Task>>();
+        private readonly List<IProcessDescriptor> _processDescriptors = new List<IProcessDescriptor>();
 
         public ClusterCommandPipe(ActorSystem system, ILogger log)
         {
@@ -73,6 +74,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
         public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
         {
+            _processDescriptors.Add(processDescriptor);
             _delayedRegistrations.Add(async () =>
                                       {
                                           Type actorType = typeof(ClusterProcessStateActor<>).MakeGenericType(processDescriptor.StateType);
@@ -92,12 +94,10 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
                                           if (_processAggregatesRegionPaths.Contains(path))
                                               throw new InvalidOperationException("Cannot add dublicate region path: " + path);
+                                          _processAggregatesRegionPaths.Add(path);
                                       });
 
-            foreach (var msg in processDescriptor.AcceptMessages)
-                _processMessageMap.Registratios.Add(new MessageMap.HandlerRegistration(msg.MessageType, processDescriptor.ProcessType, MessageMap.HandlerProcessType.Sync));
-
-
+           
             return Task.CompletedTask;
         }
 
@@ -190,7 +190,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
             container.RegisterType<ClusterProcesPipeActor>()
                      .WithParameters(new Parameter[]
                                      {
-                                         new TypedParameter(typeof(MessageMap), _processMessageMap),
+                                         new TypedParameter(typeof(IReadOnlyCollection<IProcessDescriptor>), _processDescriptors),
                                          //{akka://AutoTest/user/Aggregates}
                                          new TypedParameter(typeof(string), "/user/Aggregates")
                                      });

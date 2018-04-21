@@ -13,6 +13,11 @@ namespace GridDomain.Node.AkkaMessaging
             Name = GetFullName(entityName, id);
         }
 
+        public static string GetFullName(Type entityType, string id)
+        {
+            return GetFullName(entityType.BeautyName(), id);
+        }
+        
         public static string GetFullName(string entity, string id)
         {
             return entity + Separator + id;

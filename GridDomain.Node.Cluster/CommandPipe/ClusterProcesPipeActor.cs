@@ -1,69 +1,21 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
 using GridDomain.Common;
-using GridDomain.CQRS;
+using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.ProcessManagers;
-using GridDomain.Node.Actors.ProcessManagers.Messages;
-using GridDomain.ProcessManagers;
+using GridDomain.ProcessManagers.DomainBind;
 
-namespace GridDomain.Node.Cluster.CommandPipe {
-
-
-
-    public class ClusterProcessActor<T> : ProcessActor<T> where T : class, IProcessState
-    {
-        private IActorRef _shardRegion;
-
-        public ClusterProcessActor(IProcess<T> process, IProcessStateFactory<T> processStateFactory, string stateActorPath) : base(process, processStateFactory, stateActorPath)
-        {
-            _shardRegion = ClusterSharding.Get(Context.System)
-                                          .ShardRegion(Known.Names.Region(process.GetType()));
-        }
-        protected override object CreateGetStateMessage()
-        {
-            return new ClusterGetProcessState(typeof(T),Id);
-        }
-
-        protected override IMessageMetadataEnvelop EnvelopStateCommand(ICommand cmd, IMessageMetadata metadata)
-        {
-            return new ShardedCommandMetadataEnvelop(cmd,metadata);
-        }
-
-        protected override IActorRef RedirectActor()
-        {
-            return _shardRegion;
-        }
-
-        protected override IMessageMetadataEnvelop EnvelopRedirect(ProcessRedirect processRedirect, IMessageMetadata metadata)
-        {
-            return new ShardedProcessMessageMetadataEnvelop(processRedirect, processRedirect.ProcessId,metadata);
-        }
-    }
-
-    public class ClusterGetProcessState:GetProcessState,IShardedMessageMetadataEnvelop
-    {
-        public ClusterGetProcessState(Type type, string id, IShardIdGenerator generator = null):base(id)
-        {
-            Message = this;
-            Metadata = MessageMetadata.Empty;
-            EntityId = id;
-            ShardId = (generator ?? DefaultShardIdGenerator.Instance).GetShardId(id);
-        }
-
-        public object Message { get; }
-        public IMessageMetadata Metadata { get; }
-        public string EntityId { get; }
-        public string ShardId { get; }
-    }
-
+namespace GridDomain.Node.Cluster.CommandPipe
+{
     public class ClusterProcesPipeActor : ProcessesPipeActor, IWithUnboundedStash
     {
-        public ClusterProcesPipeActor(MessageMap map, string commandActorPath) : base(CreateRoutess(Context, map))
+
+        public ClusterProcesPipeActor( IReadOnlyCollection<IProcessDescriptor> processDescriptors,string commandActorPath) : base(CreateRoutes(Context, processDescriptors))
         {
             //initialize command actor on first message, 
             //switch to default behavior after
@@ -77,11 +29,11 @@ namespace GridDomain.Node.Cluster.CommandPipe {
                            Context.ActorSelection(commandActorPath)
                                   .ResolveOne(TimeSpan.FromSeconds(5))
                                   .PipeTo(Self);
-                           
+
                            BecomeStacked(SetCommandActorBehavior);
-                           
+
                            Stash.Stash();
-                       });  
+                       });
         }
 
         private void SetCommandActorBehavior()
@@ -98,23 +50,39 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             ReceiveAny(m => Stash.Stash());
         }
 
-        private class FireAndForgetActorMessageProcessor<T> : IMessageProcessor<T>
+        public class ShardedProcessMessageProcessor : IMessageProcessor<IProcessCompleted>
         {
-            private readonly T _answer;
+            private readonly IActorRef _processRegion;
+            private readonly TimeSpan? _defaultTimeout;
+            private readonly string _processStateName;
 
-            public FireAndForgetActorMessageProcessor(IActorRef processor, T answer)
+            public ShardedProcessMessageProcessor(IActorRef processRegion,
+                                                  string processStateName,
+                                                  TimeSpan? defaultTimeout = null)
             {
-                _answer = answer;
-                ActorRef = processor;
+                _processStateName = processStateName;
+                _defaultTimeout = defaultTimeout;
+                _processRegion = processRegion;
             }
 
-            public Task<T> Process(IMessageMetadataEnvelop message)
+            public Task<IProcessCompleted> Process(IMessageMetadataEnvelop message)
             {
-                ActorRef.Tell(message);
-                return Task.FromResult(_answer);
+                return _processRegion.Ask<IProcessCompleted>(MessageFactory(message), _defaultTimeout);
             }
 
-            private IActorRef ActorRef { get; }
+            private IMessageMetadataEnvelop MessageFactory(IMessageMetadataEnvelop m)
+            {
+                if (m.Message is IHaveProcessId proc)
+                {
+                    return new ShardedProcessMessageMetadataEnvelop(
+                                                                    m.Message,
+                                                                    proc.ProcessId,
+                                                                    _processStateName,
+                                                                    m.Metadata);
+                }
+
+                throw new InvalidMessageException();
+            }
 
             Task IMessageProcessor.Process(IMessageMetadataEnvelop message)
             {
@@ -122,33 +90,52 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             }
         }
 
-        private static IMessageProcessor<ProcessesTransitComplete> CreateRoutess(IUntypedActorContext context, MessageMap messageRouteMap)
+        private static IMessageProcessor<ProcessesTransitComplete> CreateRoutes(IUntypedActorContext context, IReadOnlyCollection<IProcessDescriptor> messageRouteMap)
         {
             var catalog = new ProcessesDefaultProcessor();
-            foreach (var reg in messageRouteMap.Registratios)
+            foreach (var reg in messageRouteMap)
             {
                 var procesShardRegion = ClusterSharding.Get(context.System)
-                                                       .ShardRegion(Known.Names.Region(reg.Handler));
+                                                       .ShardRegion(Known.Names.Region(reg.ProcessType));
 
-                IMessageProcessor<IProcessCompleted> processor;
-                switch (reg.ProcesType)
-                {
-                    case MessageMap.HandlerProcessType.Sync:
-                        processor = new ActorAskMessageProcessor<IProcessCompleted>(procesShardRegion);
-                        break;
+                var processStateName = reg.StateType.BeautyName();
 
-                    case MessageMap.HandlerProcessType.FireAndForget:
-                        processor = new FireAndForgetActorMessageProcessor<IProcessCompleted>(procesShardRegion, new ProcessTransited(null, null, null, null));
-                        break;
-                    default:
-                        throw new NotSupportedException(reg.ProcesType.ToString());
-                }
-
-                catalog.Add(reg.Message, processor);
+                IMessageProcessor<IProcessCompleted> processor = new ShardedProcessMessageProcessor(procesShardRegion,
+                                                                                                    processStateName);
+                foreach(var msg in reg.AcceptMessages)
+                    catalog.Add(msg.MessageType, processor);
             }
 
             return catalog;
         }
+
+//        private static IMessageProcessor<ProcessesTransitComplete> CreateRoutess(IUntypedActorContext context, MessageMap messageRouteMap)
+//        {
+//            var catalog = new ProcessesDefaultProcessor();
+//            foreach (var reg in messageRouteMap.Registratios)
+//            {
+//                var procesShardRegion = ClusterSharding.Get(context.System)
+//                                                       .ShardRegion(Known.Names.Region(reg.Handler));
+//
+//                IMessageProcessor<IProcessCompleted> processor;
+//                switch (reg.ProcesType)
+//                {
+//                    case MessageMap.HandlerProcessType.Sync:
+//                        processor = new ShardedProcessMessageProcessor<IProcessCompleted>(procesShardRegion);
+//                        break;
+//
+//                    case MessageMap.HandlerProcessType.FireAndForget:
+//                        processor = new FireAndForgetActorMessageProcessor<IProcessCompleted>(procesShardRegion, new ProcessTransited(null, null, null, null));
+//                        break;
+//                    default:
+//                        throw new NotSupportedException(reg.ProcesType.ToString());
+//                }
+//
+//                catalog.Add(reg.Message, processor);
+//            }
+//
+//            return catalog;
+//        }
 
         public IStash Stash { get; set; }
     }

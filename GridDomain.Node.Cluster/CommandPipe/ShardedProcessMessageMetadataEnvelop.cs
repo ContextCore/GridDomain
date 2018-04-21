@@ -17,10 +17,11 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             ShardId = generator.GetShardId(processId);
             EntityId = EntityActorName.GetFullName(processStateName,processId);
         }
-
+        
         public string EntityId { get; }
         public string ShardId { get; }
         public object Message { get; }
         public IMessageMetadata Metadata { get; }
     }
+    
 }
