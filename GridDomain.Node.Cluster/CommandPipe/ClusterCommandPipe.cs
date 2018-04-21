@@ -23,6 +23,7 @@ using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.Actors.ProcessManagers;
+using GridDomain.Node.Cluster.CommandPipe.CommandGrouping;
 using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Transport.Extension;
@@ -111,18 +112,19 @@ namespace GridDomain.Node.Cluster.CommandPipe
         public IActorRef HandlersPipeActor { get; private set; }
         public IActorRef CommandExecutor { get; private set; }
 
-        readonly List<string> _aggregatesRegionPaths = new List<string>();
+        readonly Dictionary<string, IActorRef> _aggregatesRegions = new Dictionary<string, IActorRef>();
         readonly List<string> _processAggregatesRegionPaths = new List<string>();
-        
+
         readonly MessageMap _messageMap = new MessageMap();
 
         private readonly ILogger _log;
         private readonly List<IProcessDescriptor> _processDescriptors = new List<IProcessDescriptor>();
 
-        public ClusterCommandPipe(ActorSystem cluster, ILogger log)
+        public ClusterCommandPipe(ActorSystem system, ILogger log)
         {
             _log = log;
-            System = cluster;
+            System = system;
+            ProcessesPipeActor = system.ActorOf(Props.Create(() => new DummyProcessActor()), "DummyProcessActor");
         }
 
         public async Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
@@ -134,23 +136,23 @@ namespace GridDomain.Node.Cluster.CommandPipe
         {
             var actorType = typeof(AggregateActorCell<>).MakeGenericType(aggregateType);
 
+            var regionName = aggregateType.BeautyName();
             var region = await ClusterSharding.Get(System)
-                                              .StartAsync(aggregateType.BeautyName(),
+                                              .StartAsync(regionName,
                                                           Props.Create(actorType),
                                                           ClusterShardingSettings.Create(System),
                                                           new ShardedMessageMetadataExtractor());
-            var path = region.Path.ToString();
 
-            if (_aggregatesRegionPaths.Contains(path))
-                throw new InvalidOperationException("Cannot add dublicate region path: " + path);
+            if (_aggregatesRegions.ContainsKey(regionName))
+                throw new InvalidOperationException("Cannot add dublicate region path: " + region.Path);
 
-            _aggregatesRegionPaths.Add(path);
+            _aggregatesRegions.Add(regionName, region);
         }
 
         public async Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
         {
             await RegisterAggregateByType(typeof(ProcessStateAggregate<>).MakeGenericType(processDescriptor.StateType));
-            
+
             var actorType = typeof(ProcessActor<>).MakeGenericType(processDescriptor.StateType);
 
             var region = await ClusterSharding.Get(System)
@@ -163,7 +165,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
             if (_processAggregatesRegionPaths.Contains(path))
                 throw new InvalidOperationException("Cannot add dublicate region path: " + path);
 
-            
+
             _processAggregatesRegionPaths.Add(path);
         }
 
@@ -180,7 +182,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
         public async Task StartRoutes()
         {
             BuildProcessManagerRoutes();
-            
+
             BuildMessageHandlers();
 
             BuildAggregateCommandingRoutes();
@@ -201,15 +203,15 @@ namespace GridDomain.Node.Cluster.CommandPipe
                                      throw new InvalidMessageException(m.ToString());
                                  });
 
-            ProcessesPipeActor = System.ActorOf(Props.Empty.WithRouter(routingGroup),"Processes");
-            
-          //  ProcessesPipeActor = System.ActorOf(Props.Create(() => new DummyProcessActor()), nameof(Actors.CommandPipe.ProcessesPipeActor));
+            ProcessesPipeActor = System.ActorOf(Props.Empty.WithRouter(routingGroup), "Processes");
+
+            //  ProcessesPipeActor = System.ActorOf(Props.Create(() => new DummyProcessActor()), nameof(Actors.CommandPipe.ProcessesPipeActor));
         }
 
         private void BuildMessageHandlers()
         {
             var routingPool = new ConsistentHashingPool(10)
-                                  .WithHashMapping(m =>
+                .WithHashMapping(m =>
                                  {
                                      if (m is IMessageMetadataEnvelop env)
                                      {
@@ -230,18 +232,18 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
         private void BuildAggregateCommandingRoutes()
         {
-            var routingGroup = new ConsistentHashingGroup(_aggregatesRegionPaths)
-                .WithHashMapping(m =>
+            var routingGroup = new ConsistentMapGroup(_aggregatesRegions)
+                .WithMapping(m =>
+                             {
+                                 if (m is IShardedMessageMetadataEnvelop env && env.Message is ICommand cmd)
                                  {
-                                     if (m is IShardedMessageMetadataEnvelop env && env.Message is ICommand cmd)
-                                     {
-                                         return cmd.AggregateType;
-                                     }
+                                     return cmd.AggregateType;
+                                 }
 
-                                     throw new InvalidMessageException(m.ToString());
-                                 });
+                                 throw new InvalidMessageException(m.ToString());
+                             });
 
-            CommandExecutor = System.ActorOf(Props.Empty.WithRouter(routingGroup),"Aggregates");
+            CommandExecutor = System.ActorOf(Props.Empty.WithRouter(routingGroup), "Aggregates");
         }
 
         public void Dispose()
