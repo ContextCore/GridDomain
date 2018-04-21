@@ -35,6 +35,7 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterInstance<IProcessStateFactory<TState>>(_processDependencyFactory.CreateStateFactory());
             container.RegisterInstance<IProcess<TState>>(process);
 
+            
             container.RegisterType<TActor>()
                      .WithParameters(new Parameter[] {
                                                          new TypedParameter(typeof(IProcess<TState>),  _processDependencyFactory.CreateProcess()),

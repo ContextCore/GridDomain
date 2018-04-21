@@ -8,14 +8,14 @@ namespace GridDomain.Node.Cluster.CommandPipe {
     
     public class ShardedProcessMessageMetadataEnvelop : IShardedMessageMetadataEnvelop
     {
-        public ShardedProcessMessageMetadataEnvelop(object evt, string processId, IMessageMetadata metadata=null, IShardIdGenerator generator=null)
+        public ShardedProcessMessageMetadataEnvelop(object evt, string processId, string processStateName, IMessageMetadata metadata=null, IShardIdGenerator generator=null)
         {
             Message = evt;
             Metadata = metadata ?? MessageMetadata.Empty;
             generator = generator ?? DefaultShardIdGenerator.Instance;
             
             ShardId = generator.GetShardId(processId);
-            EntityId = EntityActorName.GetFullName("none",processId);
+            EntityId = EntityActorName.GetFullName(processStateName,processId);
         }
 
         public string EntityId { get; }

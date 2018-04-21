@@ -20,9 +20,9 @@ namespace GridDomain.Node.Configuration.Composition
 {
     public class DomainBuilder : IDomainBuilder
     {
-        private readonly List<IMessageRouteMap> _maps = new List<IMessageRouteMap>();
+        protected readonly List<IMessageRouteMap> _maps = new List<IMessageRouteMap>();
 
-        private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
+        protected readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
         protected Func<Type, string> _processManagersStateActorPath;
 
         public IReadOnlyCollection<IContainerConfiguration> ContainerConfigurations => _containerConfigurations;
@@ -45,9 +45,9 @@ namespace GridDomain.Node.Configuration.Composition
                 await m.Register(router);
         }
 
-        public void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory) where TState : class, IProcessState
+        public virtual void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory) where TState : class, IProcessState
         {
-            _containerConfigurations.Add(CreateProcessManagerConfiguration(processDependenciesfactory));
+            _containerConfigurations.Add(new ProcessManagerConfiguration<TState,ProcessActor<TState>>(processDependenciesfactory,_processManagersStateActorPath(typeof(TState))));
             _maps.Add(processDependenciesfactory.CreateRouteMap());
 
             var stateConfig = new ProcessStateAggregateConfiguration<TState>(processDependenciesfactory.StateDependencyFactory);
@@ -55,11 +55,6 @@ namespace GridDomain.Node.Configuration.Composition
             _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<ProcessStateAggregate<TState>>, ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencyFactory));
 
             _maps.Add(processDependenciesfactory.StateDependencyFactory.CreateRouteMap());
-        }
-
-        protected virtual IContainerConfiguration CreateProcessManagerConfiguration<TState>(IProcessDependencyFactory<TState> processDependenciesfactory) where TState : class, IProcessState
-        {
-            return new ProcessManagerConfiguration<TState,ProcessActor<TState>>(processDependenciesfactory,_processManagersStateActorPath(typeof(TState)));
         }
 
         public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate

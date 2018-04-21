@@ -36,8 +36,20 @@ namespace GridDomain.Node.Cluster.CommandPipe {
         }
     }
     
+    public class ProcessStateActorCell<TState>: ReceiveActor where TState : class, IProcessState
+    {
+        public ProcessStateActorCell()
+        {
+            var props = Context.System.DI()
+                               .Props<ClusterProcessStateActor<TState>>();
+                               
+            var process = Context.ActorOf(props, Self.Path.Name);
+            
+            ReceiveAny(o => process.Forward(o));
+        }
+    }
     
-     public class ProcessActorCell<TState>: ReceiveActor where TState : class, IProcessState
+    public class ProcessActorCell<TState>: ReceiveActor where TState : class, IProcessState
     {
         public ProcessActorCell()
         {
@@ -49,21 +61,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             ReceiveAny(o => process.Forward(o));
         }
         
-      //  protected override SupervisorStrategy SupervisorStrategy()
-      //  {
-      //      return new OneForOneStrategy(ex =>
-      //                                   {
-      //                                       switch (ex)
-      //                                       {
-      //                                           case CommandExecutionFailedException cf:
-      //                                               return Directive.Restart;
-      //                                           case CommandAlreadyExecutedException cae:
-      //                                               return Directive.Restart;
-      //                                           default:
-      //                                               return Directive.Stop;
-      //                                       }
-      //                                   });
-      //  }
+   
     }
     
     

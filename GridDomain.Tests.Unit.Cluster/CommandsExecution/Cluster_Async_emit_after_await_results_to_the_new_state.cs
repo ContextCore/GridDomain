@@ -8,6 +8,6 @@ namespace GridDomain.Tests.Unit.Cluster.CommandsExecution
     {
         public Cluster_Async_emit_after_await_results_to_the_new_state(ITestOutputHelper output) : base(
                                                        new NodeTestFixture(output).Clustered()
-                                                                                  .LogLevel(LogEventLevel.Verbose)) { }
+                                                                                  .LogLevel(LogEventLevel.Warning)) { }
     }
 }

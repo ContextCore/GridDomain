@@ -42,7 +42,6 @@ namespace GridDomain.Node.Actors.ProcessManagers
         private BehaviorQueue Behavior { get; }
         private ActorMonitor Monitor { get; }
         private IActorRef _stateAggregateActor;
-      //  private static readonly string ProcessStateActorSelection = "user/" + typeof(TState).BeautyName() + "_Hub";
         private readonly ActorSelection _stateActorSelection;
         public IProcess<TState> Process { get; private set; }
         public TState State { get; private set; }
@@ -221,7 +220,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                         
                                           var cmd = new CreateNewStateCommand<TState>(ExecutionContext.PendingState.Id, ExecutionContext.PendingState);
                                           //will reply with CommandExecuted
-                                          _stateAggregateActor.Tell(new MessageMetadataEnvelop<ICommand>(cmd, ExecutionContext.ProcessingMessage.Metadata));
+                                          _stateAggregateActor.Tell(EnvelopStateCommand(cmd,ExecutionContext.ProcessingMessage.Metadata));
                                           Behavior.Become(AwaitingCreationConfirmationBehavior,nameof(AwaitingCreationConfirmationBehavior));
                                       });
 
@@ -238,9 +237,12 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                              if(Id != pendingStateId)
                                              {
                                                  _log.Debug("Redirecting message to newly created process state instance, {id}", pendingStateId);
-                                                 var redirect = new MessageMetadataEnvelop(new ProcessRedirect(pendingStateId, ExecutionContext.ProcessingMessage), ExecutionContext.ProcessingMessage.Metadata);
+                                                 var processRedirect = new ProcessRedirect(pendingStateId, ExecutionContext.ProcessingMessage);
+                                                 
+                                                 var redirect = EnvelopRedirect(processRedirect, ExecutionContext.ProcessingMessage.Metadata);
+                                                 
                                                  //requesting redirect from parent - persistence hub 
-                                                 Context.Parent.Tell(redirect, ExecutionContext.ProcessingMessageSender);
+                                                 RedirectActor().Tell(redirect, ExecutionContext.ProcessingMessageSender);
                                                  Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
                                                  ExecutionContext.Clear();
                                                  return;
@@ -253,6 +255,21 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                          });
                 StashingMessagesToProcessBehavior("process is waiting for process instance creation");
             }
+        }
+
+        protected virtual IActorRef RedirectActor()
+        {
+            return Context.Parent;
+        }
+
+        protected virtual IMessageMetadataEnvelop EnvelopRedirect(ProcessRedirect processRedirect, IMessageMetadata metadata)
+        {
+            return new MessageMetadataEnvelop(processRedirect, metadata);
+        }
+
+        protected virtual IMessageMetadataEnvelop EnvelopStateCommand(ICommand cmd, IMessageMetadata metadata)
+        {
+            return new MessageMetadataEnvelop<ICommand>(cmd, metadata);
         }
 
         private void TransitingProcessBehavior()
@@ -283,7 +300,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                                                           pendingState,
                                                                                           GetMessageId(processingEnvelop));
                                                    //will reply back with CommandExecuted
-                                                   _stateAggregateActor.Tell(new MessageMetadataEnvelop<SaveStateCommand<TState>>(cmd, processingEnvelop.Metadata));
+                                                   _stateAggregateActor.Tell(EnvelopStateCommand(cmd, processingEnvelop.Metadata));
                                                });
                 Receive<AggregateActor.CommandExecuted>(c =>
                                          {

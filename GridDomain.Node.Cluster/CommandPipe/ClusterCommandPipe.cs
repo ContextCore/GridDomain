@@ -42,6 +42,8 @@ namespace GridDomain.Node.Cluster.CommandPipe
         private readonly ILogger _log;
         private readonly MessageMap _processMessageMap = new MessageMap();
 
+        private readonly List<Func<Task>> _delayedRegistrations = new List<Func<Task>>();
+
         public ClusterCommandPipe(ActorSystem system, ILogger log)
         {
             _log = log;
@@ -50,16 +52,16 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
         public async Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
         {
-            await RegisterAggregateByType(descriptor.AggregateType);
+            Type aggregateType = descriptor.AggregateType;
+            _delayedRegistrations.Add(() => RegisterAggregateByType(aggregateType, typeof(ClusterAggregateActor<>).MakeGenericType(aggregateType)));
         }
 
-        private async Task RegisterAggregateByType(Type aggregateType)
+        private async Task RegisterAggregateByType(Type aggregateType, Type actorType)
         {
-            var actorType = typeof(AggregateActorCell<>).MakeGenericType(aggregateType);
-
             var region = await ClusterSharding.Get(System)
                                               .StartAsync(Known.Names.Region(aggregateType),
-                                                          Props.Create(actorType),
+                                                          System.DI()
+                                                                .Props(actorType),
                                                           ClusterShardingSettings.Create(System),
                                                           new ShardedMessageMetadataExtractor());
 
@@ -69,26 +71,34 @@ namespace GridDomain.Node.Cluster.CommandPipe
             _aggregatesRegions.Add(Known.Names.Region(aggregateType), region);
         }
 
-        public async Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
+        public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
         {
-            await RegisterAggregateByType(typeof(ProcessStateAggregate<>).MakeGenericType(processDescriptor.StateType));
+            _delayedRegistrations.Add(async () =>
+                                      {
+                                          Type actorType = typeof(ClusterProcessStateActor<>).MakeGenericType(processDescriptor.StateType);
+                                          Type aggregateType = typeof(ProcessStateAggregate<>).MakeGenericType(processDescriptor.StateType);
 
-            var actorType = typeof(ProcessActorCell<>).MakeGenericType(processDescriptor.StateType);
+                                          await RegisterAggregateByType(aggregateType, actorType);
 
-            var region = await ClusterSharding.Get(System)
-                                              .StartAsync(Known.Names.Region(processDescriptor.ProcessType),
-                                                          Props.Create(actorType),
-                                                          ClusterShardingSettings.Create(System),
-                                                          new ShardedMessageMetadataExtractor());
-            var path = region.Path.ToString();
+                                          var processActorType = typeof(ClusterProcessActor<>).MakeGenericType(processDescriptor.StateType);
 
-            if (_processAggregatesRegionPaths.Contains(path))
-                throw new InvalidOperationException("Cannot add dublicate region path: " + path);
+                                          var region = await ClusterSharding.Get(System)
+                                                                            .StartAsync(Known.Names.Region(processDescriptor.ProcessType),
+                                                                                        System.DI()
+                                                                                              .Props(processActorType),
+                                                                                        ClusterShardingSettings.Create(System),
+                                                                                        new ShardedMessageMetadataExtractor());
+                                          var path = region.Path.ToString();
 
+                                          if (_processAggregatesRegionPaths.Contains(path))
+                                              throw new InvalidOperationException("Cannot add dublicate region path: " + path);
+                                      });
 
-            // _processAggregatesRegionPaths.Add(path);
             foreach (var msg in processDescriptor.AcceptMessages)
                 _processMessageMap.Registratios.Add(new MessageMap.HandlerRegistration(msg.MessageType, processDescriptor.ProcessType, MessageMap.HandlerProcessType.Sync));
+
+
+            return Task.CompletedTask;
         }
 
         public Task RegisterSyncHandler<TMessage, THandler>() where TMessage : class, IHaveProcessId, IHaveId where THandler : IHandler<TMessage>
@@ -103,13 +113,14 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
         public async Task StartRoutes()
         {
+            foreach (var delayed in _delayedRegistrations)
+                await delayed();
+
             BuildProcessManagerRoutes();
 
             BuildMessageHandlers();
 
             BuildAggregateCommandingRoutes();
-
-            await Task.CompletedTask;
         }
 
         private void BuildProcessManagerRoutes()
@@ -188,7 +199,8 @@ namespace GridDomain.Node.Cluster.CommandPipe
                      .WithParameters(new Parameter[]
                                      {
                                          new TypedParameter(typeof(MessageMap), _messageMap),
-                                         new TypedParameter(typeof(IActorRef), ProcessesPipeActor)
+                                         new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
+                                                               (pi, ctx) => ctx.ResolveNamed<IActorRef>(Actors.CommandPipe.ProcessesPipeActor.ProcessManagersPipeActorRegistrationName))
                                      });
 
             container.Register((c, p) => ProcessesPipeActor)

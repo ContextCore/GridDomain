@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
@@ -16,18 +17,39 @@ namespace GridDomain.Node.Cluster.CommandPipe {
 
     public class ClusterProcessActor<T> : ProcessActor<T> where T : class, IProcessState
     {
-        public ClusterProcessActor(IProcess<T> process, IProcessStateFactory<T> processStateFactory, string stateActorPath) : base(process, processStateFactory, stateActorPath) { }
+        private IActorRef _shardRegion;
+
+        public ClusterProcessActor(IProcess<T> process, IProcessStateFactory<T> processStateFactory, string stateActorPath) : base(process, processStateFactory, stateActorPath)
+        {
+            _shardRegion = ClusterSharding.Get(Context.System)
+                                          .ShardRegion(Known.Names.Region(process.GetType()));
+        }
         protected override object CreateGetStateMessage()
         {
             return new ClusterGetProcessState(typeof(T),Id);
         }
+
+        protected override IMessageMetadataEnvelop EnvelopStateCommand(ICommand cmd, IMessageMetadata metadata)
+        {
+            return new ShardedCommandMetadataEnvelop(cmd,metadata);
+        }
+
+        protected override IActorRef RedirectActor()
+        {
+            return _shardRegion;
+        }
+
+        protected override IMessageMetadataEnvelop EnvelopRedirect(ProcessRedirect processRedirect, IMessageMetadata metadata)
+        {
+            return new ShardedProcessMessageMetadataEnvelop(processRedirect, processRedirect.ProcessId,metadata);
+        }
     }
 
-    public class ClusterGetProcessState :IShardedMessageMetadataEnvelop
+    public class ClusterGetProcessState:GetProcessState,IShardedMessageMetadataEnvelop
     {
-        public ClusterGetProcessState(Type type, string id, IShardIdGenerator generator = null)
+        public ClusterGetProcessState(Type type, string id, IShardIdGenerator generator = null):base(id)
         {
-            Message = new GetProcessState(id);
+            Message = this;
             Metadata = MessageMetadata.Empty;
             EntityId = id;
             ShardId = (generator ?? DefaultShardIdGenerator.Instance).GetShardId(id);

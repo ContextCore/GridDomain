@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         {
             var asyncCommand = new DoubleIncreaseTitleCommand(43, Guid.NewGuid().ToString());
             var received = new HashSet<string>();
-            var waiter = Node.NewWaiter().Expect<BalloonTitleChanged>(e =>
+            var waiter = Node.NewWaiter(TimeSpan.FromSeconds(1000)).Expect<BalloonTitleChanged>(e =>
                                                                       {
                                                                           received.Add(e.Id);
                                                                           return received.Count == 2;
