@@ -17,13 +17,17 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         public async Task When_publishing_start_message_A()
         {
             var startMessage = new SleptWellEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            var state = await Node.GetTransitedState<SoftwareProgrammingState>(startMessage);
+            var state = await GetProcessTransitedState(startMessage);
             // process_has_correct_data()
             Assert.Equal(startMessage.SofaId, state.SofaId);
             //process_has_correct_state()
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), state.CurrentStateName);
         }
 
+        protected virtual async Task<SoftwareProgrammingState> GetProcessTransitedState(SleptWellEvent startMessage)
+        {
+            return await Node.GetTransitedState<SoftwareProgrammingState>(startMessage);
+        }
 
         [Fact]
         public async Task When_publishing_start_message_B()

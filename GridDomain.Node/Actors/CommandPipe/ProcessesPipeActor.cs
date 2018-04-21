@@ -13,7 +13,7 @@ namespace GridDomain.Node.Actors.CommandPipe {
     public class ProcessesPipeActor : ReceiveActor
     {
         public const string ProcessManagersPipeActorRegistrationName = nameof(ProcessManagersPipeActorRegistrationName);
-        private IActorRef _commandExecutionActor;
+        protected IActorRef _commandExecutionActor;
         private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
         public ProcessesPipeActor(IMessageProcessor<ProcessesTransitComplete> processor)
         {

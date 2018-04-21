@@ -29,10 +29,15 @@ namespace GridDomain.Tests.Common
         {
             var task = _waiter.Start();
 
-            _commandPipe.ProcessesPipeActor.Tell(new MessageMetadataEnvelop<DomainEvent>(message,
-                                                                                    metadata ?? MessageMetadata.Empty));
+            _commandPipe.ProcessesPipeActor.Tell(EnvelopeProcessMessage(message, metadata));
 
             return task;
+        }
+
+        protected virtual object EnvelopeProcessMessage(DomainEvent message, IMessageMetadata metadata)
+        {
+            return new MessageMetadataEnvelop<DomainEvent>(message,
+                                                           metadata ?? MessageMetadata.Empty);
         }
 
         public Task<IWaitResult> SendToProcessManagers(IFault message, IMessageMetadata metadata = null)

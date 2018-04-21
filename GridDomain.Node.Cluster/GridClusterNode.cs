@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.Node.Cluster.CommandPipe;
@@ -10,6 +9,7 @@ using GridDomain.Node.Cluster.Transport;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Transport;
 using GridDomain.Transport.Extension;
+using GridDomain.Transport.Remote;
 using Serilog;
 
 namespace GridDomain.Node.Cluster {
@@ -46,7 +46,7 @@ namespace GridDomain.Node.Cluster {
 
         protected override DomainBuilder CreateDomainBuilder()
         {
-            return new DomainBuilder(t=>"system/sharding/"+t.BeautyName());
+            return new ClusterDomainBuilder();
         }
     }
 }

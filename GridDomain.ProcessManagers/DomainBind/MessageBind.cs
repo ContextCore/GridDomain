@@ -12,6 +12,7 @@ namespace GridDomain.ProcessManagers.DomainBind
         }
 
         public Type MessageType { get; }
+        //TODO:Remove not used field
         public string CorrelationField { get; }
     }
 }

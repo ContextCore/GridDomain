@@ -26,9 +26,9 @@ namespace GridDomain.Node.Configuration.Composition
 
         public IReadOnlyCollection<IContainerConfiguration> ContainerConfigurations => _containerConfigurations;
 
-        public DomainBuilder(Func<Type,string> ProcessManagersStateActorPath)
+        public DomainBuilder(Func<Type,string> processManagersStateActorPath)
         {
-            _processManagersStateActorPath = ProcessManagersStateActorPath;
+            _processManagersStateActorPath = processManagersStateActorPath;
         }
         
         public void Configure(ContainerBuilder container)
@@ -59,11 +59,16 @@ namespace GridDomain.Node.Configuration.Composition
       
         public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
         {
-            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(factory));
+            var aggregateConfiguration = CreateAggregateConfiguration(factory);
+            _containerConfigurations.Add(aggregateConfiguration);
             _maps.Add(factory.CreateRouteMap());
-
         }
-        
+
+        protected virtual IContainerConfiguration CreateAggregateConfiguration<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
+        {
+            return new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(factory);
+        }
+
         public void RegisterHandler<TContext,TMessage, THandler>(IMessageHandlerFactory<TContext,TMessage, THandler> factory) where THandler : IHandler<TMessage> where TMessage : class, IHaveProcessId, IHaveId
         {
             var cfg = new ContainerConfiguration(c => c.Register<THandler>(ctx => factory.Create(ctx.Resolve<TContext>())),

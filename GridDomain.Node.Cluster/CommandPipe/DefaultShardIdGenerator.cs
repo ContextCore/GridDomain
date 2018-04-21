@@ -13,7 +13,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             _shardGroupName = shardGroupName;
         }
         public static IShardIdGenerator Instance = new DefaultShardIdGenerator("");
-        public string Resolve(string seed, int? maxShards=null)
+        public string GetShardId(string seed, int? maxShards=null)
         {
             var seedNumber = seed.Aggregate(0,
                                             (s, c) =>

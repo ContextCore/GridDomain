@@ -27,35 +27,6 @@ namespace GridDomain.Node.Actors.Aggregates
     public class CommandAlreadyExecutedException:Exception { }
 
 
-
-    public class AggregateActorCell<TAggregate>: ReceiveActor where TAggregate : class, IAggregate
-    {
-        public AggregateActorCell()
-        {
-            var props = Context.System.DI()
-                               .Props<AggregateActor<TAggregate>>();
-                               
-            var aggregate = Context.ActorOf(props, Self.Path.Name);
-            
-            ReceiveAny(o => aggregate.Forward(o));
-        }
-        
-        protected override SupervisorStrategy SupervisorStrategy()
-        {
-            return new OneForOneStrategy(ex =>
-                                         {
-                                             switch (ex)
-                                             {
-                                                 case CommandExecutionFailedException cf:
-                                                     return Directive.Restart;
-                                                 case CommandAlreadyExecutedException cae:
-                                                     return Directive.Restart;
-                                                 default:
-                                                     return Directive.Stop;
-                                             }
-                                         });
-        }
-    }
     
     /// <summary>
     ///     Name should be parse by AggregateActorName
@@ -153,7 +124,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                                {
                                                                    NotifyPersistenceWatchers(persistedEvent);
                                                                    _totalProjectionTimer = _totalProjectionTimer ?? Monitor.StartMeasureTime("ProjectionTotal");
-                                                                   Project(persistedEvent, producedEventsMetadata);
+                                                                   Project(producedEventsMetadata,new []{persistedEvent});
                                                                    SaveSnapshot(ExecutionContext.ProducedState, persistedEvent);
 
                                                                    if (--messagesToPersistCount != 0) return;
@@ -232,17 +203,29 @@ namespace GridDomain.Node.Actors.Aggregates
             var producedFaultMetadata = ExecutionContext.CommandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
             var fault = Fault.NewGeneric(command, exception, command.ProcessId, typeof(TAggregate));
             
-            Project(fault, producedFaultMetadata);
+            Project(producedFaultMetadata,fault);
             ExecutionContext.CommandSender.Tell(fault);
             return fault;
         }
 
-        private void Project(object evt, IMessageMetadata commandMetadata)
+
+        protected virtual void Project(IMessageMetadata metadata, DomainEvent[] events)
+        {
+            foreach(var evt in events)
+                Project(new MessageMetadataEnvelop(evt, metadata));
+        }
+        
+        protected virtual void Project(IMessageMetadata metadata, IFault fault)
+        {
+             Project( new MessageMetadataEnvelop(fault, metadata));
+        }
+        
+        protected void Project(IMessageMetadataEnvelop envelopMessageToProject)
         {
             ExecutionContext.MessagesToProject++;
-            var messageMetadataEnvelop = new MessageMetadataEnvelop(evt, commandMetadata);
-            _customHandlersActor.Tell(new HandlersPipeActor.Project(Self,commandMetadata,evt));
-            _publisher.Publish(messageMetadataEnvelop);
+           
+            _customHandlersActor.Tell(new HandlersPipeActor.Project(Self,envelopMessageToProject));
+            _publisher.Publish(envelopMessageToProject);
         }
     }
     

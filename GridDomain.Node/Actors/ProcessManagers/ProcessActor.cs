@@ -121,7 +121,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
             Receive<IActorRef>(r =>
                               {
                                   _stateAggregateActor = r;
-                                  _stateAggregateActor.Tell(new GetProcessState(Id));
+                                  _stateAggregateActor.Tell(CreateGetStateMessage());
                               });
             Receive<ProcesStateMessage<TState>>(ss =>
                                                 {
@@ -130,6 +130,11 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                     Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
                                                 });
             StashingMessagesToProcessBehavior("process is initializing");
+        }
+
+        protected virtual object CreateGetStateMessage()
+        {
+            return new GetProcessState(Id);
         }
 
         private void StashMessage(object m, string reason)

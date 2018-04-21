@@ -1,6 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Akka.Actor;
+using GridDomain.Common;
+using GridDomain.CQRS;
+using GridDomain.EventSourcing;
+using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Cluster;
 using GridDomain.Node.Cluster.CommandPipe;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -8,6 +16,18 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Cluster
 {
+    
+    public class AnyMessageClusterPublisher:AnyMessagePublisher
+    {
+        public AnyMessageClusterPublisher(IActorCommandPipe commandPipe, MessagesWaiter<AnyMessagePublisher> waiter) : base(commandPipe, waiter) { }
+        
+        protected override object EnvelopeProcessMessage(DomainEvent message, IMessageMetadata metadata)
+        {
+            return new ShardedProcessMessageMetadataEnvelop(message,message.ProcessId,metadata ?? MessageMetadata.Empty);
+        }
+
+    }
+    
     public class ShardIdGenerationTests
     {
         [Fact]
@@ -34,14 +54,14 @@ namespace GridDomain.Tests.Unit.Cluster
         {
             IShardIdGenerator generator = new DefaultShardIdGenerator("myShard");
             
-            Assert.Equal(generator.Resolve("testSeed",100), generator.Resolve("testSeed",100));
+            Assert.Equal(generator.GetShardId("testSeed",100), generator.GetShardId("testSeed",100));
         }
         [Fact]
         public void ShardId_resolver_should_produce_different_id_for_same_seed_and_shards_num()
         {
             IShardIdGenerator generator = new DefaultShardIdGenerator("myShard");
             
-            Assert.NotEqual(generator.Resolve("testSeedA",100), generator.Resolve("testSeedB",100));
+            Assert.NotEqual(generator.GetShardId("testSeedA",100), generator.GetShardId("testSeedB",100));
         }
     }
 }

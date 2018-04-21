@@ -5,6 +5,6 @@ namespace GridDomain.Node.Cluster.CommandPipe {
     /// </summary>
     public interface IShardIdGenerator
     {
-        string Resolve(string seed, int? maxShards=null);
+        string GetShardId(string seed, int? maxShards=null);
     }
 }

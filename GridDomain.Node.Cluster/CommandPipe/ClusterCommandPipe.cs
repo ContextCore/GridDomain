@@ -18,10 +18,6 @@ using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.Aggregates;
-using GridDomain.Node.Actors.CommandPipe;
-using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
-using GridDomain.Node.Actors.CommandPipe.Messages;
-using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.Cluster.CommandPipe.CommandGrouping;
 using GridDomain.ProcessManagers.DomainBind;
@@ -31,80 +27,6 @@ using Serilog;
 
 namespace GridDomain.Node.Cluster.CommandPipe
 {
-    public class ClusterHandlersPipeActor : HandlersPipeActor
-    {
-        public ClusterHandlersPipeActor(MessageMap map, IActorRef processActor) : base(CreateRoutess(Context, map), processActor) { }
-
-        private static IMessageProcessor CreateRoutess(IUntypedActorContext system, MessageMap messageRouteMap)
-        {
-            var catalog = new HandlersDefaultProcessor();
-            foreach (var reg in messageRouteMap.Registratios)
-            {
-                var handlerActorType = typeof(MessageHandleActor<,>).MakeGenericType(reg.Message, reg.Handler);
-
-                var props = system.DI()
-                                  .Props(handlerActorType);
-
-                var actor = system.ActorOf(props, handlerActorType.BeautyName());
-
-                IMessageProcessor processor;
-                switch (reg.ProcesType)
-                {
-                    case MessageMap.HandlerProcessType.Sync:
-                        processor = new ActorAskMessageProcessor<HandlerExecuted>(actor);
-                        break;
-
-                    case MessageMap.HandlerProcessType.FireAndForget:
-                        processor = new FireAndForgetActorMessageProcessor(actor);
-                        break;
-                    default:
-                        throw new NotSupportedException(reg.ProcesType.ToString());
-                }
-
-                catalog.Add(reg.Message, processor);
-            }
-
-            return catalog;
-        }
-    }
-
-    public class MessageMap
-    {
-        public enum HandlerProcessType
-        {
-            Sync,
-            FireAndForget
-        }
-
-        public class HandlerRegistration
-        {
-            public HandlerRegistration(Type message, Type handler, HandlerProcessType procesType)
-            {
-                Message = message;
-                Handler = handler;
-                ProcesType = procesType;
-            }
-
-            public Type Message { get; }
-            public Type Handler { get; }
-            public HandlerProcessType ProcesType { get; }
-        }
-
-        public List<HandlerRegistration> Registratios = new List<HandlerRegistration>();
-
-        public Task RegisterSyncHandler<TMessage, THandler>() where TMessage : class, IHaveProcessId, IHaveId where THandler : IHandler<TMessage>
-        {
-            Registratios.Add(new HandlerRegistration(typeof(TMessage), typeof(THandler), HandlerProcessType.Sync));
-            return Task.CompletedTask;
-        }
-
-        public Task RegisterFireAndForgetHandler<TMessage, THandler>() where TMessage : class, IHaveProcessId, IHaveId where THandler : IHandler<TMessage>
-        {
-            Registratios.Add(new HandlerRegistration(typeof(TMessage), typeof(THandler), HandlerProcessType.FireAndForget));
-            return Task.CompletedTask;
-        }
-    }
-
     public class ClusterCommandPipe : IActorCommandPipe
     {
         public ActorSystem System { get; }
@@ -118,13 +40,12 @@ namespace GridDomain.Node.Cluster.CommandPipe
         readonly MessageMap _messageMap = new MessageMap();
 
         private readonly ILogger _log;
-        private readonly List<IProcessDescriptor> _processDescriptors = new List<IProcessDescriptor>();
+        private readonly MessageMap _processMessageMap = new MessageMap();
 
         public ClusterCommandPipe(ActorSystem system, ILogger log)
         {
             _log = log;
             System = system;
-            ProcessesPipeActor = system.ActorOf(Props.Create(() => new DummyProcessActor()), "DummyProcessActor");
         }
 
         public async Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
@@ -136,27 +57,26 @@ namespace GridDomain.Node.Cluster.CommandPipe
         {
             var actorType = typeof(AggregateActorCell<>).MakeGenericType(aggregateType);
 
-            var regionName = aggregateType.BeautyName();
             var region = await ClusterSharding.Get(System)
-                                              .StartAsync(regionName,
+                                              .StartAsync(Known.Names.Region(aggregateType),
                                                           Props.Create(actorType),
                                                           ClusterShardingSettings.Create(System),
                                                           new ShardedMessageMetadataExtractor());
 
-            if (_aggregatesRegions.ContainsKey(regionName))
+            if (_aggregatesRegions.ContainsKey(Known.Names.Region(aggregateType)))
                 throw new InvalidOperationException("Cannot add dublicate region path: " + region.Path);
 
-            _aggregatesRegions.Add(regionName, region);
+            _aggregatesRegions.Add(Known.Names.Region(aggregateType), region);
         }
 
         public async Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)
         {
             await RegisterAggregateByType(typeof(ProcessStateAggregate<>).MakeGenericType(processDescriptor.StateType));
 
-            var actorType = typeof(ProcessActor<>).MakeGenericType(processDescriptor.StateType);
+            var actorType = typeof(ProcessActorCell<>).MakeGenericType(processDescriptor.StateType);
 
             var region = await ClusterSharding.Get(System)
-                                              .StartAsync(processDescriptor.ProcessType.BeautyName(),
+                                              .StartAsync(Known.Names.Region(processDescriptor.ProcessType),
                                                           Props.Create(actorType),
                                                           ClusterShardingSettings.Create(System),
                                                           new ShardedMessageMetadataExtractor());
@@ -166,17 +86,19 @@ namespace GridDomain.Node.Cluster.CommandPipe
                 throw new InvalidOperationException("Cannot add dublicate region path: " + path);
 
 
-            _processAggregatesRegionPaths.Add(path);
+            // _processAggregatesRegionPaths.Add(path);
+            foreach (var msg in processDescriptor.AcceptMessages)
+                _processMessageMap.Registratios.Add(new MessageMap.HandlerRegistration(msg.MessageType, processDescriptor.ProcessType, MessageMap.HandlerProcessType.Sync));
         }
 
         public Task RegisterSyncHandler<TMessage, THandler>() where TMessage : class, IHaveProcessId, IHaveId where THandler : IHandler<TMessage>
         {
-            return _messageMap.RegisterSyncHandler<TMessage, THandler>();
+            return _messageMap.RegisterSync<TMessage, THandler>();
         }
 
         public Task RegisterFireAndForgetHandler<TMessage, THandler>() where TMessage : class, IHaveProcessId, IHaveId where THandler : IHandler<TMessage>
         {
-            return _messageMap.RegisterFireAndForgetHandler<TMessage, THandler>();
+            return _messageMap.RegisterFireAndForget<TMessage, THandler>();
         }
 
         public async Task StartRoutes()
@@ -192,10 +114,10 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
         private void BuildProcessManagerRoutes()
         {
-            var routingGroup = new ConsistentHashingGroup(_processAggregatesRegionPaths)
+            var routingGroup = new ConsistentHashingPool(10)
                 .WithHashMapping(m =>
                                  {
-                                     if (m is IShardedMessageMetadataEnvelop env && env.Message is DomainEvent evt)
+                                     if (m is IMessageMetadataEnvelop env && env.Message is DomainEvent evt)
                                      {
                                          return evt.SourceId;
                                      }
@@ -203,9 +125,10 @@ namespace GridDomain.Node.Cluster.CommandPipe
                                      throw new InvalidMessageException(m.ToString());
                                  });
 
-            ProcessesPipeActor = System.ActorOf(Props.Empty.WithRouter(routingGroup), "Processes");
+            var processesProps = System.DI()
+                                       .Props(typeof(ClusterProcesPipeActor));
 
-            //  ProcessesPipeActor = System.ActorOf(Props.Create(() => new DummyProcessActor()), nameof(Actors.CommandPipe.ProcessesPipeActor));
+            ProcessesPipeActor = System.ActorOf(processesProps.WithRouter(routingGroup), "Processes");
         }
 
         private void BuildMessageHandlers()
@@ -253,6 +176,14 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
         public void Register(ContainerBuilder container)
         {
+            container.RegisterType<ClusterProcesPipeActor>()
+                     .WithParameters(new Parameter[]
+                                     {
+                                         new TypedParameter(typeof(MessageMap), _processMessageMap),
+                                         //{akka://AutoTest/user/Aggregates}
+                                         new TypedParameter(typeof(string), "/user/Aggregates")
+                                     });
+
             container.RegisterType<ClusterHandlersPipeActor>()
                      .WithParameters(new Parameter[]
                                      {

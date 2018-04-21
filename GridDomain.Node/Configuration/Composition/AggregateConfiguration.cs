@@ -17,12 +17,12 @@ using GridDomain.Node.Actors.PersistentHub;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    internal class AggregateConfiguration<TAggregateActor, TAggregate> : IContainerConfiguration
+    public class AggregateConfiguration<TAggregateActor, TAggregate> : IContainerConfiguration
         where TAggregate : Aggregate
     {
         protected readonly IAggregateDependencyFactory<TAggregate> AggregateDependencyFactory;
 
-        internal AggregateConfiguration(IAggregateDependencyFactory<TAggregate> factory)
+        public AggregateConfiguration(IAggregateDependencyFactory<TAggregate> factory)
         {
             AggregateDependencyFactory = factory;
         }
