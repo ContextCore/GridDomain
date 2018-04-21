@@ -12,6 +12,7 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.Hadlers;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 
@@ -22,7 +23,7 @@ namespace GridDomain.Node.Configuration.Composition
         private readonly List<IMessageRouteMap> _maps = new List<IMessageRouteMap>();
 
         private readonly List<IContainerConfiguration> _containerConfigurations = new List<IContainerConfiguration>();
-        private Func<Type, string> _processManagersStateActorPath;
+        protected Func<Type, string> _processManagersStateActorPath;
 
         public IReadOnlyCollection<IContainerConfiguration> ContainerConfigurations => _containerConfigurations;
 
@@ -46,7 +47,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         public void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory) where TState : class, IProcessState
         {
-            _containerConfigurations.Add(new ProcessManagerConfiguration<TState>(processDependenciesfactory,_processManagersStateActorPath(typeof(TState))));
+            _containerConfigurations.Add(CreateProcessManagerConfiguration(processDependenciesfactory));
             _maps.Add(processDependenciesfactory.CreateRouteMap());
 
             var stateConfig = new ProcessStateAggregateConfiguration<TState>(processDependenciesfactory.StateDependencyFactory);
@@ -56,7 +57,11 @@ namespace GridDomain.Node.Configuration.Composition
             _maps.Add(processDependenciesfactory.StateDependencyFactory.CreateRouteMap());
         }
 
-      
+        protected virtual IContainerConfiguration CreateProcessManagerConfiguration<TState>(IProcessDependencyFactory<TState> processDependenciesfactory) where TState : class, IProcessState
+        {
+            return new ProcessManagerConfiguration<TState,ProcessActor<TState>>(processDependenciesfactory,_processManagersStateActorPath(typeof(TState)));
+        }
+
         public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
         {
             var aggregateConfiguration = CreateAggregateConfiguration(factory);

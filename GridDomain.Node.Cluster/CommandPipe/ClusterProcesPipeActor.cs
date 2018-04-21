@@ -6,8 +6,39 @@ using GridDomain.Common;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
+using GridDomain.Node.Actors.ProcessManagers;
+using GridDomain.Node.Actors.ProcessManagers.Messages;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Cluster.CommandPipe {
+
+
+
+    public class ClusterProcessActor<T> : ProcessActor<T> where T : class, IProcessState
+    {
+        public ClusterProcessActor(IProcess<T> process, IProcessStateFactory<T> processStateFactory, string stateActorPath) : base(process, processStateFactory, stateActorPath) { }
+        protected override object CreateGetStateMessage()
+        {
+            return new ClusterGetProcessState(typeof(T),Id);
+        }
+    }
+
+    public class ClusterGetProcessState :IShardedMessageMetadataEnvelop
+    {
+        public ClusterGetProcessState(Type type, string id, IShardIdGenerator generator = null)
+        {
+            Message = new GetProcessState(id);
+            Metadata = MessageMetadata.Empty;
+            EntityId = id;
+            ShardId = (generator ?? DefaultShardIdGenerator.Instance).GetShardId(id);
+        }
+
+        public object Message { get; }
+        public IMessageMetadata Metadata { get; }
+        public string EntityId { get; }
+        public string ShardId { get; }
+    }
+
     public class ClusterProcesPipeActor : ProcessesPipeActor, IWithUnboundedStash
     {
         public ClusterProcesPipeActor(MessageMap map, string commandActorPath) : base(CreateRoutess(Context, map))

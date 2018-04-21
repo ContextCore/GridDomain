@@ -42,7 +42,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
         public ProcessActorCell()
         {
             var props = Context.System.DI()
-                               .Props<ProcessActor<TState>>();
+                               .Props<ClusterProcessActor<TState>>();
                                
             var process = Context.ActorOf(props, Self.Path.Name);
             

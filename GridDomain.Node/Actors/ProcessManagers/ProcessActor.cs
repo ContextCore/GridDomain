@@ -49,7 +49,7 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         public IStash Stash { get; set; }
 
-        private string Id { get; }
+        protected string Id { get; }
 
         class ProcessExecutionContext
         {

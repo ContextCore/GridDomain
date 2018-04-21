@@ -18,12 +18,12 @@ using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    internal class ProcessManagerConfiguration<TState> : IContainerConfiguration where TState : class, IProcessState
+    public class ProcessManagerConfiguration<TState,TActor> : IContainerConfiguration where TState : class, IProcessState
     {
         private readonly IProcessDependencyFactory<TState> _processDependencyFactory;
         private string _statePath;
 
-        internal ProcessManagerConfiguration(IProcessDependencyFactory<TState> factory, string statePath)
+        public ProcessManagerConfiguration(IProcessDependencyFactory<TState> factory, string statePath)
         {
             _statePath = statePath;
             _processDependencyFactory = factory;
@@ -34,9 +34,8 @@ namespace GridDomain.Node.Configuration.Composition
             IProcess<TState> process = _processDependencyFactory.CreateProcess();
             container.RegisterInstance<IProcessStateFactory<TState>>(_processDependencyFactory.CreateStateFactory());
             container.RegisterInstance<IProcess<TState>>(process);
-            container.RegisterType<ProcessActor<TState>>();
 
-            container.RegisterType<ProcessActor<TState>>()
+            container.RegisterType<TActor>()
                      .WithParameters(new Parameter[] {
                                                          new TypedParameter(typeof(IProcess<TState>),  _processDependencyFactory.CreateProcess()),
                                                          new TypedParameter(typeof(IProcessStateFactory<TState>),  _processDependencyFactory.CreateStateFactory()),

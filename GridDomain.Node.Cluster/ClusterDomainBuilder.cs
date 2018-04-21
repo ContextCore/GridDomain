@@ -16,5 +16,10 @@ namespace GridDomain.Node.Cluster {
         {
             return new AggregateConfiguration<ClusterAggregateActor<TAggregate>, TAggregate>(factory);
         }
+
+        protected override IContainerConfiguration CreateProcessManagerConfiguration<TState>(IProcessDependencyFactory<TState> processDependenciesfactory)
+        {
+            return new ProcessManagerConfiguration<TState,ClusterProcessActor<TState>>(processDependenciesfactory,_processManagersStateActorPath(typeof(TState)));
+        }
     }
 }
