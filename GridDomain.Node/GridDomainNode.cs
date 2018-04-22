@@ -80,7 +80,7 @@ namespace GridDomain.Node {
         public ILogger Log { get;  set;}
     }
     
-    public abstract class GridDomainNode : IGridDomainNode
+    public abstract class GridDomainNode : IExtendedGridDomainNode
     {
         private ICommandExecutor _commandExecutor
         {
@@ -89,7 +89,7 @@ namespace GridDomain.Node {
         }
         
         private IMessageWaiterFactory _waiterFactory;
-        protected internal IActorCommandPipe Pipe;
+        public IActorCommandPipe Pipe { get; protected set; }
 
         protected abstract ICommandExecutor CreateCommandExecutor();
         protected abstract IActorCommandPipe CreateCommandPipe();

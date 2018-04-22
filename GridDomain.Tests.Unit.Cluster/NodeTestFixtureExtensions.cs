@@ -8,11 +8,13 @@ using GridDomain.Node.Configuration;
 using Serilog;
 
 namespace GridDomain.Tests.Unit.Cluster {
+
+    
     public static class NodeTestFixtureExtensions
     {
-        private static GridDomainNode BuildClusterNode(this NodeTestFixture fxt, Func<ActorSystem> systemFactory, ILogger log)
+        private static IExtendedGridDomainNode BuildClusterNode(this NodeTestFixture fxt, Func<ActorSystem> systemFactory, ILogger log)
         {
-            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(systemFactory,
+            var node = new GridNodeBuilder().ActorFactory(new DelegateActorSystemFactory(systemFactory,
                                                                                         sys =>
                                                                                         {
                                                                                             sys.AttachSerilogLogging(log);
@@ -22,13 +24,14 @@ namespace GridDomain.Tests.Unit.Cluster {
                                             .Log(log)
                                             .Timeout(fxt.DefaultTimeout)
                                             .BuildCluster();
-            return (GridDomainNode)node;
+            return node;
         }
 
         public static NodeTestFixture Clustered(this NodeTestFixture fxt)
         {
             fxt.ConfigBuilder = c => c.ToClusterConfig();
             fxt.NodeBuilder = fxt.BuildClusterNode;
+            fxt.TestNodeBuilder = (n, kit) => new TestClusterNode((GridClusterNode)n, kit);
             
             return fxt;
         }

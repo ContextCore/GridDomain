@@ -22,7 +22,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
 #pragma warning disable 4014
             Node.Execute(syncCommand);
 #pragma warning restore 4014
-            var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
+            var aggregate = await Node.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
             Assert.NotEqual(syncCommand.Parameter.ToString(), aggregate.Title);
         }
     }

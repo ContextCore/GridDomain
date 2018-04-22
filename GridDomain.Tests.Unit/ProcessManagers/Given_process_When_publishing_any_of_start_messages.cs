@@ -22,14 +22,14 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             var evt = new SleptWellEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var metadata = MessageMetadata.New(evt.Id, Guid.NewGuid().ToString(), null);
             var res = await
-                Node.NewLocalDebugWaiter()
+                Node.NewTestWaiter()
                     .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
                     .Create()
                     .SendToProcessManagers(evt, metadata);
 
             var processCreatedEvent = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>();
 
-            var state = await this.LoadProcessByActor<SoftwareProgrammingState>(processCreatedEvent.State.Id);
+            var state = await Node.LoadProcess<SoftwareProgrammingState>(processCreatedEvent.State.Id);
             //Process_data_is_not_null()
             Assert.NotNull(state);
             //Process_has_correct_id()

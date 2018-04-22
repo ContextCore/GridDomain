@@ -40,7 +40,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var resTask = Node.NewLocalDebugWaiter()
+            var resTask = Node.NewTestWaiter()
                               .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                               .Create()
                               .SendToProcessManagers(startEvent,MessageMetadata.New(startEvent.Id, null, null));
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
             //to avoid racy state receiving expected message from processing GotTiredEvent 
-            await Node.NewLocalDebugWaiter()
+            await Node.NewTestWaiter()
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e => e.MessageId == continueEvent.Id)
                       .Create()
                       .SendToProcessManagers(continueEvent, processId);

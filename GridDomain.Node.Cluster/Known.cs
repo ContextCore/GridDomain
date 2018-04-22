@@ -29,6 +29,8 @@ namespace GridDomain.Node.Cluster {
             {
                 return t.BeautyName();
             }
+
+            public static string EmptyProcess { get; } = "creator";
         }
         
     }

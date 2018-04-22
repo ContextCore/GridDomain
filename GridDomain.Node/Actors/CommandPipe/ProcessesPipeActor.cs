@@ -13,19 +13,18 @@ namespace GridDomain.Node.Actors.CommandPipe {
     public class ProcessesPipeActor : ReceiveActor
     {
         public const string ProcessManagersPipeActorRegistrationName = nameof(ProcessManagersPipeActorRegistrationName);
-        protected IActorRef _commandExecutionActor;
+        protected IActorRef CommandExecutionActor;
         private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
         public ProcessesPipeActor(IMessageProcessor<ProcessesTransitComplete> processor)
         {
             Receive<Initialize>(i =>
                                 {
-                                    _commandExecutionActor = i.CommandExecutorActor;
+                                    CommandExecutionActor = i.CommandExecutorActor;
                                     Sender.Tell(Initialized.Instance);
                                 });
             //part of events or fault from command execution
             Receive<IMessageMetadataEnvelop>(env =>
                                              {
-                                                 var sender = Sender;
                                                  Log.Debug("Start process managers for message {@env}", env);
                                                  processor.Process(env).ContinueWith(t =>
                                                                                      {
@@ -33,10 +32,10 @@ namespace GridDomain.Node.Actors.CommandPipe {
                                                                                          Log.Debug("Process managers transited. {@res}", m);
                                                                                          
                                                                                          foreach(var envelop in m.ProducedCommands)
-                                                                                             _commandExecutionActor.Tell(envelop);
+                                                                                             CommandExecutionActor.Tell(envelop);
                                                                                          
-                                                                                         sender.Tell(m);
-                                                                                     });
+                                                                                         return m;
+                                                                                     }).PipeTo(Sender);
                                              });
         }
     

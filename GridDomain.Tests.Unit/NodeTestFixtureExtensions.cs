@@ -62,11 +62,15 @@ namespace GridDomain.Tests.Unit
 
         public static NodeTestFixture IgnorePipeCommands(this NodeTestFixture fixture)
         {
+            fixture.OnNodeCreatedEvent += (sender, node) =>
+                                          {
+                                              
+                                          };
+            
             fixture.OnNodeStartedEvent += (sender, e) =>
                                           {
                                               //supress errors raised by commands not reaching aggregates
                                               var nullActor = fixture.Node.System.ActorOf(BlackHoleActor.Props);
-                                              //var filterActor = fixture.Node.System.ActorOf(Props.Create(() => new FilterActor(fixture.Node.Pipe.CommandExecutor)));
                                               fixture.Node.Pipe.ProcessesPipeActor.Ask<Initialized>(new Initialize(nullActor))
                                                      .Wait();
                                           };

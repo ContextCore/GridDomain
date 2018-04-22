@@ -65,7 +65,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                        "QRTZ_TRIGGER_LISTENERS");
         }
 
-        public static Task<GridDomainNode> CreateNode(this NodeTestFixture fixt, string logFile)
+        public static Task<IExtendedGridDomainNode> CreateNode(this NodeTestFixture fixt, string logFile)
         {
             return fixt.CreateNode(new XUnitAutoTestLoggerConfiguration(fixt.Output, fixt.NodeConfig.LogLevel, logFile).CreateLogger());
         }

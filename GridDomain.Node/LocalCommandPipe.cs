@@ -60,7 +60,7 @@ namespace GridDomain.Node
 
         public IActorRef ProcessesPipeActor { get; private set; }
         public IActorRef HandlersPipeActor { get; private set; }
-        public IActorRef CommandExecutor { get; private set; }
+        public IActorRef CommandExecutor { get; internal set; }
         private List<Action> _postponedRegistrations = new List<Action>();
         
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)

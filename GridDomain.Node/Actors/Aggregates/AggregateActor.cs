@@ -74,6 +74,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                 ExecutionContext.CommandMetadata = m.Metadata;
                                                 ExecutionContext.CommandSender = Sender;
                                                 
+                                                _publisher.Publish(m);
                                                 var aggregateExecutionTimer = Monitor.StartMeasureTime("AggregateLogic");
                                                 _commandTotalExecutionTimer = Monitor.StartMeasureTime("CommandTotalExecution");
                                                     

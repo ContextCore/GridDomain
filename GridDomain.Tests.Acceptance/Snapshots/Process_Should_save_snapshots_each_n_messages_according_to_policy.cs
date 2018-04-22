@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var res = await Node.NewLocalDebugWaiter()
+            var res = await Node.NewTestWaiter()
                                 .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
                                 .Create()
                                 .SendToProcessManagers(startEvent);
@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
-            await Node.NewLocalDebugWaiter()
+            await Node.NewTestWaiter()
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                       .Create()
                       .SendToProcessManagers(continueEvent);
@@ -55,7 +55,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                           processId,
                                           BusinessDateTime.Now);
 
-            await Node.NewLocalDebugWaiter()
+            await Node.NewTestWaiter()
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                       .Create()
                       .SendToProcessManagers(continueEventB);

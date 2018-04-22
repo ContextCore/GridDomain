@@ -32,7 +32,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
         public ActorSystem System { get; }
         public IActorRef ProcessesPipeActor { get; private set; }
         public IActorRef HandlersPipeActor { get; private set; }
-        public IActorRef CommandExecutor { get; private set; }
+        public IActorRef CommandExecutor { get; protected set; }
 
         readonly Dictionary<string, IActorRef> _aggregatesRegions = new Dictionary<string, IActorRef>();
         readonly List<string> _processAggregatesRegionPaths = new List<string>();
@@ -40,7 +40,6 @@ namespace GridDomain.Node.Cluster.CommandPipe
         readonly MessageMap _messageMap = new MessageMap();
 
         private readonly ILogger _log;
-        private readonly MessageMap _processMessageMap = new MessageMap();
 
         private readonly List<Func<Task>> _delayedRegistrations = new List<Func<Task>>();
         private readonly List<IProcessDescriptor> _processDescriptors = new List<IProcessDescriptor>();
@@ -51,10 +50,11 @@ namespace GridDomain.Node.Cluster.CommandPipe
             System = system;
         }
 
-        public async Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
+        public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
         {
             Type aggregateType = descriptor.AggregateType;
             _delayedRegistrations.Add(() => RegisterAggregateByType(aggregateType, typeof(ClusterAggregateActor<>).MakeGenericType(aggregateType)));
+            return Task.CompletedTask;
         }
 
         private async Task RegisterAggregateByType(Type aggregateType, Type actorType)
@@ -164,7 +164,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
             HandlersPipeActor = System.ActorOf(handlerActorProps, nameof(ClusterHandlersPipeActor));
         }
 
-        private void BuildAggregateCommandingRoutes()
+        protected virtual void BuildAggregateCommandingRoutes()
         {
             var routingGroup = new ConsistentMapGroup(_aggregatesRegions)
                 .WithMapping(m =>

@@ -26,7 +26,7 @@ namespace GridDomain.Node
             return new GridDomainLocalNode(Configurations, ActorSystemFactory, Logger, DefaultTimeout);
         }
 
-        public GridNodeBuilder PipeFactory(IActorSystemFactory factory)
+        public GridNodeBuilder ActorFactory(IActorSystemFactory factory)
         {
             ActorSystemFactory = factory;
             return this;
@@ -46,7 +46,7 @@ namespace GridDomain.Node
 
         public GridNodeBuilder Timeout(TimeSpan timeout)
         {
-            this.DefaultTimeout = timeout;
+            DefaultTimeout = timeout;
             return this;
         }
     }

@@ -3,9 +3,9 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Cluster.ProcessManagers
 {
-    public class Cluster_ProcessManagerProducedEventsAndCommandsHasProcessId : ProcessManagerProducedEventsAndCommandsHasProcessId
+    public class ClusterProcessManagerProducedEventsAndCommandsHasProcessId : ProcessManagerProducedEventsAndCommandsHasProcessId
     {
-        public Cluster_ProcessManagerProducedEventsAndCommandsHasProcessId(ITestOutputHelper helper)
+        public ClusterProcessManagerProducedEventsAndCommandsHasProcessId(ITestOutputHelper helper)
             : base(new SoftwareProgrammingProcessManagerFixture(helper).Clustered()) { }
     }
 }

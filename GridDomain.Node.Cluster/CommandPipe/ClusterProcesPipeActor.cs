@@ -40,7 +40,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
         {
             Receive<IActorRef>(m =>
                                {
-                                   _commandExecutionActor = m;
+                                   CommandExecutionActor = m;
                                    //return to default behavior of parent actor
                                    UnbecomeStacked();
                                    UnbecomeStacked();
@@ -76,7 +76,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
                 {
                     return new ShardedProcessMessageMetadataEnvelop(
                                                                     m.Message,
-                                                                    proc.ProcessId,
+                                                                    proc.ProcessId ?? Known.Names.EmptyProcess ,
                                                                     _processStateName,
                                                                     m.Metadata);
                 }
@@ -109,33 +109,6 @@ namespace GridDomain.Node.Cluster.CommandPipe
             return catalog;
         }
 
-//        private static IMessageProcessor<ProcessesTransitComplete> CreateRoutess(IUntypedActorContext context, MessageMap messageRouteMap)
-//        {
-//            var catalog = new ProcessesDefaultProcessor();
-//            foreach (var reg in messageRouteMap.Registratios)
-//            {
-//                var procesShardRegion = ClusterSharding.Get(context.System)
-//                                                       .ShardRegion(Known.Names.Region(reg.Handler));
-//
-//                IMessageProcessor<IProcessCompleted> processor;
-//                switch (reg.ProcesType)
-//                {
-//                    case MessageMap.HandlerProcessType.Sync:
-//                        processor = new ShardedProcessMessageProcessor<IProcessCompleted>(procesShardRegion);
-//                        break;
-//
-//                    case MessageMap.HandlerProcessType.FireAndForget:
-//                        processor = new FireAndForgetActorMessageProcessor<IProcessCompleted>(procesShardRegion, new ProcessTransited(null, null, null, null));
-//                        break;
-//                    default:
-//                        throw new NotSupportedException(reg.ProcesType.ToString());
-//                }
-//
-//                catalog.Add(reg.Message, processor);
-//            }
-//
-//            return catalog;
-//        }
 
         public IStash Stash { get; set; }
     }

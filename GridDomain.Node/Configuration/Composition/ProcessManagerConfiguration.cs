@@ -21,7 +21,7 @@ namespace GridDomain.Node.Configuration.Composition
     public class ProcessManagerConfiguration<TState,TActor> : IContainerConfiguration where TState : class, IProcessState
     {
         private readonly IProcessDependencyFactory<TState> _processDependencyFactory;
-        private string _statePath;
+        private readonly string _statePath;
 
         public ProcessManagerConfiguration(IProcessDependencyFactory<TState> factory, string statePath)
         {

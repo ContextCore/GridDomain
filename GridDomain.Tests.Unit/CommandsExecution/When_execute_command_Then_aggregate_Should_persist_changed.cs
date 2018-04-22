@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             await Node.Prepare(syncCommand).Expect<BalloonTitleChanged>().Execute();
 
             //to finish persistence
-            var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
+            var aggregate = await Node.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
             Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Title);
         }
 
@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             await Node.Prepare(syncCommand).Expect<BalloonTitleChanged>().Execute();
 
             //to finish persistence
-            var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
+            var aggregate = await Node.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
             Assert.Equal(syncCommand.Parameter.ToString(), aggregate.Title);
         }
     }

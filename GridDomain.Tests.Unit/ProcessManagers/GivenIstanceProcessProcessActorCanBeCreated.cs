@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         [Fact]
         public async Task Instance_process_actor_has_correct_path_when_process_is_started_by_domain_message()
         {
-            var resultMsg = await Node.NewLocalDebugWaiter()
+            var resultMsg = await Node.NewTestWaiter()
                                       .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
                                       .Create()
                                       .SendToProcessManagers(new GotTiredEvent(Guid.NewGuid().ToString()));

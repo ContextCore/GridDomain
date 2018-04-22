@@ -20,7 +20,6 @@ namespace GridDomain.Node.Cluster.CommandPipe {
                                                                               snapshotsConstructor,
                                                                               customHandlersActor)
         {
-            int a;
         }
 
         protected override void AwaitingCommandBehavior()

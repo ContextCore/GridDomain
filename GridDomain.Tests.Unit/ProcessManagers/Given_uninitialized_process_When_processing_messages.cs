@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.ProcessManagers.State;
+using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using Xunit;
@@ -17,12 +18,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         public async Task Process_state_should_not_be_changed()
         {
             var coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null, Guid.NewGuid().ToString());
-
-            Node.Transport.Publish(coffeMadeEvent);
-            await Task.Delay(200);
-            var processStateAggregate =
-                await this.LoadAggregateByActor<ProcessStateAggregate<SoftwareProgrammingState>>(coffeMadeEvent.ProcessId);
-            Assert.Null(processStateAggregate.State);
+            
+            Node.SendToProcessManager<SoftwareProgrammingState>(coffeMadeEvent).Wait(TimeSpan.FromMilliseconds(200));
+            
+            var processStateAggregate = await Node.LoadProcess<SoftwareProgrammingState>(coffeMadeEvent.ProcessId);
+            Assert.Null(processStateAggregate);
         }
     }
 }

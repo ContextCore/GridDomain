@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
 
             Assert.Equal(finalValue, event_generated_from_changed_state.Value);
 
-            var sampleAggregate = await this.LoadAggregateByActor<Balloon>(asyncCommand.AggregateId);
+            var sampleAggregate = await Node.LoadAggregateByActor<Balloon>(asyncCommand.AggregateId);
             Assert.Equal(finalValue, sampleAggregate.Title);
         }
     }

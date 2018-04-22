@@ -6,9 +6,4 @@ namespace GridDomain.Node
     {
         ActorSystem CreateSystem();
     }
-
-    public interface IActorCommandPipeFactory
-    {
-        IActorCommandPipe CreatePipe();
-    }
 }

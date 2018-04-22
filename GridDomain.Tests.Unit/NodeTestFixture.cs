@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Node;
@@ -44,7 +45,7 @@ namespace GridDomain.Tests.Unit
             Output = output;
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             NodeConfig = cfg ?? DefaultNodeConfig;
-
+            TestNodeBuilder = (node,kit) => new TestLocalNode(node, kit);
             ConfigBuilder = systemConfigFactorry ?? (n => n.ToStandAloneInMemorySystemConfig());
             NodeBuilder = BuildInMemoryStandAloneNode;
             
@@ -53,9 +54,9 @@ namespace GridDomain.Tests.Unit
                     Add(c);
         }
 
-        public GridDomainNode Node { get; private set; }
+        public IExtendedGridDomainNode Node { get; private set; }
         public Func<NodeConfiguration, string> ConfigBuilder { get; set; }
-        public Func<Func<ActorSystem>, ILogger, GridDomainNode> NodeBuilder { get; set; }
+        public Func<Func<ActorSystem>, ILogger, IExtendedGridDomainNode> NodeBuilder { get; set; }
         public NodeConfiguration NodeConfig { get; }
         public string Name => NodeConfig.Name;
 
@@ -67,6 +68,7 @@ namespace GridDomain.Tests.Unit
             3;
 #endif
         public TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
+        public Func<IExtendedGridDomainNode,TestKit,ITestGridDomainNode> TestNodeBuilder { get; set; }
 
         public void Dispose()
         {
@@ -80,7 +82,7 @@ namespace GridDomain.Tests.Unit
             return this;
         }
 
-        public async Task<GridDomainNode> StartNode(GridDomainNode node)
+        public async Task<IExtendedGridDomainNode> StartNode(IExtendedGridDomainNode node)
         {
             OnNodePreparingEvent.Invoke(this, this);
             Node = node;
@@ -91,21 +93,26 @@ namespace GridDomain.Tests.Unit
             return Node;
         }
 
-        public Task<GridDomainNode> CreateNode(ILogger logger = null)
+        public Task<IExtendedGridDomainNode> CreateNode(ILogger logger = null)
         {
             return CreateNode(() => NodeConfig.CreateInMemorySystem(), logger ?? new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger());
         }
 
-        public Task<GridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
+        public Task<IExtendedGridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
             var gridDomainNode = NodeBuilder(actorSystemProvider, logger);
             
             return StartNode(gridDomainNode);
         }
+        
+        public ITestGridDomainNode CreateTestNode(IExtendedGridDomainNode node, TestKit kit)
+        {
+            return TestNodeBuilder(node, kit);
+        }
 
         private GridDomainNode BuildInMemoryStandAloneNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            var node = new GridNodeBuilder().PipeFactory(new DelegateActorSystemFactory(actorSystemProvider,
+            var node = new GridNodeBuilder().ActorFactory(new DelegateActorSystemFactory(actorSystemProvider,
                                                                                         sys =>
                                                                                         {
                                                                                             sys.AttachSerilogLogging(logger);
@@ -119,9 +126,9 @@ namespace GridDomain.Tests.Unit
             return (GridDomainNode)node;
         }
 
-        public event EventHandler<GridDomainNode> OnNodeStartedEvent = delegate { };
+        public event EventHandler<IExtendedGridDomainNode> OnNodeStartedEvent = delegate { };
         public event EventHandler<NodeTestFixture> OnNodePreparingEvent = delegate { };
-        public event EventHandler<GridDomainNode> OnNodeCreatedEvent = delegate { };
+        public event EventHandler<IExtendedGridDomainNode> OnNodeCreatedEvent = delegate { };
         public event EventHandler<ActorSystem> OnSystemCreatedEvent = delegate { };
     }
 }
