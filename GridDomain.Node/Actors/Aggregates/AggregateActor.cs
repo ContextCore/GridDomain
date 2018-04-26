@@ -70,15 +70,16 @@ namespace GridDomain.Node.Actors.Aggregates
                                                 Monitor.Increment("CommandsTotal");
                                                 var cmd = (ICommand)m.Message;
                                                 Log.Debug($"Received command {cmd.Id}");
+                                                
                                                 ExecutionContext.Command = cmd;
                                                 ExecutionContext.CommandMetadata = m.Metadata;
                                                 ExecutionContext.CommandSender = Sender;
                                                 
                                                 _publisher.Publish(m);
+                                                
                                                 var aggregateExecutionTimer = Monitor.StartMeasureTime("AggregateLogic");
                                                 _commandTotalExecutionTimer = Monitor.StartMeasureTime("CommandTotalExecution");
-                                                    
-                                                Log.Debug("Executing command. {@m}", ExecutionContext);
+                                                
                                                 _aggregateCommandsHandler.ExecuteAsync(State,
                                                                                        ExecutionContext.Command)
                                                                          .ContinueWith(t =>
