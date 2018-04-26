@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
                                             MessageMetadataEnvelop.New(_messageB),
                                             MessageMetadataEnvelop.New(_messageC)
                                         };
-            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.True(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]

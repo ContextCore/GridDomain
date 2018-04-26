@@ -23,7 +23,7 @@ namespace GridDomain.Node
 
         public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            var conditionBuilder = new LocalMetadataConditionBuilder<Task<IWaitResult>>();
+            var conditionBuilder = new LocalMetadataConditionFactory<Task<IWaitResult>>();
             var waiter = new MessagesWaiter<Task<IWaitResult>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
             conditionBuilder.CreateResultFunc = waiter.Start;
             return waiter;
@@ -31,7 +31,7 @@ namespace GridDomain.Node
 
         public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
-            var conditionBuilder = new ConditionBuilder<Task<IWaitResult>>();
+            var conditionBuilder = new ConditionFactory<Task<IWaitResult>>();
             var waiter = new MessagesWaiter<Task<IWaitResult>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
             conditionBuilder.CreateResultFunc = waiter.Start;
             return waiter;

@@ -84,6 +84,7 @@ namespace GridDomain.Scheduling.Quartz
                 var jobFailedMetadata = messageMetadata.CreateChild(processingMessage,
                                                                     _jobFailedProcessEntry);
                 _publisher.Publish(jobFailed, jobFailedMetadata);
+                
                 throw new JobExecutionException(businessError, false);
             }
         }
@@ -100,7 +101,7 @@ namespace GridDomain.Scheduling.Quartz
             //waiting domain event by correlation id
             await _executor.Prepare(command, commandMetadata)
                            .Expect(options.SuccesEventType)
-                           .Execute(options.Timeout, true);
+                           .Execute(options.Timeout);
 
             _quartzLogger.Information("job {key} succeed", jobKey.Name);
 

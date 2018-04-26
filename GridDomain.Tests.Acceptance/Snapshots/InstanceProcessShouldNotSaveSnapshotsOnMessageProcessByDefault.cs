@@ -23,6 +23,10 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
+            var res1 = await Node.PrepareForProcessManager(startEvent)
+                                 .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
+                                 .Create();
+            
             var res = await
                 Node.NewTestWaiter()
                     .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()

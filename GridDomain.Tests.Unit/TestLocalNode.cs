@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Unit {
             return Node.Execute(command, metadata, confirm);
         }
 
-        public ICommandWaiter Prepare<U>(U cmd, IMessageMetadata metadata = null) where U : ICommand
+        public ICommandExpectationBuilder Prepare<U>(U cmd, IMessageMetadata metadata = null) where U : ICommand
         {
             return Node.Prepare(cmd, metadata);
         }
@@ -87,7 +87,7 @@ namespace GridDomain.Tests.Unit {
             return (await LoadAggregateByActor<ProcessStateAggregate<TState>>(id)).State;
         }
 
-        public async Task<TExpect> SendToProcessManager<TExpect>(DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
+        public async Task<TExpect> PrepareForProcessManager<TExpect>(DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
         {
             var res = await NewLocalDebugWaiter(Node, timeout)
                             .Expect<TExpect>()
@@ -104,7 +104,7 @@ namespace GridDomain.Tests.Unit {
 
         static IMessageWaiter<AnyMessagePublisher> NewLocalDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
         {
-            var conditionBuilder = new LocalMetadataConditionBuilder<AnyMessagePublisher>();
+            var conditionBuilder = new LocalMetadataConditionFactory<AnyMessagePublisher>();
             var waiter = new MessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionBuilder);
             conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
             return waiter;

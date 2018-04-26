@@ -17,7 +17,8 @@ using GridDomain.Tests.Common;
 using GridDomain.Transport;
 using Serilog;
 
-namespace GridDomain.Tests.Unit.Cluster {
+namespace GridDomain.Tests.Unit.Cluster
+{
     public class TestClusterNode : ITestGridDomainNode
     {
         private TestKit _testKit;
@@ -34,7 +35,7 @@ namespace GridDomain.Tests.Unit.Cluster {
             return Node.Execute(command, metadata, confirm);
         }
 
-        public ICommandWaiter Prepare<U>(U cmd, IMessageMetadata metadata = null) where U : ICommand
+        public ICommandExpectationBuilder Prepare<U>(U cmd, IMessageMetadata metadata = null) where U : ICommand
         {
             return Node.Prepare(cmd, metadata);
         }
@@ -60,6 +61,7 @@ namespace GridDomain.Tests.Unit.Cluster {
         public IActorTransport Transport => Node.Transport;
 
         public IActorCommandPipe Pipe => Node.Pipe;
+
         public Task Start()
         {
             return Node.Start();
@@ -77,9 +79,9 @@ namespace GridDomain.Tests.Unit.Cluster {
         {
             var name = EntityActorName.New<T>(id)
                                       .ToString();
-            
+
             var actor = await _testKit.LoadActor<ClusterAggregateActor<T>>(name);
-            
+
             return actor.State;
         }
 
@@ -87,26 +89,26 @@ namespace GridDomain.Tests.Unit.Cluster {
         {
             var name = EntityActorName.New<ProcessStateAggregate<TState>>(id)
                                       .ToString();
-            
+
             var actor = await _testKit.LoadActor<ClusterProcessStateActor<TState>>(name);
-            
+
             return actor.State.State;
         }
 
-        static IMessageWaiter<AnyMessagePublisher> NewClusterDebugWaiter( IExtendedGridDomainNode node, TimeSpan? timeout = null)
+        static IMessageWaiter<AnyMessagePublisher> NewClusterDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
         {
-            var conditionBuilder = new MetadataConditionBuilder<AnyMessagePublisher>();
+            var conditionBuilder = new MetadataConditionFactory<AnyMessagePublisher>();
             var waiter = new MessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionBuilder);
             conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
             return waiter;
         }
-        
-        public async Task<TExpect> SendToProcessManager<TExpect>(DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
+
+        public async Task<TExpect> PrepareForProcessManager<TExpect>(DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
         {
             var res = await NewClusterDebugWaiter(Node,timeout)
-                                .Expect<TExpect>()
-                                .Create()
-                                .SendToProcessManagers(msg);
+                            .Expect<TExpect>()
+                            .Create()
+                            .SendToProcessManagers<TExpect>(msg);
        
             return res.Message<TExpect>();
         }

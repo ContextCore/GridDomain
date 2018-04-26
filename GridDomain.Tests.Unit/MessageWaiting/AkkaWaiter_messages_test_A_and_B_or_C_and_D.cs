@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
                                             new MessageMetadataEnvelop<Message>(_messageC, MessageMetadata.Empty)
                                         };
 
-            Assert.False(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.False(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
                                             new MessageMetadataEnvelop<Message>(_messageB, MessageMetadata.Empty),
                                             new MessageMetadataEnvelop<Message>(_messageD, MessageMetadata.Empty)
                                         };  
-            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.True(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]

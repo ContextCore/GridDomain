@@ -9,7 +9,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     /// <typeparam name="T"></typeparam>
     //really important will we wait for envelop types with local waiting and EventBus
     //or it will be distributed pub sub with exact topics
-    public class MetadataConditionBuilder<T> : ConditionBuilder<T>
+    public class MetadataConditionFactory<T> : ConditionFactory<T>
     {
         protected override bool DefaultFilter<TMsg>(object received)
         {
@@ -44,11 +44,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     
     //really important will we wait for envelop types with local waiting and EventBus
     //or it will be distributed pub sub with exact topics
-    public abstract class CorrelationConditionBuilder<T> : ConditionBuilder<T>
+    public abstract class CorrelationConditionFactory<T> : ConditionFactory<T>
     {
         private readonly string _correlationId;
 
-        protected CorrelationConditionBuilder(string correlationId)
+        protected CorrelationConditionFactory(string correlationId)
         {
             _correlationId = correlationId;
         }
@@ -64,17 +64,17 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
     }
 
-    public class LocalCorrelationConditionBuilder<T> : CorrelationConditionBuilder<T>
+    public class LocalCorrelationConditionFactory<T> : CorrelationConditionFactory<T>
     {
         protected override void AddFilter(Type type, Func<object, bool> filter)
         {
             base.AddFilter(typeof(MessageMetadataEnvelop), filter);
         }
 
-        public LocalCorrelationConditionBuilder(string correlationId) : base(correlationId) { }
+        public LocalCorrelationConditionFactory(string correlationId) : base(correlationId) { }
     }
     
-    public class LocalMetadataConditionBuilder<T> : MetadataConditionBuilder<T>
+    public class LocalMetadataConditionFactory<T> : MetadataConditionFactory<T>
     {
         protected override void AddFilter(Type type, Func<object, bool> filter)
         {

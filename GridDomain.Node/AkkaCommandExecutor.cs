@@ -94,9 +94,9 @@ namespace GridDomain.Node
             return false;
         }
 
-        public virtual ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public virtual ICommandExpectationBuilder Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
-            return new CommandWaiter<T>(cmd,
+            return new CommandExpectationBuilder<T>(cmd,
                                         metadata ?? CreateEmptyCommandMetadata(cmd),
                                         _system,
                                         _transport,

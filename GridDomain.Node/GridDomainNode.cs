@@ -109,7 +109,7 @@ namespace GridDomain.Node {
             return _waiterFactory.NewExplicitWaiter(defaultTimeout ?? DefaultTimeout);
         }
 
-        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public ICommandExpectationBuilder Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             return _commandExecutor.Prepare(cmd, metadata);
         }

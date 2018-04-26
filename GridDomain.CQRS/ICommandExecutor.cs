@@ -15,6 +15,6 @@ namespace GridDomain.CQRS
     {
         Task Execute<T>(T command, IMessageMetadata metadata = null,CommandConfirmationMode confirm = CommandConfirmationMode.Projected)
             where T:ICommand;
-        ICommandWaiter Prepare<U>(U cmd, IMessageMetadata metadata = null) where U : ICommand;
+        ICommandExpectationBuilder Prepare<U>(U cmd, IMessageMetadata metadata = null) where U : ICommand;
     }
 }

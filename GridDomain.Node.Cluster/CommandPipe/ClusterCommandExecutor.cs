@@ -24,18 +24,18 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             return new ShardedCommandMetadataEnvelop(command, metadata);
         }
         
-        public override ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null)
+        public override ICommandExpectationBuilder Prepare<T>(T cmd, IMessageMetadata metadata = null)
         {
             metadata = metadata ?? CreateEmptyCommandMetadata(cmd);
             
-            return new CommandWaiter<T>(
+            return new CommandExpectationBuilder<T>(
                                         _system,
                                         _transport,
                                         _defaultTimeout,
-                                        new CommandConditionBuilder<T>(cmd, 
+                                        new ConditionCommandExecutor<T>(cmd, 
                                                                        metadata,
                                                                        this,
-                                                                       new ClusterCorrelationConditionBuilder<Task<IWaitResult>>(metadata.CorrelationId))
+                                                                       new ClusterCorrelationConditionFactory<Task<IWaitResult>>(metadata.CorrelationId))
                                         );
         }
     }

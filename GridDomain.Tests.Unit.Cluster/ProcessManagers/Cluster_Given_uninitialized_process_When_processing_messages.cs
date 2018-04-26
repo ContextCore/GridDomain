@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.Cluster.ProcessManagers
         {
             var coffeMadeEvent = new CoffeMadeEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), null, Guid.NewGuid().ToString());
             
-            Node.SendToProcessManager<SoftwareProgrammingState>(coffeMadeEvent).Wait(TimeSpan.FromMilliseconds(200));
+            Node.PrepareForProcessManager<SoftwareProgrammingState>(coffeMadeEvent).Wait(TimeSpan.FromMilliseconds(200));
             
             // await Task.Delay(200);
             var processStateAggregate = await Node.LoadProcess<SoftwareProgrammingState>(coffeMadeEvent.ProcessId);

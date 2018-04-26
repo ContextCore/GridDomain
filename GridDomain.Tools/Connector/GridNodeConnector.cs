@@ -63,7 +63,7 @@ namespace GridDomain.Tools.Connector {
             return _waiterFactory.NewExplicitWaiter(defaultTimeout);
         }
 
-        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public ICommandExpectationBuilder Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             if(!IsConnected) throw new NotConnectedException();
             return _commandExecutor.Prepare(cmd, metadata);

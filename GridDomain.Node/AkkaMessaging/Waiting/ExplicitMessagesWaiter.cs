@@ -10,14 +10,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         public ExplicitMessagesWaiter(ActorSystem system,
                                            IActorSubscriber subscriber,
-                                           TimeSpan defaultTimeout) : this(system, subscriber, defaultTimeout, new ConditionBuilder<Task<IWaitResult>>()) {}
+                                           TimeSpan defaultTimeout) : this(system, subscriber, defaultTimeout, new ConditionFactory<Task<IWaitResult>>()) {}
 
         public ExplicitMessagesWaiter(ActorSystem system, 
                                            IActorSubscriber subscriber,
                                            TimeSpan defaultTimeout, 
-                                           ConditionBuilder<Task<IWaitResult>> conditionBuilder) : base(system, subscriber, defaultTimeout, conditionBuilder)
+                                           ConditionFactory<Task<IWaitResult>> conditionFactory) : base(system, subscriber, defaultTimeout, conditionFactory)
         {
-            conditionBuilder.CreateResultFunc = Start;
+            conditionFactory.CreateResultFunc = Start;
         }
     }
 }

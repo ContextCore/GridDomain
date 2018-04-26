@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         public void Condition_wait_end_should_be_false_on_A()
         {
             var sampleObjectsReceived = new object[] {_messageA};
-            Assert.False(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.False(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]

@@ -17,7 +17,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     /// </summary>
     /// <typeparam name="T">type for return on Create method to better chaining</typeparam>
     /// <returns></returns>
-    public class ConditionBuilder<T> : IConditionBuilder<T>
+    public class ConditionFactory<T> : IConditionFactory<T>
     {
         private Expression<Func<IEnumerable<object>, bool>> StopExpression { get; set; } = c => true;
         public Func<IEnumerable<object>, bool> StopCondition { get; private set; }
@@ -36,26 +36,26 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return CreateResultFunc.Invoke(timeout);
         }
 
-        public ConditionBuilder(Func<TimeSpan?, T> createResultFunc = null)
+        public ConditionFactory(Func<TimeSpan?, T> createResultFunc = null)
         {
             CreateResultFunc = createResultFunc;
         }
 
-        public IConditionBuilder<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        public IConditionFactory<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return filter == null
                        ? And(typeof(TMsg), DefaultFilter<TMsg>)
                        : And(typeof(TMsg), o => DomainFilterAdapter(o, filter));
         }
 
-        public IConditionBuilder<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        public IConditionFactory<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return filter == null
                        ? Or(typeof(TMsg), DefaultFilter<TMsg>)
                        : Or(typeof(TMsg), o => DomainFilterAdapter(o, filter));
         }
 
-        public IConditionBuilder<T> And(Type type, Func<object, bool> filter = null)
+        public IConditionFactory<T> And(Type type, Func<object, bool> filter = null)
         {
             var messageFilter = filter ?? DefaultFilter<object>;
             StopExpression = StopExpression.And(c => c != null && c.Any(messageFilter));
@@ -65,7 +65,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return this;
         }
 
-        public IConditionBuilder<T> Or(Type type, Func<object, bool> filter = null)
+        public IConditionFactory<T> Or(Type type, Func<object, bool> filter = null)
         {
             var messageFilter = filter ?? DefaultFilter<object>;
             StopExpression = StopExpression.Or(c => c != null && c.Any(messageFilter));

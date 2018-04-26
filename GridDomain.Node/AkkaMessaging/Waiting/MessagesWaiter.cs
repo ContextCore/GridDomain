@@ -18,31 +18,31 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
         private readonly TimeSpan _defaultTimeout;
-        internal readonly ConditionBuilder<T> ConditionBuilder;
+        internal readonly ConditionFactory<T> ConditionFactory;
         private readonly IActorSubscriber _subscriber;
         private readonly ActorSystem _system;
 
-        public MessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout, ConditionBuilder<T> conditionBuilder)
+        public MessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout, ConditionFactory<T> conditionFactory)
         {
             _system = system;
             _defaultTimeout = defaultTimeout;
             _subscriber = subscriber;
-            ConditionBuilder = conditionBuilder;
+            ConditionFactory = conditionFactory;
         }
 
-        IConditionBuilder<T> IMessageWaiterBase<T, IConditionBuilder<T>>.Expect<TMsg>(Predicate<TMsg> filter)
+        IConditionFactory<T> IExpectationBuilder<IConditionFactory<T>>.Expect<TMsg>(Predicate<TMsg> filter)
         {
             return Expect(filter);
         }
 
-        public IConditionBuilder<T> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        public IConditionFactory<T> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
-            return ConditionBuilder.And(filter);
+            return ConditionFactory.And(filter);
         }
 
-        public IConditionBuilder<T> Expect(Type type, Func<object, bool> filter)
+        public IConditionFactory<T> Expect(Type type, Func<object, bool> filter)
         {
-            return ConditionBuilder.And(type, filter);
+            return ConditionFactory.And(type, filter);
         }
 
         public async Task<IWaitResult> Start(TimeSpan? timeout = null)
@@ -52,7 +52,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             using (var inbox = Inbox.Create(_system))
             {
-                foreach (var type in ConditionBuilder.MessageFilters.Keys)
+                foreach (var type in ConditionFactory.MessageFilters.Keys)
                     await _subscriber.Subscribe(type, inbox.Receiver);
 
                 var finalTimeout = timeout ?? _defaultTimeout;
@@ -60,7 +60,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                 await WaitForMessages(inbox, finalTimeout)
                     .TimeoutAfter(finalTimeout);
 
-                foreach (var type in ConditionBuilder.MessageFilters.Keys)
+                foreach (var type in ConditionFactory.MessageFilters.Keys)
                     await _subscriber.Unsubscribe(inbox.Receiver, type);
 
                 return new WaitResult(_allExpectedMessages);
@@ -82,12 +82,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private bool IsAllExpectedMessagedReceived()
         {
-            return ConditionBuilder.StopCondition(_allExpectedMessages);
+            return ConditionFactory.StopCondition(_allExpectedMessages);
         }
 
         private bool IsExpected(object message)
         {
-            return ConditionBuilder.MessageFilters
+            return ConditionFactory.MessageFilters
                                    .SelectMany(v => v.Value)
                                    .Any(filter => filter(message));
         }
@@ -107,17 +107,17 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                               TimeSpan defaultTimeout) : this(system,
                                                               subscriber,
                                                               defaultTimeout,
-                                                              new LocalMetadataConditionBuilder<Task<IWaitResult>>()) { }
+                                                              new LocalMetadataConditionFactory<Task<IWaitResult>>()) { }
 
         private MessagesWaiter(ActorSystem system,
                                IActorSubscriber subscriber,
                                TimeSpan defaultTimeout,
-                               ConditionBuilder<Task<IWaitResult>> conditionBuilder) : base(system,
+                               ConditionFactory<Task<IWaitResult>> conditionFactory) : base(system,
                                                                                             subscriber,
                                                                                             defaultTimeout,
-                                                                                            conditionBuilder)
+                                                                                            conditionFactory)
         {
-            conditionBuilder.CreateResultFunc = Start;
+            conditionFactory.CreateResultFunc = Start;
         }
     }
 }

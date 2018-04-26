@@ -36,21 +36,21 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         public void Condition_wait_end_should_be_false_on_A()
         {
             var sampleObjectsReceived = new object[] {_messageEnvelopeA};
-            Assert.False(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.False(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]
         public void Condition_wait_end_should_be_false_on_B()
         {
             var sampleObjectsReceived = new object[] {_messageEnvelopeB};
-            Assert.False(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.False(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]
         public void Condition_wait_end_should_be_true_on_A_and_B()
         {
             var sampleObjectsReceived = new object[] {_messageEnvelopeA, _messageEnvelopeB};
-            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.True(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
     }
 }

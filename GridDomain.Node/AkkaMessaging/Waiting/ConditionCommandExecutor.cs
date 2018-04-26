@@ -10,19 +10,19 @@ using GridDomain.CQRS;
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
 
-    public class CommandConditionBuilder<TCommand> : ICommandConditionBuilder where TCommand : ICommand
+    public class ConditionCommandExecutor<TCommand> : IConditionCommandExecutor where TCommand : ICommand
     {
         private readonly TCommand _command;
         private readonly IMessageMetadata _commandMetadata;
         private readonly ICommandExecutor _executorActorRef;
-        public readonly ConditionBuilder<Task<IWaitResult>> ConditionaBuilder;
+        public readonly ConditionFactory<Task<IWaitResult>> ConditionaFactory;
 
-        public CommandConditionBuilder(TCommand command,
+        public ConditionCommandExecutor(TCommand command,
                                        IMessageMetadata commandMetadata,
                                        ICommandExecutor executorActorRef,
-                                       ConditionBuilder<Task<IWaitResult>> conditionaBuilder = null)
+                                       ConditionFactory<Task<IWaitResult>> conditionaFactory = null)
         {
-            ConditionaBuilder = conditionaBuilder ?? new LocalCorrelationConditionBuilder<Task<IWaitResult>>(commandMetadata.CorrelationId);
+            ConditionaFactory = conditionaFactory ?? new LocalCorrelationConditionFactory<Task<IWaitResult>>(commandMetadata.CorrelationId);
             _commandMetadata = commandMetadata;
             _executorActorRef = executorActorRef;
             _command = command;
@@ -33,9 +33,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             //we can launch any command with CommandConditionBuilder<ICommand>
             //and TCommand will resolve to ICommand leading to incorect subscription
             if(failOnAnyFault)
-                ConditionaBuilder.Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
+                ConditionaFactory.Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
 
-            var task = ConditionaBuilder.Create(timeout);
+            var task = ConditionaFactory.Create(timeout);
 
             //will wait later in task; 
 #pragma warning disable 4014
@@ -58,15 +58,15 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == _command.Id;
         }
 
-        public ICommandConditionBuilder And<TMsg>(Predicate<TMsg> filter) where TMsg : class
+        public IConditionCommandExecutor And<TMsg>(Predicate<TMsg> filter) where TMsg : class
         {
-            ConditionaBuilder.And(filter);
+            ConditionaFactory.And(filter);
             return this;
         }
 
-        public ICommandConditionBuilder Or<TMsg>(Predicate<TMsg> filter) where TMsg : class
+        public IConditionCommandExecutor Or<TMsg>(Predicate<TMsg> filter) where TMsg : class
         {
-            ConditionaBuilder.Or(filter);
+            ConditionaFactory.Or(filter);
             return this;
         }
     }

@@ -26,14 +26,14 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         public void Condition_wait_end_should_be_true_on_A()
         {
             var sampleObjectsReceived = new object[] { MessageMetadataEnvelop.New(_messageA)};
-            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.True(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]
         public void Condition_wait_end_should_be_true_on_B()
         {
             var sampleObjectsReceived = new object[] { MessageMetadataEnvelop.New(_messageA) };
-            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.True(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
         }
 
         [Fact]
