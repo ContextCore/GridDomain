@@ -27,10 +27,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var res = await Node.NewTestWaiter()
+            var res = await Node.PrepareForProcessManager(startEvent)
                                 .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-                                .Create()
-                                .SendToProcessManagers(startEvent);
+                                .Send();
 
             var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
                                .SourceId;
@@ -40,7 +39,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                           BusinessDateTime.UtcNow,
                                                           processId);
 
-            await Node.SendToProcessManagers(continueEventA);
+            await Node.PrepareForProcessManager(continueEventA).Send();
 
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 

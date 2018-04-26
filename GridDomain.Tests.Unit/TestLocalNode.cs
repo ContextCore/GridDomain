@@ -81,20 +81,78 @@ namespace GridDomain.Tests.Unit {
 
             return actor.State;
         }
-
+                                                                  
         public async Task<TState> LoadProcess<TState>(string id) where TState : class, IProcessState
         {
             return (await LoadAggregateByActor<ProcessStateAggregate<TState>>(id)).State;
         }
 
-        public async Task<TExpect> PrepareForProcessManager<TExpect>(DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
+        public IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata = null)
         {
-            var res = await NewLocalDebugWaiter(Node, timeout)
+            //var res = await NewLocalDebugWaiter(Node, timeout)
+            //                .Expect<TExpect>()
+            //                .Create()
+            //                .SendToProcessManagers(msg);
+            //
+            //return res.Message<TExpect>();
+            throw new NotImplementedException();
+
+        }
+
+        public IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata = null)
+        {
+            throw new NotImplementedException();
+
+        }
+
+        class ProcessManagerExpectationBuilder : IProcessManagerExpectationBuilder
+        {
+            private IExtendedGridDomainNode _extendedGridDomainNode;
+
+            public ProcessManagerExpectationBuilder(IExtendedGridDomainNode node)
+            {
+                _extendedGridDomainNode = node;
+            }
+            public IConditionProcessManagerExecutor<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+            {
+                var waiter = NewLocalDebugWaiter(_extendedGridDomainNode);
+                
+            }
+
+            public Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
+            {
+                throw new NotImplementedException();
+            }
+
+            class ConditionProcessManagerExecutor<T> : IConditionProcessManagerExecutor<T>
+            {
+                public IConditionProcessManagerExecutor<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+                {
+                    throw new NotImplementedException();
+                }
+
+                public IConditionProcessManagerExecutor<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+                {
+                    throw new NotImplementedException();
+                }
+
+                public Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+        }
+        
+        public IProcessManagerExpectationBuilder PrepareForProcessManager(object msg, MessageMetadata metadata = null)
+        {
+            var res = await NewLocalDebugWaiter(Node)
                             .Expect<TExpect>()
                             .Create()
                             .SendToProcessManagers(msg);
-
+           
             return res.Message<TExpect>();
+            throw new NotImplementedException();
+
         }
 
         public IMessageWaiter<AnyMessagePublisher> NewTestWaiter(TimeSpan? timeout = null)

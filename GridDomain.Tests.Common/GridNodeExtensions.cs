@@ -22,30 +22,29 @@ using GridDomain.Tools.Repositories.EventRepositories;
 namespace GridDomain.Tests.Common
 {
  
-   // public interface IConditionProcessManagerSender : 
-   // {
-   //     Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
-   // }
-    
-    public interface IConditionProcessManagerExecutor : IConditionBuilder<IConditionProcessManagerExecutor>
+    public interface IConditionProcessManagerExecutor<T> : IConditionBuilder<IConditionProcessManagerExecutor<T>>
     {
+        Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
+    }
+    
+    public interface IProcessManagerExpectationBuilder
+    {
+        IConditionProcessManagerExecutor<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class; 
         Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
     }
     
-    //public interface IConditionCommandExecutor : IConditionBuilder<IConditionCommandExecutor>
-    //{
-    //    Task<IWaitResult> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true);
-    //}
     
-    
+  
     public interface ITestGridDomainNode : IExtendedGridDomainNode
     {
         Task<T> LoadAggregateByActor<T>(string id) where T : Aggregate;
         Task<TState> LoadProcess<TState>(string id) where TState : class,IProcessState;
-        IExpectationBuilder<IConditionProcessManagerExecutor> PrepareForProcessManager(DomainEvent msg, TimeSpan? timeout = null);// where TExpect : class;
+        IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata=null);// where TExpect : class;
+        IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata=null);// where TExpect : class;
         IMessageWaiter<AnyMessagePublisher> NewTestWaiter(TimeSpan? timeout = null);
     }
-    
+
+   
     public static class GridNodeExtensions
     {
 
@@ -71,23 +70,19 @@ namespace GridDomain.Tests.Common
        //     return res.Message<TExpect>();
        // }
 
-        public static Task<TState> GetTransitedState<TState>(this ITestGridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
+        public static async Task<TState> GetTransitedState<TState>(this ITestGridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
         {
-            var res = node.PrepareForProcessManager(msg,timeout)
+            var res = await node.PrepareForProcessManager(msg)
                           .Expect<ProcessReceivedMessage<TState>>()
-                          .Builder
-                          .Send();
+                          .Send(timeout);
             
-            var res = node.PrepareForProcessManager(msg,timeout)
-                          .Expect<ProcessReceivedMessage<TState>>()
-                          .Create();
-            return res;
+            return res.Received.State;
         }
 
         public static async Task<TState> GetCreatedState<TState>(this ITestGridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
         {
-            var res = await node.PrepareForProcessManager<ProcessManagerCreated<TState>>(msg, timeout);
-            return res.State;
+            var res = await node.PrepareForProcessManager(msg).Expect<ProcessManagerCreated<TState>>().Send(timeout);
+            return res.Received.State;
         }
 
 

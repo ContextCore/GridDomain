@@ -33,20 +33,18 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var res = await Node.NewTestWaiter()
+            var res = await Node.PrepareForProcessManager(startEvent)
                                 .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-                                .Create()
-                                .SendToProcessManagers(startEvent);
+                                .Send();
 
             var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
                                .SourceId;
 
             var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
-            await Node.NewTestWaiter()
+            await Node.PrepareForProcessManager(continueEvent)
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                      .Create()
-                      .SendToProcessManagers(continueEvent);
+                      .Send();
 
             var continueEventB =
                 new Fault<GoSleepCommand>(new GoSleepCommand(startEvent.PersonId, startEvent.LovelySofaId),
@@ -55,10 +53,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                           processId,
                                           BusinessDateTime.Now);
 
-            await Node.NewTestWaiter()
+            await Node.PrepareForProcessManager(continueEventB)
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                      .Create()
-                      .SendToProcessManagers(continueEventB);
+                      .Send();
 
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(continueEvent.ProcessId);
 

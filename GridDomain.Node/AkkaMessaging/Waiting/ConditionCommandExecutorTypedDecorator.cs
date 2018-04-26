@@ -32,8 +32,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting {
         async Task<IWaitResult<T>> IConditionCommandExecutor<T>.Execute(TimeSpan? timeout, bool failOnAnyFault)
         {
             var res = await _conditionCommandExecutor.Execute(timeout, failOnAnyFault);
-            return new WaitResult<T>(res.All.OfType<IMessageMetadataEnvelop>().FirstOrDefault(r => !(r.Message is IFault)),
-                                     res.All.OfType<IMessageMetadataEnvelop>().FirstOrDefault(r => r.Message is IFault));
+            return WaitResult.Parse<T>(res);
         }
     }
 }

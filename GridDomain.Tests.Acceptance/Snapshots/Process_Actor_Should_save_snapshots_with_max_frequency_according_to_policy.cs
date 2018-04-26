@@ -40,20 +40,18 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         {
             var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var resTask = Node.NewTestWaiter()
+            var resTask = Node.PrepareForProcessManager(startEvent,MessageMetadata.New(startEvent.Id, null, null))
                               .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                              .Create()
-                              .SendToProcessManagers(startEvent,MessageMetadata.New(startEvent.Id, null, null));
+                              .Send();
 
             var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>().SourceId;
 
             var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
             //to avoid racy state receiving expected message from processing GotTiredEvent 
-            await Node.NewTestWaiter()
+            await Node.PrepareForProcessManager(continueEvent.CloneForProcess(processId))
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e => e.MessageId == continueEvent.Id)
-                      .Create()
-                      .SendToProcessManagers(continueEvent, processId);
+                      .Send();
 
             Log.Info("Testcase enforce additional snapshot save & delete, will kill process manager");
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);

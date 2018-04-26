@@ -95,6 +95,22 @@ namespace GridDomain.Tests.Unit.Cluster
             return actor.State.State;
         }
 
+        public IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata = null)
+        {
+            throw new NotImplementedException();
+            // var res = await NewClusterDebugWaiter(Node,timeout)
+            //                 .Expect<TExpect>()
+            //                 .Create()
+            //                 .SendToProcessManagers<TExpect>(msg);
+            //
+            // return res.Message<TExpect>();
+        }
+
         static IMessageWaiter<AnyMessagePublisher> NewClusterDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
         {
             var conditionBuilder = new MetadataConditionFactory<AnyMessagePublisher>();
@@ -103,16 +119,7 @@ namespace GridDomain.Tests.Unit.Cluster
             return waiter;
         }
 
-        public async Task<TExpect> PrepareForProcessManager<TExpect>(DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
-        {
-            var res = await NewClusterDebugWaiter(Node,timeout)
-                            .Expect<TExpect>()
-                            .Create()
-                            .SendToProcessManagers<TExpect>(msg);
-       
-            return res.Message<TExpect>();
-        }
-
+      
         public IMessageWaiter<AnyMessagePublisher> NewTestWaiter(TimeSpan? timeout = null)
         {
             return NewClusterDebugWaiter(Node, timeout);

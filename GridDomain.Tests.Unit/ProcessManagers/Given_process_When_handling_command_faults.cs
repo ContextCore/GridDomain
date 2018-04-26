@@ -34,13 +34,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                                                 BusinessDateTime.UtcNow,
                                                                 givenProcessStateAggregate.Id);
 
-            await Node.PrepareForProcessManager<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                  
-                  
-                  NewTestWaiter()
+            await Node.PrepareForProcessManager(coffeMakeFailedEvent)
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(m => m.State.CurrentStateName == nameof(SoftwareProgrammingProcess.Coding))
-                      .Create()
-                      .SendToProcessManagers(coffeMakeFailedEvent, MessageMetadata.New(coffeMakeFailedEvent.SourceId, null, null));
+                      .Send();
 
             var processStateAggregate = await Node.LoadProcess<SoftwareProgrammingState>(givenProcessStateAggregate.Id);
             //Process_should_be_in_correct_state_after_fault_handling()

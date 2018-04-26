@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;

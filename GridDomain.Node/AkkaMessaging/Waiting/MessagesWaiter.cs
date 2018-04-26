@@ -30,11 +30,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             ConditionFactory = conditionFactory;
         }
 
-        IConditionFactory<T> IExpectationBuilder<IConditionFactory<T>>.Expect<TMsg>(Predicate<TMsg> filter)
-        {
-            return Expect(filter);
-        }
-
         public IConditionFactory<T> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return ConditionFactory.And(filter);

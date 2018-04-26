@@ -30,10 +30,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                                 Guid.NewGuid()
                                                     .ToString());
 
-            var waitResults = await Node.NewTestWaiter()
+            var waitResults = await Node.PrepareForProcessManager(domainEvent)
                                         .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-                                        .Create()
-                                        .SendToProcessManagers(domainEvent);
+                                        .Send();
 
             Assert.NotEqual(domainEvent.ProcessId,
                             waitResults.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
@@ -43,12 +42,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers
         [Fact]
         public async Task When_dispatch_command_than_command_should_have_right_processId()
         {
-            var messages = await Node.NewTestWaiter()
+            var messages = await Node.PrepareForProcessManager(new GotTiredEvent(Guid.NewGuid()
+                                                                                     .ToString()))
                                      .Expect<MakeCoffeCommand>()
                                      .And<ProcessManagerCreated<SoftwareProgrammingState>>()
-                                     .Create()
-                                     .SendToProcessManagers(new GotTiredEvent(Guid.NewGuid()
-                                                                                  .ToString()));
+                                     .Send();
 
             var command = messages.Message<MakeCoffeCommand>();
             var processCreatedEvent = messages.Message<ProcessStateEvent>();
