@@ -8,6 +8,14 @@ namespace GridDomain.CQRS
     {
         TExpectBuilder Expect(Type type, Func<object, bool> filter = null);
     }
-
+    
+    public interface IConditionFactory<out T, out TBuilder>: IConditionBuilder<TBuilder>
+    {
+        T Create();
+    }
+     
+    public interface IConditionFactory<out T>:IConditionFactory<T,IConditionFactory<T>>
+    {
+    }
    
 }

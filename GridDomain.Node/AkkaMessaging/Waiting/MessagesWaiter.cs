@@ -15,7 +15,7 @@ using Serilog;
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
 
-    public class ExpectedMessageBox<T> : IExpectedMessageBox<IConditionFactory<T>>
+    public class ExpectedMessageBox<T> 
     {
         public ExpectedMessageBox(ConditionFactory<T> factory)
         {

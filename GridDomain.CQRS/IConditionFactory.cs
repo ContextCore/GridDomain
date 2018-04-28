@@ -16,23 +16,5 @@ namespace GridDomain.CQRS
          bool Check(params object[] messages);
      }
      
-     /// <summary>
-     /// Create conditions to receiving messages, defining was all expecte messages arrived or not
-     /// </summary>
-     public interface IExpectedMessageBox<out TBuilder>
-     {
-         bool Receive(object message);
-         bool AllExpectedMessagesReceived();
-         IReadOnlyCollection<object> ReceivedMessages { get; }
-     }
-     
-     public interface IConditionFactory<out T, out TBuilder>: IConditionBuilder<TBuilder>
-     {
-         T Create();
-         IReadOnlyCollection<Type> RequiredMessageTypes { get; }
-     }
-     
-     public interface IConditionFactory<out T>:IConditionFactory<T,IConditionFactory<T>>
-     {
-     }
+
  }

@@ -60,7 +60,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return  WaitResult.Parse<T>(res); 
         }
 
-        public IReadOnlyCollection<Type> RequiredMessageTypes => _conditionFactory.RequiredMessageTypes;
     }
     
     
