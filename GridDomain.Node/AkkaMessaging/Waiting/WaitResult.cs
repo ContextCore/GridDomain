@@ -14,7 +14,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             Func<object, bool> func = null;
             if (predicate != null)
-                func = o => predicate((T)o);
+                func = o =>
+                       {
+                           if (o is T t)
+                               return predicate(t);
+                           return false;
+                       };
             
             return new TypedConditionFactoryDecorator<T>(waiter.Expect(typeof(T),func));
         }

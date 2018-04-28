@@ -38,10 +38,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
            return new ConditionCommandExecutorTypedDecorator<TMsg>(_executor);
        }
 
-        public IConditionCommandExecutor Expect(Type type, Func<object, bool> filter = null)
-        {
-            ConditionFactory.And(type, filter);
-            return _executor;
-        }
+       public IConditionCommandExecutor Expect(Type type, Func<object, bool> filter = null)
+       {
+           ConditionFactory.And(type, filter);
+           return _executor;
+       }
     }
 }

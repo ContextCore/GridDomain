@@ -71,7 +71,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public async Task<IWaitResult> Start(TimeSpan? timeout = null)
         {
-            if (!_expectedMessageBox.AllExpectedMessagesReceived())
+            if (_expectedMessageBox.AllExpectedMessagesReceived())
                 throw new WaiterIsFinishedException();
 
             using (var inbox = Inbox.Create(_system))

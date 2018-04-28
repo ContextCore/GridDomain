@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -58,7 +59,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             return filter == null
                        ? Or(typeof(TMsg), DefaultFilter<TMsg>)
-                       : Or(typeof(TMsg), o => DomainFilterAdapter(o, filter));
+                       : Or(typeof(TMsg),o => DomainFilterAdapter(o,filter));
         }
 
         public IReadOnlyCollection<Type> KnownMessageTypes => _knownMessageTypes;
@@ -68,13 +69,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             var allFilters = _messageFilters.SelectMany(v => v.Value).ToArray();
             return messages.All(m => allFilters.Any(filter => filter(m)));
         }
-
-        //public bool Check(object msg)
-        //{
-        //    return _messageFilters
-        //           .SelectMany(v => v.Value)
-        //           .Any(filter => filter(msg));
-        //}
 
         public IConditionFactory<T> And(Type type, Func<object, bool> filter = null)
         {
@@ -105,6 +99,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         {
             return receivedMessage is TMsg msg && domainMessageFilter(msg);
         }
+       
 
         protected virtual void AddFilter(Type type, Func<object, bool> filter)
         {
