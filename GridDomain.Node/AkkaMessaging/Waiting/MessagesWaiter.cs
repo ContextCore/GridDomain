@@ -14,13 +14,41 @@ using Serilog;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
+
+    public class ExpectedMessageBox<T> : IExpectedMessageBox<IConditionFactory<T>>
+    {
+        public ExpectedMessageBox(ConditionFactory<T> factory)
+        {
+            _conditionFactory = factory;
+        }
+        private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
+        private readonly ConditionFactory<T> _conditionFactory;
+
+        public bool Receive(object message)
+        {
+            if (!_conditionFactory.Check(message)) return false;
+            
+            _allExpectedMessages.Add(message);
+            return true;
+        }
+
+        public bool AllExpectedMessagesReceived()
+        {
+            return _conditionFactory.StopCondition(_allExpectedMessages);
+        }
+
+        public IReadOnlyCollection<object> ReceivedMessages => _allExpectedMessages;
+    }
+
+
+
     public class MessagesWaiter<T> : IMessageWaiter<T>
     {
-        private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
         private readonly TimeSpan _defaultTimeout;
         internal readonly ConditionFactory<T> ConditionFactory;
         private readonly IActorSubscriber _subscriber;
         private readonly ActorSystem _system;
+        private readonly ExpectedMessageBox<T> _expectedMessageBox;
 
         public MessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout, ConditionFactory<T> conditionFactory)
         {
@@ -28,6 +56,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _defaultTimeout = defaultTimeout;
             _subscriber = subscriber;
             ConditionFactory = conditionFactory;
+            _expectedMessageBox = new ExpectedMessageBox<T>(conditionFactory);
         }
 
         public IConditionFactory<T> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
@@ -42,23 +71,22 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public async Task<IWaitResult> Start(TimeSpan? timeout = null)
         {
-            if (!_allExpectedMessages.IsEmpty)
+            if (!_expectedMessageBox.AllExpectedMessagesReceived())
                 throw new WaiterIsFinishedException();
 
             using (var inbox = Inbox.Create(_system))
             {
-                foreach (var type in ConditionFactory.MessageFilters.Keys)
+                foreach (var type in ConditionFactory.RequiredMessageTypes)
                     await _subscriber.Subscribe(type, inbox.Receiver);
 
                 var finalTimeout = timeout ?? _defaultTimeout;
 
-                await WaitForMessages(inbox, finalTimeout)
-                    .TimeoutAfter(finalTimeout);
+                await WaitForMessages(inbox, finalTimeout).TimeoutAfter(finalTimeout);
 
-                foreach (var type in ConditionFactory.MessageFilters.Keys)
+                foreach (var type in ConditionFactory.RequiredMessageTypes)
                     await _subscriber.Unsubscribe(inbox.Receiver, type);
 
-                return new WaitResult(_allExpectedMessages);
+                return new WaitResult(_expectedMessageBox.ReceivedMessages);
             }
         }
 
@@ -68,23 +96,11 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             {
                 var message = await inbox.ReceiveAsync(timeoutPerMessage)
                                          .ConfigureAwait(false);
+                
                 CheckExecutionError(message);
-                if (IsExpected(message))
-                    _allExpectedMessages.Add(message);
+                _expectedMessageBox.Receive(message);
             }
-            while (!IsAllExpectedMessagedReceived());
-        }
-
-        private bool IsAllExpectedMessagedReceived()
-        {
-            return ConditionFactory.StopCondition(_allExpectedMessages);
-        }
-
-        private bool IsExpected(object message)
-        {
-            return ConditionFactory.MessageFilters
-                                   .SelectMany(v => v.Value)
-                                   .Any(filter => filter(message));
+            while (!_expectedMessageBox.AllExpectedMessagesReceived());
         }
 
         private static void CheckExecutionError(object t)

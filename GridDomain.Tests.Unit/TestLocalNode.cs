@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.TestKit.Xunit2;
@@ -113,10 +114,10 @@ namespace GridDomain.Tests.Unit {
             {
                 _extendedGridDomainNode = node;
             }
-            public IConditionProcessManagerExecutor<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+            public IConditionedProcessManagerSender<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
             {
                 var waiter = NewLocalDebugWaiter(_extendedGridDomainNode);
-                
+                throw new NotImplementedException();
             }
 
             public Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
@@ -124,36 +125,72 @@ namespace GridDomain.Tests.Unit {
                 throw new NotImplementedException();
             }
 
-            class ConditionProcessManagerExecutor<T> : IConditionProcessManagerExecutor<T>
+            class ConditionedProcessManagerSender<T> : IConditionedProcessManagerSender<T>
             {
-                public IConditionProcessManagerExecutor<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+                private ConditionFactory<Task<IWaitResult>> _conditionFactory;
+                private object _msg;
+
+                public ConditionedProcessManagerSender(object msg, ConditionFactory<Task<IWaitResult>> conditionFactory)
                 {
-                    throw new NotImplementedException();
+                    _msg = msg;
+                    _conditionFactory = conditionFactory;
+                }
+                public IConditionedProcessManagerSender<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+                {
+                    _conditionFactory.And(filter);
+                    return this;
                 }
 
-                public IConditionProcessManagerExecutor<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+                public IConditionedProcessManagerSender<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+                {
+                    _conditionFactory.Or(filter);
+                    return this;
+                }
+
+                public IReadOnlyCollection<Type> KnownMessageTypes { get; }
+                public bool Check(params object[] messages)
                 {
                     throw new NotImplementedException();
                 }
 
                 public Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
                 {
+                    var task = _conditionFactory.Create(timeout);
                     throw new NotImplementedException();
+
+//                    //will wait later in task; 
+//#pragma warning disable 4014
+//                    _executorActorRef.Execute(_command, _commandMetadata, CommandConfirmationMode.None);
+//#pragma warning restore 4014
+//
+//                    var res = await task;
+//
+//                    if (!failOnAnyFault)
+//                        return res;
+//                    
+//                    var faults = res.All.OfType<IMessageMetadataEnvelop>()
+//                                    .Select(env => env.Message)
+//                                    .OfType<IFault>()
+//                                    .ToArray();
+//                    if (faults.Any())
+//                        throw new AggregateException(faults.Select(f => f.Exception));
+//
+//                    return task;
                 }
             }
         }
         
-        public IProcessManagerExpectationBuilder PrepareForProcessManager(object msg, MessageMetadata metadata = null)
-        {
-            var res = await NewLocalDebugWaiter(Node)
-                            .Expect<TExpect>()
-                            .Create()
-                            .SendToProcessManagers(msg);
-           
-            return res.Message<TExpect>();
-            throw new NotImplementedException();
-
-        }
+//        public IProcessManagerExpectationBuilder PrepareForProcessManager(object msg, MessageMetadata metadata = null)
+//        {
+//            var res = await NewLocalDebugWaiter(Node)
+//                            .Expect<TExpect>()
+//                            .Create()
+//                            .SendToProcessManagers(msg);
+//           
+//            return res.Message<TExpect>();
+//            throw new NotImplementedException();
+//
+//        }
 
         public IMessageWaiter<AnyMessagePublisher> NewTestWaiter(TimeSpan? timeout = null)
         {

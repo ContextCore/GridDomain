@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.CQRS;
 
@@ -23,13 +24,18 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public Func<IEnumerable<object>, bool> StopCondition { get; private set; }
 
         //message filter should be able to proceed message with type from filter key
-        public readonly IDictionary<Type, List<Func<object, bool>>> MessageFilters = new Dictionary<Type, List<Func<object, bool>>>();
+        private readonly IDictionary<Type, List<Func<object, bool>>> _messageFilters = new Dictionary<Type, List<Func<object, bool>>>();
+        
+        private readonly HashSet<Type> _knownMessageTypes = new HashSet<Type>();
+        
         public Func<TimeSpan?, T> CreateResultFunc;
 
         public T Create()
         {
             return Create(null);
         }
+
+        public IReadOnlyCollection<Type> RequiredMessageTypes => KnownMessageTypes;
 
         public T Create(TimeSpan? timeout)
         {
@@ -54,6 +60,21 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                        ? Or(typeof(TMsg), DefaultFilter<TMsg>)
                        : Or(typeof(TMsg), o => DomainFilterAdapter(o, filter));
         }
+
+        public IReadOnlyCollection<Type> KnownMessageTypes => _knownMessageTypes;
+
+        public bool Check(params object[] messages)
+        {
+            var allFilters = _messageFilters.SelectMany(v => v.Value).ToArray();
+            return messages.All(m => allFilters.Any(filter => filter(m)));
+        }
+
+        //public bool Check(object msg)
+        //{
+        //    return _messageFilters
+        //           .SelectMany(v => v.Value)
+        //           .Any(filter => filter(msg));
+        //}
 
         public IConditionFactory<T> And(Type type, Func<object, bool> filter = null)
         {
@@ -88,9 +109,12 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected virtual void AddFilter(Type type, Func<object, bool> filter)
         {
             Condition.NotNull(() => filter);
+            Condition.NotNull(() => type);
 
-            if (!MessageFilters.TryGetValue(type, out var list))
-                list = MessageFilters[type] = new List<Func<object, bool>>();
+            _knownMessageTypes.Add(type);
+
+            if (!_messageFilters.TryGetValue(type, out var list))
+                list = _messageFilters[type] = new List<Func<object, bool>>();
 
             list.Add(filter);
         }

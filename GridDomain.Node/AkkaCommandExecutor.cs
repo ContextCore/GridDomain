@@ -97,11 +97,11 @@ namespace GridDomain.Node
         public virtual ICommandExpectationBuilder Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             return new CommandExpectationBuilder<T>(cmd,
-                                        metadata ?? CreateEmptyCommandMetadata(cmd),
-                                        _system,
-                                        _transport,
-                                        this,
-                                        _defaultTimeout);
+                                                    metadata ?? CreateEmptyCommandMetadata(cmd),
+                                                    _system,
+                                                    _transport,
+                                                    this,
+                                                    _defaultTimeout);
         }
 
         protected static MessageMetadata CreateEmptyCommandMetadata<T>(T cmd) where T : ICommand

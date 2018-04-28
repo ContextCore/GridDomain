@@ -42,11 +42,20 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return this;
         }
 
+        public IReadOnlyCollection<Type> KnownMessageTypes => _conditionFactory.KnownMessageTypes;
+        
+        public bool Check(params object[] messages)
+        {
+            return _conditionFactory.Check(messages);
+        }
+
         public async Task<IWaitResult<T>> Create()
         {
             var res = await _conditionFactory.Create();
             return  WaitResult.Parse<T>(res); 
         }
+
+        public IReadOnlyCollection<Type> RequiredMessageTypes => _conditionFactory.RequiredMessageTypes;
     }
     
     

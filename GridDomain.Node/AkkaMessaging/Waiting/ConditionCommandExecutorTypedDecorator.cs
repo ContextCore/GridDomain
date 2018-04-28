@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
@@ -28,6 +29,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting {
         {
             return _conditionCommandExecutor.Or(filter);
         }
+
+        public IReadOnlyCollection<Type> KnownMessageTypes => _conditionCommandExecutor.KnownMessageTypes;
+        public bool Check(params object[] messages) => _conditionCommandExecutor.Check(messages);
 
         async Task<IWaitResult<T>> IConditionCommandExecutor<T>.Execute(TimeSpan? timeout, bool failOnAnyFault)
         {

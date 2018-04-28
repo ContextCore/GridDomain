@@ -10,7 +10,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
 
     public class CommandExpectationBuilder<TCommand> : MessagesWaiter<Task<IWaitResult>>,
-                                           ICommandExpectationBuilder where TCommand : ICommand
+                                                       ICommandExpectationBuilder where TCommand : ICommand
     {
         private readonly ConditionCommandExecutor<TCommand> _executor;
 
@@ -25,10 +25,10 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public CommandExpectationBuilder(ActorSystem system,
                              IActorSubscriber subscriber,
                              TimeSpan defaultTimeout,
-                             ConditionCommandExecutor<TCommand> executor) : base(system, subscriber, defaultTimeout, executor.ConditionaFactory)
+                             ConditionCommandExecutor<TCommand> executor) : base(system, subscriber, defaultTimeout, executor.ConditionFactory)
         {
             _executor = executor;
-            _executor.ConditionaFactory.CreateResultFunc = Start;
+            _executor.ConditionFactory.CreateResultFunc = Start;
         }
 
 
