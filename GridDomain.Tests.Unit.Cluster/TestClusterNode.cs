@@ -113,9 +113,10 @@ namespace GridDomain.Tests.Unit.Cluster
 
         static IMessageWaiter<AnyMessagePublisher> NewClusterDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
         {
-            var conditionBuilder = new MetadataConditionFactory<AnyMessagePublisher>();
-            var waiter = new MessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionBuilder);
-            conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
+            var conditionBuilder = new MetadataConditionFactory();
+            var conditionFactory = new ConditionFactory<AnyMessagePublisher>(conditionBuilder);
+            var waiter = new MessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionFactory);
+            conditionFactory.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
             return waiter;
         }
 

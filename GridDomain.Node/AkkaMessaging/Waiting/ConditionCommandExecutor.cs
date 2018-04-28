@@ -20,9 +20,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public ConditionCommandExecutor(TCommand command,
                                         IMessageMetadata commandMetadata,
                                         ICommandExecutor executorActorRef,
-                                        ConditionFactory<Task<IWaitResult>> conditionaFactory = null)
+                                        ConditionFactory<Task<IWaitResult>> conditionFactory = null)
         {
-            ConditionFactory = conditionaFactory ?? new LocalCorrelationConditionFactory<Task<IWaitResult>>(commandMetadata.CorrelationId);
+            ConditionFactory = conditionFactory ?? new ConditionFactory<Task<IWaitResult>>(new LocalCorrelationConditionFactory(commandMetadata.CorrelationId));
             _commandMetadata = commandMetadata;
             _executorActorRef = executorActorRef;
             _command = command;

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -17,9 +18,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     ///     and
     ///     ExpectBuilder.And(A).And(B).Or(C).And(D) into (((A and B) or C) and D)
     /// </summary>
-    /// <typeparam name="T">type for return on Create method to better chaining</typeparam>
-    /// <returns></returns>
-    public class ConditionFactory<T> : IConditionFactory<T>
+    public class ConditionBuilder 
     {
         private Expression<Func<IEnumerable<object>, bool>> StopExpression { get; set; } = c => true;
         public Func<IEnumerable<object>, bool> StopCondition { get; private set; }
@@ -28,34 +27,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private readonly IDictionary<Type, List<Func<object, bool>>> _messageFilters = new Dictionary<Type, List<Func<object, bool>>>();
         
         private readonly HashSet<Type> _knownMessageTypes = new HashSet<Type>();
-        
-        public Func<TimeSpan?, T> CreateResultFunc;
+      
 
-        public T Create()
-        {
-            return Create(null);
-        }
-
-        public IReadOnlyCollection<Type> RequiredMessageTypes => KnownMessageTypes;
-
-        public T Create(TimeSpan? timeout)
-        {
-            return CreateResultFunc.Invoke(timeout);
-        }
-
-        public ConditionFactory(Func<TimeSpan?, T> createResultFunc = null)
-        {
-            CreateResultFunc = createResultFunc;
-        }
-
-        public IConditionFactory<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        public ConditionBuilder And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return filter == null
                        ? And(typeof(TMsg), DefaultFilter<TMsg>)
                        : And(typeof(TMsg), o => DomainFilterAdapter(o, filter));
         }
 
-        public IConditionFactory<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        public ConditionBuilder Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
             return filter == null
                        ? Or(typeof(TMsg), DefaultFilter<TMsg>)
@@ -70,7 +51,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return messages.All(m => allFilters.Any(filter => filter(m)));
         }
 
-        public IConditionFactory<T> And(Type type, Func<object, bool> filter = null)
+        public ConditionBuilder And(Type type, Func<object, bool> filter = null)
         {
             var messageFilter = filter ?? DefaultFilter<object>;
             StopExpression = StopExpression.And(c => c != null && c.Any(messageFilter));
@@ -80,7 +61,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return this;
         }
 
-        public IConditionFactory<T> Or(Type type, Func<object, bool> filter = null)
+        public ConditionBuilder Or(Type type, Func<object, bool> filter = null)
         {
             var messageFilter = filter ?? DefaultFilter<object>;
             StopExpression = StopExpression.Or(c => c != null && c.Any(messageFilter));
@@ -113,5 +94,61 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
             list.Add(filter);
         }
+    }
+   
+   
+    public class ConditionFactory<T> : IConditionFactory<T>
+    {
+        public Func<TimeSpan?, T> CreateResultFunc;
+        private readonly ConditionBuilder _conditionBuilder;
+
+        public T Create()
+        {
+            return Create(null);
+        }
+
+        public IReadOnlyCollection<Type> RequiredMessageTypes => KnownMessageTypes;
+
+        public T Create(TimeSpan? timeout)
+        {
+            return CreateResultFunc.Invoke(timeout);
+        }
+
+        public ConditionFactory(ConditionBuilder conditionBuilder=null,Func<TimeSpan?, T> createResultFunc = null)
+        {
+            _conditionBuilder = conditionBuilder;
+            CreateResultFunc = createResultFunc;
+        }
+
+        public IConditionFactory<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        {
+            _conditionBuilder.And(filter);
+            return this;
+        }
+
+        public IConditionFactory<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        {
+            _conditionBuilder.Or(filter);
+            return this;
+        }
+
+        public IReadOnlyCollection<Type> KnownMessageTypes => _conditionBuilder.KnownMessageTypes;
+
+        public bool Check(params object[] messages) => _conditionBuilder.Check(messages);
+
+        public IConditionFactory<T> And(Type type, Func<object, bool> filter = null)
+        {
+            _conditionBuilder.And(type, filter);
+            return this;
+        }
+
+        public IConditionFactory<T> Or(Type type, Func<object, bool> filter = null)
+        {
+            _conditionBuilder.Or(type, filter);
+            return this;
+        }
+
+        public bool StopCondition(IEnumerable<object> allExpectedMessages) => _conditionBuilder.StopCondition(allExpectedMessages);
+
     }
 }

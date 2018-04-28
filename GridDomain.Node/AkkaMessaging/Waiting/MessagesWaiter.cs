@@ -118,7 +118,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                               TimeSpan defaultTimeout) : this(system,
                                                               subscriber,
                                                               defaultTimeout,
-                                                              new LocalMetadataConditionFactory<Task<IWaitResult>>()) { }
+                                                              new ConditionFactory<Task<IWaitResult>>(new LocalMetadataConditionFactory<Task<IWaitResult>>())) { }
 
         private MessagesWaiter(ActorSystem system,
                                IActorSubscriber subscriber,
