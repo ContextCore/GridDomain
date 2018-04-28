@@ -116,7 +116,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public ConditionFactory(ConditionBuilder builder=null,Func<TimeSpan?, T> createResultFunc = null)
         {
-            Builder = builder;
+            Builder = builder ?? new ConditionBuilder();
             CreateResultFunc = createResultFunc;
         }
 

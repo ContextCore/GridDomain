@@ -41,7 +41,6 @@ namespace GridDomain.Tests.Common
         Task<TState> LoadProcess<TState>(string id) where TState : class,IProcessState;
         IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata=null);// where TExpect : class;
         IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata=null);// where TExpect : class;
-        IMessageWaiter<AnyMessagePublisher> NewTestWaiter(TimeSpan? timeout = null);
     }
 
    

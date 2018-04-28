@@ -21,20 +21,19 @@ namespace GridDomain.Node
         public TimeSpan DefaultTimeout { get; }
         public ActorSystem System { get; }
 
-        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewWaiter(TimeSpan? defaultTimeout = null)
         {
             var conditionBuilder = new LocalMetadataConditionFactory<Task<IWaitResult>>();
             var conditionFactory = new ConditionFactory<Task<IWaitResult>>(conditionBuilder);
-            var waiter = new MessagesWaiter<Task<IWaitResult>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionFactory);
-            conditionFactory.CreateResultFunc = waiter.Start;
+            var waiter = new MessagesWaiter(System, Transport, defaultTimeout ?? DefaultTimeout, conditionFactory);
             return waiter;
         }
 
-        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
+            
             var conditionBuilder = new ConditionFactory<Task<IWaitResult>>();
-            var waiter = new MessagesWaiter<Task<IWaitResult>>(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
-            conditionBuilder.CreateResultFunc = waiter.Start;
+            var waiter = new MessagesWaiter(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
             return waiter;
         }
     }

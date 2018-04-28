@@ -10,7 +10,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     
     public static class ExpectationBuilderExtensions
     {
-        public static IConditionFactory<Task<IWaitResult<T>>> Expect<T>(this IMessageWaiter<Task<IWaitResult>> waiter, Predicate<T> predicate=null) where T : class
+        public static IConditionFactory<Task<IWaitResult<T>>> Expect<T>(this IMessageWaiter waiter, Predicate<T> predicate=null) where T : class
         {
             Func<object, bool> func = null;
             if (predicate != null)

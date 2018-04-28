@@ -57,7 +57,7 @@ namespace GridDomain.Tools.Connector {
         }
 
 
-        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
             if (!IsConnected)throw new NotConnectedException();
             return _waiterFactory.NewExplicitWaiter(defaultTimeout);
@@ -126,7 +126,7 @@ namespace GridDomain.Tools.Connector {
             _waiterFactory = new LocalMessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }
 
-        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout);
         }

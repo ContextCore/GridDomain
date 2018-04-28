@@ -9,7 +9,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
 
 
-    public class CommandExpectationBuilder<TCommand> : MessagesWaiter<Task<IWaitResult>>,
+    public class CommandExpectationBuilder<TCommand> : MessagesWaiter,
                                                        ICommandExpectationBuilder where TCommand : ICommand
     {
         private readonly CommandEventsFilter<TCommand> _eventsFilter;

@@ -6,7 +6,7 @@ using GridDomain.Transport;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class ExplicitMessagesWaiter : MessagesWaiter<Task<IWaitResult>>
+    public class ExplicitMessagesWaiter : MessagesWaiter
     {
         public ExplicitMessagesWaiter(ActorSystem system,
                                            IActorSubscriber subscriber,

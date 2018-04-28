@@ -39,12 +39,12 @@ namespace GridDomain.Tests.Unit {
             return Node.Prepare(cmd, metadata);
         }
 
-        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
             return Node.NewExplicitWaiter(defaultTimeout);
         }
 
-        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return Node.NewWaiter(defaultTimeout);
         }
@@ -192,17 +192,11 @@ namespace GridDomain.Tests.Unit {
 //
 //        }
 
-        public IMessageWaiter<AnyMessagePublisher> NewTestWaiter(TimeSpan? timeout = null)
+        static IMessageWaiter NewLocalDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
         {
-            return NewLocalDebugWaiter(Node, timeout);
-        }
-
-        static IMessageWaiter<AnyMessagePublisher> NewLocalDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
-        {
-            var conditionBuilder = new LocalMetadataConditionFactory<AnyMessagePublisher>();
-            var conditionFactory = new ConditionFactory<AnyMessagePublisher>(conditionBuilder);
-            var waiter = new MessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionFactory);
-            conditionFactory.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
+            var conditionBuilder = new LocalMetadataConditionFactory<Task<IWaitResult>>();
+            var conditionFactory = new ConditionFactory<Task<IWaitResult>>(conditionBuilder);
+            var waiter = new MessagesWaiter(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionFactory);
             return waiter;
         }
     }

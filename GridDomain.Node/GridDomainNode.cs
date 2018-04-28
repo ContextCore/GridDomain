@@ -95,7 +95,7 @@ namespace GridDomain.Node {
         protected abstract IActorCommandPipe CreateCommandPipe();
         protected abstract IActorTransport CreateTransport();
         
-        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout);
         }
@@ -104,7 +104,7 @@ namespace GridDomain.Node {
             return _commandExecutor.Execute(command, metadata, mode);
         }
 
-        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewExplicitWaiter(defaultTimeout ?? DefaultTimeout);
         }
