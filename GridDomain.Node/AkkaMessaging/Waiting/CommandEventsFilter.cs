@@ -10,17 +10,17 @@ using GridDomain.CQRS;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-    public class CommandFilter<TCommand> : ICommandFilter where TCommand : ICommand
+    public class CommandEventsFilter<TCommand> : ICommandEventsFilter where TCommand : ICommand
     {
         private readonly TCommand _command;
         private readonly IMessageMetadata _commandMetadata;
         private readonly ICommandExecutor _executorActorRef;
         public readonly ConditionFactory<Task<IWaitResult>> ConditionFactory;
 
-        public CommandFilter(TCommand command,
-                             IMessageMetadata commandMetadata,
-                             ICommandExecutor executorActorRef,
-                             ConditionFactory<Task<IWaitResult>> conditionFactory = null)
+        public CommandEventsFilter(TCommand command,
+                                        IMessageMetadata commandMetadata,
+                                        ICommandExecutor executorActorRef,
+                                        ConditionFactory<Task<IWaitResult>> conditionFactory = null)
         {
             ConditionFactory = conditionFactory ?? new ConditionFactory<Task<IWaitResult>>(new LocalCorrelationConditionFactory(commandMetadata.CorrelationId));
             _commandMetadata = commandMetadata;
@@ -61,13 +61,13 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == _command.Id;
         }
 
-        public ICommandFilter And<TMsg>(Predicate<TMsg> filter) where TMsg : class
+        public ICommandEventsFilter And<TMsg>(Predicate<TMsg> filter) where TMsg : class
         {
             ConditionFactory.And(filter);
             return this;
         }
 
-        public ICommandFilter Or<TMsg>(Predicate<TMsg> filter) where TMsg : class
+        public ICommandEventsFilter Or<TMsg>(Predicate<TMsg> filter) where TMsg : class
         {
             ConditionFactory.Or(filter);
             return this;

@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 
 namespace GridDomain.CQRS
 {
-    public interface ICommandFilter : IMessageFilter<ICommandFilter>
+    public interface ICommandEventsFilter : IMessageFilter<ICommandEventsFilter>
     {
         Task<IWaitResult> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true);
     }
 
-    public interface ICommandFilter<T>: ICommandFilter
+    public interface ICommandEventsFilter<T>: ICommandEventsFilter
     {
         new Task<IWaitResult<T>> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true);
     }

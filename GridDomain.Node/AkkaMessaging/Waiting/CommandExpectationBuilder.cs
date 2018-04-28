@@ -12,7 +12,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     public class CommandExpectationBuilder<TCommand> : MessagesWaiter<Task<IWaitResult>>,
                                                        ICommandExpectationBuilder where TCommand : ICommand
     {
-        private readonly ConditionCommandExecutor<TCommand> _executor;
+        private readonly CommandEventsFilter<TCommand> _eventsFilter;
 
         public CommandExpectationBuilder(TCommand command,
                              IMessageMetadata commandMetadata,
@@ -20,28 +20,28 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                              IActorTransport transport,
                              ICommandExecutor executor,
                              TimeSpan defaultTimeout) : this(system, transport, defaultTimeout, 
-                                                             new ConditionCommandExecutor<TCommand>(command, commandMetadata, executor)) { }
+                                                             new CommandEventsFilter<TCommand>(command, commandMetadata, executor)) { }
 
         public CommandExpectationBuilder(ActorSystem system,
                              IActorSubscriber subscriber,
                              TimeSpan defaultTimeout,
-                             ConditionCommandExecutor<TCommand> executor) : base(system, subscriber, defaultTimeout, executor.ConditionFactory)
+                             CommandEventsFilter<TCommand> eventsFilter) : base(system, subscriber, defaultTimeout, eventsFilter.ConditionFactory)
         {
-            _executor = executor;
-            _executor.ConditionFactory.CreateResultFunc = Start;
+            _eventsFilter = eventsFilter;
+            _eventsFilter.ConditionFactory.CreateResultFunc = Start;
         }
 
 
-       IConditionCommandExecutor<TMsg> ICommandExpectationBuilder.Expect<TMsg>(Predicate<TMsg> filter) 
+       ICommandEventsFilter<TMsg> ICommandExpectationBuilder.Expect<TMsg>(Predicate<TMsg> filter) 
        {
            Expect(filter);
-           return new ConditionCommandExecutorTypedDecorator<TMsg>(_executor);
+           return new CommandEventsFilterTypedDecorator<TMsg>(_eventsFilter);
        }
 
-       public IConditionCommandExecutor Expect(Type type, Func<object, bool> filter = null)
+       public ICommandEventsFilter Expect(Type type, Func<object, bool> filter = null)
        {
            ConditionFactory.And(type, filter);
-           return _executor;
+           return _eventsFilter;
        }
     }
 }

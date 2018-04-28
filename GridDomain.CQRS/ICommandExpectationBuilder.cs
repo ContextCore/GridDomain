@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace GridDomain.CQRS
 {
-    public interface ICommandExpectationBuilder: IExpectationBuilder<IConditionCommandExecutor>
+    public interface ICommandExpectationBuilder: IExpectationBuilder<ICommandEventsFilter>
     {
-        IConditionCommandExecutor<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class; 
+        ICommandEventsFilter<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class; 
     }
 }

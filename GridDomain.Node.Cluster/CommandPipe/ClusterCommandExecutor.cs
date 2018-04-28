@@ -32,7 +32,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
                                         _system,
                                         _transport,
                                         _defaultTimeout,
-                                        new ConditionCommandExecutor<T>(cmd, 
+                                        new CommandEventsFilter<T>(cmd, 
                                                                        metadata,
                                                                        this,
                                                                        new ConditionFactory<Task<IWaitResult>>(new ClusterCorrelationConditionFactory<Task<IWaitResult>>(metadata.CorrelationId)))
