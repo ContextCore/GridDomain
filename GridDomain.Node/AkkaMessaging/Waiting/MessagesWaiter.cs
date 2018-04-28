@@ -15,14 +15,14 @@ using Serilog;
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
 
-    public class ExpectedMessageBox<T> 
+    public class ExpectedMessageBox 
     {
-        public ExpectedMessageBox(ConditionFactory<T> factory)
+        public ExpectedMessageBox(ConditionBuilder factory)
         {
             _conditionFactory = factory;
         }
         private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
-        private readonly ConditionFactory<T> _conditionFactory;
+        private readonly ConditionBuilder _conditionFactory;
 
         public bool Receive(object message)
         {
@@ -48,7 +48,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         internal readonly ConditionFactory<T> ConditionFactory;
         private readonly IActorSubscriber _subscriber;
         private readonly ActorSystem _system;
-        private readonly ExpectedMessageBox<T> _expectedMessageBox;
+        private readonly ExpectedMessageBox _expectedMessageBox;
 
         public MessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout, ConditionFactory<T> conditionFactory)
         {
@@ -56,7 +56,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             _defaultTimeout = defaultTimeout;
             _subscriber = subscriber;
             ConditionFactory = conditionFactory;
-            _expectedMessageBox = new ExpectedMessageBox<T>(conditionFactory);
+            _expectedMessageBox = new ExpectedMessageBox(conditionFactory.Builder);
         }
 
         public IConditionFactory<T> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class

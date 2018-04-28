@@ -8,7 +8,7 @@ namespace GridDomain.CQRS
      /// that will be used for messages to decide about other actions
      /// </summary>
      /// <typeparam name="TBuilder"></typeparam>
-     public interface IConditionBuilder<out TBuilder>
+     public interface IMessageFilter<out TBuilder>
      {
          TBuilder And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class;
          TBuilder Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class;

@@ -100,7 +100,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     public class ConditionFactory<T> : IConditionFactory<T>
     {
         public Func<TimeSpan?, T> CreateResultFunc;
-        private readonly ConditionBuilder _conditionBuilder;
+        public readonly ConditionBuilder Builder;
 
         public T Create()
         {
@@ -114,41 +114,41 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             return CreateResultFunc.Invoke(timeout);
         }
 
-        public ConditionFactory(ConditionBuilder conditionBuilder=null,Func<TimeSpan?, T> createResultFunc = null)
+        public ConditionFactory(ConditionBuilder builder=null,Func<TimeSpan?, T> createResultFunc = null)
         {
-            _conditionBuilder = conditionBuilder;
+            Builder = builder;
             CreateResultFunc = createResultFunc;
         }
 
         public IConditionFactory<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
-            _conditionBuilder.And(filter);
+            Builder.And(filter);
             return this;
         }
 
         public IConditionFactory<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
-            _conditionBuilder.Or(filter);
+            Builder.Or(filter);
             return this;
         }
 
-        public IReadOnlyCollection<Type> KnownMessageTypes => _conditionBuilder.KnownMessageTypes;
+        public IReadOnlyCollection<Type> KnownMessageTypes => Builder.KnownMessageTypes;
 
-        public bool Check(params object[] messages) => _conditionBuilder.Check(messages);
+        public bool Check(params object[] messages) => Builder.Check(messages);
 
         public IConditionFactory<T> And(Type type, Func<object, bool> filter = null)
         {
-            _conditionBuilder.And(type, filter);
+            Builder.And(type, filter);
             return this;
         }
 
         public IConditionFactory<T> Or(Type type, Func<object, bool> filter = null)
         {
-            _conditionBuilder.Or(type, filter);
+            Builder.Or(type, filter);
             return this;
         }
 
-        public bool StopCondition(IEnumerable<object> allExpectedMessages) => _conditionBuilder.StopCondition(allExpectedMessages);
+        public bool StopCondition(IEnumerable<object> allExpectedMessages) => Builder.StopCondition(allExpectedMessages);
 
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace GridDomain.CQRS
 {
-    public interface IConditionCommandExecutor : IConditionBuilder<IConditionCommandExecutor>
+    public interface IConditionCommandExecutor : IMessageFilter<IConditionCommandExecutor>
     {
         Task<IWaitResult> Execute(TimeSpan? timeout = null, bool failOnAnyFault = true);
     }

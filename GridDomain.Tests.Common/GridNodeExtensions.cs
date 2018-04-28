@@ -22,7 +22,7 @@ using GridDomain.Tools.Repositories.EventRepositories;
 namespace GridDomain.Tests.Common
 {
  
-    public interface IConditionedProcessManagerSender<T> : IConditionBuilder<IConditionedProcessManagerSender<T>>
+    public interface IConditionedProcessManagerSender<T> : IMessageFilter<IConditionedProcessManagerSender<T>>
     {
         Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
     }
