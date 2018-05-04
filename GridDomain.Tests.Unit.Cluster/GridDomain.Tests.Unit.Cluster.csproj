@@ -25,4 +25,7 @@
     <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj" />
     <ProjectReference Include="..\GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MessageWaiter" />
+  </ItemGroup>
 </Project>

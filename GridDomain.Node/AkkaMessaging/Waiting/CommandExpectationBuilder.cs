@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -9,7 +8,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 {
 
 
-    public class CommandExpectationBuilder<TCommand> : MessagesWaiter,
+    public class CommandExpectationBuilder<TCommand> : MessagesWaiter<ICommandEventsFilter>,
                                                        ICommandExpectationBuilder where TCommand : ICommand
     {
         private readonly CommandEventsFilter<TCommand> _eventsFilter;
@@ -25,23 +24,33 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public CommandExpectationBuilder(ActorSystem system,
                              IActorSubscriber subscriber,
                              TimeSpan defaultTimeout,
-                             CommandEventsFilter<TCommand> eventsFilter) : base(system, subscriber, defaultTimeout, eventsFilter.ConditionFactory)
+                             CommandEventsFilter<TCommand> eventsFilter) : base(system, subscriber, defaultTimeout)
         {
             _eventsFilter = eventsFilter;
-            _eventsFilter.ConditionFactory.CreateResultFunc = Start;
+            _eventsFilter.MessageConditionFactory.CreateResultFunc = Start;
         }
 
+        public override IMessagesExpectation CreateMessagesExpectation()
+        {
+            return _eventsFilter.MessageConditionFactory.Builder.Build();
+        }
 
-       ICommandEventsFilter<TMsg> ICommandExpectationBuilder.Expect<TMsg>(Predicate<TMsg> filter) 
+        ICommandEventsFilter<TMsg> ICommandExpectationBuilder.Expect<TMsg>(Predicate<TMsg> filter) 
        {
            Expect(filter);
            return new CommandEventsFilterTypedDecorator<TMsg>(_eventsFilter);
        }
 
-       public ICommandEventsFilter Expect(Type type, Func<object, bool> filter = null)
-       {
-           ConditionFactory.And(type, filter);
-           return _eventsFilter;
-       }
+        public override ICommandEventsFilter Expect(Type type, Func<object, bool> filter)
+        {
+             _eventsFilter.MessageConditionFactory.And(type, filter);
+            return _eventsFilter;
+        }
+
+        public override ICommandEventsFilter Expect<TMsg>(Predicate<TMsg> filter = null)
+        {
+            _eventsFilter.MessageConditionFactory.And(filter);
+            return _eventsFilter;
+        }
     }
 }

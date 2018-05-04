@@ -21,8 +21,8 @@ namespace GridDomain.Node.Cluster.MessageWaiting {
 
         public IMessageWaiter NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            var conditionBuilder = new MetadataConditionFactory();
-            var conditionFactory = new ConditionFactory<Task<IWaitResult>>(conditionBuilder);
+            var conditionBuilder = new MetadataEnvelopConditionBuilder();
+            var conditionFactory = new MessageConditionFactory<Task<IWaitResult>>(conditionBuilder);
             var waiter = new MessagesWaiter(System, Transport, defaultTimeout ?? DefaultTimeout, conditionFactory);
             return waiter;
         }

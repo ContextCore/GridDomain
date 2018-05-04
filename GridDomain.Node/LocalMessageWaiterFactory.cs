@@ -23,8 +23,8 @@ namespace GridDomain.Node
 
         public IMessageWaiter NewWaiter(TimeSpan? defaultTimeout = null)
         {
-            var conditionBuilder = new LocalMetadataConditionFactory<Task<IWaitResult>>();
-            var conditionFactory = new ConditionFactory<Task<IWaitResult>>(conditionBuilder);
+            var conditionBuilder = new LocalMetadataEnvelopConditionBuilder();
+            var conditionFactory = new MessageConditionFactory<Task<IWaitResult>>(conditionBuilder);
             var waiter = new MessagesWaiter(System, Transport, defaultTimeout ?? DefaultTimeout, conditionFactory);
             return waiter;
         }
@@ -32,7 +32,7 @@ namespace GridDomain.Node
         public IMessageWaiter NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
             
-            var conditionBuilder = new ConditionFactory<Task<IWaitResult>>();
+            var conditionBuilder = new MessageConditionFactory<Task<IWaitResult>>();
             var waiter = new MessagesWaiter(System, Transport, defaultTimeout ?? DefaultTimeout, conditionBuilder);
             return waiter;
         }

@@ -127,27 +127,27 @@ namespace GridDomain.Tests.Unit {
 
             class ConditionedProcessManagerSender<T> : IConditionedProcessManagerSender<T>
             {
-                private ConditionFactory<Task<IWaitResult>> _conditionFactory;
+                private MessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
                 private object _msg;
 
-                public ConditionedProcessManagerSender(object msg, ConditionFactory<Task<IWaitResult>> conditionFactory)
+                public ConditionedProcessManagerSender(object msg, MessageConditionFactory<Task<IWaitResult>> messageConditionFactory)
                 {
                     _msg = msg;
-                    _conditionFactory = conditionFactory;
+                    _messageConditionFactory = messageConditionFactory;
                 }
                 public IConditionedProcessManagerSender<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
                 {
-                    _conditionFactory.And(filter);
+                    _messageConditionFactory.And(filter);
                     return this;
                 }
 
                 public IConditionedProcessManagerSender<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
                 {
-                    _conditionFactory.Or(filter);
+                    _messageConditionFactory.Or(filter);
                     return this;
                 }
 
-                public IReadOnlyCollection<Type> KnownMessageTypes { get; }
+                public IReadOnlyCollection<Type> AcceptedMessageTypes { get; }
                 public bool Check(params object[] messages)
                 {
                     throw new NotImplementedException();
@@ -155,7 +155,7 @@ namespace GridDomain.Tests.Unit {
 
                 public Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
                 {
-                    var task = _conditionFactory.Create(timeout);
+                    var task = _messageConditionFactory.Create(timeout);
                     throw new NotImplementedException();
 
 //                    //will wait later in task; 
@@ -194,8 +194,8 @@ namespace GridDomain.Tests.Unit {
 
         static IMessageWaiter NewLocalDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
         {
-            var conditionBuilder = new LocalMetadataConditionFactory<Task<IWaitResult>>();
-            var conditionFactory = new ConditionFactory<Task<IWaitResult>>(conditionBuilder);
+            var conditionBuilder = new LocalMetadataEnvelopConditionBuilder();
+            var conditionFactory = new MessageConditionFactory<Task<IWaitResult>>(conditionBuilder);
             var waiter = new MessagesWaiter(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionFactory);
             return waiter;
         }

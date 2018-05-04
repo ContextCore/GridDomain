@@ -14,70 +14,70 @@ using Serilog;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
-
-    public class ExpectedMessageBox 
+    public class ExpectedMessageBox
     {
-        public ExpectedMessageBox(ConditionBuilder factory)
+        public ExpectedMessageBox(IMessagesExpectation expectation)
         {
-            _conditionFactory = factory;
+            _conditionExpectation = expectation;
         }
+
         private readonly ConcurrentBag<object> _allExpectedMessages = new ConcurrentBag<object>();
-        private readonly ConditionBuilder _conditionFactory;
+        private readonly IMessagesExpectation _conditionExpectation;
 
         public bool Receive(object message)
         {
-            if (!_conditionFactory.Check(message)) return false;
-            
+            if (!_conditionExpectation.IsExpected(message)) return false;
+
             _allExpectedMessages.Add(message);
             return true;
         }
 
         public bool AllExpectedMessagesReceived()
         {
-            return _conditionFactory.StopCondition(_allExpectedMessages);
+            return _conditionExpectation.IsExpectationFulfilled(_allExpectedMessages);
         }
 
         public IReadOnlyCollection<object> ReceivedMessages => _allExpectedMessages;
     }
 
 
-
-    public abstract class MessagesWaiter<TBuilder,TWaiter> : IMessageWaiter<TBuilder> where TBuilder : IConditionFactory<TWaiter,TBuilder>
+    public abstract class MessagesWaiter<TBuilder> : IMessageWaiter<TBuilder> where TBuilder : IMessageFilter<TBuilder>
     {
         private readonly TimeSpan _defaultTimeout;
-        internal readonly ConditionBuilder ConditionFactory;
         private readonly IActorSubscriber _subscriber;
         private readonly ActorSystem _system;
-        private readonly ExpectedMessageBox _expectedMessageBox;
+        private ExpectedMessageBox _expectedMessageBox;
 
-        protected MessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout, ConditionBuilder conditionFactory)
+        protected MessagesWaiter(ActorSystem system, IActorSubscriber subscriber, TimeSpan defaultTimeout)
         {
             _system = system;
             _defaultTimeout = defaultTimeout;
             _subscriber = subscriber;
-            ConditionFactory = conditionFactory;
-            _expectedMessageBox = new ExpectedMessageBox(conditionFactory);
         }
 
+        public abstract IMessagesExpectation CreateMessagesExpectation();
         public abstract TBuilder Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class;
-
         public abstract TBuilder Expect(Type type, Func<object, bool> filter);
-       
+
         public async Task<IWaitResult> Start(TimeSpan? timeout = null)
         {
-            if (_expectedMessageBox.AllExpectedMessagesReceived())
+            if (_expectedMessageBox != null)
                 throw new WaiterIsFinishedException();
+
+            var messagesExpectation = CreateMessagesExpectation();
+            _expectedMessageBox = new ExpectedMessageBox(messagesExpectation);
 
             using (var inbox = Inbox.Create(_system))
             {
-                foreach (var type in ConditionFactory.KnownMessageTypes)
+                foreach (var type in messagesExpectation.ExpectedMessageTypes)
                     await _subscriber.Subscribe(type, inbox.Receiver);
 
                 var finalTimeout = timeout ?? _defaultTimeout;
 
-                await WaitForMessages(inbox, finalTimeout).TimeoutAfter(finalTimeout);
+                await WaitForMessages(inbox, finalTimeout)
+                    .TimeoutAfter(finalTimeout);
 
-                foreach (var type in ConditionFactory.KnownMessageTypes)
+                foreach (var type in messagesExpectation.ExpectedMessageTypes)
                     await _subscriber.Unsubscribe(inbox.Receiver, type);
 
                 return new WaitResult(_expectedMessageBox.ReceivedMessages);
@@ -90,7 +90,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             {
                 var message = await inbox.ReceiveAsync(timeoutPerMessage)
                                          .ConfigureAwait(false);
-                
+
                 CheckExecutionError(message);
                 _expectedMessageBox.Receive(message);
             }
@@ -105,37 +105,41 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
     }
 
-    public class MessagesWaiter : MessagesWaiter<IConditionFactory<Task<IWaitResult>>,Task<IWaitResult>>,IMessageWaiter
+    public class MessagesWaiter : MessagesWaiter<IMessageConditionFactory<Task<IWaitResult>>>, IMessageWaiter
     {
-        private readonly ConditionFactory<Task<IWaitResult>> _conditionFactory;
+        private readonly MessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
 
         public MessagesWaiter(ActorSystem system,
                               IActorSubscriber subscriber,
                               TimeSpan defaultTimeout) : this(system,
                                                               subscriber,
                                                               defaultTimeout,
-                                                              new ConditionFactory<Task<IWaitResult>>(new LocalMetadataConditionFactory<Task<IWaitResult>>())) { }
+                                                              new MessageConditionFactory<Task<IWaitResult>>(new LocalMetadataEnvelopConditionBuilder())) { }
 
         public MessagesWaiter(ActorSystem system,
-                               IActorSubscriber subscriber,
-                               TimeSpan defaultTimeout,
-                               ConditionFactory<Task<IWaitResult>> conditionFactory) : base(system,
-                                                                                            subscriber,
-                                                                                            defaultTimeout,
-                                                                                            conditionFactory.Builder)
+                              IActorSubscriber subscriber,
+                              TimeSpan defaultTimeout,
+                              MessageConditionFactory<Task<IWaitResult>> messageConditionFactory) : base(system,
+                                                                                                         subscriber,
+                                                                                                         defaultTimeout)
         {
-            _conditionFactory = conditionFactory;
-            _conditionFactory.CreateResultFunc = Start;
+            _messageConditionFactory = messageConditionFactory;
+            _messageConditionFactory.CreateResultFunc = Start;
         }
 
-        public override IConditionFactory<Task<IWaitResult>> Expect<TMsg>(Predicate<TMsg> filter = null)
+        public override IMessagesExpectation CreateMessagesExpectation()
         {
-            return _conditionFactory.And(filter);
+            return _messageConditionFactory.Builder.Build();
         }
 
-        public override IConditionFactory<Task<IWaitResult>> Expect(Type type, Func<object, bool> filter)
+        public override IMessageConditionFactory<Task<IWaitResult>> Expect<TMsg>(Predicate<TMsg> filter = null)
         {
-            return _conditionFactory.And(type, filter);
+            return _messageConditionFactory.And(filter);
+        }
+
+        public override IMessageConditionFactory<Task<IWaitResult>> Expect(Type type, Func<object, bool> filter)
+        {
+            return _messageConditionFactory.And(type, filter);
         }
     }
 }

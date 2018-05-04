@@ -11,22 +11,25 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         private readonly Message _messageB = new Message("B");
         private readonly Message _messageC = new Message("C");
         private readonly Message _messageD = new Message("D");
+        private IMessagesExpectation _messagesExpectation;
 
         protected override Task<IWaitResult> ConfigureWaiter(MessagesWaiter waiter)
         {
-            return
-                waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                      .Or<Message>(m => m.Id == _messageB.Id)
-                      .And<Message>(m => m.Id == _messageC.Id)
-                      .Or<Message>(m => m.Id == _messageD.Id)
-                      .Create();
+            var configureWaiter = waiter.Expect<Message>(m => m.Id == _messageA.Id)
+                                        .Or<Message>(m => m.Id == _messageB.Id)
+                                        .And<Message>(m => m.Id == _messageC.Id)
+                                        .Or<Message>(m => m.Id == _messageD.Id)
+                                        .Create();
+            
+            _messagesExpectation = waiter.CreateMessagesExpectation();
+            return configureWaiter;
         }
 
         [Fact]
         public void Condition_wait_end_should_be_false_on_A()
         {
             var sampleObjectsReceived = new object[] {_messageA};
-            Assert.False(Waiter.ConditionFactory.StopCondition(sampleObjectsReceived));
+            Assert.False(_messagesExpectation.IsExpectationFulfilled(sampleObjectsReceived));
         }
 
         [Fact]

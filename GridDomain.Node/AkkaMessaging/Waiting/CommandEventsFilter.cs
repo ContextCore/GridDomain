@@ -15,14 +15,14 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         private readonly TCommand _command;
         private readonly IMessageMetadata _commandMetadata;
         private readonly ICommandExecutor _executorActorRef;
-        public readonly ConditionFactory<Task<IWaitResult>> ConditionFactory;
+        public readonly MessageConditionFactory<Task<IWaitResult>> MessageConditionFactory;
 
         public CommandEventsFilter(TCommand command,
-                                        IMessageMetadata commandMetadata,
-                                        ICommandExecutor executorActorRef,
-                                        ConditionFactory<Task<IWaitResult>> conditionFactory = null)
+                                   IMessageMetadata commandMetadata,
+                                   ICommandExecutor executorActorRef,
+                                   MessageConditionFactory<Task<IWaitResult>> messageConditionFactory = null)
         {
-            ConditionFactory = conditionFactory ?? new ConditionFactory<Task<IWaitResult>>(new LocalCorrelationConditionFactory(commandMetadata.CorrelationId));
+            MessageConditionFactory = messageConditionFactory ?? new MessageConditionFactory<Task<IWaitResult>>(new LocalCorrelationConditionFactory(commandMetadata.CorrelationId));
             _commandMetadata = commandMetadata;
             _executorActorRef = executorActorRef;
             _command = command;
@@ -33,9 +33,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
             //we can launch any command with CommandConditionBuilder<ICommand>
             //and TCommand will resolve to ICommand leading to incorect subscription
             if (failOnAnyFault)
-                ConditionFactory.Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
+                MessageConditionFactory.Or(Fault.TypeFor(_command), IsFaultFromExecutingCommand);
 
-            var task = ConditionFactory.Create(timeout);
+            var task = MessageConditionFactory.Create(timeout);
 
             //will wait later in task; 
 #pragma warning disable 4014
@@ -63,17 +63,15 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public ICommandEventsFilter And<TMsg>(Predicate<TMsg> filter) where TMsg : class
         {
-            ConditionFactory.And(filter);
+            MessageConditionFactory.And(filter);
             return this;
         }
 
         public ICommandEventsFilter Or<TMsg>(Predicate<TMsg> filter) where TMsg : class
         {
-            ConditionFactory.Or(filter);
+            MessageConditionFactory.Or(filter);
             return this;
         }
 
-        public IReadOnlyCollection<Type> KnownMessageTypes => ConditionFactory.KnownMessageTypes;
-        public bool Check(params object[] messages) => ConditionFactory.Check(messages);
     }
 }

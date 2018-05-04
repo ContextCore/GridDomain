@@ -30,8 +30,8 @@ namespace GridDomain.Node.AkkaMessaging.Waiting {
             return _commandEventsFilter.Or(filter);
         }
 
-        public IReadOnlyCollection<Type> KnownMessageTypes => _commandEventsFilter.KnownMessageTypes;
-        public bool Check(params object[] messages) => _commandEventsFilter.Check(messages);
+        //public IReadOnlyCollection<Type> AcceptedMessageTypes => _commandEventsFilter.AcceptedMessageTypes;
+        //public bool Check(params object[] messages) => _commandEventsFilter.Check(messages);
 
         async Task<IWaitResult<T>> ICommandEventsFilter<T>.Execute(TimeSpan? timeout, bool failOnAnyFault)
         {

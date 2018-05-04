@@ -12,8 +12,8 @@ namespace GridDomain.CQRS
      {
          TBuilder And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class;
          TBuilder Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class;
-         IReadOnlyCollection<Type> KnownMessageTypes { get; }
-         bool Check(params object[] messages);
+         //IReadOnlyCollection<Type> AcceptedMessageTypes { get; }
+         //bool Check(params object[] messages);
      }
      
 

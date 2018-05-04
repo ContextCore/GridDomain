@@ -10,7 +10,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     
     public static class ExpectationBuilderExtensions
     {
-        public static IConditionFactory<Task<IWaitResult<T>>> Expect<T>(this IMessageWaiter waiter, Predicate<T> predicate=null) where T : class
+        public static IMessageConditionFactory<Task<IWaitResult<T>>> Expect<T>(this IMessageWaiter waiter, Predicate<T> predicate=null) where T : class
         {
             Func<object, bool> func = null;
             if (predicate != null)
@@ -21,42 +21,36 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                            return false;
                        };
             
-            return new TypedConditionFactoryDecorator<T>(waiter.Expect(typeof(T),func));
+            return new TypedMessageConditionFactoryDecorator<T>(waiter.Expect(typeof(T),func));
         }
     }
     
     
-    public class TypedConditionFactoryDecorator<T> : IConditionFactory<Task<IWaitResult<T>>> where T : class
+    public class TypedMessageConditionFactoryDecorator<T> : IMessageConditionFactory<Task<IWaitResult<T>>> where T : class
     {
-        private readonly IConditionFactory<Task<IWaitResult>> _conditionFactory;
+        private readonly IMessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
 
-        public TypedConditionFactoryDecorator(IConditionFactory<Task<IWaitResult>> factory)
+        public TypedMessageConditionFactoryDecorator(IMessageConditionFactory<Task<IWaitResult>> factory)
         {
-            _conditionFactory = factory;
+            _messageConditionFactory = factory;
         }
 
-        public IConditionFactory<Task<IWaitResult<T>>> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        public IMessageConditionFactory<Task<IWaitResult<T>>> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
-            _conditionFactory.And(filter);
+            _messageConditionFactory.And(filter);
             return this;
         }
 
-        public IConditionFactory<Task<IWaitResult<T>>> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        public IMessageConditionFactory<Task<IWaitResult<T>>> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
         {
-            _conditionFactory.Or(filter);
+            _messageConditionFactory.Or(filter);
             return this;
         }
 
-        public IReadOnlyCollection<Type> KnownMessageTypes => _conditionFactory.KnownMessageTypes;
         
-        public bool Check(params object[] messages)
-        {
-            return _conditionFactory.Check(messages);
-        }
-
         public async Task<IWaitResult<T>> Create()
         {
-            var res = await _conditionFactory.Create();
+            var res = await _messageConditionFactory.Create();
             return  WaitResult.Parse<T>(res); 
         }
 
