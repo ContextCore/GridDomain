@@ -35,7 +35,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
                                         new CommandEventsFilter<T>(cmd, 
                                                                        metadata,
                                                                        this,
-                                                                       new MessageConditionFactory<Task<IWaitResult>>(new ClusterCorrelationConditionFactory<Task<IWaitResult>>(metadata.CorrelationId)))
+                                                                       new MessageConditionFactory<Task<IWaitResult>>(new ClusterCorrelationConditionBuilder<Task<IWaitResult>>(metadata.CorrelationId)))
                                         );
         }
     }

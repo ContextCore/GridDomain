@@ -22,7 +22,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                                    ICommandExecutor executorActorRef,
                                    MessageConditionFactory<Task<IWaitResult>> messageConditionFactory = null)
         {
-            MessageConditionFactory = messageConditionFactory ?? new MessageConditionFactory<Task<IWaitResult>>(new LocalCorrelationConditionFactory(commandMetadata.CorrelationId));
+            MessageConditionFactory = messageConditionFactory ?? new MessageConditionFactory<Task<IWaitResult>>(new LocalCorrelationConditionBuilder(commandMetadata.CorrelationId));
             _commandMetadata = commandMetadata;
             _executorActorRef = executorActorRef;
             _command = command;
@@ -58,7 +58,7 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         private bool IsFaultFromExecutingCommand(object o)
         {
-            return (((o as IMessageMetadataEnvelop)?.Message as IFault)?.Message as ICommand)?.Id == _command.Id;
+            return ((o as IFault)?.Message as ICommand)?.Id == _command.Id;
         }
 
         public ICommandEventsFilter And<TMsg>(Predicate<TMsg> filter) where TMsg : class

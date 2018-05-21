@@ -102,15 +102,23 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         protected virtual bool CheckMessageType(object receivedMessage, Type t, Func<object, bool> domainMessageFilter = null)
         {
-            return domainMessageFilter == null ? t.IsInstanceOfType(receivedMessage) : t.IsInstanceOfType(receivedMessage) && domainMessageFilter(receivedMessage);
+            if (domainMessageFilter == null)
+                return t.IsInstanceOfType(receivedMessage);
+            
+            return t.IsInstanceOfType(receivedMessage) && domainMessageFilter(receivedMessage);
         }
 
         protected virtual Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
         {
             Func<object, bool> filterWithAdapter = (o => CheckMessageType(o, messageType, filter));
-            AcceptedMessageTypes.Add(messageType);
+            RegisterAcceptedMessage(messageType);
             MessageFilters.Add(o => filterWithAdapter(o));
             return filterWithAdapter;
+        }
+
+        protected virtual void RegisterAcceptedMessage(Type messageType)
+        {
+            AcceptedMessageTypes.Add(messageType);
         }
     }
 

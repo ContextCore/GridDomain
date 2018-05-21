@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using DotNetty.Codecs.Base64;
 using GridDomain.Common;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
@@ -13,68 +14,70 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
     {
         protected override bool CheckMessageType(object receivedMessage, Type t, Func<object, bool> domainMessageFilter = null)
         {
-            var message = (receivedMessage as IMessageMetadataEnvelop)?.Message;
-            
-            if (t.IsInstanceOfType(message) )
-            {
-                if(domainMessageFilter == null)
-                    return true;
-                        
-                return domainMessageFilter(message);
-            }
-
-            return false;
+            return base.CheckMessageType(receivedMessage.SafeUnenvelope(), t, domainMessageFilter);
         }
     }
-    
+
     //really important will we wait for envelop types with local waiting and EventBus
     //or it will be distributed pub sub with exact topics
-    public abstract class CorrelationConditionFactory : ConditionBuilder
+    public abstract class CorrelationConditionBuilder : MetadataEnvelopConditionBuilder
     {
         private readonly string _correlationId;
-
-        protected CorrelationConditionFactory(string correlationId)
+    
+        protected CorrelationConditionBuilder(string correlationId)
         {
             _correlationId = correlationId;
         }
-
-        protected override Func<object,bool> AddFilter(Type messageType, Func<object, bool> filter=null)
-        {
-            bool Filter(object m)
-            {
-                if (m is IMessageMetadataEnvelop env)
-                {
-                    if (messageType.IsInstanceOfType(env.Message) && env.Metadata.CorrelationId == _correlationId)
-                    {
-                        if (filter == null) return true;
-                        return filter(m);
-                    }
-                }
-
-                return false;
-            }
-
-            base.AddFilter(messageType, Filter);
-            
-            return Filter;
-        }
-    }
-
-    public class LocalCorrelationConditionFactory : CorrelationConditionFactory
-    {
-        protected override Func<object,bool> AddFilter(Type messageType, Func<object, bool> filter)
-        {
-            return base.AddFilter(typeof(MessageMetadataEnvelop), filter);
-        }
-
-        public LocalCorrelationConditionFactory(string correlationId) : base(correlationId) { }
-    }
     
-    public class LocalMetadataEnvelopConditionBuilder : MetadataEnvelopConditionBuilder
+        protected override Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
+        {
+            bool CorrelationFilter(object m) => m.SafeCheckCorrelation(_correlationId)
+                                                && CheckMessageType(m, messageType, filter);
+    
+            base.AddFilter(messageType, CorrelationFilter);
+    
+            return CorrelationFilter;
+        }
+    }
+
+    public static class ObjectExtensions
     {
-        protected override Func<object,bool> AddFilter(Type messageType, Func<object, bool> filter)
+        public static object SafeUnenvelope(this object msg)
+        {
+            return (msg as IMessageMetadataEnvelop)?.Message;
+        }
+
+        public static bool SafeCheckCorrelation(this object msg, string correlationId)
+        {
+            return (msg as IMessageMetadataEnvelop)?.Metadata?.CorrelationId == correlationId;
+        }
+    }
+
+    
+    public class LocalCorrelationConditionBuilder : CorrelationConditionBuilder
+    {
+        private readonly string _correlationId;
+
+        public LocalCorrelationConditionBuilder(string correlationId):base(correlationId)
+        {
+            _correlationId = correlationId;
+        }
+        protected override Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
         {
             AcceptedMessageTypes.Add(typeof(MessageMetadataEnvelop));
+
+            bool FilterWithAdapter(object o) => CheckMessageType(o, messageType, filter);
+            MessageFilters.Add(FilterWithAdapter);
+            return FilterWithAdapter;
+        }
+    }
+
+    public class LocalMetadataEnvelopConditionBuilder : MetadataEnvelopConditionBuilder
+    {
+        protected override Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
+        {
+            AcceptedMessageTypes.Add(typeof(MessageMetadataEnvelop));
+
             bool FilterWithAdapter(object o) => CheckMessageType(o, messageType, filter);
             MessageFilters.Add(FilterWithAdapter);
             return FilterWithAdapter;
