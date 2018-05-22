@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                           BusinessDateTime.UtcNow,
                                                           processId);
 
-            await Node.PrepareForProcessManager(continueEventA).Send();
+            await Node.PrepareForProcessManager(continueEventA).Expect<ProcessReceivedMessage<SoftwareProgrammingState>>().Send();
 
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 

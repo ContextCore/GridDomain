@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Common
     public interface IProcessManagerExpectationBuilder
     {
         IConditionedProcessManagerSender<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class; 
-        Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
+       // Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
     }
     
     
@@ -53,11 +53,6 @@ namespace GridDomain.Tests.Common
             return await processHub.Ask<WarmUpResult>(new WarmUpChild(id));
         }
 
-
-        //public static Task SendToProcessManagers(this IExtendedGridDomainNode node, DomainEvent msg, TimeSpan? timeout = null)
-        //{
-        //    return node.Pipe.ProcessesPipeActor.Ask<ProcessesTransitComplete>(new MessageMetadataEnvelop(msg), timeout);
-        //}
 
        // public static async Task<TExpect> SendToProcessManager<TExpect>(this IExtendedGridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
        // {

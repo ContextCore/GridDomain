@@ -9,6 +9,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
 using GridDomain.Node.Actors.Aggregates;
+using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.ProcessManagers;
@@ -90,49 +91,45 @@ namespace GridDomain.Tests.Unit {
 
         public IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata = null)
         {
-            //var res = await NewLocalDebugWaiter(Node, timeout)
-            //                .Expect<TExpect>()
-            //                .Create()
-            //                .SendToProcessManagers(msg);
-            //
-            //return res.Message<TExpect>();
-            throw new NotImplementedException();
+            
+            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.Empty), Node);
 
         }
 
         public IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata = null)
         {
-            throw new NotImplementedException();
-
+            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.Empty), Node);
         }
 
         class ProcessManagerExpectationBuilder : IProcessManagerExpectationBuilder
         {
-            private IExtendedGridDomainNode _extendedGridDomainNode;
+            private readonly IExtendedGridDomainNode _extendedGridDomainNode;
+            private readonly object _msg;
 
-            public ProcessManagerExpectationBuilder(IExtendedGridDomainNode node)
+            public ProcessManagerExpectationBuilder(object msg, IExtendedGridDomainNode node)
             {
+                _msg = msg;
                 _extendedGridDomainNode = node;
             }
             public IConditionedProcessManagerSender<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
             {
-                var waiter = NewLocalDebugWaiter(_extendedGridDomainNode);
-                throw new NotImplementedException();
+                var sender = new ConditionedProcessManagerSender<TMsg>(_extendedGridDomainNode,_msg,new MessageConditionFactory<Task<IWaitResult>>());
+                sender.And<TMsg>(filter);
+                return sender;
             }
 
-            public Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
+            class ConditionedProcessManagerSender<T> : IConditionedProcessManagerSender<T> where T : class
             {
-                throw new NotImplementedException();
-            }
+                private readonly MessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
+                private readonly IExtendedGridDomainNode _node;
+                private readonly object _msg;
 
-            class ConditionedProcessManagerSender<T> : IConditionedProcessManagerSender<T>
-            {
-                private MessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
-                private object _msg;
-
-                public ConditionedProcessManagerSender(object msg, MessageConditionFactory<Task<IWaitResult>> messageConditionFactory)
+                public ConditionedProcessManagerSender(IExtendedGridDomainNode node,
+                                                       object msg,
+                                                       MessageConditionFactory<Task<IWaitResult>> messageConditionFactory)
                 {
                     _msg = msg;
+                    _node = node;
                     _messageConditionFactory = messageConditionFactory;
                 }
                 public IConditionedProcessManagerSender<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
@@ -147,57 +144,30 @@ namespace GridDomain.Tests.Unit {
                     return this;
                 }
 
-                public IReadOnlyCollection<Type> AcceptedMessageTypes { get; }
-                public bool Check(params object[] messages)
-                {
-                    throw new NotImplementedException();
-                }
 
-                public Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
+                public async Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
                 {
-                    var task = _messageConditionFactory.Create(timeout);
-                    throw new NotImplementedException();
+                    //var subscriptionTask = _messageConditionFactory.Create(timeout);
+                    
+                    var waiter = new MessagesWaiter(_node.System, _node.Transport, timeout ?? _node.DefaultTimeout, _messageConditionFactory);
+                    var results = waiter.Start(timeout);
 
-//                    //will wait later in task; 
-//#pragma warning disable 4014
-//                    _executorActorRef.Execute(_command, _commandMetadata, CommandConfirmationMode.None);
-//#pragma warning restore 4014
-//
-//                    var res = await task;
-//
-//                    if (!failOnAnyFault)
-//                        return res;
-//                    
-//                    var faults = res.All.OfType<IMessageMetadataEnvelop>()
-//                                    .Select(env => env.Message)
-//                                    .OfType<IFault>()
-//                                    .ToArray();
-//                    if (faults.Any())
-//                        throw new AggregateException(faults.Select(f => f.Exception));
-//
-//                    return task;
+                     _node.Pipe.ProcessesPipeActor.Tell(_msg);
+                  //  await _node.Pipe.ProcessesPipeActor.Ask<ProcessesTransitComplete>(_msg);
+
+                    return WaitResult.Parse<T>(await results);
                 }
             }
         }
         
-//        public IProcessManagerExpectationBuilder PrepareForProcessManager(object msg, MessageMetadata metadata = null)
-//        {
-//            var res = await NewLocalDebugWaiter(Node)
-//                            .Expect<TExpect>()
-//                            .Create()
-//                            .SendToProcessManagers(msg);
-//           
-//            return res.Message<TExpect>();
-//            throw new NotImplementedException();
-//
-//        }
 
-        static IMessageWaiter NewLocalDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
-        {
-            var conditionBuilder = new LocalMetadataEnvelopConditionBuilder();
-            var conditionFactory = new MessageConditionFactory<Task<IWaitResult>>(conditionBuilder);
-            var waiter = new MessagesWaiter(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionFactory);
-            return waiter;
-        }
+
+        //static IMessageWaiter NewLocalDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
+        //{
+        //    var conditionBuilder = new LocalMetadataEnvelopConditionBuilder();
+        //    var conditionFactory = new MessageConditionFactory<Task<IWaitResult>>(conditionBuilder);
+        //    var waiter = new MessagesWaiter(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionFactory);
+        //    return waiter;
+        //}
     }
 }
