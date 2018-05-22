@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
 
             var results = await Node.PrepareForProcessManager(new CoffeMakeFailedEvent(null, processState.PersonId).CloneForProcess(processId))
                                     .Expect<Fault<CoffeMakeFailedEvent>>()
-                                    .Send();
+                                    .Send(TimeSpan.FromSeconds(5));
 
             var fault = results.Message<IFault<CoffeMakeFailedEvent>>();
             //Fault_should_be_produced_and_published()

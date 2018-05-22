@@ -113,7 +113,8 @@ namespace GridDomain.Tests.Unit {
             }
             public IConditionedProcessManagerSender<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
             {
-                var sender = new ConditionedProcessManagerSender<TMsg>(_extendedGridDomainNode,_msg,new MessageConditionFactory<Task<IWaitResult>>());
+                var sender = new ConditionedProcessManagerSender<TMsg>(_extendedGridDomainNode,_msg,
+                                                                       new MessageConditionFactory<Task<IWaitResult>>(new LocalMetadataEnvelopConditionBuilder()));
                 sender.And<TMsg>(filter);
                 return sender;
             }
@@ -148,9 +149,11 @@ namespace GridDomain.Tests.Unit {
                 public async Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
                 {
                     //var subscriptionTask = _messageConditionFactory.Create(timeout);
+
+                    var defaultTimeout = timeout ?? _node.DefaultTimeout;
                     
-                    var waiter = new MessagesWaiter(_node.System, _node.Transport, timeout ?? _node.DefaultTimeout, _messageConditionFactory);
-                    var results = waiter.Start(timeout);
+                    var waiter = new MessagesWaiter(_node.System, _node.Transport, defaultTimeout, _messageConditionFactory);
+                    var results = waiter.Start();
 
                      _node.Pipe.ProcessesPipeActor.Tell(_msg);
                   //  await _node.Pipe.ProcessesPipeActor.Ask<ProcessesTransitComplete>(_msg);
