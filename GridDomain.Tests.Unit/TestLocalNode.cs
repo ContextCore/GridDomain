@@ -133,32 +133,35 @@ namespace GridDomain.Tests.Unit {
                     _node = node;
                     _messageConditionFactory = messageConditionFactory;
                 }
-                public IConditionedProcessManagerSender<T> And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+
+                async Task<IWaitResult<T>> IConditionedProcessManagerSender<T>.Send(TimeSpan? timeout, bool failOnAnyFault)
+                {
+                    return WaitResult.Parse<T>(await Send(timeout, failOnAnyFault));
+                }
+
+                public IConditionedProcessManagerSender And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
                 {
                     _messageConditionFactory.And(filter);
                     return this;
                 }
 
-                public IConditionedProcessManagerSender<T> Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+                public IConditionedProcessManagerSender Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
                 {
                     _messageConditionFactory.Or(filter);
                     return this;
                 }
 
 
-                public async Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
+                public async Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
                 {
-                    //var subscriptionTask = _messageConditionFactory.Create(timeout);
-
                     var defaultTimeout = timeout ?? _node.DefaultTimeout;
                     
                     var waiter = new MessagesWaiter(_node.System, _node.Transport, defaultTimeout, _messageConditionFactory);
                     var results = waiter.Start();
 
                      _node.Pipe.ProcessesPipeActor.Tell(_msg);
-                  //  await _node.Pipe.ProcessesPipeActor.Ask<ProcessesTransitComplete>(_msg);
 
-                    return WaitResult.Parse<T>(await results);
+                    return await results;
                 }
             }
         }

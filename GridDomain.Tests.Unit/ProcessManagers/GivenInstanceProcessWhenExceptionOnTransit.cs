@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                     .Expect<Fault<CoffeMakeFailedEvent>>()
                                     .Send(TimeSpan.FromSeconds(5));
 
-            var fault = results.Message<IFault<CoffeMakeFailedEvent>>();
+            var fault = results.Received;
             //Fault_should_be_produced_and_published()
             Assert.NotNull(fault);
             //Fault_exception_should_contains_stack_trace()

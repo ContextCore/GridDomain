@@ -68,23 +68,24 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
         public static WaitResult<T> Parse<T>(IWaitResult res) where T : class
         {
-            return new WaitResult<T>(res.All.OfType<IMessageMetadataEnvelop>().FirstOrDefault(r => !(r.Message is IFault)),
-                              res.All.OfType<IMessageMetadataEnvelop>().FirstOrDefault(r => r.Message is IFault));
+            var expectedTypedMessage = res.All.OfType<IMessageMetadataEnvelop>().ToArray();
+            if(expectedTypedMessage.Length > 1) throw new InvalidOperationException("Too many results");
+
+
+            return new WaitResult<T>(expectedTypedMessage.FirstOrDefault());
         }
     }
 
     public class WaitResult<T> : WaitResult, IWaitResult<T> where T : class
     {
-        public WaitResult(IMessageMetadataEnvelop message, IMessageMetadataEnvelop fault = null):base(new object[]{ message})
+        public WaitResult(IMessageMetadataEnvelop message):base(new object[]{ message})
         {
             Received = message?.Message as T;
-            Fault = fault?.Message as IFault;
-            ReceivedMetadata = message?.Metadata ?? fault?.Metadata;
+            ReceivedMetadata = message?.Metadata;
         }
 
         public T Received { get; }
         public IMessageMetadata ReceivedMetadata { get; }
-        public IFault Fault { get; }
     }
 
    

@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Unit.Metadata
             var metadata = res.ReceivedMetadata;
             Assert.NotNull(metadata);
             // Result_contains_message()
-            var fault = res.Fault;
+            var fault = res.Received;
 
             Assert.NotNull(fault);
             //Result_message_has_expected_type()
