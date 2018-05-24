@@ -39,7 +39,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
             Assert.True(_result.Message<BalloonTitleChanged>() != null
                         && _result.Message<BalloonCreated>() != null);
             //Then_recieve_only_expected_messages()
-            Assert.True(_result.All.Count == 2);
+            Assert.Equal(2,_result.All.Count);
         }
     }
 }
