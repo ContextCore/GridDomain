@@ -25,7 +25,7 @@ namespace GridDomain.Node.Cluster {
            // builder.Add(new ClusterSingletonInternalMessagesSerializerConfig());
             builder.Add(new ClusterShardingMessagesSerializerConfig());
             builder.Add(new HyperionForAll());
-            builder.Add(new AutoTerminateProcessOnClusterShutdown());
+           // builder.Add(new AutoTerminateProcessOnClusterShutdown());
 
             return new ClusterConfigBuilder(name, builder);
         }  

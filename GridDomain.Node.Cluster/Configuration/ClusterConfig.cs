@@ -129,7 +129,7 @@ namespace GridDomain.Node.Cluster.Configuration
             return new ClusterInfo(akkaCluster,
                                    seedSystemAddresses.Concat(autoSeedAddresses)
                                                       .Concat(workerSystemAddresses)
-                                                      .ToArray());
+                                                      .ToArray(),Logger);
         }
 
         private async Task<ActorSystem[]> CreateSystems(IReadOnlyCollection<ActorSystemBuilder> actorSystemBuilders, Func<ActorSystem, Task<ActorSystem>> init)

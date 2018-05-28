@@ -1,12 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Akka.Actor;
+using GridDomain.Common;
+using Serilog;
 
-namespace GridDomain.Node.Cluster.Configuration {
+namespace GridDomain.Node.Cluster.Configuration
+{
     public class ClusterInfo : IDisposable
     {
-        public ClusterInfo(Akka.Cluster.Cluster cluster, IReadOnlyCollection<Address> members)
+        private ILogger _logger;
+
+        public ClusterInfo(Akka.Cluster.Cluster cluster, IReadOnlyCollection<Address> members, ILogger logger)
         {
+            _logger = logger;
             Cluster = cluster;
             Members = members;
         }
@@ -16,9 +24,26 @@ namespace GridDomain.Node.Cluster.Configuration {
 
         public void Dispose()
         {
-            CoordinatedShutdown.Get(Cluster.System)
-                               .Run()
-                               .Wait(TimeSpan.FromSeconds(10));
+           // var hashCode = this.GetHashCode();
+           // var formattableString = $"Cluster info {hashCode} {Cluster.SelfAddress.System} dispose is started";
+           //
+           // _logger.Information(formattableString);
+            try
+            {
+                //Task.Delay(TimeSpan.FromSeconds(20)).Wait();//.Result;
+                var a = CoordinatedShutdown.Get(Cluster.System)
+                                           .Run()
+                                           .GetAwaiter()
+                                           .GetResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Got error during cluster info {Cluster.SelfAddress.System} dispose ");
+            }
+
+            //var formattable = $"Cluster info {hashCode} {Cluster.SelfAddress.System} dispose was finished";
+            //
+            //_logger.Information(formattable);
         }
     }
 }
