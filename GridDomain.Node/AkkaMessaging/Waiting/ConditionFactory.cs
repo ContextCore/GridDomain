@@ -111,14 +111,9 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected virtual Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
         {
             Func<object, bool> filterWithAdapter = (o => CheckMessageType(o, messageType, filter));
-            RegisterAcceptedMessage(messageType);
+            AcceptedMessageTypes.Add(messageType);
             MessageFilters.Add(o => filterWithAdapter(o));
             return filterWithAdapter;
-        }
-
-        protected virtual void RegisterAcceptedMessage(Type messageType)
-        {
-            AcceptedMessageTypes.Add(messageType);
         }
     }
 

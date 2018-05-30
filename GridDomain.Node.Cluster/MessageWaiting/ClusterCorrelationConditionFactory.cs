@@ -15,12 +15,10 @@ namespace GridDomain.Node.Cluster.MessageWaiting {
 
         protected override Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
         {
-            bool CorrelationFilter(object m) => m.SafeCheckCorrelation(_correlationId)
-                                                && base.CheckMessageType(m, messageType, filter);
-
-            base.AddFilter(messageType, CorrelationFilter);
-
-            return CorrelationFilter;
+            AcceptedMessageTypes.Add(messageType);
+            bool FilterWithAdapter(object o) => o.SafeCheckCorrelation(_correlationId) && CheckMessageType(o, messageType, filter);
+            MessageFilters.Add(FilterWithAdapter);
+            return FilterWithAdapter;
         }
     }
 }

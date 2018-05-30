@@ -20,18 +20,18 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
 
     //really important will we wait for envelop types with local waiting and EventBus
     //or it will be distributed pub sub with exact topics
-    public abstract class CorrelationConditionBuilder : MetadataEnvelopConditionBuilder
+    public class CorrelationConditionBuilder : MetadataEnvelopConditionBuilder
     {
-        private readonly string _correlationId;
+        protected readonly string CorrelationId;
     
         protected CorrelationConditionBuilder(string correlationId)
         {
-            _correlationId = correlationId;
+            CorrelationId = correlationId;
         }
     
         protected override Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
         {
-            bool CorrelationFilter(object m) => m.SafeCheckCorrelation(_correlationId)
+            bool CorrelationFilter(object m) => m.SafeCheckCorrelation(CorrelationId)
                                                 && CheckMessageType(m, messageType, filter);
     
             base.AddFilter(messageType, CorrelationFilter);
@@ -50,25 +50,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         public static bool SafeCheckCorrelation(this object msg, string correlationId)
         {
             return (msg as IMessageMetadataEnvelop)?.Metadata?.CorrelationId == correlationId;
-        }
-    }
-
-    
-    public class LocalCorrelationConditionBuilder : CorrelationConditionBuilder
-    {
-        private readonly string _correlationId;
-
-        public LocalCorrelationConditionBuilder(string correlationId):base(correlationId)
-        {
-            _correlationId = correlationId;
-        }
-        protected override Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
-        {
-            AcceptedMessageTypes.Add(typeof(MessageMetadataEnvelop));
-
-            bool FilterWithAdapter(object o) => CheckMessageType(o, messageType, filter);
-            MessageFilters.Add(FilterWithAdapter);
-            return FilterWithAdapter;
         }
     }
 

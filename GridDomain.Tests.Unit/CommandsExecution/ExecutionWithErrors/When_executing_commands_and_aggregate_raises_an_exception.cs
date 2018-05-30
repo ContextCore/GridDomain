@@ -77,7 +77,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
 
             var aggregateId = "test_balloon";
             //aggregate should fail after blow command
-            //and restores after write title, no loosing write title command
+            //and restores for write title, no loosing write title command
             // intentionally not waiting for command result, allowing aggregate actor take care of command managment and 
             // storage
 
