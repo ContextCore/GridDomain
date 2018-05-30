@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using GridDomain.Node.Configuration;
 
 namespace GridDomain.Node.Cluster.Configuration
@@ -30,12 +32,23 @@ namespace GridDomain.Node.Cluster.Configuration
             return this;
         }
 
+        private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
+
+        public static int GetAvailablePort()
+        {
+            using (var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+            {
+                socket.Bind(DefaultLoopbackEndpoint);
+                return ((IPEndPoint)socket.LocalEndPoint).Port;
+            }
+        }
+        
         public ClusterConfig Build()
         {
             var clusterConfig = new ClusterConfig(_clusterName, _actorSystemBuilder.Logger);
             if (_seedNodeNetworkAddresses.Any() && _seedNodeNetworkAddresses.All(a => a.PortNumber == 0))
             {
-                _seedNodeNetworkAddresses.Add(((NodeNetworkAddress) _seedNodeNetworkAddresses.First()).Copy(10000));
+                _seedNodeNetworkAddresses.Add(((NodeNetworkAddress) _seedNodeNetworkAddresses.First()).Copy(GetAvailablePort()));
                 _seedNodeNetworkAddresses.RemoveAt(0);
             }
             

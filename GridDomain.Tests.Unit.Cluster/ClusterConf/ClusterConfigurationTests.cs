@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         public async Task Cluster_can_start_with_predefined_and_automatic_seed_nodes()
         {
             using (var akkaCluster = await ActorSystemBuilder.New(_logger)
-                                                             .Cluster("testPredefined")
+                                                             .Cluster()
                                                              .AutoSeeds(3)
                                                              .Seeds(10010)
                                                              .Workers(1)
@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         public async Task Cluster_can_start_with_automatic_seed_nodes()
         {
             using (var akkaCluster = await ActorSystemBuilder.New(_logger)
-                                                             .Cluster("testAutoSeed")
+                                                             .Cluster()
                                                              .AutoSeeds(3)
                                                              .Workers(1)
                                                              .Build()
@@ -65,7 +65,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         public async Task Cluster_can_start_with_static_seed_nodes()
         {
             using (var akkaCluster = await ActorSystemBuilder.New(_logger)
-                                                             .Cluster("testSeed")
+                                                             .Cluster()
                                                              .Seeds(10011)
                                                              .Workers(1)
                                                              .Build()
@@ -79,9 +79,10 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         {
             var diagnoseActor = akkaCluster.Cluster.System.ActorOf(Props.Create(() => new SimpleClusterListener()));
 
-            await Task.Delay(1000);
-            var knownClusterMembers = SimpleClusterListener.KnownMemberList;
-            var knownClusterAddresses = knownClusterMembers.Select(m => m.Address)
+            var knownClusterMembers = await diagnoseActor.Ask<MembersExplored>(new GetResult(akkaCluster.Members.Count))
+                                                         .TimeoutAfter(TimeSpan.FromSeconds(5000));
+
+            var knownClusterAddresses = knownClusterMembers.Members.Select(m => m.Address)
                                                            .ToArray();
 
             //All members of cluster should be reachable
@@ -94,8 +95,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         {
             using (var akkaCluster = await ActorSystemBuilder.New(_logger)
                                                              .Log(LogEventLevel.Verbose)
-                                                             // .DomainSerialization()
-                                                             .Cluster("testNexta")
+                                                             .Cluster()
                                                              .Seeds(10030)
                                                              .AutoSeeds(1)
                                                              .Workers(1)
@@ -112,7 +112,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         {
             using (var akkaCluster = await ActorSystemBuilder.New(_logger)
                                                              .Log(LogEventLevel.Verbose)
-                                                             .Cluster("testABC")
+                                                             .Cluster()
                                                              .AutoSeeds(2)
                                                              .Workers(2)
                                                              .Build()

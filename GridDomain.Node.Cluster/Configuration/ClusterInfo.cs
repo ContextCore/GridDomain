@@ -24,26 +24,17 @@ namespace GridDomain.Node.Cluster.Configuration
 
         public void Dispose()
         {
-           // var hashCode = this.GetHashCode();
-           // var formattableString = $"Cluster info {hashCode} {Cluster.SelfAddress.System} dispose is started";
-           //
-           // _logger.Information(formattableString);
             try
             {
-                //Task.Delay(TimeSpan.FromSeconds(20)).Wait();//.Result;
-                var a = CoordinatedShutdown.Get(Cluster.System)
-                                           .Run()
-                                           .GetAwaiter()
-                                           .GetResult();
+                CoordinatedShutdown.Get(Cluster.System)
+                                   .Run()
+                                   .GetAwaiter()
+                                   .GetResult();
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, $"Got error during cluster info {Cluster.SelfAddress.System} dispose ");
             }
-
-            //var formattable = $"Cluster info {hashCode} {Cluster.SelfAddress.System} dispose was finished";
-            //
-            //_logger.Information(formattable);
         }
     }
 }

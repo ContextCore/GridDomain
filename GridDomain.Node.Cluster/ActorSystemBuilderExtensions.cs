@@ -18,9 +18,10 @@ namespace GridDomain.Node.Cluster {
             builder.Add(new ClusterSeedAwareTransportConfig(otherSeeds.Select(s => s.ToFullTcpAddress(name)).ToArray()));
             return builder;
         }
-
-        public static ClusterConfigBuilder Cluster(this ActorSystemBuilder builder, string name)
+        
+        public static ClusterConfigBuilder Cluster(this ActorSystemBuilder builder, string name=null)
         {
+            name = name ?? "TestCluster" + builder.GetHashCode();
             builder.Add(new PubSubConfig());
            // builder.Add(new ClusterSingletonInternalMessagesSerializerConfig());
             builder.Add(new ClusterShardingMessagesSerializerConfig());
