@@ -69,10 +69,11 @@ namespace GridDomain.Tests.Unit
             
             fixture.OnNodeStartedEvent += (sender, e) =>
                                           {
+                                              //cannot work for cluster mode 
                                               //supress errors raised by commands not reaching aggregates
-                                              var nullActor = fixture.Node.System.ActorOf(BlackHoleActor.Props);
-                                              fixture.Node.Pipe.ProcessesPipeActor.Ask<Initialized>(new Initialize(nullActor))
-                                                     .Wait();
+                                              //var nullActor = fixture.Node.System.ActorOf(BlackHoleActor.Props);
+                                              //fixture.Node.Pipe.ProcessesPipeActor.Ask<Initialized>(new Initialize(nullActor))
+                                              //       .Wait();
                                           };
 
             return fixture;

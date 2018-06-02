@@ -49,7 +49,7 @@ namespace GridDomain.Node
             _handlersCatalog = handlersProcessor ?? new HandlersDefaultProcessor();
             _processCatalog = processProcessor ?? new ProcessesDefaultProcessor();
             
-            ProcessesPipeActor = System.ActorOf(Props.Create(() => new ProcessesPipeActor(_processCatalog)), nameof(Actors.CommandPipe.ProcessesPipeActor));
+            ProcessesPipeActor = System.ActorOf(Props.Create(() => new LocalProcessesPipeActor(_processCatalog)), nameof(LocalProcessesPipeActor));
 
             HandlersPipeActor = System.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, ProcessesPipeActor)),
                                                nameof(Actors.CommandPipe.HandlersPipeActor));

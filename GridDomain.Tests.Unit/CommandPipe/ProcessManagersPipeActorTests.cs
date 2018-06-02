@@ -65,7 +65,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
 
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new LocalProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
             processPipeActor.Tell(MessageMetadataEnvelop.New<DomainEvent>(balloonCreated));
@@ -124,7 +124,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var catalog = new ProcessesDefaultProcessor();
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActor));
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new LocalProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
             var msg = MessageMetadataEnvelop.New<DomainEvent>(new Inherited());
@@ -143,7 +143,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             var catalog = new ProcessesDefaultProcessor();
             catalog.Add<BalloonCreated>(new SyncProcessManagerProcessor(testProcessActor));
 
-            var processPipeActor = Sys.ActorOf(Props.Create(() => new ProcessesPipeActor(catalog)));
+            var processPipeActor = Sys.ActorOf(Props.Create(() => new LocalProcessesPipeActor(catalog)));
             await processPipeActor.Ask<Initialized>(new Initialize(TestActor));
 
 

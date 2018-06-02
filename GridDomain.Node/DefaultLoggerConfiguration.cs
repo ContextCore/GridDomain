@@ -40,7 +40,7 @@ namespace GridDomain.Node
             Destructure.ByTransforming<MessageMetadataEnvelop<ICommand>>(r => new { CommandType = r.Message.GetType(), CommandId = r.Message.Id, r.Metadata });
             Destructure.ByTransforming<MessageMetadataEnvelop<DomainEvent>>(r => new { EventType = r.Message.GetType(), EventId = r.Message.Id, r.Metadata });
             Destructure.ByTransforming<AggregateCommandExecutionContext>(r => new { CommandId = r.Command?.Id, Metadata = r.CommandMetadata });
-            Destructure.ByTransforming<ProcessesTransitComplete>(r => new { Event = r.InitialMessage, ProducedCommandsNum = r.ProducedCommands.Length });
+            Destructure.ByTransforming<ProcessesTransitComplete>(r => new { Event = r.InitialMessage, ProducedCommandsNum = r.ProducedCommands.Count });
             Destructure.ByTransforming<CreateNewProcess>(r => new { Event = (r.Message?.Message as IHaveId)?.Id ?? r.Message?.Message, r.EnforcedId, r.Message?.Metadata });
         }
     }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
@@ -111,5 +112,9 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
 
         public IStash Stash { get; set; }
+        public override IMessageMetadataEnvelop EnvelopCommand(ICommand cmd, IMessageMetadataEnvelop initialMessage)
+        {
+            return new ShardedCommandMetadataEnvelop(cmd,initialMessage.Metadata.CreateChild(cmd));
+        }
     }
 }

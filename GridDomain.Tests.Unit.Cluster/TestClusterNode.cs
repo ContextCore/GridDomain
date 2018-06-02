@@ -97,18 +97,15 @@ namespace GridDomain.Tests.Unit.Cluster
 
         public IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata = null)
         {
-            throw new NotImplementedException();
+            var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new MetadataEnvelopConditionBuilder());
+            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.Empty), Node,msgConditionFactory);
+
         }
 
         public IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata = null)
         {
-            throw new NotImplementedException();
-            // var res = await NewClusterDebugWaiter(Node,timeout)
-            //                 .Expect<TExpect>()
-            //                 .Create()
-            //                 .SendToProcessManagers<TExpect>(msg);
-            //
-            // return res.Message<TExpect>();
+            var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new MetadataEnvelopConditionBuilder());
+            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.Empty), Node,msgConditionFactory);
         }
 
         static IMessageWaiter NewClusterDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)
@@ -120,9 +117,6 @@ namespace GridDomain.Tests.Unit.Cluster
         }
 
       
-        public IMessageWaiter NewTestWaiter(TimeSpan? timeout = null)
-        {
-            return NewClusterDebugWaiter(Node, timeout);
-        }
+        
     }
 }

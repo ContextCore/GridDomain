@@ -18,28 +18,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         }
     }
 
-    //really important will we wait for envelop types with local waiting and EventBus
-    //or it will be distributed pub sub with exact topics
-    public class CorrelationConditionBuilder : MetadataEnvelopConditionBuilder
-    {
-        protected readonly string CorrelationId;
-    
-        protected CorrelationConditionBuilder(string correlationId)
-        {
-            CorrelationId = correlationId;
-        }
-    
-        protected override Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
-        {
-            bool CorrelationFilter(object m) => m.SafeCheckCorrelation(CorrelationId)
-                                                && CheckMessageType(m, messageType, filter);
-    
-            base.AddFilter(messageType, CorrelationFilter);
-    
-            return CorrelationFilter;
-        }
-    }
-
     public static class ObjectExtensions
     {
         public static object SafeUnenvelope(this object msg)
