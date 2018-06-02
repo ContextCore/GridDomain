@@ -128,9 +128,17 @@ namespace GridDomain.Node.Cluster.CommandPipe
             var routingGroup = new ConsistentHashingPool(10)
                 .WithHashMapping(m =>
                                  {
-                                     if (m is IMessageMetadataEnvelop env && env.Message is DomainEvent evt)
+                                     if (m is IMessageMetadataEnvelop env)
                                      {
-                                         return evt.SourceId;
+                                         if(env.Message is DomainEvent evt)
+                                             return evt.SourceId;
+                                         if (env.Message is IFault flt)
+                                         {
+                                             if (flt.Message is DomainEvent e)
+                                                 return e.SourceId;
+                                             if (flt.Message is ICommand c)
+                                                 return c.AggregateId;
+                                         }
                                      }
 
                                      throw new InvalidMessageException(m.ToString());
@@ -151,6 +159,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
                                      {
                                          return env.Metadata.CorrelationId;
                                      }
+                                    
 
                                      throw new InvalidMessageException(m.ToString());
                                  });
