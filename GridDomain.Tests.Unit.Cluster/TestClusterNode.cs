@@ -7,6 +7,7 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Cluster;
@@ -80,7 +81,7 @@ namespace GridDomain.Tests.Unit.Cluster
             var name = EntityActorName.New<T>(id)
                                       .ToString();
 
-            var actor = await _testKit.LoadActor<ClusterAggregateActor<T>>(name);
+            var actor = await _testKit.LoadActor<AggregateActor<T>>(name);
 
             return actor.State;
         }

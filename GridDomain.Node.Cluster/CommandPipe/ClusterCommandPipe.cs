@@ -53,16 +53,31 @@ namespace GridDomain.Node.Cluster.CommandPipe
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
         {
             Type aggregateType = descriptor.AggregateType;
-            _delayedRegistrations.Add(() => RegisterAggregateByType(aggregateType, typeof(ClusterAggregateActor<>).MakeGenericType(aggregateType)));
+            _delayedRegistrations.Add(() => RegisterAggregateByType(aggregateType, typeof(AggregateActor<>).MakeGenericType(aggregateType)));
             return Task.CompletedTask;
         }
 
         private async Task RegisterAggregateByType(Type aggregateType, Type actorType)
         {
+
+            var supervisionPolicy = new OneForOneStrategy(ex =>
+                                                          {
+                                                              switch (ex)
+                                                              {
+                                                                  case CommandExecutionFailedException cf:
+                                                                      return Directive.Restart;
+                                                                  case CommandAlreadyExecutedException cae:
+                                                                      return Directive.Restart;
+                                                                  default:
+                                                                      return Directive.Stop;
+                                                              }
+                                                          });
+            
             var region = await ClusterSharding.Get(System)
                                               .StartAsync(Known.Names.Region(aggregateType),
                                                           System.DI()
-                                                                .Props(actorType),
+                                                                .Props(actorType)
+                                                                .WithSupervisorStrategy(supervisionPolicy),
                                                           ClusterShardingSettings.Create(System),
                                                           new ShardedMessageMetadataExtractor());
 

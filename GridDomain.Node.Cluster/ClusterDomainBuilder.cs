@@ -1,4 +1,5 @@
 using GridDomain.Configuration;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Cluster.CommandPipe;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Composition;
@@ -15,7 +16,7 @@ namespace GridDomain.Node.Cluster {
 
         protected override IContainerConfiguration CreateAggregateConfiguration<TAggregate>(IAggregateDependencyFactory<TAggregate> factory)
         {
-            return new AggregateConfiguration<ClusterAggregateActor<TAggregate>, TAggregate>(factory);
+            return new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(factory);
         }
 
         public override void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory)
