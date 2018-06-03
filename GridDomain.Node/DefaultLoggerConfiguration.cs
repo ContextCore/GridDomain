@@ -36,6 +36,7 @@ namespace GridDomain.Node
             Destructure.ByTransforming<Money>(r => new { r.Amount, r.CurrencyCode });
             Destructure.ByTransforming<Exception>(r => new { Type = r.GetType(),r.Message, r.StackTrace });
             Destructure.ByTransforming<MessageMetadata>(r => new { r.CasuationId, r.CorrelationId });
+            Destructure.ByTransforming<IMessageMetadataEnvelop>(r => new {r.Message, r.Metadata});
             Destructure.ByTransforming<PersistEventPack>(r => new { Size = r.Events?.Length });
             Destructure.ByTransforming<MessageMetadataEnvelop<ICommand>>(r => new { CommandType = r.Message.GetType(), CommandId = r.Message.Id, r.Metadata });
             Destructure.ByTransforming<MessageMetadataEnvelop<DomainEvent>>(r => new { EventType = r.Message.GetType(), EventId = r.Message.Id, r.Metadata });

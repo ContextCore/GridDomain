@@ -32,7 +32,11 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             var procesStateEvent = new ProcessManagerCreated<SoftwareProgrammingState>(processState, processId);
             await Node.SaveToJournal<ProcessStateAggregate<SoftwareProgrammingState>>(processId, procesStateEvent);
 
-            var results = await Node.PrepareForProcessManager(new CoffeMakeFailedEvent(null, processState.PersonId).CloneForProcess(processId))
+            var coffeMachineId = "c"; //will case process manager exception
+            
+            var coffeMakeFailed = new CoffeMakeFailedEvent(coffeMachineId, processState.PersonId).CloneForProcess(processId);
+            
+            var results = await Node.PrepareForProcessManager(coffeMakeFailed)
                                     .Expect<Fault<CoffeMakeFailedEvent>>()
                                     .Send(TimeSpan.FromSeconds(5));
 

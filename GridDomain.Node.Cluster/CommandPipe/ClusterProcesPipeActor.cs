@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
+using Akka.Event;
+using Akka.IO;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -10,6 +12,7 @@ using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.ProcessManagers.DomainBind;
+using Serilog;
 
 namespace GridDomain.Node.Cluster.CommandPipe
 {
@@ -56,11 +59,14 @@ namespace GridDomain.Node.Cluster.CommandPipe
             private readonly IActorRef _processRegion;
             private readonly TimeSpan? _defaultTimeout;
             private readonly string _processStateName;
+            private ILoggingAdapter _log;
 
             public ShardedProcessMessageProcessor(IActorRef processRegion,
                                                   string processStateName,
+                                                  ILoggingAdapter log,
                                                   TimeSpan? defaultTimeout = null)
             {
+                _log = log;
                 _processStateName = processStateName;
                 _defaultTimeout = defaultTimeout;
                 _processRegion = processRegion;
@@ -73,16 +79,35 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
             private IMessageMetadataEnvelop MessageFactory(IMessageMetadataEnvelop m)
             {
+                string processId = null;
+                
                 if (m.Message is IHaveProcessId proc)
                 {
-                    return new ShardedProcessMessageMetadataEnvelop(
-                                                                    m.Message,
-                                                                    proc.ProcessId ?? Known.Names.EmptyProcess ,
-                                                                    _processStateName,
-                                                                    m.Metadata);
+                    processId = proc.ProcessId;
+                  
                 }
 
-                throw new InvalidMessageException();
+                if (m.Message is IFault f)
+                {
+                    processId = f.ProcessId;
+                }
+
+                if (processId != null)
+                {
+                    var shardedProcessMessageMetadataEnvelop = new ShardedProcessMessageMetadataEnvelop(
+                                                                                                        m.Message,
+                                                                                                        processId,
+                                                                                                        _processStateName,
+                                                                                                        m.Metadata);
+                    _log.Debug("Sending message {@m} to sharder process managers", shardedProcessMessageMetadataEnvelop);
+
+                    return shardedProcessMessageMetadataEnvelop;
+                }
+
+                var invalidMessageException = new InvalidMessageException();
+                _log.Error(invalidMessageException,"unexpected message received {@m}",m);
+
+                throw invalidMessageException;
             }
 
             Task IMessageProcessor.Process(IMessageMetadataEnvelop message)
@@ -102,7 +127,8 @@ namespace GridDomain.Node.Cluster.CommandPipe
                 var processStateName = reg.StateType.BeautyName();
 
                 IMessageProcessor<IProcessCompleted> processor = new ShardedProcessMessageProcessor(procesShardRegion,
-                                                                                                    processStateName);
+                                                                                                    processStateName,
+                                                                                                    Context.GetSeriLogger());
                 foreach(var msg in reg.AcceptMessages)
                     catalog.Add(msg.MessageType, processor);
             }
