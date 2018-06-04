@@ -37,7 +37,6 @@ namespace GridDomain.Node.Actors.CommandPipe
                                                                   {
                                                                       Log.Debug("Sent message {@message} to process managers",e);
                                                                       processManagerPipeActor.Tell(e);
-                                                                      //publisher.Publish(e);
                                                                       return AllHandlersCompleted.Instance;
                                                                   })
                                                     .PipeTo(envelop.ProjectionWaiter);

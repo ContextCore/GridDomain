@@ -151,8 +151,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
         {
             Sys.InitLocalTransportExtension();
 
-            var fastHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(1), TestActor)));
-            var slowHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(500), TestActor)));
+            var fastHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(1), TestActor)),"fastHandler");
+            var slowHandler = Sys.ActorOf(Props.Create(() => new EchoSleepActor(TimeSpan.FromMilliseconds(1000), TestActor)),"slowHandler");
             var catalog = new HandlersDefaultProcessor();
 
             //Slow handler will receive messages first. 
@@ -169,21 +169,13 @@ namespace GridDomain.Tests.Unit.CommandPipe
             actor.Tell(new HandlersPipeActor.Project(TestActor, MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString()))));
             actor.Tell(new HandlersPipeActor.Project(TestActor, MessageMetadataEnvelop.New(new BalloonTitleChanged("1", Guid.NewGuid().ToString()))));
 
-            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonCreated && s == fastHandler);
-            ExpectMsg<IMessageMetadataEnvelop<BalloonCreated>>();
-            ExpectMsg<AllHandlersCompleted>(); //for balloon created
+            FishForMessage<MarkedHandlerExecutedMessage>(e => e.Mark == "fastHandler");
+            FishForMessage<MarkedHandlerExecutedMessage>(e => e.Mark == "fastHandler");
+            
+            //slow fire and forget handlers will finish execution in undetermined order
 
-
-            ExpectMsg<MarkedHandlerExecutedMessage>((e,s) => e.ProcessingMessage.Message is BalloonTitleChanged && s == fastHandler);
-            //HandlersProcessActor should notify next step - process actor that work is done
-            ExpectMsg<IMessageMetadataEnvelop<BalloonTitleChanged>>();
-
-            //HandlersProcessActor should notify sender (TestActor) of initial messages that work is done
-            ExpectMsg<AllHandlersCompleted>();
-
-            //slow fire and  handlers will finish execution in undetermined order
-            ExpectMsg<MarkedHandlerExecutedMessage>();
-            ExpectMsg<MarkedHandlerExecutedMessage>();
+            FishForMessage<MarkedHandlerExecutedMessage>(e => e.Mark == "slowHandler");
+            FishForMessage<MarkedHandlerExecutedMessage>(e =>e.Mark == "slowHandler");
         }
     }
 }

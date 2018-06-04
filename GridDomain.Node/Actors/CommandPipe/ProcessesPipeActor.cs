@@ -5,16 +5,18 @@ using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 
-namespace GridDomain.Node.Actors.CommandPipe {
-
+namespace GridDomain.Node.Actors.CommandPipe
+{
     public class LocalProcessesPipeActor : ProcessesPipeActor
     {
         public LocalProcessesPipeActor(IMessageProcessor<ProcessesTransitComplete> processor) : base(processor) { }
+
         public override IMessageMetadataEnvelop EnvelopCommand(ICommand cmd, IMessageMetadataEnvelop initialMessage)
         {
-           return new MessageMetadataEnvelop<ICommand>(cmd,initialMessage.Metadata.CreateChild(cmd));
+            return new MessageMetadataEnvelop<ICommand>(cmd, initialMessage.Metadata.CreateChild(cmd));
         }
     }
+
     /// <summary>
     ///     Synhronize process managers transition and produced command execution for produced domain events
     ///     If message process policy is set to synchronized, will process such events one after one
@@ -25,6 +27,7 @@ namespace GridDomain.Node.Actors.CommandPipe {
         public const string ProcessManagersPipeActorRegistrationName = nameof(ProcessManagersPipeActorRegistrationName);
         protected IActorRef CommandExecutionActor;
         private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
+
         public ProcessesPipeActor(IMessageProcessor<ProcessesTransitComplete> processor)
         {
             Receive<Initialize>(i =>
@@ -36,16 +39,18 @@ namespace GridDomain.Node.Actors.CommandPipe {
             Receive<IMessageMetadataEnvelop>(env =>
                                              {
                                                  Log.Debug("Start process managers for message {@env}", env);
-                                                 processor.Process(env).ContinueWith(t =>
-                                                                                     {
-                                                                                         var m = t.Result;
-                                                                                         Log.Debug("Process managers transited. {@res}", m);
-                                                                                         
-                                                                                         foreach(var command in m.ProducedCommands)
-                                                                                             CommandExecutionActor.Tell(EnvelopCommand(command, m.InitialMessage));
-                                                                                         
-                                                                                         return m;
-                                                                                     }).PipeTo(Sender);
+                                                 processor.Process(env)
+                                                          .ContinueWith(t =>
+                                                                        {
+                                                                            var m = t.Result;
+                                                                            Log.Debug("Process managers transited. {@res}", m);
+
+                                                                            foreach (var command in m.ProducedCommands)
+                                                                                CommandExecutionActor.Tell(EnvelopCommand(command, m.InitialMessage));
+
+                                                                            return m;
+                                                                        })
+                                                          .PipeTo(Sender);
                                              });
         }
 

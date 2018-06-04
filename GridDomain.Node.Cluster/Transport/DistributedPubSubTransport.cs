@@ -65,6 +65,11 @@ namespace GridDomain.Node.Cluster.Transport
         public void Publish(object msg)
         {
             var topic = _topicExtractor.GetPublishTopic(msg);
+            List<IActorRef> subscribers;
+            _subscribers.TryGetValue(topic, out subscribers);
+            
+            _log.Debug("Publishing message for topic {topic}, there are {subscribers} known subscribers",topic, subscribers?.Count ?? 0);
+            
             _transport.Tell(new Publish(topic, msg));
         }
 
