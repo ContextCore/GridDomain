@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.Metadata
     public class Cluster_Metadata_from_message_handler_event_passed_to_produced_notification : Metadata_from_message_handler_event_passed_to_produced_notification
     {
         public Cluster_Metadata_from_message_handler_event_passed_to_produced_notification(ITestOutputHelper output) 
-            : base(new BalloonFixture(output).Clustered()) { }
+            : base(new NodeTestFixture(output).Add(new BalloonDomainConfiguration())) { }
 
     }
 }

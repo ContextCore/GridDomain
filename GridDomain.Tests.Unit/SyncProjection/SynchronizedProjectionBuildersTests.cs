@@ -16,8 +16,8 @@ namespace GridDomain.Tests.Unit.SyncProjection
 {
     public class SynchronizedProjectionBuildersTests : NodeTestKit
     {
-        public SynchronizedProjectionBuildersTests(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
-        protected SynchronizedProjectionBuildersTests(NodeTestFixture fixture) : base(fixture.Add(new BalloonDomainConfiguration())) {}
+        public SynchronizedProjectionBuildersTests(ITestOutputHelper output) : this(new NodeTestFixture(output).Add(new BalloonDomainConfiguration())) {}
+        protected SynchronizedProjectionBuildersTests(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public async Task When_execute_many_commands_for_create_and_update()

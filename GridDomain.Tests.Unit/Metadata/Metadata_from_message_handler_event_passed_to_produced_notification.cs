@@ -17,8 +17,8 @@ namespace GridDomain.Tests.Unit.Metadata
 {
     public class Metadata_from_message_handler_event_passed_to_produced_notification : NodeTestKit
     {
-        public Metadata_from_message_handler_event_passed_to_produced_notification(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
-        protected Metadata_from_message_handler_event_passed_to_produced_notification(NodeTestFixture fixture) : base(fixture.Add(new BalloonDomainConfiguration())) {}
+        public Metadata_from_message_handler_event_passed_to_produced_notification(ITestOutputHelper output) : this(new NodeTestFixture(output).Add(new BalloonDomainConfiguration())) {}
+        protected Metadata_from_message_handler_event_passed_to_produced_notification(NodeTestFixture fixture) : base(fixture) {}
 
         private IMessageMetadataEnvelop<BalloonCreatedNotification> _answer;
         private InflateNewBallonCommand _command;

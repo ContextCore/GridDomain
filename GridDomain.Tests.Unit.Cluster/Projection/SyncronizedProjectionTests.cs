@@ -6,7 +6,7 @@ namespace GridDomain.Tests.Unit.Cluster.Projection
 {
     public class ClusterSynchronizedProjectionBuildersTests : SynchronizedProjectionBuildersTests
     {
-        protected ClusterSynchronizedProjectionBuildersTests(ITestOutputHelper output)
+        public ClusterSynchronizedProjectionBuildersTests(ITestOutputHelper output)
             : base(new NodeTestFixture(output).Clustered().Add(new BalloonDomainConfiguration())) {}
 
     }
