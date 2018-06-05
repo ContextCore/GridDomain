@@ -8,10 +8,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    public class Given_different_aggregates_future_events_Should_be_processed_independently : FutureEventsTest
+    public class Given_different_aggregates_future_events_Should_be_processed_independently : NodeTestKit
     {
-        public Given_different_aggregates_future_events_Should_be_processed_independently(ITestOutputHelper output)
-            : base(output) { }
+        public Given_different_aggregates_future_events_Should_be_processed_independently(ITestOutputHelper output) : this(new FutureEventsFixture(output)) { }
+        protected Given_different_aggregates_future_events_Should_be_processed_independently(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Raising_several_future_events_for_different_aggregates()

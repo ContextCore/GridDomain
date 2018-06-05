@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    internal class FutureEventsFixture : NodeTestFixture
+    public class FutureEventsFixture : NodeTestFixture
     {
         public FutureEventsFixture(ITestOutputHelper output, IRetrySettings settings=null) : base(output)
         {

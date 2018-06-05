@@ -6,6 +6,7 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
+using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
@@ -15,30 +16,16 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
-    
-    
-    //ublic static class ExpectationBuilderExtensions
-    //
-    //   public static IConditionFactory<Task<IWaitResult<T>>> Expect<T>(this IMessageWaiter<AnyMessagePublisher> waiter, Predicate<T> predicate=null)
-    //   {
-    //       throw new NotImplementedException();
-    //   }
-    //
-
-    
-    public class InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault : SoftwareProgrammingProcessTest
+    public class InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault : NodeTestKit
     {
-        public InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault(ITestOutputHelper helper) : base(helper) {}
+        public InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault(ITestOutputHelper output) : this(new SoftwareProgrammingProcessManagerFixture(output)) { }
+        protected InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Given_default_policy()
         {
             var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-           // var res1 = await Node.PrepareForProcessManager(startEvent)
-           //                      .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-           //                      .Create();
-            
             var res = await
                 Node.PrepareForProcessManager(startEvent)
                     .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()

@@ -9,9 +9,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    public class Given_aggregate_When_raising_several_future_events : FutureEventsTest
+    public class Given_aggregate_When_raising_several_future_events : NodeTestKit
     {
-        public Given_aggregate_When_raising_several_future_events(ITestOutputHelper output) : base(output) {}
+        public Given_aggregate_When_raising_several_future_events(ITestOutputHelper output) : this(new FutureEventsFixture(output)) { }
+        protected Given_aggregate_When_raising_several_future_events(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task FutureDomainEvent_envelops_has_unique_id()

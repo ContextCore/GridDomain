@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Scheduling;
+using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.FutureEvents;
 using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
 using Xunit;
@@ -10,9 +11,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.FutureDomainEvents
 {
-    public class Given_aggregate_When_raising_several_future_events_Persistent : FutureEventsTest
+    public class Given_aggregate_When_raising_several_future_events_Persistent : NodeTestKit
     {
-        public Given_aggregate_When_raising_several_future_events_Persistent(ITestOutputHelper output) : base(output) { }
+        public Given_aggregate_When_raising_several_future_events_Persistent(ITestOutputHelper output) : this(new FutureEventsFixture(output)) { }
+        protected Given_aggregate_When_raising_several_future_events_Persistent(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task FutureDomainEvent_envelops_has_unique_id()

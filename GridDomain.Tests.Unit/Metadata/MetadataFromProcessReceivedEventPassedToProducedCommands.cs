@@ -18,10 +18,11 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
-    public class MetadataFromProcessReceivedEventPassedToProducedCommands : SoftwareProgrammingProcessTest
+    public class MetadataFromProcessReceivedEventPassedToProducedCommands : NodeTestKit
     {
-        public MetadataFromProcessReceivedEventPassedToProducedCommands(ITestOutputHelper helper) : base(helper) {}
-
+        public MetadataFromProcessReceivedEventPassedToProducedCommands(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) {}
+        protected MetadataFromProcessReceivedEventPassedToProducedCommands(NodeTestFixture fixture):base(fixture){}
+        
         [Fact]
         public void When_publishing_start_message()
         {
