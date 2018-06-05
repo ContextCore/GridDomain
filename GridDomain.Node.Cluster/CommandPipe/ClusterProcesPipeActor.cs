@@ -83,13 +83,12 @@ namespace GridDomain.Node.Cluster.CommandPipe
                 
                 if (m.Message is IHaveProcessId proc)
                 {
-                    processId = proc.ProcessId;
-                  
+                    processId = proc.ProcessId ?? "notExist";
                 }
 
                 if (m.Message is IFault f)
                 {
-                    processId = f.ProcessId;
+                    processId = f.ProcessId ?? "notExist";
                 }
 
                 if (processId != null)
@@ -104,8 +103,8 @@ namespace GridDomain.Node.Cluster.CommandPipe
                     return shardedProcessMessageMetadataEnvelop;
                 }
 
-                var invalidMessageException = new InvalidMessageException();
-                _log.Error(invalidMessageException,"unexpected message received {@m}",m);
+                var invalidMessageException = new CannotExtractProcessIdException();
+                _log.Error(invalidMessageException,"cannot extract process id from message received {@m}",m);
 
                 throw invalidMessageException;
             }
@@ -143,4 +142,6 @@ namespace GridDomain.Node.Cluster.CommandPipe
             return new ShardedCommandMetadataEnvelop(cmd,initialMessage.Metadata.CreateChild(cmd));
         }
     }
+
+    internal class CannotExtractProcessIdException : Exception { }
 }

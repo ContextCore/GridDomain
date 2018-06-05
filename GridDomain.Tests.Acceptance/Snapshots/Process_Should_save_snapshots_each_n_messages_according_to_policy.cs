@@ -46,14 +46,16 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                       .Send();
 
+            var goSleepCommand = new GoSleepCommand(startEvent.PersonId, startEvent.LovelySofaId);
+            
             var continueEventB =
-                new Fault<GoSleepCommand>(new GoSleepCommand(startEvent.PersonId, startEvent.LovelySofaId),
+                new Fault<GoSleepCommand>(goSleepCommand,
                                           new Exception(),
                                           typeof(object),
                                           processId,
                                           BusinessDateTime.Now);
 
-            await Node.PrepareForProcessManager(continueEventB)
+            await Node.PrepareForProcessManager(continueEventB,MessageMetadata.New(goSleepCommand.Id,goSleepCommand.Id))
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                       .Send();
 
