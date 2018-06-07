@@ -1,14 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using GridDomain.CQRS;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Scheduling;
-using GridDomain.Tests.Unit.Cluster;
-using GridDomain.Tests.Unit.FutureEvents.Infrastructure;
-using Xunit;
+using GridDomain.Tests.Unit.FutureEvents;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.FutureEvents
+namespace GridDomain.Tests.Unit.Cluster.FutureEvents
 {
     public class Cluster_Given_aggregate_When_raising_several_future_events : Given_aggregate_When_raising_several_future_events
     {
