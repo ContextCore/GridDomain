@@ -14,31 +14,28 @@ namespace GridDomain.Node.Cluster
         public static Task<ClusterInfo> ToCluster(this NodeConfiguration conf, int workerNodes = 0,
                                                   params INodeNetworkAddress[] otherSeeds)
         {
-            return ActorSystemBuilder.New()
-                                     .Log(conf.LogLevel)
-                                     .DomainSerialization()
-                                     .Cluster(conf.Name)
-                                     .Seeds(otherSeeds)
-                                     .AutoSeeds(1)
-                                     .Workers(workerNodes)
-                                     .Build()
-                                     .Create();
+            return BuildClusterConfig(conf,workerNodes,otherSeeds).Create();
         }
         
         public static string ToClusterConfig(this NodeConfiguration conf, int workerNodes = 0,
                                                   params INodeNetworkAddress[] otherSeeds)
         {
+            return BuildClusterConfig(conf, workerNodes, otherSeeds)
+                                     .CreateConfigs()
+                                     .First();
+        }
+
+        private static ClusterConfig BuildClusterConfig(NodeConfiguration conf, int workerNodes, INodeNetworkAddress[] otherSeeds)
+        {
             return ActorSystemBuilder.New()
                                      .Log(conf.LogLevel)
                                      .DomainSerialization()
+                                     .InMemoryPersistence()
                                      .Cluster(conf.Name)
                                      .Seeds(otherSeeds)
                                      .AutoSeeds(1)
                                      .Workers(workerNodes)
-                                     .Build()
-                                     .CreateConfigs()
-                                     .First();
+                                     .Build();
         }
-      
     }
 }

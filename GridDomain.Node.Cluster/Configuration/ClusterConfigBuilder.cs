@@ -10,8 +10,8 @@ namespace GridDomain.Node.Cluster.Configuration
     {
         private readonly ActorSystemBuilder _actorSystemBuilder;
         private readonly string _clusterName;
-        private List<INodeNetworkAddress> _seedNodeNetworkAddresses = new List<INodeNetworkAddress>();
-        private List<INodeNetworkAddress> _workerNodeNetworkAddresses = new List<INodeNetworkAddress>();
+        private readonly List<INodeNetworkAddress> _seedNodeNetworkAddresses = new List<INodeNetworkAddress>();
+        private readonly List<INodeNetworkAddress> _workerNodeNetworkAddresses = new List<INodeNetworkAddress>();
 
         public ClusterConfigBuilder(string clusterName, ActorSystemBuilder systemBuilder)
         {

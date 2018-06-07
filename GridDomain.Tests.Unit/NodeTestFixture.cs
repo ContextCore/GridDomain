@@ -82,7 +82,7 @@ namespace GridDomain.Tests.Unit
             return this;
         }
 
-        public async Task<IExtendedGridDomainNode> StartNode(IExtendedGridDomainNode node)
+        private async Task<IExtendedGridDomainNode> StartNode(IExtendedGridDomainNode node)
         {
             OnNodePreparingEvent.Invoke(this, this);
             Node = node;
