@@ -49,9 +49,9 @@ namespace GridDomain.Tests.Unit
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             NodeConfig = cfg ?? DefaultNodeConfig;
             DefaultLogger = new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger();
-            ActorSystemBuilder = new ActorSystemBuilder(DefaultLogger);
+            ActorSystemConfigBuilder = new ActorSystemConfigBuilder(DefaultLogger);
 
-            NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemBuilder);
+            NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder);
                 
             TestNodeBuilder = (node,kit) => new TestLocalNode(node, kit);
              
@@ -63,7 +63,7 @@ namespace GridDomain.Tests.Unit
             
         }
         
-        public ActorSystemBuilder ActorSystemBuilder { get; set; }
+        public ActorSystemConfigBuilder ActorSystemConfigBuilder { get; set; }
         
         public IExtendedGridDomainNode Node { get; private set; }
         public Func<Func<ActorSystem>, ILogger, IExtendedGridDomainNode> NodeBuilder { get; set; }

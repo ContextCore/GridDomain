@@ -17,7 +17,7 @@ namespace GridDomain.Node.Cluster
             return ConfigureCluster(conf, workerNodes, otherSeeds).Build().Create();
         }
         
-        public static ActorSystemBuilder ToClusterConfig(this NodeConfiguration conf, int workerNodes = 0,
+        public static ActorSystemConfigBuilder ToClusterConfig(this NodeConfiguration conf, int workerNodes = 0,
                                                   params INodeNetworkAddress[] otherSeeds)
         {
             return ConfigureCluster(conf, workerNodes, otherSeeds).Build().SeedNodes.First();
@@ -26,7 +26,7 @@ namespace GridDomain.Node.Cluster
 
         private static ClusterConfigBuilder ConfigureCluster(NodeConfiguration conf, int workerNodes, INodeNetworkAddress[] otherSeeds)
         {
-            return ActorSystemBuilder.New()
+            return ActorSystemConfigBuilder.New()
                                      .Log(conf.LogLevel)
                                      .DomainSerialization()
                                      .InMemoryPersistence()

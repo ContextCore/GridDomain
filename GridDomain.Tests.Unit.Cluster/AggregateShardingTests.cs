@@ -68,7 +68,7 @@ namespace GridDomain.Tests.Unit.Cluster
 
         private async Task<ClusterInfo> CreateClusterNodes(BalloonFixture domainFixture, List<IGridDomainNode> nodes)
         {
-            return await ActorSystemBuilder.New(_logger)
+            return await ActorSystemConfigBuilder.New(_logger)
                                            .Log(LogEventLevel.Information)
                                            .DomainSerialization()
                                            .Cluster("test")

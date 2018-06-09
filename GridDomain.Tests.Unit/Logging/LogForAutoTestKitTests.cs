@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit.Logging {
 
     public class LogForAutoTestKitTests : TestKit
     {
-        public LogForAutoTestKitTests(ITestOutputHelper output):base(new AutoTestNodeConfiguration(LogEventLevel.Verbose).ToStandAloneInMemorySystem().BuildHocon())
+        public LogForAutoTestKitTests(ITestOutputHelper output):base(new AutoTestNodeConfiguration(LogEventLevel.Verbose).ToStandAloneInMemorySystem().Build())
         {
             Sys.AttachSerilogLogging(new XUnitAutoTestLoggerConfiguration(output).CreateLogger());
         }

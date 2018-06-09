@@ -11,9 +11,9 @@ namespace GridDomain.Node.Cluster.Configuration
 {
     public class ClusterConfig
     {
-        private readonly List<ActorSystemBuilder> _seedNodes = new List<ActorSystemBuilder>();
-        private readonly List<ActorSystemBuilder> _autoSeedNodes = new List<ActorSystemBuilder>();
-        private readonly List<ActorSystemBuilder> _workerNodes = new List<ActorSystemBuilder>();
+        private readonly List<ActorSystemConfigBuilder> _seedNodes = new List<ActorSystemConfigBuilder>();
+        private readonly List<ActorSystemConfigBuilder> _autoSeedNodes = new List<ActorSystemConfigBuilder>();
+        private readonly List<ActorSystemConfigBuilder> _workerNodes = new List<ActorSystemConfigBuilder>();
         public readonly ILogger Logger;
         
         private Func<ActorSystem, Task> _onMemberUp = s => Task.CompletedTask;
@@ -26,30 +26,30 @@ namespace GridDomain.Node.Cluster.Configuration
         }
 
         public string Name { get; }
-        public IReadOnlyCollection<ActorSystemBuilder> SeedNodes => _seedNodes;
-        public IReadOnlyCollection<ActorSystemBuilder> AutoSeedNodes => _autoSeedNodes;
-        public IReadOnlyCollection<ActorSystemBuilder> WorkerNodes => _workerNodes;
+        public IReadOnlyCollection<ActorSystemConfigBuilder> SeedNodes => _seedNodes;
+        public IReadOnlyCollection<ActorSystemConfigBuilder> AutoSeedNodes => _autoSeedNodes;
+        public IReadOnlyCollection<ActorSystemConfigBuilder> WorkerNodes => _workerNodes;
 
         public string[] CreateConfigs()
         {
             return SeedNodes.Concat(WorkerNodes)
-                            .Select(n => n.BuildHocon())
+                            .Select(n => n.Build())
                             .ToArray();
         }
 
-        public void AddAutoSeed(params ActorSystemBuilder[] builder)
+        public void AddAutoSeed(params ActorSystemConfigBuilder[] configBuilder)
         {
-            _autoSeedNodes.AddRange(builder);
+            _autoSeedNodes.AddRange(configBuilder);
         }
 
-        public void AddSeed(params ActorSystemBuilder[] builder)
+        public void AddSeed(params ActorSystemConfigBuilder[] configBuilder)
         {
-            _seedNodes.AddRange(builder);
+            _seedNodes.AddRange(configBuilder);
         }
 
-        public void AddWorker(params ActorSystemBuilder[] builder)
+        public void AddWorker(params ActorSystemConfigBuilder[] configBuilder)
         {
-            _workerNodes.AddRange(builder);
+            _workerNodes.AddRange(configBuilder);
         }
 
         public ClusterConfig OnClusterUp(Func<ActorSystem, Task> sys)
@@ -133,7 +133,7 @@ namespace GridDomain.Node.Cluster.Configuration
                                                       .ToArray(),Logger);
         }
 
-        private async Task<ActorSystem[]> CreateSystems(IReadOnlyCollection<ActorSystemBuilder> actorSystemBuilders, Func<ActorSystem, Task<ActorSystem>> init)
+        private async Task<ActorSystem[]> CreateSystems(IReadOnlyCollection<ActorSystemConfigBuilder> actorSystemBuilders, Func<ActorSystem, Task<ActorSystem>> init)
         {
             var systems = actorSystemBuilders.Select(s => s.BuildClusterSystemFactory(Name)
                                                            .CreateSystem())

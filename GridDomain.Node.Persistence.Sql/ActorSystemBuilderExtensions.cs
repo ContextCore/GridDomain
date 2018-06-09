@@ -6,17 +6,17 @@ namespace GridDomain.Node.Persistence.Sql
 {
     public static class ActorSystemBuilderExtensions
     {
-        public static ActorSystemBuilder SqlPersistence(this ActorSystemBuilder builder, ISqlNodeDbConfiguration conf)
+        public static ActorSystemConfigBuilder SqlPersistence(this ActorSystemConfigBuilder configBuilder, ISqlNodeDbConfiguration conf)
         {
-            builder.Add(new PersistenceConfig(new PersistenceJournalConfig(conf ?? throw new ArgumentNullException(nameof(conf)),
+            configBuilder.Add(new PersistenceConfig(new PersistenceJournalConfig(conf ?? throw new ArgumentNullException(nameof(conf)),
                                                                            new DomainEventAdaptersConfig()),
                                               new PersistenceSnapshotConfig(conf)));
-            return builder;
+            return configBuilder;
         }
 
-        public static IActorSystemFactory Build(this ActorSystemBuilder builder, NodeConfiguration conf, ISqlNodeDbConfiguration persistence)
+        public static IActorSystemFactory Build(this ActorSystemConfigBuilder configBuilder, NodeConfiguration conf, ISqlNodeDbConfiguration persistence)
         {
-            return builder.Log(conf.LogLevel)
+            return configBuilder.Log(conf.LogLevel)
                           .DomainSerialization(false)
                           .RemoteActorProvider()
                           .Remote(conf.Address)

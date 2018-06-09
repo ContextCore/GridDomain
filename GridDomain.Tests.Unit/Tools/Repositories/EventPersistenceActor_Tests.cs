@@ -10,7 +10,7 @@ namespace GridDomain.Tests.Unit.Tools.Repositories
 {
     public class EventPersistenceActor_Tests : TestKit
     {
-        public EventPersistenceActor_Tests() : base(new AutoTestNodeConfiguration().ToDebugStandAloneInMemorySystem().BuildHocon()) {}
+        public EventPersistenceActor_Tests() : base(new AutoTestNodeConfiguration().ToDebugStandAloneInMemorySystem().Build()) {}
 
         private IActorRef CreateActor(string persistenceId)
         {

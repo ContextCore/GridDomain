@@ -9,12 +9,12 @@ namespace GridDomain.Node.Persistence.Sql
     {
         public static ActorSystem CreateSystem(this NodeConfiguration conf, ISqlNodeDbConfiguration cfg)
         {
-            return ActorSystem.Create(conf.Name, conf.ToStandAloneSystemConfig(cfg).BuildHocon());
+            return ActorSystem.Create(conf.Name, conf.ToStandAloneSystemConfig(cfg).Build());
         }
 
-        public static ActorSystemBuilder ToStandAloneSystemConfig(this NodeConfiguration conf, ISqlNodeDbConfiguration persistence, bool serializeMessagesCreators = false)
+        public static ActorSystemConfigBuilder ToStandAloneSystemConfig(this NodeConfiguration conf, ISqlNodeDbConfiguration persistence, bool serializeMessagesCreators = false)
         {
-            return ActorSystemBuilder.New()
+            return ActorSystemConfigBuilder.New()
                                      .Log(conf.LogLevel)
                                      .DomainSerialization(serializeMessagesCreators)
                                      .RemoteActorProvider()

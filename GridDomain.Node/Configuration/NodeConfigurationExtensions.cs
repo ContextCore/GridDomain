@@ -7,17 +7,17 @@ namespace GridDomain.Node.Configuration
     {
         public static ActorSystem CreateInMemorySystem(this NodeConfiguration conf)
         {
-            return ActorSystem.Create(conf.Name, conf.ToStandAloneInMemorySystem().BuildHocon());
+            return ActorSystem.Create(conf.Name, conf.ToStandAloneInMemorySystem().Build());
         }
 
-        public static ActorSystemBuilder ToStandAloneInMemorySystem(this NodeConfiguration conf, bool serializeMessagesCreators = false)
+        public static ActorSystemConfigBuilder ToStandAloneInMemorySystem(this NodeConfiguration conf, bool serializeMessagesCreators = false)
         {
-            return conf.ConfigureStandAloneInMemorySystem(ActorSystemBuilder.New(), serializeMessagesCreators);
+            return conf.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder.New(), serializeMessagesCreators);
         }
 
-        public static ActorSystemBuilder ConfigureStandAloneInMemorySystem(this NodeConfiguration conf, ActorSystemBuilder builder, bool serializeMessagesCreators = false)
+        public static ActorSystemConfigBuilder ConfigureStandAloneInMemorySystem(this NodeConfiguration conf, ActorSystemConfigBuilder configBuilder, bool serializeMessagesCreators = false)
         {
-            return builder.LocalInMemory(serializeMessagesCreators)
+            return configBuilder.LocalInMemory(serializeMessagesCreators)
                           .Log(conf.LogLevel)
                           .Remote(conf.Address);
         }

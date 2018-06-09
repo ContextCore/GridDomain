@@ -13,27 +13,27 @@ using Serilog.Events;
 namespace GridDomain.Node.Cluster {
     public static class ActorSystemBuilderExtensions
     {
-        public static ActorSystemBuilder ClusterSeed(this ActorSystemBuilder builder, string name, params INodeNetworkAddress[] otherSeeds)
+        public static ActorSystemConfigBuilder ClusterSeed(this ActorSystemConfigBuilder configBuilder, string name, params INodeNetworkAddress[] otherSeeds)
         {
-            builder.Add(new ClusterSeedAwareTransportConfig(otherSeeds.Select(s => s.ToFullTcpAddress(name)).ToArray()));
-            return builder;
+            configBuilder.Add(new ClusterSeedAwareTransportConfig(otherSeeds.Select(s => s.ToFullTcpAddress(name)).ToArray()));
+            return configBuilder;
         }
         
-        public static ClusterConfigBuilder Cluster(this ActorSystemBuilder builder, string name=null)
+        public static ClusterConfigBuilder Cluster(this ActorSystemConfigBuilder configBuilder, string name=null)
         {
-            name = name ?? "TestCluster" + builder.GetHashCode();
-            builder.Add(new PubSubConfig());
+            name = name ?? "TestCluster" + configBuilder.GetHashCode();
+            configBuilder.Add(new PubSubConfig());
            // builder.Add(new ClusterSingletonInternalMessagesSerializerConfig());
-            builder.Add(new ClusterShardingMessagesSerializerConfig());
-            builder.Add(new HyperionForAll());
+            configBuilder.Add(new ClusterShardingMessagesSerializerConfig());
+            configBuilder.Add(new HyperionForAll());
            // builder.Add(new AutoTerminateProcessOnClusterShutdown());
 
-            return new ClusterConfigBuilder(name, builder);
+            return new ClusterConfigBuilder(name, configBuilder);
         }  
         
-        public static IActorSystemFactory BuildClusterSystemFactory(this ActorSystemBuilder builder, string name)
+        public static IActorSystemFactory BuildClusterSystemFactory(this ActorSystemConfigBuilder configBuilder, string name)
         {
-            Config hocon = new RootConfig(builder.Configs.ToArray()).Build();
+            Config hocon = new RootConfig(configBuilder.Configs.ToArray()).Build();
             var factory = new HoconActorSystemFactory(name, hocon.WithFallback(ClusterSingletonManager.DefaultConfig()));
             return factory;
         }

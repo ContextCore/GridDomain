@@ -62,9 +62,9 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
-        public static NodeTestFixture Configure(this NodeTestFixture fixture, Action<ActorSystemBuilder> configuration)
+        public static NodeTestFixture Configure(this NodeTestFixture fixture, Action<ActorSystemConfigBuilder> configuration)
         {
-            configuration(fixture.ActorSystemBuilder);
+            configuration(fixture.ActorSystemConfigBuilder);
             return fixture;
         } 
         

@@ -1,9 +1,9 @@
 namespace GridDomain.Node.Configuration {
     public static class ActorSystemBuilderExtensions
     {
-        public static ActorSystemBuilder LocalInMemory(this ActorSystemBuilder builder,bool serializeMessagesCreators = false)
+        public static ActorSystemConfigBuilder LocalInMemory(this ActorSystemConfigBuilder configBuilder,bool serializeMessagesCreators = false)
         {
-            return builder
+            return configBuilder
                    .DomainSerialization(serializeMessagesCreators)
                    .RemoteActorProvider()
                    .InMemoryPersistence();

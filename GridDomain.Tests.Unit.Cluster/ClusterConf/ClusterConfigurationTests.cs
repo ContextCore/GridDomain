@@ -35,7 +35,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         [Fact]
         public async Task Cluster_can_start_with_predefined_and_automatic_seed_nodes()
         {
-            using (var akkaCluster = await ActorSystemBuilder.New(_logger)
+            using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
                                                              .Cluster()
                                                              .AutoSeeds(3)
                                                              .Seeds(10010)
@@ -50,7 +50,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         [Fact]
         public async Task Cluster_can_start_with_automatic_seed_nodes()
         {
-            using (var akkaCluster = await ActorSystemBuilder.New(_logger)
+            using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
                                                              .Cluster()
                                                              .AutoSeeds(3)
                                                              .Workers(1)
@@ -64,7 +64,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         [Fact]
         public async Task Cluster_can_start_with_static_seed_nodes()
         {
-            using (var akkaCluster = await ActorSystemBuilder.New(_logger)
+            using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
                                                              .Cluster()
                                                              .Seeds(10011)
                                                              .Workers(1)
@@ -93,7 +93,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         [Fact]
         public async Task Cluster_can_host_an_actor_with_shard_region_with_predefined_seeds()
         {
-            using (var akkaCluster = await ActorSystemBuilder.New(_logger)
+            using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
                                                              .Log(LogEventLevel.Verbose)
                                                              .Cluster()
                                                              .Seeds(10030)
@@ -110,7 +110,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         [Fact]
         public async Task Cluster_can_host_an_actor_with_shard_region_with_auto_seeds()
         {
-            using (var akkaCluster = await ActorSystemBuilder.New(_logger)
+            using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
                                                              .Log(LogEventLevel.Verbose)
                                                              .Cluster()
                                                              .AutoSeeds(2)

@@ -15,13 +15,13 @@ namespace GridDomain.Tests.Unit.Logging {
 
         private static string GetConfig()
         {
-            return ActorSystemBuilder.New()
+            return ActorSystemConfigBuilder.New()
                                      .Log(LogEventLevel.Verbose,null,true)
                                      .DomainSerialization()
                                      .RemoteActorProvider()
                                      .Remote(new NodeNetworkAddress())
                                      .InMemoryPersistence()
-                                     .BuildHocon();
+                                     .Build();
         }
         public LogForCustomizedSystemTests(ITestOutputHelper output):base(GetConfig())
         {
