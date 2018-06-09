@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.Cluster {
 
         public static NodeTestFixture Clustered(this NodeTestFixture fxt)
         {
-            fxt.ConfigBuilder = c => c.ToClusterConfig();
+            fxt.ActorSystemBuilder = fxt.NodeConfig.ToClusterConfig();
             fxt.NodeBuilder = fxt.BuildClusterNode;
             fxt.TestNodeBuilder = (n, kit) => new TestClusterNode((GridClusterNode)n, kit);
             

@@ -8,7 +8,7 @@ namespace GridDomain.Node.Cluster.Configuration
 {
     public class ClusterConfigBuilder
     {
-        private readonly ActorSystemBuilder _actorSystemBuilder;
+        private readonly ActorSystemBuilder _seedActorSystemBuilder;
         private readonly string _clusterName;
         private readonly List<INodeNetworkAddress> _seedNodeNetworkAddresses = new List<INodeNetworkAddress>();
         private readonly List<INodeNetworkAddress> _workerNodeNetworkAddresses = new List<INodeNetworkAddress>();
@@ -16,7 +16,7 @@ namespace GridDomain.Node.Cluster.Configuration
         public ClusterConfigBuilder(string clusterName, ActorSystemBuilder systemBuilder)
         {
             _clusterName = clusterName;
-            _actorSystemBuilder = systemBuilder;
+            _seedActorSystemBuilder = systemBuilder;
         }
 
 
@@ -45,7 +45,7 @@ namespace GridDomain.Node.Cluster.Configuration
         
         public ClusterConfig Build()
         {
-            var clusterConfig = new ClusterConfig(_clusterName, _actorSystemBuilder.Logger);
+            var clusterConfig = new ClusterConfig(_clusterName, _seedActorSystemBuilder.Logger);
             if (_seedNodeNetworkAddresses.Any() && _seedNodeNetworkAddresses.All(a => a.PortNumber == 0))
             {
                 _seedNodeNetworkAddresses.Add(((NodeNetworkAddress) _seedNodeNetworkAddresses.First()).Copy(GetAvailablePort()));
@@ -57,18 +57,18 @@ namespace GridDomain.Node.Cluster.Configuration
 
             foreach (var address in _seedNodeNetworkAddresses)
             {
-                var systemBuilder = _actorSystemBuilder.Clone()
-                                                       .Remote(address)
-                                                       .ClusterSeed(_clusterName, preconfiguredSeeds);
+                var systemBuilder = _seedActorSystemBuilder.Clone()
+                                                      .Remote(address)
+                                                      .ClusterSeed(_clusterName, preconfiguredSeeds);
+                
                 if (address.PortNumber == 0)
                     clusterConfig.AddAutoSeed(systemBuilder);
                 else
                     clusterConfig.AddSeed(systemBuilder);
             }
-
-            clusterConfig.AddWorker(_workerNodeNetworkAddresses.Select(i => _actorSystemBuilder.Clone()
-                                                                                               .Remote(i)
-                                                                                               .ClusterSeed(_clusterName, preconfiguredSeeds))
+            clusterConfig.AddWorker(_workerNodeNetworkAddresses.Select(i => _seedActorSystemBuilder.Clone()
+                                                                                              .Remote(i)
+                                                                                              .ClusterSeed(_clusterName, preconfiguredSeeds))
                                                                .ToArray());
             return clusterConfig;
         }

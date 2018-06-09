@@ -4,16 +4,16 @@ using GridDomain.Node.Persistence.Sql;
 namespace GridDomain.Tests.Unit {
     public static class NodeConfigurationDebugExtensions
     {
-        public static string ToDebugStandAloneInMemorySystemConfig(this NodeConfiguration conf)
+        public static ActorSystemBuilder ToDebugStandAloneInMemorySystem(this NodeConfiguration conf)
         {
 #if DEBUG
-            return conf.ToStandAloneInMemorySystemConfig(true);
+            return conf.ToStandAloneInMemorySystem(true);
 #else
             return conf.ToStandAloneInMemorySystemConfig(false);
 #endif
         }
 
-        public static string ToDebugStandAloneSystemConfig(this NodeConfiguration conf, ISqlNodeDbConfiguration persistence)
+        public static ActorSystemBuilder ToDebugStandAloneSystem(this NodeConfiguration conf, ISqlNodeDbConfiguration persistence)
         {
 #if DEBUG
             return conf.ToStandAloneSystemConfig(persistence, true);

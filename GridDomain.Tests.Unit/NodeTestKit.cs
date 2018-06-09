@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Unit
 {
     public class NodeTestKit : TestKit
     {
-        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.ConfigBuilder(fixture.NodeConfig), fixture.Name)
+        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.ActorSystemBuilder.BuildHocon(), fixture.Name)
         {
             var testClassName = GetType().Name; 
             var logger = new XUnitAutoTestLoggerConfiguration(fixture.Output, fixture.NodeConfig.LogLevel, testClassName)

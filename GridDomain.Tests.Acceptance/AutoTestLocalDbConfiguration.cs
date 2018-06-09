@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GridDomain.Node.Actors.Aggregates;
-using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Persistence;
-using GridDomain.Node.Persistence.Sql;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Acceptance.Tools;
 using GridDomain.Tests.Common;
@@ -11,7 +9,6 @@ using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.CommandsExecution;
-using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,14 +20,7 @@ namespace GridDomain.Tests.Acceptance
         //disable messages serialization dut to wire exception on deserealizeing SqlException 
         //when same command is executed second time and we trying to write it status to DB
         public CommandIndepotenceTests(ITestOutputHelper output)
-            : base(new NodeTestFixture(output,new AcceptanceAutoTestNodeConfiguration(),cfg =>
-                                                                                   ActorSystemBuilder.New()
-                                                                                   .Log(LogEventLevel.Debug)
-                                                                                   .DomainSerialization()
-                                                                                   .RemoteActorProvider()
-                                                                                   .Remote(new NodeNetworkAddress())
-                                                                                   .SqlPersistence(new AutoTestNodeDbConfiguration())
-                                                                                   .BuildHocon(),
+            : base(new NodeTestFixture(output,new AcceptanceAutoTestNodeConfiguration(),
                                        new []{new BalloonDomainConfiguration()})
                    .ClearDomainData()) {}
         

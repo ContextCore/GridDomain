@@ -4,8 +4,10 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using Akka.Actor;
+using Akka.Configuration;
 using GridDomain.Common;
 using GridDomain.Node;
+using GridDomain.Node.Configuration;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
@@ -60,6 +62,12 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
+        public static NodeTestFixture Configure(this NodeTestFixture fixture, Action<ActorSystemBuilder> configuration)
+        {
+            configuration(fixture.ActorSystemBuilder);
+            return fixture;
+        } 
+        
         public static NodeTestFixture IgnorePipeCommands(this NodeTestFixture fixture)
         {
             fixture.OnNodeCreatedEvent += (sender, node) =>

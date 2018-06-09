@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Configuration;
 using Akka.TestKit.Xunit2;
 using GridDomain.Common;
 using GridDomain.Configuration;
@@ -15,6 +17,7 @@ using GridDomain.Tests.Common;
 using GridDomain.Tests.Common.Configuration;
 using GridDomain.Transport.Extension;
 using Serilog;
+using Serilog.Core;
 using Serilog.Data;
 using Serilog.Events;
 using Xunit.Abstractions;
@@ -28,34 +31,41 @@ namespace GridDomain.Tests.Unit
         private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
 
         public readonly List<IDomainConfiguration> DomainConfigurations = new List<IDomainConfiguration>();
+        protected readonly Logger DefaultLogger;
 
         public NodeTestFixture(ITestOutputHelper output, IDomainConfiguration domainConfiguration) : this(output, new[] {domainConfiguration}) { }
 
         public NodeTestFixture(ITestOutputHelper output,
                                IDomainConfiguration[] domainConfiguration = null,
                                TimeSpan? defaultTimeout = null) :
-            this(output, null, null, domainConfiguration, defaultTimeout) { }
+            this(output, null, domainConfiguration, defaultTimeout) { }
 
         public NodeTestFixture(ITestOutputHelper output,
                                NodeConfiguration cfg,
-                               Func<NodeConfiguration, string> systemConfigFactorry = null,
                                IDomainConfiguration[] domainConfiguration = null,
                                TimeSpan? defaultTimeout = null)
         {
             Output = output;
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             NodeConfig = cfg ?? DefaultNodeConfig;
+            DefaultLogger = new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger();
+            ActorSystemBuilder = new ActorSystemBuilder(DefaultLogger);
+
+            NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemBuilder);
+                
             TestNodeBuilder = (node,kit) => new TestLocalNode(node, kit);
-            ConfigBuilder = systemConfigFactorry ?? (n => n.ToStandAloneInMemorySystemConfig());
+             
             NodeBuilder = BuildInMemoryStandAloneNode;
             
             if (domainConfiguration != null)
                 foreach (var c in domainConfiguration)
                     Add(c);
+            
         }
-
+        
+        public ActorSystemBuilder ActorSystemBuilder { get; set; }
+        
         public IExtendedGridDomainNode Node { get; private set; }
-        public Func<NodeConfiguration, string> ConfigBuilder { get; set; }
         public Func<Func<ActorSystem>, ILogger, IExtendedGridDomainNode> NodeBuilder { get; set; }
         public NodeConfiguration NodeConfig { get; }
         public string Name => NodeConfig.Name;
@@ -95,9 +105,14 @@ namespace GridDomain.Tests.Unit
 
         public Task<IExtendedGridDomainNode> CreateNode(ILogger logger = null)
         {
-            return CreateNode(() => NodeConfig.CreateInMemorySystem(), logger ?? new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger());
+            return CreateNode(() => CreateActorSystem(NodeConfig), logger ?? DefaultLogger);
         }
 
+        protected virtual ActorSystem CreateActorSystem(NodeConfiguration cfg)
+        {
+            return cfg.CreateInMemorySystem();
+        }
+        
         public Task<IExtendedGridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
             var gridDomainNode = NodeBuilder(actorSystemProvider, logger);
@@ -112,23 +127,26 @@ namespace GridDomain.Tests.Unit
 
         private GridDomainNode BuildInMemoryStandAloneNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            var node = new GridNodeBuilder().ActorFactory(new DelegateActorSystemFactory(actorSystemProvider,
-                                                                                        sys =>
-                                                                                        {
-                                                                                            sys.AttachSerilogLogging(logger);
-                                                                                            sys.InitLocalTransportExtension();
-                                                                                            OnSystemCreatedEvent.Invoke(this, sys);
-                                                                                        }))
-                                            .DomainConfigurations(DomainConfigurations.ToArray())
-                                            .Log(logger)
-                                            .Timeout(DefaultTimeout)
+            var node = ConfigureNodeBuilder(actorSystemProvider, logger)
                                             .Build();
             return (GridDomainNode)node;
+        }
+
+        protected virtual GridNodeBuilder ConfigureNodeBuilder(Func<ActorSystem> actorSystemProvider, ILogger logger)
+        {
+            return new GridNodeBuilder().ActorFactory(new DelegateActorSystemFactory(actorSystemProvider,
+                                                                                     sys =>
+                                                                                     {
+                                                                                         sys.AttachSerilogLogging(logger);
+                                                                                         sys.InitLocalTransportExtension();
+                                                                                     }))
+                                        .DomainConfigurations(DomainConfigurations.ToArray())
+                                        .Log(logger)
+                                        .Timeout(DefaultTimeout);
         }
 
         public event EventHandler<IExtendedGridDomainNode> OnNodeStartedEvent = delegate { };
         public event EventHandler<NodeTestFixture> OnNodePreparingEvent = delegate { };
         public event EventHandler<IExtendedGridDomainNode> OnNodeCreatedEvent = delegate { };
-        public event EventHandler<ActorSystem> OnSystemCreatedEvent = delegate { };
     }
 }

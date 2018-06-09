@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
     public class AggregateActorPerfSql: AggregateActorPerf
     {
         public AggregateActorPerfSql(ITestOutputHelper output):
-            base(output,new StressTestNodeConfiguration().ToStandAloneSystemConfig(AutoTestNodeDbConfiguration.Default))
+            base(output,new StressTestNodeConfiguration().ToStandAloneSystemConfig(AutoTestNodeDbConfiguration.Default).BuildHocon())
         {
             
         }

@@ -124,7 +124,9 @@ namespace GridDomain.Node {
             _domainConfigurations = domainConfigurations.ToList();
             if(!_domainConfigurations.Any())
                 throw new NoDomainConfigurationException();
-
+            if (_domainConfigurations.Any(d => d == null))
+                throw new InvalidDomainConfigurationException();
+            
             DefaultTimeout = defaultTimeout;
             Log = log;
             _actorSystemFactory = actorSystemFactory;
@@ -268,4 +270,6 @@ namespace GridDomain.Node {
         }
 
     }
+
+    public class InvalidDomainConfigurationException : Exception { }
 }

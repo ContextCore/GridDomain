@@ -11,7 +11,7 @@ using Serilog.Events;
 namespace GridDomain.Node.Configuration {
     public class ActorSystemBuilder
     {
-        public ILogger Logger;
+        public readonly ILogger Logger;
 
         public ActorSystemBuilder(ILogger log=null)
         {
@@ -52,11 +52,13 @@ namespace GridDomain.Node.Configuration {
             var hocon = new RootConfig(Configs.ToArray());
             return hocon.Build();
         }
+        
         public ActorSystemBuilder DomainSerialization(bool serializeMessagesAndProps = false)
         {
             Add(new SerializersConfig(serializeMessagesAndProps, serializeMessagesAndProps));
             return this;
         }
+        
         public ActorSystemBuilder RemoteActorProvider()
         {
             Add(new RemoteActorProviderConfig());

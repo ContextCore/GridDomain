@@ -9,6 +9,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tools;
 using GridDomain.Tools.Repositories.AggregateRepositories;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
     public class Aggregate_should_recover_from_snapshot : NodeTestKit
     {
         public Aggregate_should_recover_from_snapshot(ITestOutputHelper output)
-            : base(new BalloonFixture(output).UseSqlPersistence().EnableSnapshots()) {}
+            : base(new BalloonFixture(output).UseSqlPersistence().EnableSnapshots().LogLevel(LogEventLevel.Verbose)) {}
 
         [Fact]
         public async Task Given_persisted_snapshot_Aggregate_should_execute_command()

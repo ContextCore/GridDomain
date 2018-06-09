@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
     public class AggregateActorPerfInMem : AggregateActorPerf
     {
         public AggregateActorPerfInMem(ITestOutputHelper output):base(output, 
-            new StressTestNodeConfiguration().ToStandAloneInMemorySystemConfig())
+            new StressTestNodeConfiguration().ToStandAloneInMemorySystem().BuildHocon())
         {
             
         }

@@ -14,18 +14,17 @@ namespace GridDomain.Node.Cluster
         public static Task<ClusterInfo> ToCluster(this NodeConfiguration conf, int workerNodes = 0,
                                                   params INodeNetworkAddress[] otherSeeds)
         {
-            return BuildClusterConfig(conf,workerNodes,otherSeeds).Create();
+            return ConfigureCluster(conf, workerNodes, otherSeeds).Build().Create();
         }
         
-        public static string ToClusterConfig(this NodeConfiguration conf, int workerNodes = 0,
+        public static ActorSystemBuilder ToClusterConfig(this NodeConfiguration conf, int workerNodes = 0,
                                                   params INodeNetworkAddress[] otherSeeds)
         {
-            return BuildClusterConfig(conf, workerNodes, otherSeeds)
-                                     .CreateConfigs()
-                                     .First();
+            return ConfigureCluster(conf, workerNodes, otherSeeds).Build().SeedNodes.First();
+
         }
 
-        private static ClusterConfig BuildClusterConfig(NodeConfiguration conf, int workerNodes, INodeNetworkAddress[] otherSeeds)
+        private static ClusterConfigBuilder ConfigureCluster(NodeConfiguration conf, int workerNodes, INodeNetworkAddress[] otherSeeds)
         {
             return ActorSystemBuilder.New()
                                      .Log(conf.LogLevel)
@@ -34,8 +33,7 @@ namespace GridDomain.Node.Cluster
                                      .Cluster(conf.Name)
                                      .Seeds(otherSeeds)
                                      .AutoSeeds(1)
-                                     .Workers(workerNodes)
-                                     .Build();
+                                     .Workers(workerNodes);
         }
     }
 }

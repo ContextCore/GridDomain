@@ -15,6 +15,7 @@ namespace GridDomain.Node.Cluster.Configuration
         private readonly List<ActorSystemBuilder> _autoSeedNodes = new List<ActorSystemBuilder>();
         private readonly List<ActorSystemBuilder> _workerNodes = new List<ActorSystemBuilder>();
         public readonly ILogger Logger;
+        
         private Func<ActorSystem, Task> _onMemberUp = s => Task.CompletedTask;
         private Func<ActorSystem, Task> _additionalInit = s => Task.CompletedTask;
 
