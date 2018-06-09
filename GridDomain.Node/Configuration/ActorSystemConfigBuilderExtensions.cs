@@ -1,4 +1,5 @@
 using System;
+using Akka.Configuration;
 using GridDomain.Node.Configuration.Hocon;
 using GridDomain.Node.Logging;
 using Serilog.Events;
@@ -18,7 +19,14 @@ namespace GridDomain.Node.Configuration {
             builder.Add(new TransportConfig(network));
             return builder;
         }
+
         
+        public static ActorSystemConfigBuilder Add(this ActorSystemConfigBuilder builder, Config cfg)
+        {
+            builder.Add(new CustomConfig(cfg));
+            return builder;
+        }
+
         public static ActorSystemConfigBuilder DomainSerialization(this ActorSystemConfigBuilder builder, bool serializeMessagesAndProps = false)
         {
             builder.Add(new SerializersConfig(serializeMessagesAndProps, serializeMessagesAndProps));

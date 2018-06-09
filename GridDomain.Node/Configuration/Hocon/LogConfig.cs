@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Akka.Configuration;
 using Akka.Event;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Logging;
@@ -31,7 +32,7 @@ namespace GridDomain.Node.Configuration.Hocon
             _logActorType = logActorType ?? typeof(SerilogLoggerActor);
         }
 
-        public string Build()
+        public Config Build()
         {
             var logLevel = _akkaLogLevels[_verbosity]; 
             var logConfig = @"

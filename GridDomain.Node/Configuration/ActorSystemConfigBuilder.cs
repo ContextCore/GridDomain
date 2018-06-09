@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Akka.Configuration;
 using Akka.Event;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Configuration.Hocon;
@@ -21,12 +22,13 @@ namespace GridDomain.Node.Configuration {
         {
             return new ActorSystemConfigBuilder(log);
         }
+        
         public void Add(IHoconConfig cfg)
         {
             Configs.Add(cfg);
         }
 
-        public string Build()
+        public Config Build()
         {
             var hocon = new RootConfig(Configs.ToArray());
             return hocon.Build();

@@ -30,13 +30,6 @@ namespace GridDomain.Node.Cluster.Configuration
         public IReadOnlyCollection<ActorSystemConfigBuilder> AutoSeedNodes => _autoSeedNodes;
         public IReadOnlyCollection<ActorSystemConfigBuilder> WorkerNodes => _workerNodes;
 
-        public string[] CreateConfigs()
-        {
-            return SeedNodes.Concat(WorkerNodes)
-                            .Select(n => n.Build())
-                            .ToArray();
-        }
-
         public void AddAutoSeed(params ActorSystemConfigBuilder[] configBuilder)
         {
             _autoSeedNodes.AddRange(configBuilder);

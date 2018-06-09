@@ -1,10 +1,11 @@
+using Akka.Configuration;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
     public class DomainEventAdaptersConfig : IHoconConfig
     {
-        public string Build()
+        public Config Build()
         {
             var adaptersConfig = @"
                 event-adapters

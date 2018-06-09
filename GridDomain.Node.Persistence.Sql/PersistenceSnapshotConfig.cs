@@ -1,3 +1,4 @@
+using Akka.Configuration;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Hocon;
 
@@ -12,12 +13,12 @@ namespace GridDomain.Node.Persistence.Sql
             _sqlNodeDbConfiguration = sqlNodeDbConfiguration;
         }
 
-        public string Build()
+        public Config Build()
         {
             return BuildPersistenceSnapshotConfig(_sqlNodeDbConfiguration);
         }
 
-        public static string BuildPersistenceSnapshotConfig(ISqlNodeDbConfiguration sqlNodeDbConfiguration)
+        public Config BuildPersistenceSnapshotConfig(ISqlNodeDbConfiguration sqlNodeDbConfiguration)
         {
             var persistenceSnapshotStorageConfig = @" 
             snapshot-store {

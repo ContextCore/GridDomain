@@ -1,3 +1,5 @@
+using Akka.Configuration;
+
 namespace GridDomain.Node.Configuration.Hocon
 {
     public class PersistenceConfig : IHoconConfig
@@ -11,12 +13,12 @@ namespace GridDomain.Node.Configuration.Hocon
             _journalConfig = journalConfig;
         }
 
-        public string Build()
+        public Config Build()
         {
-            var akkaPersistenceConfig = @"persistence {
+            var akkaPersistenceConfig = @"persistence{
                     publish-plugin-commands = on
-" + _journalConfig.Build() + @"
-" + _snapshotsConfig.Build() + @"
+" + _journalConfig.Build().ToString() + @"
+" + _snapshotsConfig.Build().ToString() + @"
         }";
             return akkaPersistenceConfig;
         }

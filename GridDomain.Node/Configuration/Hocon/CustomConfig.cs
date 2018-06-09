@@ -10,9 +10,9 @@ namespace GridDomain.Node.Configuration.Hocon {
             _config = cfg;
         }
 
-        public string Build()
+        public Config Build()
         {
-            return _config.ToString();
+            return _config;
         }
     }
 }

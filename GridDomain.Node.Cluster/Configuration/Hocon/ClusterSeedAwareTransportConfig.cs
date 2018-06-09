@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Akka.Configuration;
 using GridDomain.Node.Configuration.Hocon;
 
 namespace GridDomain.Node.Cluster.Configuration.Hocon
@@ -13,7 +14,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon
             _seedNodeFullAddresses = seedNodeFullAddresses;
         }
 
-        public string Build()
+        public Config Build()
         {
             var seeds = string.Join(Environment.NewLine, _seedNodeFullAddresses.Select(n => @"""" + n + @""""));
 

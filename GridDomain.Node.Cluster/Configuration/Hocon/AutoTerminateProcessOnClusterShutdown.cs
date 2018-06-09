@@ -1,9 +1,10 @@
+using Akka.Configuration;
 using GridDomain.Node.Configuration.Hocon;
 
 namespace GridDomain.Node.Cluster.Configuration.Hocon {
     public class AutoTerminateProcessOnClusterShutdown : IHoconConfig
     {
-        public string Build()
+        public Config Build()
         {
             return "coordinated-shutdown.exit-clr = on";
         }

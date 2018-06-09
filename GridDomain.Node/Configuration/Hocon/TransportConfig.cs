@@ -1,3 +1,5 @@
+using Akka.Configuration;
+
 namespace GridDomain.Node.Configuration.Hocon {
     public class TransportConfig : IHoconConfig
     {
@@ -17,7 +19,7 @@ namespace GridDomain.Node.Configuration.Hocon {
         public TransportConfig(INodeNetworkAddress config)
             : this(config.PortNumber, config.Host, config.PublicHost, config.EnforceIpVersion) {}
 
-        public string Build()
+        public Config Build()
         {
             var transportString = @"remote {
                     log-remote-lifecycle-events = DEBUG

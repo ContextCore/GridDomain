@@ -1,3 +1,5 @@
+using Akka.Configuration;
+
 namespace GridDomain.Node.Configuration.Hocon
 {
     internal class InMemoryJournalConfig : IHoconConfig
@@ -9,7 +11,7 @@ namespace GridDomain.Node.Configuration.Hocon
             _eventAdaptersConfig = eventAdaptersConfig;
         }
 
-        public string Build()
+        public Config Build()
         {
             return @"
                  journal {

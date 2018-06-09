@@ -1,4 +1,5 @@
 using System;
+using Akka.Configuration;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Hocon;
 
@@ -20,7 +21,7 @@ namespace GridDomain.Node.Persistence.Sql
             _sqlJournalType = sqlJournalType;
         }
 
-        public string Build()
+        public Config Build()
         {
             var jornalConnectionTimeoutSeconds = _dbConfiguration.JornalConnectionTimeoutSeconds;
             if (jornalConnectionTimeoutSeconds <= 0)

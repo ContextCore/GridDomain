@@ -1,3 +1,4 @@
+using Akka.Configuration;
 using GridDomain.Node.Configuration.Hocon;
 
 namespace GridDomain.Node.Cluster.Configuration.Hocon {
@@ -10,7 +11,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon {
             _length = length;
         }
 
-        public string Build()
+        public Config Build()
         {
             return $"cluster.min-nr-of-members = {_length}";
         }

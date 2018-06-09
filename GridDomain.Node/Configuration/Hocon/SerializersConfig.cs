@@ -1,4 +1,5 @@
 using System;
+using Akka.Configuration;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Serializers;
@@ -17,7 +18,7 @@ namespace GridDomain.Node.Configuration.Hocon
             _serializeMessages = serializeMessages;
         }
 
-        public string Build()
+        public Config Build()
         {
             var actorConfig = @"   
        actor {
