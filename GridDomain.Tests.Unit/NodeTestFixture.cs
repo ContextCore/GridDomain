@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit
         private static readonly NodeConfiguration DefaultNodeConfig = new AutoTestNodeConfiguration();
 
         public readonly List<IDomainConfiguration> DomainConfigurations = new List<IDomainConfiguration>();
-        protected readonly Logger DefaultLogger;
+        public readonly Logger DefaultLogger;
 
         public NodeTestFixture(ITestOutputHelper output, IDomainConfiguration domainConfiguration) : this(output, new[] {domainConfiguration}) { }
 
@@ -51,7 +51,7 @@ namespace GridDomain.Tests.Unit
             DefaultLogger = new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger();
             ActorSystemConfigBuilder = new ActorSystemConfigBuilder(DefaultLogger);
 
-            NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder);
+            NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder,true);
                 
             TestNodeBuilder = (node,kit) => new TestLocalNode(node, kit);
              
