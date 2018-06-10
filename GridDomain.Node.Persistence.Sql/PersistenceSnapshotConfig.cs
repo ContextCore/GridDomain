@@ -13,12 +13,12 @@ namespace GridDomain.Node.Persistence.Sql
             _sqlNodeDbConfiguration = sqlNodeDbConfiguration;
         }
 
-        public Config Build()
+        public string Build()
         {
             return BuildPersistenceSnapshotConfig(_sqlNodeDbConfiguration);
         }
 
-        public Config BuildPersistenceSnapshotConfig(ISqlNodeDbConfiguration sqlNodeDbConfiguration)
+        public string BuildPersistenceSnapshotConfig(ISqlNodeDbConfiguration sqlNodeDbConfiguration)
         {
             var persistenceSnapshotStorageConfig = @" 
             snapshot-store {

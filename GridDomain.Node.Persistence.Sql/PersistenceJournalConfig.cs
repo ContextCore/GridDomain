@@ -21,7 +21,7 @@ namespace GridDomain.Node.Persistence.Sql
             _sqlJournalType = sqlJournalType;
         }
 
-        public Config Build()
+        public string Build()
         {
             var jornalConnectionTimeoutSeconds = _dbConfiguration.JornalConnectionTimeoutSeconds;
             if (jornalConnectionTimeoutSeconds <= 0)

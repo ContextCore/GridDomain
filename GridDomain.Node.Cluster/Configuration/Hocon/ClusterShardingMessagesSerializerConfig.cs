@@ -4,7 +4,7 @@ using GridDomain.Node.Configuration.Hocon;
 namespace GridDomain.Node.Cluster.Configuration.Hocon {
     public class ClusterShardingMessagesSerializerConfig : IHoconConfig
     {
-        public Config Build()
+        public string Build()
         {
             return @"akka.actor : {
                                  serializers : {

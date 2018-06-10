@@ -15,14 +15,13 @@ namespace GridDomain.Node.Configuration.Hocon
             _parts = parts;
         }
 
-        public Config Build()
+        public string Build()
         {
             var cfg = ByStringParse();
-           // var cfg = ByFallbacks();
             return cfg;
         }
 
-        private Config ByStringParse()
+        private string ByStringParse()
         {
             var configs = _parts.Select(p => p.Build()
                                               .ToString())
@@ -30,14 +29,13 @@ namespace GridDomain.Node.Configuration.Hocon
 
 
             var configString = string.Join(Environment.NewLine, configs);
-            Config cfg = configString;
-            return cfg;
+            return configString;
         }
 
-        private Config ByFallbacks()
+        private string ByFallbacks()
         {
-            return _parts.Select(p => p.Build())
-                         .Aggregate(Config.Empty, (a, c) => a.WithFallback(c));
+            return  _parts.Select(p => p.Build())
+                         .Aggregate(Config.Empty, (a, c) => a.WithFallback(c)).ToString();
         }
     }
 }

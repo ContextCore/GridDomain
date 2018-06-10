@@ -19,7 +19,7 @@ namespace GridDomain.Node.Configuration.Hocon
             _serializeMessages = serializeMessages;
         }
 
-        public Config Build()
+        public string Build()
         {
             string actorConfig = @"   
        akka.actor {
@@ -35,18 +35,14 @@ namespace GridDomain.Node.Configuration.Hocon
                                    """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = domain
                                   # for local snapshots storage
                                    """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = domain
-                                   """+typeof(System.Object).Name+@""" = hyperion
+                                  # """+typeof(System.Object).Name+@""" = hyperion
                                    System.Object = hyperion
                                    ""System.Object"" = hyperion
-                                   ""System.Object, System"" = hyperion
-                                   ""System.Object, System.Private"" = hyperion
-                                   ""System.Object, System.Private.CoreLib"" = hyperion
                                    """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyperion
 
              }
        }";
-            Config cfg = actorConfig;
-            return cfg;
+            return actorConfig;
         }
     }
 }

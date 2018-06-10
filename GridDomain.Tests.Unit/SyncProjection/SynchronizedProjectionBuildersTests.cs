@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.CommandsExecution;
 using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,7 +20,9 @@ namespace GridDomain.Tests.Unit.SyncProjection
     {
         public SynchronizedProjectionBuildersTests(ITestOutputHelper output) :
             this(new NodeTestFixture(output).Add(new BalloonDomainConfiguration())
-                                            .PrintSystemConfig()) { }
+                                            .PrintSystemConfig()
+                                            .LogLevel(LogEventLevel.Verbose)
+                                            .Configure(c => c.Log(LogEventLevel.Verbose))) { }
 
         protected SynchronizedProjectionBuildersTests(NodeTestFixture fixture) : base(fixture) { }
 

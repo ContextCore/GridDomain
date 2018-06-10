@@ -14,7 +14,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon
             _seedNodeFullAddresses = seedNodeFullAddresses;
         }
 
-        public Config Build()
+        public string Build()
         {
             var seeds = string.Join(Environment.NewLine, _seedNodeFullAddresses.Select(n => @"""" + n + @""""));
 

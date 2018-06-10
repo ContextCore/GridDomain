@@ -19,7 +19,7 @@ namespace GridDomain.Node.Configuration.Hocon {
         public TransportConfig(INodeNetworkAddress config)
             : this(config.PortNumber, config.Host, config.PublicHost, config.EnforceIpVersion) {}
 
-        public Config Build()
+        public string Build()
         {
             var transportString = @"akka.remote {
                     log-remote-lifecycle-events = DEBUG

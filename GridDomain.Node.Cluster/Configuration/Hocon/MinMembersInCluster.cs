@@ -11,7 +11,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon {
             _length = length;
         }
 
-        public Config Build()
+        public string Build()
         {
             return $"akka.cluster.min-nr-of-members = {_length}";
         }

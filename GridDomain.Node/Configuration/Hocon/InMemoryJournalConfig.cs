@@ -11,7 +11,7 @@ namespace GridDomain.Node.Configuration.Hocon
             _eventAdaptersConfig = eventAdaptersConfig;
         }
 
-        public Config Build()
+        public string Build()
         {
             var build = _eventAdaptersConfig.Build();
             string config = @"
@@ -24,8 +24,7 @@ namespace GridDomain.Node.Configuration.Hocon
                                 }
                         }
 ";
-            Config cfg = config;
-            return cfg;
+            return config;
         }
     }
 }

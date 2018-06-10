@@ -32,7 +32,7 @@ namespace GridDomain.Node.Configuration.Hocon
             _logActorType = logActorType ?? typeof(SerilogLoggerActor);
         }
 
-        public Config Build()
+        public string Build()
         {
             var logLevel = _akkaLogLevels[_verbosity]; 
             var logConfig = @"

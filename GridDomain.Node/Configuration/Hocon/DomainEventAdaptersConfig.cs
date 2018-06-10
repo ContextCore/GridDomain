@@ -5,7 +5,7 @@ namespace GridDomain.Node.Configuration.Hocon
 {
     public class DomainEventAdaptersConfig : IHoconConfig
     {
-        public Config Build()
+        public string Build()
         {
             var adaptersConfig = @"
                 event-adapters

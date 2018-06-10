@@ -13,7 +13,7 @@ namespace GridDomain.Node.Configuration.Hocon
             _journalConfig = journalConfig;
         }
 
-        public Config Build()
+        public string Build()
         {
             var akkaPersistenceConfig = @"akka.persistence.publish-plugin-commands = on
 "
