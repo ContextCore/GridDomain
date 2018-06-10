@@ -21,7 +21,7 @@ namespace GridDomain.Node.Persistence.Sql
         public string BuildPersistenceSnapshotConfig(ISqlNodeDbConfiguration sqlNodeDbConfiguration)
         {
             var persistenceSnapshotStorageConfig = @" 
-            snapshot-store {
+            akka.persistence.snapshot-store {
                            plugin =  ""akka.persistence.snapshot-store.sql-server""
                            sql-server {
                                       class = ""Akka.Persistence.SqlServer.Snapshot.SqlServerSnapshotStore, Akka.Persistence.SqlServer""
