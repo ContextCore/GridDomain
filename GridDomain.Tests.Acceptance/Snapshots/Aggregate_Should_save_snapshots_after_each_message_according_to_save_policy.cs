@@ -19,13 +19,17 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy : NodeTestKit
     {
+        protected Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy(NodeTestFixture fixture) : base(fixture) { }
+
         public Aggregate_Should_save_snapshots_after_each_message_according_to_save_policy(ITestOutputHelper output)
-            : base(new BalloonFixture(output).UseSqlPersistence().EnableSnapshots()) {}
+            : this(new BalloonFixture(output).UseSqlPersistence()
+                                             .EnableSnapshots()) { }
 
         [Fact]
         public async Task Given_default_policy()
         {
-            var aggregateId = Guid.NewGuid().ToString();
+            var aggregateId = Guid.NewGuid()
+                                  .ToString();
             var initialParameter = 1;
             var cmd = new InflateNewBallonCommand(initialParameter, aggregateId);
             await Node.Prepare(cmd)
@@ -43,15 +47,20 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var aggregates = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                                    BalloonAggregateFactory.Default)
-                                                                  .Load<Balloon>(aggregateId);
+                                                              .Load<Balloon>(aggregateId);
             //Snapshots_should_be_saved_two_times()
             Assert.Equal(2, aggregates.Length);
             //Restored_aggregates_should_have_same_ids()
             Assert.True(aggregates.All(s => s.Payload.Id == aggregateId));
             //First_snapshot_should_have_parameters_from_first_command()
-            Assert.Equal(initialParameter.ToString(), aggregates.First().Payload.Title);
+            Assert.Equal(initialParameter.ToString(),
+                         aggregates.First()
+                                   .Payload.Title);
             //Second_snapshot_should_have_parameters_from_second_command()
-            Assert.Equal(changedParameter.ToString(), aggregates.Skip(1).First().Payload.Title);
+            Assert.Equal(changedParameter.ToString(),
+                         aggregates.Skip(1)
+                                   .First()
+                                   .Payload.Title);
         }
     }
 }

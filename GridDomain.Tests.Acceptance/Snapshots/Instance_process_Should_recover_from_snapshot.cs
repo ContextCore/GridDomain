@@ -14,14 +14,22 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Instance_process_Should_recover_from_snapshot : NodeTestKit
     {
+        protected Instance_process_Should_recover_from_snapshot(NodeTestFixture fixture) : base(fixture) { }
+
         public Instance_process_Should_recover_from_snapshot(ITestOutputHelper helper)
-            : base(new SoftwareProgrammingProcessManagerFixture(helper).UseSqlPersistence()) {}
+            : this(new SoftwareProgrammingProcessManagerFixture(helper).UseSqlPersistence()) { }
 
         [Fact]
         public async Task Test()
         {
-            var process  = new SoftwareProgrammingProcess();
-            var state = new SoftwareProgrammingState(Guid.NewGuid().ToString(), process.Coding.Name, Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var process = new SoftwareProgrammingProcess();
+            var state = new SoftwareProgrammingState(Guid.NewGuid()
+                                                         .ToString(),
+                                                     process.Coding.Name,
+                                                     Guid.NewGuid()
+                                                         .ToString(),
+                                                     Guid.NewGuid()
+                                                         .ToString());
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
             processStateAggregate.ReceiveMessage(state, null);
@@ -34,7 +42,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var restoredState = await Node.LoadProcess<SoftwareProgrammingState>(processStateAggregate.Id);
             //CoffeMachineId_should_be_equal()
-            Assert.Equal(processStateAggregate.State.CoffeeMachineId,  restoredState.CoffeeMachineId);
+            Assert.Equal(processStateAggregate.State.CoffeeMachineId, restoredState.CoffeeMachineId);
             // State_should_be_equal()
             Assert.Equal(processStateAggregate.State.CurrentStateName, restoredState.CurrentStateName);
         }

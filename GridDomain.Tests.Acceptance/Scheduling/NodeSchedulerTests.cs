@@ -29,7 +29,8 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             }
         }
 
-        public NodeSchedulerTests(ITestOutputHelper output) : base(new SchedulerFixture(output))
+        protected NodeSchedulerTests(NodeTestFixture fixture) : base(fixture){}
+        public NodeSchedulerTests(ITestOutputHelper output) : this(new SchedulerFixture(output))
         {
             ResultHolder.Clear();
             _schedulerActor = new Lazy<IActorRef>(() => Node.ResolveActor(nameof(SchedulingActor)).Result);

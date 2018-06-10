@@ -20,17 +20,17 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     public class Future_events_class_upgraded_by_object_adapter : NodeTestKit
     {
-
         public Future_events_class_upgraded_by_object_adapter(ITestOutputHelper output)
-            : base(
-                   CreateFixture(output)) { }
+            : this(CreateFixture(output)) { }
 
-        private static NodeTestFixture CreateFixture(ITestOutputHelper output)
+        protected Future_events_class_upgraded_by_object_adapter(NodeTestFixture fixture) : base(fixture) { }
+
+        protected static NodeTestFixture CreateFixture(ITestOutputHelper output)
         {
             var persistedQuartzConfig = new PersistedQuartzConfig();
-            return new BalanceFixture(output,persistedQuartzConfig).UseSqlPersistence()
-                                                                   .UseAdaper(new BalanceChanged_eventdapter1())
-                                                                   .ClearQuartzPersistence(persistedQuartzConfig.ConnectionString);
+            return new BalanceFixture(output, persistedQuartzConfig).UseSqlPersistence()
+                                                                    .UseAdaper(new BalanceChanged_eventdapter1())
+                                                                    .ClearQuartzPersistence(persistedQuartzConfig.ConnectionString);
         }
 
         private class BalanceChanged_eventdapter1 : ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
@@ -44,7 +44,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Fact]
         public async Task Future_event_is_upgraded_by_event_adapter()
         {
-            var aggregateId = Guid.NewGuid().ToString();
+            var aggregateId = Guid.NewGuid()
+                                  .ToString();
             await Node.Execute(new ChangeBalanceInFuture(1, aggregateId, BusinessDateTime.Now.AddSeconds(2), true));
 
             await Node.KillAggregate<BalanceAggregate>(aggregateId); // to enforce domain events reload from storage and upgrade.

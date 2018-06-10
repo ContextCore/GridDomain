@@ -15,16 +15,21 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Aggregate_Should_Not_save_snapshots_on_message_process_by_default : NodeTestKit
     {
+        protected Aggregate_Should_Not_save_snapshots_on_message_process_by_default(NodeTestFixture fixture) : base(fixture) { }
+
         public Aggregate_Should_Not_save_snapshots_on_message_process_by_default(ITestOutputHelper output)
-            : base(new BalloonFixture(output).LogLevel(LogEventLevel.Debug).UseSqlPersistence()) {}
+            : this(new BalloonFixture(output).UseSqlPersistence()) { }
 
         [Fact]
         public async Task Given_timeout_only_default_policy()
         {
-            var aggregateId = Guid.NewGuid().ToString();
+            var aggregateId = Guid.NewGuid()
+                                  .ToString();
 
             var cmd = new InflateNewBallonCommand(1, aggregateId);
-            await Node.Prepare(cmd).Expect<BalloonCreated>().Execute();
+            await Node.Prepare(cmd)
+                      .Expect<BalloonCreated>()
+                      .Execute();
 
             //checking "time-out" rule for policy, snapshots should be saved once on second command
             await Task.Delay(1000);
@@ -32,7 +37,9 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var changedParameter = 2;
             var changeSampleAggregateCommand = new WriteTitleCommand(changedParameter, aggregateId);
 
-            await Node.Prepare(changeSampleAggregateCommand).Expect<BalloonTitleChanged>().Execute();
+            await Node.Prepare(changeSampleAggregateCommand)
+                      .Expect<BalloonTitleChanged>()
+                      .Execute();
 
             await Task.Delay(1000);
 

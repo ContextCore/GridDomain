@@ -17,15 +17,27 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
+        protected Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(NodeTestFixture fixture) : base(fixture) { }
+
         public Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
-                                                                       .InitSnapshots(2)
-                                                                       .IgnorePipeCommands()) { }
+            : this(ConfigureFixture(new SoftwareProgrammingProcessManagerFixture(output))) { }
+
+        protected static NodeTestFixture ConfigureFixture(SoftwareProgrammingProcessManagerFixture softwareProgrammingProcessManagerFixture)
+        {
+            return softwareProgrammingProcessManagerFixture.UseSqlPersistence()
+                                                           .InitSnapshots(2)
+                                                           .IgnorePipeCommands();
+        }
 
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
-            var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var startEvent = new GotTiredEvent(Guid.NewGuid()
+                                                   .ToString(),
+                                               Guid.NewGuid()
+                                                   .ToString(),
+                                               Guid.NewGuid()
+                                                   .ToString());
 
             var res = await Node.PrepareForProcessManager(startEvent)
                                 .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
@@ -34,17 +46,20 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
                                .SourceId;
 
-            var continueEventA = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(),
+            var continueEventA = new CoffeMakeFailedEvent(Guid.NewGuid()
+                                                              .ToString(),
                                                           startEvent.PersonId,
                                                           BusinessDateTime.UtcNow,
                                                           processId);
 
-            await Node.PrepareForProcessManager(continueEventA).Expect<ProcessReceivedMessage<SoftwareProgrammingState>>().Send();
+            await Node.PrepareForProcessManager(continueEventA)
+                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
+                      .Send();
 
             await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 
 
-            Version<ProcessStateAggregate<SoftwareProgrammingState>>[] snapshots=null;
+            Version<ProcessStateAggregate<SoftwareProgrammingState>>[] snapshots = null;
 
 
             //Only_two_Snapshots_should_left()
@@ -55,7 +70,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                                                    .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId)
                                                                    .Result;
                             Assert.Equal(2, snapshots.Length);
-                            
+
                             // Restored_aggregates_should_have_same_ids()
                             Assert.True(snapshots.All(s => s.Payload.Id == processId));
 
@@ -63,8 +78,6 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                         },
                         TimeSpan.FromSeconds(10),
                         TimeSpan.FromSeconds(1));
-
-         
         }
     }
 }

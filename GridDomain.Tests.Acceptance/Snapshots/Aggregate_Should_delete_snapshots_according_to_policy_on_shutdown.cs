@@ -18,11 +18,17 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
+        protected Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(NodeTestFixture fixture) : base(fixture) { }
+
         public Aggregate_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(
-                   new BalloonFixture(output).UseSqlPersistence()
-                                             .InitFastRecycle()
-                                             .EnableSnapshots(2)) { }
+            : this(ConfigureDomain(new BalloonFixture(output))) { }
+
+        protected static BalloonFixture ConfigureDomain(BalloonFixture balloonFixture)
+        {
+            return balloonFixture.UseSqlPersistence()
+                                 .InitFastRecycle()
+                                 .EnableSnapshots(2);
+        }
 
         private readonly int[] _parameters = new int[5];
 
@@ -38,13 +44,14 @@ namespace GridDomain.Tests.Acceptance.Snapshots
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
-            var aggregateId = Guid.NewGuid().ToString();
+            var aggregateId = Guid.NewGuid()
+                                  .ToString();
 
             await Node.Execute(new InflateNewBallonCommand(1, aggregateId));
 
             await ChangeSeveralTimes(5, aggregateId);
 
-            await Node.KillAggregate<Balloon>(aggregateId,TimeSpan.FromSeconds(10));                                
+            await Node.KillAggregate<Balloon>(aggregateId, TimeSpan.FromSeconds(10));
 
             //sql server still need some time to commit deleted snapshots;
             await Task.Delay(TimeSpan.FromSeconds(3));

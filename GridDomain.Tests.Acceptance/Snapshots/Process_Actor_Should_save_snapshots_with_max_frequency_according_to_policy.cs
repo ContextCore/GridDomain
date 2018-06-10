@@ -29,22 +29,34 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy : NodeTestKit
     {
-        public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
-            : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
-                                                                       .InitSnapshots(5, TimeSpan.FromSeconds(60))
-                                                                       .IgnorePipeCommands()) { }
+        protected Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(NodeTestFixture fixture) : base(fixture) { }
 
-       
+        public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
+            : base(ConfigureFixture(new SoftwareProgrammingProcessManagerFixture(output))) { }
+
+        protected static NodeTestFixture ConfigureFixture(SoftwareProgrammingProcessManagerFixture softwareProgrammingProcessManagerFixture)
+        {
+            return softwareProgrammingProcessManagerFixture.UseSqlPersistence()
+                                                           .InitSnapshots(5, TimeSpan.FromSeconds(60))
+                                                           .IgnorePipeCommands();
+        }
+
         [Fact]
         public async Task Given_default_policy()
         {
-            var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var startEvent = new GotTiredEvent(Guid.NewGuid()
+                                                   .ToString(),
+                                               Guid.NewGuid()
+                                                   .ToString(),
+                                               Guid.NewGuid()
+                                                   .ToString());
 
-            var resTask = Node.PrepareForProcessManager(startEvent,MessageMetadata.New(startEvent.Id, null, null))
+            var resTask = Node.PrepareForProcessManager(startEvent, MessageMetadata.New(startEvent.Id, null, null))
                               .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                               .Send();
 
-            var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>().SourceId;
+            var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>()
+                                           .SourceId;
 
             var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
@@ -66,7 +78,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             Assert.True(snapshots.All(s => s.Payload.Id == processId));
             //Snapshot_should_have_parameters_from_first_event = created event
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
-                         snapshots.First().Payload.State.CurrentStateName);
+                         snapshots.First()
+                                  .Payload.State.CurrentStateName);
             //All_snapshots_should_not_have_uncommited_events
             Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
         }

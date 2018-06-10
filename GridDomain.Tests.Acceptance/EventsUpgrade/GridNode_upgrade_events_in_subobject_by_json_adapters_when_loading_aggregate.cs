@@ -18,11 +18,16 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     public class GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate : NodeTestKit
     {
+        protected GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate(NodeTestFixture fixture):base(fixture){}
         public GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate(ITestOutputHelper output)
-            : base(new BalloonFixture(output).UseSqlPersistence()
-                                             .UseAdaper(new String01Adapter())
-                                             .Configure(c => c.Log(LogEventLevel.Verbose,null,true)))
-                                              { }
+            : this(ConfigureDomain(new BalloonFixture(output))) { }
+
+        protected static NodeTestFixture ConfigureDomain(BalloonFixture fixture)
+        {
+            return fixture.UseSqlPersistence()
+                          .UseAdaper(new String01Adapter())
+                          .Configure(c => c.Log(LogEventLevel.Verbose, null, true));
+        }
 
         private class String01Adapter : ObjectAdapter<string, string>
         {
@@ -36,7 +41,8 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         public async Task Then_domain_events_should_be_upgraded_by_json_custom_adapter()
         {
             var cmd = new InflateNewBallonCommand(1,
-                                                  Guid.NewGuid().ToString());
+                                                  Guid.NewGuid()
+                                                      .ToString());
 
             await Node.Prepare(cmd)
                       .Expect<BalloonCreated>()
