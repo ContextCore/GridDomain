@@ -1,5 +1,6 @@
 using System;
 using Akka.Configuration;
+using Akka.Serialization;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Serializers;
@@ -25,16 +26,16 @@ namespace GridDomain.Node.Configuration.Hocon
              serialize-messages = " + (_serializeMessages ? "on" : "off") + @"
              serialize-creators = " + (_serializeCreators ? "on" : "off") + @"
              serializers {
-                        hyp = """ + typeof(DebugHyperionSerializer).AssemblyQualifiedShortName() + @"""
-                        json = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
+                        hyperion = """ + typeof(DebugHyperionSerializer).AssemblyQualifiedShortName() + @"""
+                        domain = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              
              serialization-bindings {
-                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = json
-                                   """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = json
+                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = domain
+                                   """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = domain
                                   # for local snapshots storage
-                                   """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = json
-                                    """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyp
+                                   """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = domain
+                                   """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyperion
 
              }
        }";
