@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance
                                        new []{new BalloonDomainConfiguration()})
                    .ClearDomainData()) {}
         
-        [Fact]
+        [Fact(Skip = "Will add idepotence support later")]
         public async Task Given_aggregate_When_executing_same_command_twice_Then_second_commands_fails()
         {
             var cmd = new WriteTitleCommand(43, Guid.NewGuid().ToString());
@@ -34,7 +34,8 @@ namespace GridDomain.Tests.Acceptance
             await Node.Execute(cmd).ShouldThrow<CommandAlreadyExecutedException>();
           
         } 
-        [Fact]
+        
+        [Fact(Skip = "Will add idepotence support later")]
         public async Task Given_aggregate_When_executing_same_command_several_times_fast_Then_only_first_command_succeed()
         {
             var cmd = new WriteTitleCommand(43, Guid.NewGuid().ToString());
@@ -43,9 +44,7 @@ namespace GridDomain.Tests.Acceptance
             await Node.Execute(cmd).ShouldThrow<CommandAlreadyExecutedException>();
             await Node.Execute(cmd).ShouldThrow<CommandAlreadyExecutedException>();
             await Node.Execute(cmd).ShouldThrow<CommandAlreadyExecutedException>();
-          
         }
-        
     }
     
     public class AutoTestLocalDbConfiguration : IDbConfiguration
