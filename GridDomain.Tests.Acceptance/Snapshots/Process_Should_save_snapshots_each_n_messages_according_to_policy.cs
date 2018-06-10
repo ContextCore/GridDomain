@@ -76,18 +76,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                             //Snapshots_should_be_saved_two_times
                             //4 events in total, two saves of snapshots due to policy saves on each two events
                             //1 event and 3
-                            Assert.Equal(2, snapshots.Length);
+                            Assert.Equal(3, snapshots.Length);
 
-
-                            //First_snapshot_should_have_state_from_first_event
-                            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
-                                         snapshots.First()
-                                                  .Payload.State.CurrentStateName);
-                            //Last_snapshot_should_have_parameters_from_last_command()
-                            Assert.Equal(nameof(SoftwareProgrammingProcess.Sleeping),
-                                         snapshots.Last()
-                                                  .Payload.State.CurrentStateName);
-                            //Restored_process_state_should_have_correct_ids
                             Assert.True(snapshots.All(s => s.Payload.Id == processId));
                             //All_snapshots_should_not_have_uncommited_events()
                             Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
