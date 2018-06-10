@@ -28,7 +28,7 @@ namespace GridDomain.Node.Cluster
         {
             return ActorSystemConfigBuilder.New()
                                      .Log(conf.LogLevel)
-                                     .DomainSerialization()
+                                     .DomainSerialization(true)
                                      .InMemoryPersistence()
                                      .Cluster(conf.Name)
                                      .Seeds(otherSeeds)

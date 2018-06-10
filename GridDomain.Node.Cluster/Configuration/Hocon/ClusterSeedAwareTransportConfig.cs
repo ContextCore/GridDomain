@@ -18,12 +18,12 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon
         {
             var seeds = string.Join(Environment.NewLine, _seedNodeFullAddresses.Select(n => @"""" + n + @""""));
 
-            var clusterConfigString = @"actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""";
+            var clusterConfigString = @"akka.actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""";
             if (seeds.Any())
             {
                 clusterConfigString +=
                 @"
-                cluster {
+                akka.cluster {
                     seed-nodes =  [" + seeds + @"]
                 }
                 ";
