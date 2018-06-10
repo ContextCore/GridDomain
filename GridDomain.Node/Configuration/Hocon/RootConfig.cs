@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Akka.Configuration;
 using Akka.Configuration.Hocon;
+using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
@@ -16,11 +17,32 @@ namespace GridDomain.Node.Configuration.Hocon
 
         public Config Build()
         {
-            var configStrings = _parts.Select(p => p.Build().ToString()).ToArray();
-            var configString = string.Join(Environment.NewLine, configStrings);
-            return @"akka {
-" + configString + @"
+           // var cfg = ByStringParse();
+            var cfg = ByFallbacks();
+            return cfg;
+        }
+
+        private Config ByStringParse()
+        {
+            var configs = _parts.Select(p => p.Build()
+                                              .ToString())
+                                .ToArray();
+
+
+            var configString = string.Join(Environment.NewLine, configs);
+            var finalConfig = @"akka {
+"
+                              + configString
+                              + @"
 }";
+            Config cfg = finalConfig;
+            return cfg;
+        }
+
+        private Config ByFallbacks()
+        {
+            return _parts.Select(p => p.Build())
+                         .Aggregate(Config.Empty, (a, c) => a.WithFallback(c));
         }
     }
 }

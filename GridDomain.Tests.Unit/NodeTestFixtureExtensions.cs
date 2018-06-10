@@ -68,6 +68,14 @@ namespace GridDomain.Tests.Unit
             return fixture;
         } 
         
+        public static NodeTestFixture PrintSystemConfig(this NodeTestFixture fixture)
+        {
+           // fixture.LogLevel(LogEventLevel.Verbose);
+           // fixture.Configure(c => c.Log(LogEventLevel.Verbose, null, true));
+            fixture.OnNodeCreatedEvent += (s,e) => fixture.DefaultLogger.Information(fixture.Node.System.Settings.Config.ToString());
+            return fixture;
+        } 
+        
         public static NodeTestFixture IgnorePipeCommands(this NodeTestFixture fixture)
         {
             fixture.OnNodeCreatedEvent += (sender, node) =>
