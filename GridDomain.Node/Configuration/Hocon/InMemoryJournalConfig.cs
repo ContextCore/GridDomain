@@ -13,16 +13,19 @@ namespace GridDomain.Node.Configuration.Hocon
 
         public Config Build()
         {
-            return @"
+            var build = _eventAdaptersConfig.Build();
+            string config = @"
                  journal {
                     plugin = ""akka.persistence.journal.inmem""
                     inmem {
                             class = ""Akka.Persistence.Journal.MemoryJournal, Akka.Persistence""
                             plugin-dispatcher = ""akka.actor.default-dispatcher""
-                            " + _eventAdaptersConfig.Build() + @"
+                            " + build.ToString() + @"
                                 }
                         }
 ";
+            Config cfg = config;
+            return cfg;
         }
     }
 }

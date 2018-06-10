@@ -33,8 +33,8 @@ namespace GridDomain.Node.Configuration.Hocon
                                    """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = json
                                    """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = json
                                   # for local snapshots storage
-                                   ""Akka.Persistence.Serialization.Snapshot, Akka.Persistence"" = json
-                                   ""System.Object"" = hyp
+                                   """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = json
+                                    """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyp
 
              }
        }";

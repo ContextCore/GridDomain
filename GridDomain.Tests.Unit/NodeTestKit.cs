@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Configuration;
 using Akka.TestKit.Xunit2;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
@@ -13,7 +14,7 @@ namespace GridDomain.Tests.Unit
 {
     public class NodeTestKit : TestKit
     {
-        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.ActorSystemConfigBuilder.Build(), fixture.Name)
+        protected NodeTestKit(NodeTestFixture fixture) : base(PrepareConfig(fixture), fixture.Name)
         {
             var testClassName = GetType().Name; 
             var logger = new XUnitAutoTestLoggerConfiguration(fixture.Output, fixture.NodeConfig.LogLevel, testClassName)
@@ -21,6 +22,13 @@ namespace GridDomain.Tests.Unit
             
             var node = fixture.CreateNode(() => Sys,logger).Result;
             Node = fixture.CreateTestNode(node,this);
+        }
+
+        private static Config PrepareConfig(NodeTestFixture fixture)
+        {
+            //only for debug
+            //Serilog.Log.Logger = fixture.DefaultLogger;
+            return fixture.ActorSystemConfigBuilder.Build();
         }
 
         protected ITestGridDomainNode Node { get; }
