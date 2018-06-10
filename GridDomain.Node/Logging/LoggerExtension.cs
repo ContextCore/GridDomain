@@ -26,24 +26,25 @@ namespace GridDomain.Node.Logging
 
     public class LoggingExtensionProvider : ExtensionIdProvider<LoggingExtension>
     {
-        private readonly ILogger _loggerActor;
+        private readonly ILogger _logger;
         private string _logActorName;
         private readonly TimeSpan _actorCreateTimeout;
 
-        public LoggingExtensionProvider(ILogger loggerActor, string logActorName = null, TimeSpan? actorCreateTimeout = null)
+        public LoggingExtensionProvider(ILogger logger, string logActorName = null, TimeSpan? actorCreateTimeout = null)
         {
             _actorCreateTimeout = actorCreateTimeout ?? TimeSpan.FromSeconds(5);
             _logActorName = logActorName;
 
-            _loggerActor = loggerActor;
+            _logger = logger;
         }
 
         public override LoggingExtension CreateExtension(ExtendedActorSystem system)
         {
-            var logActor = system.SystemActorOf(Props.Create(() => new SerilogLoggerActor(_loggerActor)), _logActorName ?? "node-log-test");
+            var logActor = system.SystemActorOf(Props.Create(() => new SerilogLoggerActor(_logger)), _logActorName ?? "node-log-test");
             logActor.Ask<LoggerInitialized>(new InitializeLogger(system.EventStream))
                     .TimeoutAfter(_actorCreateTimeout)
                     .Wait();
+            
             return new LoggingExtension(logActor);
         }
     }

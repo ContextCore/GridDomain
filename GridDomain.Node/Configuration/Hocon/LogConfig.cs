@@ -38,7 +38,7 @@ namespace GridDomain.Node.Configuration.Hocon
             var logConfig = @"
                 akka.stdout-loglevel = " + logLevel +@"
                 akka.loglevel=" + logLevel + @"
-                akka.loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
+               # akka.loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
 
                 akka.actor.debug {" + AdditionalLogs(_verbosity) + @" 
                       unhandled = on

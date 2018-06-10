@@ -80,6 +80,13 @@ namespace GridDomain.Node.Actors.Aggregates
                                                  _commandTotalExecutionTimer = Monitor.StartMeasureTime("CommandTotalExecution");
 
                                                  _aggregateCommandsHandler.ExecuteAsync(State, ExecutionContext.Command)
+                                                                          .ContinueWith(t =>
+                                                                                        {
+                                                                                            _aggregateExecutionTimer.Stop();
+                                                                                            ExecutionContext.ProducedState = t.Result;
+                                                                                            var domainEvents = ExecutionContext.ProducedState.GetUncommittedEvents();
+                                                                                            return domainEvents;
+                                                                                        })
                                                                           .PipeTo(Self);
 
                                                  Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
@@ -98,14 +105,10 @@ namespace GridDomain.Node.Actors.Aggregates
         private void ProcessingCommandBehavior()
         {
             var producedEventsMetadata = ExecutionContext.CommandMetadata.CreateChild(Id, _domainEventProcessEntry);
-            Command<TAggregate>(aggregate =>
+            Command<IReadOnlyCollection<DomainEvent>>(domainEvents =>
                                 {
                                     Log.Debug("command executed, starting to persist events");
-                                    _aggregateExecutionTimer.Stop();
-                                    ExecutionContext.ProducedState = aggregate;
-
-                                    var domainEvents = ExecutionContext.ProducedState.GetUncommittedEvents();
-
+                                  
                                     if (!domainEvents.Any())
                                     {
                                         Log.Warning("Trying to persist events but no events is presented. {@context}", ExecutionContext);

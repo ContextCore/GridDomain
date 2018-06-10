@@ -35,8 +35,6 @@ namespace GridDomain.Node.Configuration.Hocon
                                    """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = domain
                                   # for local snapshots storage
                                    """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = domain
-                                  # """+typeof(System.Object).Name+@""" = hyperion
-                                   System.Object = hyperion
                                    ""System.Object"" = hyperion
                                    """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyperion
 
