@@ -15,11 +15,14 @@ namespace GridDomain.Node.Configuration.Hocon
 
         public Config Build()
         {
-            var akkaPersistenceConfig = @"persistence{
-                    publish-plugin-commands = on
-" + _journalConfig.Build().ToString() + @"
-" + _snapshotsConfig.Build().ToString() + @"
-        }";
+            var akkaPersistenceConfig = @"akka.persistence.publish-plugin-commands = on
+"
+                                        + _journalConfig.Build()
+                                                        .ToString()
+                                        + @"
+"
+                                        + _snapshotsConfig.Build()
+                                                          .ToString();
             return akkaPersistenceConfig;
         }
     }

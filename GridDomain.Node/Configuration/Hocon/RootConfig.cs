@@ -17,8 +17,8 @@ namespace GridDomain.Node.Configuration.Hocon
 
         public Config Build()
         {
-           // var cfg = ByStringParse();
-            var cfg = ByFallbacks();
+            var cfg = ByStringParse();
+           // var cfg = ByFallbacks();
             return cfg;
         }
 
@@ -30,12 +30,7 @@ namespace GridDomain.Node.Configuration.Hocon
 
 
             var configString = string.Join(Environment.NewLine, configs);
-            var finalConfig = @"akka {
-"
-                              + configString
-                              + @"
-}";
-            Config cfg = finalConfig;
+            Config cfg = configString;
             return cfg;
         }
 

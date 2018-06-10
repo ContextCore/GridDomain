@@ -6,7 +6,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon {
     {
         public Config Build()
         {
-            return @"actor : {
+            return @"akka.actor : {
                                  serializers : {
                                      hyperion = ""Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion""
                                  }

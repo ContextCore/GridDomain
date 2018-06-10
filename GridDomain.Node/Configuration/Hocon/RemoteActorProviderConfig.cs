@@ -5,7 +5,7 @@ namespace GridDomain.Node.Configuration.Hocon {
     {
         public Config Build()
         {
-            return @"actor.provider =  ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""";
+            return @"akka.actor.provider =  ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""";
         }
     }
 }

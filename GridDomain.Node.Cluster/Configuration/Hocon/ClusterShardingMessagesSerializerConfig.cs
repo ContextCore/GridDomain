@@ -6,7 +6,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon {
     {
         public Config Build()
         {
-            return @"actor : {
+            return @"akka.actor : {
                                  serializers : {
                                       akka-sharding = ""Akka.Cluster.Sharding.Serialization.ClusterShardingMessageSerializer, Akka.Cluster.Sharding""
                                  }

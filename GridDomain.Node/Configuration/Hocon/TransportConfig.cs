@@ -21,7 +21,7 @@ namespace GridDomain.Node.Configuration.Hocon {
 
         public Config Build()
         {
-            var transportString = @"remote {
+            var transportString = @"akka.remote {
                     log-remote-lifecycle-events = DEBUG
                     dot-netty.tcp {
                                port = " + _port + @"

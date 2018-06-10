@@ -16,8 +16,11 @@ namespace GridDomain.Tests.Unit.SyncProjection
 {
     public class SynchronizedProjectionBuildersTests : NodeTestKit
     {
-        public SynchronizedProjectionBuildersTests(ITestOutputHelper output) : this(new NodeTestFixture(output).Add(new BalloonDomainConfiguration())) {}
-        protected SynchronizedProjectionBuildersTests(NodeTestFixture fixture) : base(fixture) {}
+        public SynchronizedProjectionBuildersTests(ITestOutputHelper output) :
+            this(new NodeTestFixture(output).Add(new BalloonDomainConfiguration())
+                                            .PrintSystemConfig()) { }
+
+        protected SynchronizedProjectionBuildersTests(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task When_execute_many_commands_for_create_and_update()
@@ -27,10 +30,13 @@ namespace GridDomain.Tests.Unit.SyncProjection
 
             var createCommands =
                 Enumerable.Range(0, totalAggregates)
-                          .Select(r => new InflateNewBallonCommand(0, Guid.NewGuid().ToString()))
+                          .Select(r => new InflateNewBallonCommand(0,
+                                                                   Guid.NewGuid()
+                                                                       .ToString()))
                           .ToArray();
 
-            var aggregateIds = createCommands.Select(c => c.AggregateId).ToArray();
+            var aggregateIds = createCommands.Select(c => c.AggregateId)
+                                             .ToArray();
 
             var updateCommands =
                 createCommands.SelectMany(
@@ -40,9 +46,13 @@ namespace GridDomain.Tests.Unit.SyncProjection
 
             createCommands.Shuffle();
 
-            var createWaiters = createCommands.Select(async c => (IWaitResult) await Node.Prepare(c).Expect<BalloonCreated>().Execute());
+            var createWaiters = createCommands.Select(async c => (IWaitResult) await Node.Prepare(c)
+                                                                                         .Expect<BalloonCreated>()
+                                                                                         .Execute());
 
-            var updateWaiters = updateCommands.Select(async c => (IWaitResult) await Node.Prepare(c).Expect<BalloonTitleChanged>().Execute());
+            var updateWaiters = updateCommands.Select(async c => (IWaitResult) await Node.Prepare(c)
+                                                                                         .Expect<BalloonTitleChanged>()
+                                                                                         .Execute());
 
             var allResults = await Task.WhenAll(createWaiters.Concat(updateWaiters));
 
@@ -51,7 +61,9 @@ namespace GridDomain.Tests.Unit.SyncProjection
                           .Cast<IMessageMetadataEnvelop>()
                           .Select(m => (IHaveProcessingHistory) m.Message)
                           .GroupBy(e => e.SourceId)
-                          .ToDictionary(g => g.Key, g => g.OrderBy(i => i.History.ElapsedTicksFromAppStart).ToArray());
+                          .ToDictionary(g => g.Key,
+                                        g => g.OrderBy(i => i.History.ElapsedTicksFromAppStart)
+                                              .ToArray());
 
             //all change events for one aggregate should be processed synchroniously, one-by-one, according to their 
             //sequence numbers

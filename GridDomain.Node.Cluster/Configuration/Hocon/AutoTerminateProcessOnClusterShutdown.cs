@@ -6,7 +6,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon {
     {
         public Config Build()
         {
-            return "coordinated-shutdown.exit-clr = on";
+            return "akka.cluster.coordinated-shutdown.exit-clr = on";
         }
     }
 }

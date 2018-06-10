@@ -22,7 +22,7 @@ namespace GridDomain.Node.Configuration.Hocon
         public Config Build()
         {
             string actorConfig = @"   
-       actor {
+       akka.actor {
              serialize-messages = " + (_serializeMessages ? "on" : "off") + @"
              serialize-creators = " + (_serializeCreators ? "on" : "off") + @"
              serializers {
@@ -35,7 +35,12 @@ namespace GridDomain.Node.Configuration.Hocon
                                    """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = domain
                                   # for local snapshots storage
                                    """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = domain
+                                   """+typeof(System.Object).Name+@""" = hyperion
+                                   System.Object = hyperion
                                    ""System.Object"" = hyperion
+                                   ""System.Object, System"" = hyperion
+                                   ""System.Object, System.Private"" = hyperion
+                                   ""System.Object, System.Private.CoreLib"" = hyperion
                                    """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyperion
 
              }

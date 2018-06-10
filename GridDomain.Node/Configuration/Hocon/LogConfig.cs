@@ -36,17 +36,17 @@ namespace GridDomain.Node.Configuration.Hocon
         {
             var logLevel = _akkaLogLevels[_verbosity]; 
             var logConfig = @"
-                stdout-loglevel = " + logLevel +@"
-                loglevel=" + logLevel + @"
-                loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
+                akka.stdout-loglevel = " + logLevel +@"
+                akka.loglevel=" + logLevel + @"
+                akka.loggers=[""" + _logActorType.AssemblyQualifiedShortName() + @"""]
 
-                actor.debug {" + AdditionalLogs(_verbosity) + @" 
+                akka.actor.debug {" + AdditionalLogs(_verbosity) + @" 
                       unhandled = on
                 }";
 
             if (_includeConfig)
                 logConfig += @"
-                log-config-on-start = on";
+                akka.log-config-on-start = on";
 
             return logConfig;
         }

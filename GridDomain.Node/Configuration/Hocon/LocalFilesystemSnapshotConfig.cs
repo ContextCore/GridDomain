@@ -7,7 +7,7 @@ namespace GridDomain.Node.Configuration.Hocon
         public Config Build()
         {
             return @" 
-             snapshot-store {
+             akka.persistence.snapshot-store {
                             plugin = ""akka.persistence.snapshot-store.local""
                             local {
                                     class = ""Akka.Persistence.Snapshot.LocalSnapshotStore, Akka.Persistence""

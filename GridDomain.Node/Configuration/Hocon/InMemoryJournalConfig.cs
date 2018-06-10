@@ -15,7 +15,7 @@ namespace GridDomain.Node.Configuration.Hocon
         {
             var build = _eventAdaptersConfig.Build();
             string config = @"
-                 journal {
+                 akka.persistence.journal {
                     plugin = ""akka.persistence.journal.inmem""
                     inmem {
                             class = ""Akka.Persistence.Journal.MemoryJournal, Akka.Persistence""

@@ -6,7 +6,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon {
     {
         public Config Build()
         {
-            return @"actor : {
+            return @"akka.actor : {
                                  serializers : {
                                      akka-singleton : ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools""
                                  }
