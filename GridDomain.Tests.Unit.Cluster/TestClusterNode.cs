@@ -81,7 +81,7 @@ namespace GridDomain.Tests.Unit.Cluster
             var name = EntityActorName.New<T>(id)
                                       .ToString();
 
-            var actor = await _testKit.LoadActor<AggregateActor<T>>(name);
+            var actor = await _testKit.LoadActor<ClusterAggregateActor<T>>(name);
 
             return actor.State;
         }

@@ -2,19 +2,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using Akka.Configuration;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Hocon;
+using Serilog;
 
 namespace GridDomain.Node.Cluster.Configuration
 {
-    public class ClusterConfigBuilder
+    public class ClusterConfigBuilder: IActorSystemConfigBuilder
     {
-        private readonly ActorSystemConfigBuilder _seedActorSystemConfigBuilder;
+        private readonly IActorSystemConfigBuilder _seedActorSystemConfigBuilder;
         private readonly string _clusterName;
         private readonly List<INodeNetworkAddress> _seedNodeNetworkAddresses = new List<INodeNetworkAddress>();
         private readonly List<INodeNetworkAddress> _workerNodeNetworkAddresses = new List<INodeNetworkAddress>();
 
-        public ClusterConfigBuilder(string clusterName, ActorSystemConfigBuilder systemConfigBuilder)
+        public ClusterConfigBuilder(string clusterName, IActorSystemConfigBuilder systemConfigBuilder, ILogger log)
         {
+            Logger = log;
             _clusterName = clusterName;
             _seedActorSystemConfigBuilder = systemConfigBuilder;
         }
@@ -33,6 +37,7 @@ namespace GridDomain.Node.Cluster.Configuration
         }
 
         private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
+        public  ILogger Logger { get; }
 
         public static int GetAvailablePort()
         {
@@ -42,10 +47,30 @@ namespace GridDomain.Node.Cluster.Configuration
                 return ((IPEndPoint)socket.LocalEndPoint).Port;
             }
         }
-        
+
+        public void Add(IHoconConfig cfg)
+        {
+            _seedActorSystemConfigBuilder.Add(cfg);
+        }
+
+        Config IActorSystemConfigBuilder.Build()
+        {
+            return _seedActorSystemConfigBuilder.Build();
+        }
+
+        public ActorSystemConfigBuilder Clone()
+        {
+            return _seedActorSystemConfigBuilder.Clone();
+        }
+
+        public IActorSystemFactory BuildActorSystemFactory(string systemName)
+        {
+            return _seedActorSystemConfigBuilder.BuildActorSystemFactory(systemName);
+        }
+
         public ClusterConfig Build()
         {
-            var clusterConfig = new ClusterConfig(_clusterName, _seedActorSystemConfigBuilder.Logger);
+            var clusterConfig = new ClusterConfig(_clusterName,Logger);
             if (_seedNodeNetworkAddresses.Any() && _seedNodeNetworkAddresses.All(a => a.PortNumber == 0))
             {
                 _seedNodeNetworkAddresses.Add(((NodeNetworkAddress) _seedNodeNetworkAddresses.First()).Copy(GetAvailablePort()));

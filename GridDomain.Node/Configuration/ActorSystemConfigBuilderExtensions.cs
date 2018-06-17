@@ -8,38 +8,38 @@ namespace GridDomain.Node.Configuration {
     
     public static class ActorSystemConfigBuilderExtensions
     {
-        public static ActorSystemConfigBuilder Log(this ActorSystemConfigBuilder builder, LogEventLevel verbosity, Type logActorType = null, bool writeConfig=false)
+        public static IActorSystemConfigBuilder Log(this IActorSystemConfigBuilder builder, LogEventLevel verbosity, Type logActorType = null, bool writeConfig=false)
         {
             builder.Add(new LogConfig(verbosity, logActorType ?? typeof(SerilogLoggerActor), writeConfig));
             return builder;
         }
 
-        public static ActorSystemConfigBuilder Remote(this ActorSystemConfigBuilder builder, INodeNetworkAddress network)
+        public static IActorSystemConfigBuilder Remote(this IActorSystemConfigBuilder builder, INodeNetworkAddress network)
         {
             builder.Add(new TransportConfig(network));
             return builder;
         }
 
         
-        public static ActorSystemConfigBuilder Add(this ActorSystemConfigBuilder builder, Config cfg)
+        public static IActorSystemConfigBuilder Add(this IActorSystemConfigBuilder builder, Config cfg)
         {
             builder.Add(new CustomConfig(cfg));
             return builder;
         }
 
-        public static ActorSystemConfigBuilder DomainSerialization(this ActorSystemConfigBuilder builder, bool serializeMessagesAndProps = false)
+        public static IActorSystemConfigBuilder DomainSerialization(this IActorSystemConfigBuilder builder, bool serializeMessagesAndProps = false)
         {
             builder.Add(new SerializersConfig(serializeMessagesAndProps, serializeMessagesAndProps));
             return builder;
         }
         
-        public static ActorSystemConfigBuilder RemoteActorProvider(this ActorSystemConfigBuilder builder)
+        public static IActorSystemConfigBuilder RemoteActorProvider(this IActorSystemConfigBuilder builder)
         {
             builder.Add(new RemoteActorProviderConfig());
             return builder;
         }
 
-        public static ActorSystemConfigBuilder InMemoryPersistence(this ActorSystemConfigBuilder builder)
+        public static IActorSystemConfigBuilder InMemoryPersistence(this IActorSystemConfigBuilder builder)
         {
             builder.Add(new PersistenceConfig(new InMemoryJournalConfig(new DomainEventAdaptersConfig()),
                                               new LocalFilesystemSnapshotConfig()));

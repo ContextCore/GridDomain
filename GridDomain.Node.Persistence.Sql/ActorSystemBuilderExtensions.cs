@@ -6,7 +6,7 @@ namespace GridDomain.Node.Persistence.Sql
 {
     public static class ActorSystemBuilderExtensions
     {
-        public static ActorSystemConfigBuilder SqlPersistence(this ActorSystemConfigBuilder configBuilder, ISqlNodeDbConfiguration conf)
+        public static IActorSystemConfigBuilder SqlPersistence(this IActorSystemConfigBuilder configBuilder, ISqlNodeDbConfiguration conf)
         {
             configBuilder.Add(new PersistenceConfig(new PersistenceJournalConfig(conf ?? throw new ArgumentNullException(nameof(conf)),
                                                                            new DomainEventAdaptersConfig()),
@@ -14,7 +14,7 @@ namespace GridDomain.Node.Persistence.Sql
             return configBuilder;
         }
 
-        public static IActorSystemFactory Build(this ActorSystemConfigBuilder configBuilder, NodeConfiguration conf, ISqlNodeDbConfiguration persistence)
+        public static IActorSystemFactory Build(this IActorSystemConfigBuilder configBuilder, NodeConfiguration conf, ISqlNodeDbConfiguration persistence)
         {
             return configBuilder.Log(conf.LogLevel)
                           .DomainSerialization(false)

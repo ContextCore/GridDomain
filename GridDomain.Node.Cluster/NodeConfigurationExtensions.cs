@@ -8,32 +8,37 @@ using GridDomain.Node.Persistence.Sql;
 
 namespace GridDomain.Node.Cluster
 {
-
     public static class NodeConfigurationExtensions
     {
-        public static Task<ClusterInfo> ToCluster(this NodeConfiguration conf, int workerNodes = 0,
+        public static Task<ClusterInfo> ToCluster(this NodeConfiguration conf,
+                                                  int workerNodes = 0,
                                                   params INodeNetworkAddress[] otherSeeds)
         {
-            return ConfigureCluster(conf, workerNodes, otherSeeds).Build().Create();
+            return ConfigureCluster(conf, workerNodes, otherSeeds)
+                   .Build()
+                   .Create();
+        }
+
+        public static IActorSystemConfigBuilder ToClusterConfig(this NodeConfiguration conf,
+                                                                int workerNodes = 0,
+                                                                params INodeNetworkAddress[] otherSeeds)
+        {
+            return ConfigureCluster(conf, workerNodes, otherSeeds)
+                   .Build()
+                   .SeedNodes.First();
         }
         
-        public static ActorSystemConfigBuilder ToClusterConfig(this NodeConfiguration conf, int workerNodes = 0,
-                                                  params INodeNetworkAddress[] otherSeeds)
-        {
-            return ConfigureCluster(conf, workerNodes, otherSeeds).Build().SeedNodes.First();
 
-        }
-
-        private static ClusterConfigBuilder ConfigureCluster(NodeConfiguration conf, int workerNodes, INodeNetworkAddress[] otherSeeds)
+        public static ClusterConfigBuilder ConfigureCluster(NodeConfiguration conf, int workerNodes, INodeNetworkAddress[] otherSeeds)
         {
             return ActorSystemConfigBuilder.New()
-                                     .Log(conf.LogLevel)
-                                     .DomainSerialization(true)
-                                     .InMemoryPersistence()
-                                     .Cluster(conf.Name)
-                                     .Seeds(otherSeeds)
-                                     .AutoSeeds(1)
-                                     .Workers(workerNodes);
+                                           .Log(conf.LogLevel)
+                                           .DomainSerialization(true)
+                                           .InMemoryPersistence()
+                                           .Cluster(conf.Name)
+                                           .Seeds(otherSeeds)
+                                           .AutoSeeds(1)
+                                           .Workers(workerNodes);
         }
     }
 }

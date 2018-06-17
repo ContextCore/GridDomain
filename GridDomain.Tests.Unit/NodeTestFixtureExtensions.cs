@@ -27,6 +27,7 @@ namespace GridDomain.Tests.Unit
         public static T LogLevel<T>(this T fixture, LogEventLevel value)where T:NodeTestFixture
         {
             fixture.NodeConfig.LogLevel = value;
+            fixture.Configure(c => c.Log(value));
             return fixture;
         }
 
@@ -62,7 +63,7 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
-        public static NodeTestFixture Configure(this NodeTestFixture fixture, Action<ActorSystemConfigBuilder> configuration)
+        public static NodeTestFixture Configure(this NodeTestFixture fixture, Action<IActorSystemConfigBuilder> configuration)
         {
             configuration(fixture.ActorSystemConfigBuilder);
             return fixture;

@@ -8,7 +8,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon {
         {
             return @"akka.actor : {
                                  serializers : {
-                                     hyperion = ""Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion""
+                                     hyperion = ""GridDomain.Node.DebugHyperionSerializer, GridDomain.Node""
                                  }
                                  serialization-bindings : {
                                      ""System.Object"" = hyperion

@@ -63,7 +63,7 @@ namespace GridDomain.Tests.Unit
             
         }
         
-        public ActorSystemConfigBuilder ActorSystemConfigBuilder { get; set; }
+        public IActorSystemConfigBuilder ActorSystemConfigBuilder { get; set; }
         
         public IExtendedGridDomainNode Node { get; private set; }
         public Func<Func<ActorSystem>, ILogger, IExtendedGridDomainNode> NodeBuilder { get; set; }

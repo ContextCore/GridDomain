@@ -32,17 +32,22 @@ namespace GridDomain.Node.Configuration.Composition
             RegisterHub(container);
 
             container.RegisterType<TAggregateActor>()
-                     .WithParameters(new Parameter[] { 
-                                     new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), AggregateDependencyFactory.CreateCommandsHandler()),
-                                     new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IPublisher),
-                                         (pi, ctx) => ctx.Resolve<IPublisher>()),
-                                     new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
-                                         (pi, ctx) => ((Func<ISnapshotsPersistencePolicy>) AggregateDependencyFactory.CreatePersistencePolicy)()),
-                                     new TypedParameter(typeof(IConstructAggregates), AggregateDependencyFactory.CreateAggregateFactory()),
-                                     new TypedParameter(typeof(IConstructSnapshots), AggregateDependencyFactory.CreateSnapshotsFactory()),
-                                     new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
-                                         (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))
-                                });
+                     .WithParameters(CreateParametersRegistration());
+        }
+
+        protected virtual Parameter[] CreateParametersRegistration()
+        {
+            return new Parameter[] { 
+                                       new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), AggregateDependencyFactory.CreateCommandsHandler()),
+                                       new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IPublisher),
+                                                             (pi, ctx) => ctx.Resolve<IPublisher>()),
+                                       new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
+                                                             (pi, ctx) => ((Func<ISnapshotsPersistencePolicy>) AggregateDependencyFactory.CreatePersistencePolicy)()),
+                                       new TypedParameter(typeof(IConstructAggregates), AggregateDependencyFactory.CreateAggregateFactory()),
+                                       new TypedParameter(typeof(IConstructSnapshots), AggregateDependencyFactory.CreateSnapshotsFactory()),
+                                       new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
+                                                             (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))
+                                   };
         }
 
         protected virtual void RegisterHub(ContainerBuilder container)

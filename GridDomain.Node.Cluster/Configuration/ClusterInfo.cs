@@ -10,7 +10,7 @@ namespace GridDomain.Node.Cluster.Configuration
 {
     public class ClusterInfo : IDisposable
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public ClusterInfo(Akka.Cluster.Cluster cluster, IReadOnlyCollection<Address> members, ILogger logger)
         {

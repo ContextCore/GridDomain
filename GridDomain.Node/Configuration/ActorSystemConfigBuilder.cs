@@ -6,23 +6,33 @@ using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Configuration.Hocon;
 using Serilog;
 
-namespace GridDomain.Node.Configuration {
-    public class ActorSystemConfigBuilder
+namespace GridDomain.Node.Configuration
+{
+    public interface IActorSystemConfigBuilder
     {
-        public readonly ILogger Logger;
+        void Add(IHoconConfig cfg);
+        Config Build();
+        ActorSystemConfigBuilder Clone();
+        IActorSystemFactory BuildActorSystemFactory(string systemName);
+        ILogger Logger { get; }
+    }
 
-        public ActorSystemConfigBuilder(ILogger log=null)
+    public class ActorSystemConfigBuilder : IActorSystemConfigBuilder
+    {
+        public ILogger Logger { get; }
+
+        public ActorSystemConfigBuilder(ILogger log = null)
         {
             Logger = log ?? Serilog.Log.Logger;
         }
 
-        public List<IHoconConfig> Configs { get; private set; } = new List<IHoconConfig>();
+        private List<IHoconConfig> Configs { get; set; } = new List<IHoconConfig>();
 
-        public static ActorSystemConfigBuilder New(ILogger log=null)
+        public static ActorSystemConfigBuilder New(ILogger log = null)
         {
             return new ActorSystemConfigBuilder(log);
         }
-        
+
         public void Add(IHoconConfig cfg)
         {
             Configs.Add(cfg);
@@ -33,13 +43,12 @@ namespace GridDomain.Node.Configuration {
             var hocon = new RootConfig(Configs.ToArray());
             return hocon.Build();
         }
-        
-        
+
         public ActorSystemConfigBuilder Clone()
         {
             return new ActorSystemConfigBuilder(Logger) {Configs = Configs.ToList()};
         }
-        
+
         public IActorSystemFactory BuildActorSystemFactory(string systemName)
         {
             var hocon = new RootConfig(Configs.ToArray());

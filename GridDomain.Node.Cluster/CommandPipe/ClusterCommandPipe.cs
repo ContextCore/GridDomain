@@ -53,7 +53,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
         public Task RegisterAggregate(IAggregateCommandsHandlerDescriptor descriptor)
         {
             Type aggregateType = descriptor.AggregateType;
-            _delayedRegistrations.Add(() => RegisterAggregateByType(aggregateType, typeof(AggregateActor<>).MakeGenericType(aggregateType)));
+            _delayedRegistrations.Add(() => RegisterAggregateByType(aggregateType, typeof(ClusterAggregateActor<>).MakeGenericType(aggregateType)));
             return Task.CompletedTask;
         }
 

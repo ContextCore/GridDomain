@@ -13,13 +13,13 @@ using Serilog.Events;
 namespace GridDomain.Node.Cluster {
     public static class ActorSystemBuilderExtensions
     {
-        public static ActorSystemConfigBuilder ClusterSeed(this ActorSystemConfigBuilder configBuilder, string name, params INodeNetworkAddress[] otherSeeds)
+        public static IActorSystemConfigBuilder ClusterSeed(this IActorSystemConfigBuilder configBuilder, string name, params INodeNetworkAddress[] otherSeeds)
         {
             configBuilder.Add(new ClusterSeedAwareTransportConfig(otherSeeds.Select(s => s.ToFullTcpAddress(name)).ToArray()));
             return configBuilder;
         }
         
-        public static ClusterConfigBuilder Cluster(this ActorSystemConfigBuilder configBuilder, string name=null)
+        public static ClusterConfigBuilder Cluster(this IActorSystemConfigBuilder configBuilder, string name=null)
         {
             name = name ?? "TestCluster" + configBuilder.GetHashCode();
             configBuilder.Add(new PubSubConfig());
@@ -28,12 +28,12 @@ namespace GridDomain.Node.Cluster {
             configBuilder.Add(new HyperionForAll());
            // builder.Add(new AutoTerminateProcessOnClusterShutdown());
 
-            return new ClusterConfigBuilder(name, configBuilder);
+            return new ClusterConfigBuilder(name, configBuilder, configBuilder.Logger);
         }  
         
-        public static IActorSystemFactory BuildClusterSystemFactory(this ActorSystemConfigBuilder configBuilder, string name)
+        public static IActorSystemFactory BuildClusterSystemFactory(this IActorSystemConfigBuilder configBuilder, string name)
         {
-            Config hocon = new RootConfig(configBuilder.Configs.ToArray()).Build();
+            Config hocon = configBuilder.Build();
             var factory = new HoconActorSystemFactory(name, hocon.WithFallback(ClusterSingletonManager.DefaultConfig()));
             return factory;
         }

@@ -28,9 +28,12 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         protected static NodeTestFixture CreateFixture(ITestOutputHelper output)
         {
             var persistedQuartzConfig = new PersistedQuartzConfig();
-            return new BalanceFixture(output, persistedQuartzConfig).UseSqlPersistence()
+            return new BalanceFixture(output, persistedQuartzConfig).InitFastRecycle()
+                                                                    .UseSqlPersistence()
                                                                     .UseAdaper(new BalanceChanged_eventdapter1())
-                                                                    .ClearQuartzPersistence(persistedQuartzConfig.ConnectionString);
+                                                                    .ClearQuartzPersistence(persistedQuartzConfig.ConnectionString)
+                                                                    .LogLevel(LogEventLevel.Verbose)
+                                                                    .PrintSystemConfig();
         }
 
         private class BalanceChanged_eventdapter1 : ObjectAdapter<BalanceChangedEvent_V0, BalanceChangedEvent_V1>
@@ -48,7 +51,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
                                   .ToString();
             await Node.Execute(new ChangeBalanceInFuture(1, aggregateId, BusinessDateTime.Now.AddSeconds(2), true));
 
-            await Node.KillAggregate<BalanceAggregate>(aggregateId); // to enforce domain events reload from storage and upgrade.
+            //await Node.KillAggregate<BalanceAggregate>(aggregateId); // to enforce domain events reload from storage and upgrade.
 
             await Node.NewWaiter(TimeSpan.FromSeconds(10))
                       .Expect<BalanceChangedEvent_V1>()

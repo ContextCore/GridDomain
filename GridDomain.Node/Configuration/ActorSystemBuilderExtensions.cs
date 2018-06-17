@@ -1,7 +1,7 @@
 namespace GridDomain.Node.Configuration {
     public static class ActorSystemBuilderExtensions
     {
-        public static ActorSystemConfigBuilder LocalInMemory(this ActorSystemConfigBuilder configBuilder,bool serializeMessagesCreators = false)
+        public static IActorSystemConfigBuilder LocalInMemory(this IActorSystemConfigBuilder configBuilder,bool serializeMessagesCreators = false)
         {
             return configBuilder
                    .DomainSerialization(serializeMessagesCreators)
