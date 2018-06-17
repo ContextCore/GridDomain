@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             if (clearData)
                 fixture.ClearDomainData(dbConfig);
 
-            fixture.ActorSystemConfigBuilder = fixture.NodeConfig.ToDebugStandAloneSystem(persistence);
+             fixture.ActorSystemConfigBuilder.ToDebugStandAloneSystem(fixture.NodeConfig, persistence);
 
             return fixture;
         }

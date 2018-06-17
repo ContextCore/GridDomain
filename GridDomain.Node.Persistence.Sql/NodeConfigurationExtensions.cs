@@ -1,6 +1,7 @@
 ﻿using System;
 using Akka.Actor;
 using GridDomain.Node.Configuration;
+using Serilog.Events;
 
 namespace GridDomain.Node.Persistence.Sql
 {
@@ -9,18 +10,22 @@ namespace GridDomain.Node.Persistence.Sql
         public static ActorSystem CreateSystem(this NodeConfiguration conf, ISqlNodeDbConfiguration cfg)
         {
             return ActorSystem.Create(conf.Name,
-                                      conf.ToStandAloneSystemConfig(cfg)
+                                      ToStandAloneSystemConfig(ActorSystemConfigBuilder.New(), cfg, conf.LogLevel, conf.Address)
                                           .Build());
         }
 
-        public static IActorSystemConfigBuilder ToStandAloneSystemConfig(this NodeConfiguration conf, ISqlNodeDbConfiguration persistence, bool serializeMessagesCreators = false)
+        public static IActorSystemConfigBuilder ToStandAloneSystemConfig(this IActorSystemConfigBuilder actorSystemConfigBuilder,
+                                                                         ISqlNodeDbConfiguration persistence,
+                                                                         LogEventLevel logEventLevel,
+                                                                         INodeNetworkAddress nodeNetworkAddress,
+                                                                         bool serializeMessagesCreators = false)
         {
-            return ActorSystemConfigBuilder.New()
-                                           .Log(conf.LogLevel)
-                                           .DomainSerialization(serializeMessagesCreators)
-                                           .RemoteActorProvider()
-                                           .Remote(conf.Address)
-                                           .SqlPersistence(persistence);
+            return actorSystemConfigBuilder
+                   .Log(logEventLevel)
+                   .DomainSerialization(serializeMessagesCreators)
+                   .RemoteActorProvider()
+                   .Remote(nodeNetworkAddress)
+                   .SqlPersistence(persistence);
         }
     }
 }
