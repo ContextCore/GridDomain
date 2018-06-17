@@ -51,22 +51,21 @@ namespace GridDomain.Tests.Unit
             DefaultLogger = new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel).CreateLogger();
             ActorSystemConfigBuilder = new ActorSystemConfigBuilder(DefaultLogger);
 
-            NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder,true);
-                
-            TestNodeBuilder = (node,kit) => new TestLocalNode(node, kit);
-             
-            NodeBuilder = BuildInMemoryStandAloneNode;
-            
+            NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder, true);
+
+            TestNodeBuilder = (node, kit) => new TestLocalNode(node, kit);
+
+            NodeBuilder = new GridNodeBuilder(); // (actorSystemProvider, logger) => BuildInMemoryStandAloneNode(actorSystemProvider, logger, new GridNodeBuilder());
+            NodeBuilderConfigurator = ConfigureNodeBuilder;
             if (domainConfiguration != null)
                 foreach (var c in domainConfiguration)
                     Add(c);
-            
         }
-        
+
         public IActorSystemConfigBuilder ActorSystemConfigBuilder { get; }
-        
+        public GridNodeBuilder NodeBuilder { get; set; }
+        public Action<Func<ActorSystem>, ILogger, GridNodeBuilder> NodeBuilderConfigurator { get; set; }
         public IExtendedGridDomainNode Node { get; private set; }
-        public Func<Func<ActorSystem>, ILogger, IExtendedGridDomainNode> NodeBuilder { get; set; }
         public NodeConfiguration NodeConfig { get; }
         public string Name => NodeConfig.Name;
 
@@ -78,7 +77,7 @@ namespace GridDomain.Tests.Unit
             3;
 #endif
         public TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
-        public Func<IExtendedGridDomainNode,TestKit,ITestGridDomainNode> TestNodeBuilder { get; set; }
+        public Func<IExtendedGridDomainNode, TestKit, ITestGridDomainNode> TestNodeBuilder { get; set; }
 
         public void Dispose()
         {
@@ -112,37 +111,33 @@ namespace GridDomain.Tests.Unit
         {
             return cfg.CreateInMemorySystem();
         }
-        
+
         public Task<IExtendedGridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
         {
-            var gridDomainNode = NodeBuilder(actorSystemProvider, logger);
-            
+            ConfigureNodeBuilder(actorSystemProvider, logger, NodeBuilder);
+            var node = NodeBuilder.Build();
+
+            var gridDomainNode = (GridDomainNode) node;
+
             return StartNode(gridDomainNode);
         }
-        
+
+        private void ConfigureNodeBuilder(Func<ActorSystem> actorSystemProvider, ILogger logger, GridNodeBuilder gridNodeBuilder)
+        {
+            gridNodeBuilder.ActorSystem(actorSystemProvider)
+                           .Initialize(sys =>
+                                       {
+                                           sys.AttachSerilogLogging(logger);
+                                           sys.InitLocalTransportExtension();
+                                       })
+                           .DomainConfigurations(DomainConfigurations.ToArray())
+                           .Log(logger)
+                           .Timeout(DefaultTimeout);
+        }
+
         public ITestGridDomainNode CreateTestNode(IExtendedGridDomainNode node, TestKit kit)
         {
             return TestNodeBuilder(node, kit);
-        }
-
-        private GridDomainNode BuildInMemoryStandAloneNode(Func<ActorSystem> actorSystemProvider, ILogger logger)
-        {
-            var node = ConfigureNodeBuilder(actorSystemProvider, logger)
-                                            .Build();
-            return (GridDomainNode)node;
-        }
-
-        protected virtual GridNodeBuilder ConfigureNodeBuilder(Func<ActorSystem> actorSystemProvider, ILogger logger)
-        {
-            return new GridNodeBuilder().ActorFactory(new DelegateActorSystemFactory(actorSystemProvider,
-                                                                                     sys =>
-                                                                                     {
-                                                                                         sys.AttachSerilogLogging(logger);
-                                                                                         sys.InitLocalTransportExtension();
-                                                                                     }))
-                                        .DomainConfigurations(DomainConfigurations.ToArray())
-                                        .Log(logger)
-                                        .Timeout(DefaultTimeout);
         }
 
         public event EventHandler<IExtendedGridDomainNode> OnNodeStartedEvent = delegate { };

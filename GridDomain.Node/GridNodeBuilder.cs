@@ -1,4 +1,5 @@
 ﻿using System;
+using Akka.Actor;
 using GridDomain.Configuration;
 using GridDomain.Node.Configuration;
 using Serilog;
@@ -7,30 +8,39 @@ namespace GridDomain.Node
 {
     public class GridNodeBuilder
     {
-        public IActorSystemFactory ActorSystemFactory;
         public ILogger Logger;
         public IDomainConfiguration[] Configurations;
         public TimeSpan DefaultTimeout;
+        protected Func<ActorSystem> _actorProducers;
+
+        protected Action<ActorSystem> _actorInit = delegate { };
 
         public GridNodeBuilder()
         {
             Logger = new DefaultLoggerConfiguration().CreateLogger()
                                                      .ForContext<GridDomainNode>();
             DefaultTimeout = TimeSpan.FromSeconds(10);
-            ActorSystemFactory = new HoconActorSystemFactory("system", "");
             Configurations = new IDomainConfiguration[] { };
         }
 
-        public IGridDomainNode Build()
+        public virtual IGridDomainNode Build()
         {
-            return new GridDomainLocalNode(Configurations, ActorSystemFactory, Logger, DefaultTimeout);
+            var factory = new DelegateActorSystemFactory(_actorProducers, _actorInit);
+            return new GridDomainLocalNode(Configurations, factory, Logger, DefaultTimeout);
         }
 
-        public GridNodeBuilder ActorFactory(IActorSystemFactory factory)
+        public GridNodeBuilder ActorSystem(Func<ActorSystem> sys)
         {
-            ActorSystemFactory = factory;
+            _actorProducers = sys;
             return this;
         }
+
+        public GridNodeBuilder Initialize(Action<ActorSystem> sys)
+        {
+            _actorInit = sys;
+            return this;
+        }
+
 
         public GridNodeBuilder Log(ILogger log)
         {
