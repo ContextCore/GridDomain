@@ -14,7 +14,7 @@ namespace GridDomain.Node.Cluster
                                                   int workerNodes = 0,
                                                   params INodeNetworkAddress[] otherSeeds)
         {
-            return ConfigureCluster(conf, workerNodes, otherSeeds)
+            return ConfigureCluster(ActorSystemConfigBuilder.New(), conf.Name, workerNodes, otherSeeds)
                    .Build()
                    .Create();
         }
@@ -23,22 +23,18 @@ namespace GridDomain.Node.Cluster
                                                                 int workerNodes = 0,
                                                                 params INodeNetworkAddress[] otherSeeds)
         {
-            return ConfigureCluster(conf, workerNodes, otherSeeds)
+            return ConfigureCluster(ActorSystemConfigBuilder.New(), conf.Name, workerNodes, otherSeeds)
                    .Build()
                    .SeedNodes.First();
         }
-        
 
-        public static ClusterConfigBuilder ConfigureCluster(NodeConfiguration conf, int workerNodes, INodeNetworkAddress[] otherSeeds)
+        public static ClusterConfigBuilder ConfigureCluster(this IActorSystemConfigBuilder actorSystemConfigBuilder, string confName, int workerNodes=0, params INodeNetworkAddress[] otherSeeds)
         {
-            return ActorSystemConfigBuilder.New()
-                                           .Log(conf.LogLevel)
-                                           .DomainSerialization(true)
-                                           .InMemoryPersistence()
-                                           .Cluster(conf.Name)
-                                           .Seeds(otherSeeds)
-                                           .AutoSeeds(1)
-                                           .Workers(workerNodes);
+            return actorSystemConfigBuilder
+                   .Cluster(confName)
+                   .Seeds(otherSeeds)
+                   .AutoSeeds(1)
+                   .Workers(workerNodes);
         }
     }
 }
