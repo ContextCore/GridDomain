@@ -15,7 +15,7 @@ namespace GridDomain.Node.Cluster {
     {
         public static IActorSystemConfigBuilder ClusterSeed(this IActorSystemConfigBuilder configBuilder, string name, params INodeNetworkAddress[] otherSeeds)
         {
-            configBuilder.Add(new ClusterSeedAwareTransportConfig(otherSeeds.Select(s => s.ToFullTcpAddress(name)).ToArray()));
+            configBuilder.Add(new ClusterSeedNodes(otherSeeds.Select(s => s.ToFullTcpAddress(name)).ToArray()));
             return configBuilder;
         }
         
@@ -23,12 +23,14 @@ namespace GridDomain.Node.Cluster {
         {
             name = name ?? "TestCluster" + configBuilder.GetHashCode();
             configBuilder.Add(new PubSubConfig());
+          //  configBuilder.Add(new CustomConfig(@"akka.remote={}"));
            // builder.Add(new ClusterSingletonInternalMessagesSerializerConfig());
             configBuilder.Add(new ClusterShardingMessagesSerializerConfig());
             configBuilder.Add(new HyperionForAll());
+            configBuilder.Add(new ClusterActorProviderConfig());
            // builder.Add(new AutoTerminateProcessOnClusterShutdown());
 
-            return new ClusterConfigBuilder(name, configBuilder, configBuilder.Logger);
+            return new ClusterConfigBuilder(name, configBuilder);
         }  
         
         public static IActorSystemFactory BuildClusterSystemFactory(this IActorSystemConfigBuilder configBuilder, string name)

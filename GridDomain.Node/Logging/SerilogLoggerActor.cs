@@ -2,6 +2,7 @@
 using Akka.Dispatch;
 using Akka.Event;
 using Serilog;
+using Serilog.Core;
 using LogEvent = Akka.Event.LogEvent;
 
 namespace GridDomain.Node.Logging
@@ -50,8 +51,8 @@ namespace GridDomain.Node.Logging
         private ILogger GetLogger(LogEvent logEvent)
         {
             return _logger.ForContext("Timestamp", logEvent.Timestamp)
-                         // .ForContext("LogSource","[" + logEvent.LogSource.Split('/').Last())
-                          .ForContext("LogSource",logEvent.LogSource)
+                          .ForContext("LogClass", logEvent.LogClass)
+                          .ForContext(Constants.SourceContextPropertyName, logEvent.LogSource)
                           .ForContext("Thread", logEvent.Thread.ManagedThreadId);
         }
 

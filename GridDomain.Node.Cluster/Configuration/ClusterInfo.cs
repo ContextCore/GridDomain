@@ -12,9 +12,9 @@ namespace GridDomain.Node.Cluster.Configuration
     {
         private readonly ILogger _logger;
 
-        public ClusterInfo(Akka.Cluster.Cluster cluster, IReadOnlyCollection<Address> members, ILogger logger)
+        public ClusterInfo(Akka.Cluster.Cluster cluster, IReadOnlyCollection<Address> members, ILogger logger=null)
         {
-            _logger = logger;
+            _logger = logger ?? Serilog.Log.Logger;
             Cluster = cluster;
             Members = members;
         }

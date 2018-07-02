@@ -28,7 +28,7 @@ namespace GridDomain.Node.Cluster
                    .SeedNodes.First();
         }
 
-        public static ClusterConfigBuilder ConfigureCluster(this IActorSystemConfigBuilder actorSystemConfigBuilder, string confName, int workerNodes=0, params INodeNetworkAddress[] otherSeeds)
+        public static ClusterConfigBuilder ConfigureCluster(this IActorSystemConfigBuilder actorSystemConfigBuilder, string confName, int workerNodes = 0, params INodeNetworkAddress[] otherSeeds)
         {
             return actorSystemConfigBuilder
                    .Cluster(confName)

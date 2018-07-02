@@ -17,9 +17,19 @@ using Serilog.Events;
 
 namespace GridDomain.Node
 {
+
+
+    public static class LoggerConfigurationExtensions
+    {
+        public static void WriteToFile(this LoggerConfiguration cfg, LogEventLevel level, string fileName)
+        {
+            cfg.WriteTo.File($"./Logs/{fileName}.log", level, DefaultLoggerConfiguration.DefaultTemplate);
+        }
+    }
+
     public class DefaultLoggerConfiguration : LoggerConfiguration
     {
-        public const string DefaultTemplate = "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{LogSource}"
+        public const string DefaultTemplate = "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{SourceContext} {NewLine}  Gen: {LogClass}"
                                                  + "{NewLine} {Message} {NewLine} {Exception} {NewLine}";
 
         public DefaultLoggerConfiguration(LogEventLevel level = LogEventLevel.Verbose, string fileName = null)
@@ -27,7 +37,7 @@ namespace GridDomain.Node
             Enrich.FromLogContext();
             if (fileName != null)
             {
-                WriteTo.File($"./Logs/{fileName}.log", level, DefaultTemplate);
+                this.WriteToFile(level, fileName);
             }
             else 
                 WriteTo.RollingFile("./Logs/log_{HalfHour}.txt", level,DefaultTemplate);

@@ -5,11 +5,19 @@ using GridDomain.Node.Configuration.Hocon;
 
 namespace GridDomain.Node.Cluster.Configuration.Hocon
 {
-    public class ClusterSeedAwareTransportConfig : IHoconConfig
+    public class ClusterActorProviderConfig : IHoconConfig
+    {
+        public string Build()
+        {
+            return @"akka.actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""";
+        }
+    }
+
+    public class ClusterSeedNodes : IHoconConfig
     {
         private readonly string[] _seedNodeFullAddresses;
 
-        public ClusterSeedAwareTransportConfig(params string[] seedNodeFullAddresses)
+        public ClusterSeedNodes(params string[] seedNodeFullAddresses)
         {
             _seedNodeFullAddresses = seedNodeFullAddresses;
         }
@@ -18,19 +26,18 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon
         {
             var seeds = string.Join(Environment.NewLine, _seedNodeFullAddresses.Select(n => @"""" + n + @""""));
 
-            var clusterConfigString = @"akka.actor.provider = ""Akka.Cluster.ClusterActorRefProvider, Akka.Cluster""";
             if (seeds.Any())
             {
-                clusterConfigString +=
-                @"
+                return @"
                 akka.cluster {
-                    seed-nodes =  [" + seeds + @"]
+                    seed-nodes =  ["
+                       + seeds
+                       + @"]
                 }
                 ";
             }
 
-            return clusterConfigString;
+            return "";
         }
-     
     }
 }

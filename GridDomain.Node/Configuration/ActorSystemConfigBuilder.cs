@@ -14,23 +14,15 @@ namespace GridDomain.Node.Configuration
         Config Build();
         ActorSystemConfigBuilder Clone();
         IActorSystemFactory BuildActorSystemFactory(string systemName);
-        ILogger Logger { get; }
     }
 
     public class ActorSystemConfigBuilder : IActorSystemConfigBuilder
     {
-        public ILogger Logger { get; }
-
-        public ActorSystemConfigBuilder(ILogger log = null)
-        {
-            Logger = log ?? Serilog.Log.Logger;
-        }
-
         private List<IHoconConfig> Configs { get; set; } = new List<IHoconConfig>();
 
         public static ActorSystemConfigBuilder New(ILogger log = null)
         {
-            return new ActorSystemConfigBuilder(log);
+            return new ActorSystemConfigBuilder();
         }
 
         public void Add(IHoconConfig cfg)
@@ -46,7 +38,7 @@ namespace GridDomain.Node.Configuration
 
         public ActorSystemConfigBuilder Clone()
         {
-            return new ActorSystemConfigBuilder(Logger) {Configs = Configs.ToList()};
+            return new ActorSystemConfigBuilder() {Configs = Configs.ToList()};
         }
 
         public IActorSystemFactory BuildActorSystemFactory(string systemName)

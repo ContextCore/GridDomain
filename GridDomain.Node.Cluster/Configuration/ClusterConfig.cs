@@ -19,9 +19,9 @@ namespace GridDomain.Node.Cluster.Configuration
         private Func<ActorSystem, Task> _onMemberUp = s => Task.CompletedTask;
         private Func<ActorSystem, Task> _additionalInit = s => Task.CompletedTask;
 
-        public ClusterConfig(string name, ILogger logger)
+        public ClusterConfig(string name, ILogger logger=null)
         {
-            Logger = logger;
+            Logger = logger ?? Serilog.Log.Logger;
             Name = name;
         }
 
@@ -30,6 +30,9 @@ namespace GridDomain.Node.Cluster.Configuration
         public IReadOnlyCollection<IActorSystemConfigBuilder> AutoSeedNodes => _autoSeedNodes;
         public IReadOnlyCollection<IActorSystemConfigBuilder> WorkerNodes => _workerNodes;
 
+        public IEnumerable<IActorSystemConfigBuilder> AllNodes => SeedNodes.Union(AutoSeedNodes)
+                                                                           .Union(WorkerNodes);
+        
         public void AddAutoSeed(params IActorSystemConfigBuilder[] configBuilder)
         {
             _autoSeedNodes.AddRange(configBuilder);
@@ -118,7 +121,7 @@ namespace GridDomain.Node.Cluster.Configuration
             return new ClusterInfo(akkaCluster,
                                    seedSystemAddresses.Concat(autoSeedAddresses)
                                                       .Concat(workerSystemAddresses)
-                                                      .ToArray(),Logger);
+                                                      .ToArray());
         }
 
         private async Task<ActorSystem[]> CreateSystems(IReadOnlyCollection<IActorSystemConfigBuilder> actorSystemBuilders, Func<ActorSystem, Task<ActorSystem>> init)

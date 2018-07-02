@@ -14,34 +14,60 @@ namespace GridDomain.Tests.Unit.Cluster
     {
         public static NodeTestFixture Clustered(this NodeTestFixture fxt)
         {
-            fxt.ActorSystemConfigBuilder.ConfigureCluster(fxt.Name);
-
-            fxt.NodeBuilder = new ClusterNodeBuilder();
-
-            var baseNodeSetup = fxt.NodeBuilderConfigurator;
-            fxt.NodeBuilderConfigurator = (actorSystemProducer, log, builder) =>
-                                          {
-                                              baseNodeSetup(actorSystemProducer, log, builder);
-                                              builder.Initialize(sys =>
-                                                                 {
-                                                                     sys.AttachSerilogLogging(log);
-                                                                     sys.InitDistributedTransport();
-                                                                 });
-                                          };
-            
+            fxt.ActorSystemConfigBuilder = fxt.ActorSystemConfigBuilder.ConfigureCluster(fxt.Name);
+            fxt.NodeBuilder = new ClusterNodeBuilder((GridNodeBuilder)fxt.NodeBuilder);
+            fxt.NodeBuilder.Transport(sys => sys.InitDistributedTransport());
             fxt.TestNodeBuilder = (n, kit) => new TestClusterNode((GridClusterNode) n, kit);
 
             return fxt;
         }
     }
 
-    public class ClusterNodeBuilder : GridNodeBuilder
+    public class ClusterNodeBuilder : IGridNodeBuilder
     {
-        public override IGridDomainNode Build()
+        private readonly GridNodeBuilder _builder;
+        public ClusterNodeBuilder(GridNodeBuilder builder)
         {
-            var factory = new DelegateActorSystemFactory(_actorProducers, _actorInit);
+            _builder = builder;
+        }
 
-            return new GridClusterNode(Configurations, factory, Logger, DefaultTimeout);
+        public IGridDomainNode Build()
+        {
+            var factory = new DelegateActorSystemFactory(_builder.ActorProducers, _builder.ActorInit);
+
+            return new GridClusterNode(_builder.Configurations, factory, _builder.Logger, _builder.DefaultTimeout);
+        }
+
+        public GridNodeBuilder ActorSystem(Func<ActorSystem> sys)
+        {
+            return _builder.ActorSystem(sys);
+        }
+
+        public GridNodeBuilder Initialize(Action<ActorSystem> sys)
+        {
+            return _builder.Initialize(sys);
+        }
+
+        public GridNodeBuilder Transport(Action<ActorSystem> sys)
+        {
+            return _builder.Transport(sys);
+        }
+
+        public GridNodeBuilder Log(ILogger log)
+        {
+            return _builder.Log(log);
+        }
+
+        public ILogger Logger => _builder.Logger;
+
+        public GridNodeBuilder DomainConfigurations(params IDomainConfiguration[] domainConfigurations)
+        {
+            return _builder.DomainConfigurations(domainConfigurations);
+        }
+
+        public GridNodeBuilder Timeout(TimeSpan timeout)
+        {
+            return _builder.Timeout(timeout);
         }
     }
 }

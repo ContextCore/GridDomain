@@ -17,10 +17,10 @@ namespace GridDomain.Tests.Unit
         protected NodeTestKit(NodeTestFixture fixture) : base(PrepareConfig(fixture), fixture.Name)
         {
             var testClassName = GetType().Name; 
-            var logger = new XUnitAutoTestLoggerConfiguration(fixture.Output, fixture.NodeConfig.LogLevel, testClassName)
-                                                            .CreateLogger();
-            
-            var node = fixture.CreateNode(() => Sys,logger).Result;
+
+            fixture.LoggerConfiguration.WriteToFile(fixture.NodeConfig.LogLevel, testClassName);
+
+            var node = fixture.CreateNode(() => Sys).Result;
             Node = fixture.CreateTestNode(node,this);
         }
 

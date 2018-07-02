@@ -14,6 +14,7 @@ using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Scheduling.Quartz.Retry;
 using Serilog.Events;
+using Serilog.Filters;
 
 namespace GridDomain.Tests.Unit
 {
@@ -24,10 +25,18 @@ namespace GridDomain.Tests.Unit
             return EnableScheduling(fixture, new InMemoryQuartzConfig(config));
         }
 
-        public static T LogLevel<T>(this T fixture, LogEventLevel value)where T:NodeTestFixture
+        public static T LogLevel<T>(this T fixture, LogEventLevel value) where T : NodeTestFixture
         {
             fixture.NodeConfig.LogLevel = value;
             fixture.Configure(c => c.Log(value));
+            return fixture;
+        }
+
+        public static T DisableInfrastructureLog<T>(this T fixture) where T : NodeTestFixture
+        {
+            fixture.LoggerConfiguration
+                   .Filter.ByExcluding(Matching.WithProperty<string>("LogClass", s => s.StartsWith("Akka.")));
+
             return fixture;
         }
 
@@ -67,23 +76,18 @@ namespace GridDomain.Tests.Unit
         {
             configuration(fixture.ActorSystemConfigBuilder);
             return fixture;
-        } 
-        
+        }
+
         public static NodeTestFixture PrintSystemConfig(this NodeTestFixture fixture)
         {
-           // fixture.LogLevel(LogEventLevel.Verbose);
-           // fixture.Configure(c => c.Log(LogEventLevel.Verbose, null, true));
-            fixture.OnNodeCreatedEvent += (s,e) => fixture.DefaultLogger.Information(fixture.Node.System.Settings.Config.ToString());
+            fixture.OnNodePreparingEvent += (s, e) => e.NodeBuilder.Logger.Information(fixture.Node.System.Settings.Config.ToString());
             return fixture;
-        } 
-        
+        }
+
         public static NodeTestFixture IgnorePipeCommands(this NodeTestFixture fixture)
         {
-            fixture.OnNodeCreatedEvent += (sender, node) =>
-                                          {
-                                              
-                                          };
-            
+            fixture.OnNodeCreatedEvent += (sender, node) => { };
+
             fixture.OnNodeStartedEvent += (sender, e) =>
                                           {
                                               //cannot work for cluster mode 

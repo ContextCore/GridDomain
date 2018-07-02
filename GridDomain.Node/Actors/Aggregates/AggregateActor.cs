@@ -68,7 +68,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                              {
                                                  Monitor.Increment("CommandsTotal");
                                                  var cmd = (ICommand) m.Message;
-                                                 Log.Debug($"Received command {cmd.Id}");
+                                                 Log.Debug("Received command {cmdId}",cmd.Id);
 
                                                  ExecutionContext.Command = cmd;
                                                  ExecutionContext.CommandMetadata = m.Metadata;

@@ -5,7 +5,6 @@ using System.Net.Sockets;
 using Akka.Configuration;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Hocon;
-using Serilog;
 
 namespace GridDomain.Node.Cluster.Configuration
 {
@@ -16,9 +15,8 @@ namespace GridDomain.Node.Cluster.Configuration
         private readonly List<INodeNetworkAddress> _seedNodeNetworkAddresses = new List<INodeNetworkAddress>();
         private readonly List<INodeNetworkAddress> _workerNodeNetworkAddresses = new List<INodeNetworkAddress>();
 
-        public ClusterConfigBuilder(string clusterName, IActorSystemConfigBuilder systemConfigBuilder, ILogger log)
+        public ClusterConfigBuilder(string clusterName, IActorSystemConfigBuilder systemConfigBuilder)
         {
-            Logger = log;
             _clusterName = clusterName;
             _seedActorSystemConfigBuilder = systemConfigBuilder;
         }
@@ -37,7 +35,7 @@ namespace GridDomain.Node.Cluster.Configuration
         }
 
         private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
-        public  ILogger Logger { get; }
+     //   private ILogger Logger { get; }
 
         public static int GetAvailablePort()
         {
@@ -55,7 +53,9 @@ namespace GridDomain.Node.Cluster.Configuration
 
         Config IActorSystemConfigBuilder.Build()
         {
-            return _seedActorSystemConfigBuilder.Build();
+            var clusterConfig = Build();
+            return clusterConfig.AllNodes.First()
+                                .Build();
         }
 
         public ActorSystemConfigBuilder Clone()
@@ -70,7 +70,7 @@ namespace GridDomain.Node.Cluster.Configuration
 
         public ClusterConfig Build()
         {
-            var clusterConfig = new ClusterConfig(_clusterName,Logger);
+            var clusterConfig = new ClusterConfig(_clusterName);
             if (_seedNodeNetworkAddresses.Any() && _seedNodeNetworkAddresses.All(a => a.PortNumber == 0))
             {
                 _seedNodeNetworkAddresses.Add(((NodeNetworkAddress) _seedNodeNetworkAddresses.First()).Copy(GetAvailablePort()));

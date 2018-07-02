@@ -6,14 +6,26 @@ using Serilog;
 
 namespace GridDomain.Node
 {
-    public class GridNodeBuilder
+    public interface IGridNodeBuilder {
+        IGridDomainNode Build();
+        GridNodeBuilder ActorSystem(Func<ActorSystem> sys);
+        GridNodeBuilder Initialize(Action<ActorSystem> sys);
+        GridNodeBuilder Transport(Action<ActorSystem> sys);
+        GridNodeBuilder Log(ILogger log);
+        ILogger Logger { get; }
+        GridNodeBuilder DomainConfigurations(params IDomainConfiguration[] domainConfigurations);
+        GridNodeBuilder Timeout(TimeSpan timeout);
+    }
+
+    public class GridNodeBuilder : IGridNodeBuilder
     {
-        public ILogger Logger;
+        public ILogger Logger { get; private set; }
         public IDomainConfiguration[] Configurations;
         public TimeSpan DefaultTimeout;
-        protected Func<ActorSystem> _actorProducers;
+        public Func<ActorSystem> ActorProducers;
 
-        protected Action<ActorSystem> _actorInit = delegate { };
+        public Action<ActorSystem> ActorInit = delegate { };
+        private Action<ActorSystem> _transport;
 
         public GridNodeBuilder()
         {
@@ -25,22 +37,27 @@ namespace GridDomain.Node
 
         public virtual IGridDomainNode Build()
         {
-            var factory = new DelegateActorSystemFactory(_actorProducers, _actorInit);
+            var factory = new DelegateActorSystemFactory(ActorProducers, _transport+ActorInit);
             return new GridDomainLocalNode(Configurations, factory, Logger, DefaultTimeout);
         }
 
         public GridNodeBuilder ActorSystem(Func<ActorSystem> sys)
         {
-            _actorProducers = sys;
+            ActorProducers = sys;
             return this;
         }
-
+     
         public GridNodeBuilder Initialize(Action<ActorSystem> sys)
         {
-            _actorInit = sys;
+            ActorInit += sys;
             return this;
         }
 
+        public GridNodeBuilder Transport(Action<ActorSystem> sys)
+        {
+            _transport = sys;
+            return this;
+        }
 
         public GridNodeBuilder Log(ILogger log)
         {

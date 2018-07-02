@@ -1,10 +1,12 @@
 using System;
 using Akka.Actor;
+using Akka.Streams.Implementation.Fusing;
 using Akka.TestKit.Xunit2;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.RecycleMonitor;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common;
+using Quartz.Logging;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
