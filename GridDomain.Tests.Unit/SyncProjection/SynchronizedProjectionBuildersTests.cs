@@ -21,8 +21,7 @@ namespace GridDomain.Tests.Unit.SyncProjection
         public SynchronizedProjectionBuildersTests(ITestOutputHelper output) :
             this(new NodeTestFixture(output).Add(new BalloonDomainConfiguration())
                                             .PrintSystemConfig()
-                                            .LogLevel(LogEventLevel.Verbose)
-                                            .Configure(c => c.Log(LogEventLevel.Verbose))) { }
+                                            .LogLevel(LogEventLevel.Verbose)){ }
 
         protected SynchronizedProjectionBuildersTests(NodeTestFixture fixture) : base(fixture) { }
 

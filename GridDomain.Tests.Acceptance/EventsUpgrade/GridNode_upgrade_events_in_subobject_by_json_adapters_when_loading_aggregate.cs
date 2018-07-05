@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         {
             return fixture.UseSqlPersistence()
                           .UseAdaper(new String01Adapter())
-                          .Configure(c => c.Log(LogEventLevel.Verbose, null, true));
+                          .LogLevel(LogEventLevel.Verbose);
         }
 
         private class String01Adapter : ObjectAdapter<string, string>

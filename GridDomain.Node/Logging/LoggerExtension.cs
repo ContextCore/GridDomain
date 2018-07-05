@@ -22,12 +22,14 @@ namespace GridDomain.Node.Logging
         {
             return (LoggingExtension) system.RegisterExtension(new LoggingExtensionProvider(log,name));
         }
+
+      
     }
 
     public class LoggingExtensionProvider : ExtensionIdProvider<LoggingExtension>
     {
         private readonly ILogger _logger;
-        private string _logActorName;
+        private readonly string _logActorName;
         private readonly TimeSpan _actorCreateTimeout;
 
         public LoggingExtensionProvider(ILogger logger, string logActorName = null, TimeSpan? actorCreateTimeout = null)

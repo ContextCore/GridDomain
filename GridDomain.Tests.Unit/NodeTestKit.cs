@@ -14,21 +14,15 @@ namespace GridDomain.Tests.Unit
 {
     public class NodeTestKit : TestKit
     {
-        protected NodeTestKit(NodeTestFixture fixture) : base(PrepareConfig(fixture), fixture.Name)
+        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.ActorSystemConfigBuilder.Build(), fixture.Name)
         {
             var testClassName = GetType().Name; 
 
+            var node = fixture.CreateNode(() => Sys).Result;
+
             fixture.LoggerConfiguration.WriteToFile(fixture.NodeConfig.LogLevel, testClassName);
 
-            var node = fixture.CreateNode(() => Sys).Result;
             Node = fixture.CreateTestNode(node,this);
-        }
-
-        private static Config PrepareConfig(NodeTestFixture fixture)
-        {
-            //only for debug
-            //Serilog.Log.Logger = fixture.DefaultLogger;
-            return fixture.ActorSystemConfigBuilder.Build();
         }
 
         protected ITestGridDomainNode Node { get; }

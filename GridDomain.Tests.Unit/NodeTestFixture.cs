@@ -47,7 +47,7 @@ namespace GridDomain.Tests.Unit
             Output = output;
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             NodeConfig = cfg ?? DefaultNodeConfig;
-            LoggerConfiguration = new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel);
+            LoggerConfiguration = new LoggerConfiguration(); //new XUnitAutoTestLoggerConfiguration(Output, NodeConfig.LogLevel);
             ActorSystemConfigBuilder = new ActorSystemConfigBuilder();
 
             NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder, true);
@@ -64,7 +64,7 @@ namespace GridDomain.Tests.Unit
         }
 
         public IActorSystemConfigBuilder ActorSystemConfigBuilder { get; set; }
-        public XUnitAutoTestLoggerConfiguration LoggerConfiguration { get; set; }
+        public LoggerConfiguration LoggerConfiguration { get; set; }
         public IGridNodeBuilder NodeBuilder { get; set; }
         public IExtendedGridDomainNode Node { get; private set; }
         public NodeConfiguration NodeConfig { get; }
@@ -107,9 +107,9 @@ namespace GridDomain.Tests.Unit
             return CreateNode(() => NodeConfig.CreateInMemorySystem(), logger);
         }
 
-        public Task<IExtendedGridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger=null)
+        public Task<IExtendedGridDomainNode> CreateNode(Func<ActorSystem> actorSystemProvider, ILogger logger = null)
         {
-            var log = logger ?? LoggerConfiguration.CreateLogger();
+            var log = logger ?? CreateLogger();
 
             NodeBuilder.DomainConfigurations(DomainConfigurations.ToArray())
                        .Log(log)
@@ -123,6 +123,13 @@ namespace GridDomain.Tests.Unit
             var gridDomainNode = (GridDomainNode) node;
 
             return StartNode(gridDomainNode);
+        }
+
+        private Logger CreateLogger()
+        {
+            return LoggerConfiguration.Default(NodeConfig.LogLevel)
+                                      .XUnit(NodeConfig.LogLevel, Output)
+                                      .CreateLogger();
         }
 
         public ITestGridDomainNode CreateTestNode(IExtendedGridDomainNode node, TestKit kit)

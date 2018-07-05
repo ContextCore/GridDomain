@@ -10,10 +10,10 @@ namespace GridDomain.Node.Configuration {
     {
         public static IActorSystemConfigBuilder Log(this IActorSystemConfigBuilder builder, LogEventLevel verbosity, Type logActorType = null, bool writeConfig=false)
         {
-            builder.Add(new LogConfig(verbosity, logActorType ?? typeof(SerilogLoggerActor), writeConfig));
+            builder.Add(new LogConfig(verbosity, logActorType: logActorType ?? typeof(SerilogLoggerActor), configOnStart:writeConfig));
             return builder;
         }
-
+        
         public static IActorSystemConfigBuilder Remote(this IActorSystemConfigBuilder builder, INodeNetworkAddress network)
         {
             builder.Add(new TransportConfig(network));

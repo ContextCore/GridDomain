@@ -1,12 +1,26 @@
 ﻿using Akka.Actor;
 using Akka.Dispatch;
 using Akka.Event;
+using GridDomain.Common;
 using Serilog;
 using Serilog.Core;
 using LogEvent = Akka.Event.LogEvent;
 
 namespace GridDomain.Node.Logging
 {
+
+
+
+    public static class LogContextNames
+    {
+        public const string Timestamp = "Timestamp";
+        public const string ClassShortName = "ClassName";
+        public const string Class = "Class";
+        public const string SourceContext = Constants.SourceContextPropertyName;
+        public const string Path = "Path";
+        public const string Thread = "Thread";
+    }
+
     public class SerilogLoggerActor : ReceiveActor,
                                       IRequiresMessageQueue<ILoggerMessageQueueSemantics>
     {
@@ -29,7 +43,13 @@ namespace GridDomain.Node.Logging
             Receive<InitializeLogger>(m =>
                                       {
                                           Context.GetLogger().Info("SerilogLoggerActor started");
-                                          m.LoggingBus.Subscribe(Self, typeof(LogEvent));
+                                         // Context.System.LoggingBus.Subscribe(Self, typeof(Error));
+                                          m.LoggingBus.Subscribe(Self, typeof(Warning));
+                                          m.LoggingBus.Subscribe(Self, typeof(Info));
+                                          m.LoggingBus.Subscribe(Self, typeof(Debug));
+
+
+                                         // Context.System.EventStream.
                                           Sender.Tell(new LoggerInitialized());
                                       });
         }
@@ -50,10 +70,12 @@ namespace GridDomain.Node.Logging
 
         private ILogger GetLogger(LogEvent logEvent)
         {
-            return _logger.ForContext("Timestamp", logEvent.Timestamp)
-                          .ForContext("LogClass", logEvent.LogClass)
-                          .ForContext(Constants.SourceContextPropertyName, logEvent.LogSource)
-                          .ForContext("Thread", logEvent.Thread.ManagedThreadId);
+            return _logger.ForContext(LogContextNames.Timestamp, logEvent.Timestamp)
+                          .ForContext(LogContextNames.ClassShortName, logEvent.LogClass.BeautyName())
+                          .ForContext(LogContextNames.Class, logEvent.LogClass)
+                          .ForContext(LogContextNames.SourceContext, logEvent.LogSource)
+                          .ForContext(LogContextNames.Path, Context.Sender.Path)
+                          .ForContext(LogContextNames.Thread, logEvent.Thread.ManagedThreadId);
         }
 
         private void Handle(Error logEvent)
@@ -73,7 +95,7 @@ namespace GridDomain.Node.Logging
 
         private void Handle(Debug logEvent)
         {
-            GetLogger(logEvent).Debug(GetFormat(logEvent.Message), GetArgs(logEvent.Message));
+           GetLogger(logEvent).Debug(GetFormat(logEvent.Message), GetArgs(logEvent.Message));
         }
     }
 }

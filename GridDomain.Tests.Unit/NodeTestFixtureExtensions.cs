@@ -8,6 +8,8 @@ using Akka.Configuration;
 using GridDomain.Common;
 using GridDomain.Node;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Configuration.Hocon;
+using GridDomain.Node.Logging;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
@@ -28,14 +30,20 @@ namespace GridDomain.Tests.Unit
         public static T LogLevel<T>(this T fixture, LogEventLevel value) where T : NodeTestFixture
         {
             fixture.NodeConfig.LogLevel = value;
-            fixture.Configure(c => c.Log(value));
+            fixture.ActorSystemConfigBuilder.Log(value);
+            return fixture;
+        }
+        public static T Log<T>(this T fixture, LogConfig value) where T : NodeTestFixture
+        {
+            fixture.NodeConfig.LogLevel = value.LogEventLevel;
+            fixture.ActorSystemConfigBuilder.Add(value);
             return fixture;
         }
 
         public static T DisableInfrastructureLog<T>(this T fixture) where T : NodeTestFixture
         {
             fixture.LoggerConfiguration
-                   .Filter.ByExcluding(Matching.WithProperty<string>("LogClass", s => s.StartsWith("Akka.")));
+                   .Filter.ByExcluding(Matching.WithProperty<string>(LogContextNames.Class, s => s.StartsWith("Akka.")));
 
             return fixture;
         }
@@ -72,15 +80,9 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
-        public static NodeTestFixture Configure(this NodeTestFixture fixture, Action<IActorSystemConfigBuilder> configuration)
-        {
-            configuration(fixture.ActorSystemConfigBuilder);
-            return fixture;
-        }
-
         public static NodeTestFixture PrintSystemConfig(this NodeTestFixture fixture)
         {
-            fixture.OnNodePreparingEvent += (s, e) => e.NodeBuilder.Logger.Information(fixture.Node.System.Settings.Config.ToString());
+            fixture.OnNodePreparingEvent += (s, e) => e.NodeBuilder.Logger.Warning(fixture.ActorSystemConfigBuilder.Build().ToString());
             return fixture;
         }
 
