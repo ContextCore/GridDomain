@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.Cluster
 {
     public static class NodeTestFixtureExtensions
     {
-        public static NodeTestFixture Clustered(this NodeTestFixture fxt)
+        public static T Clustered<T>(this T fxt)where T:NodeTestFixture
         {
             fxt.ActorSystemConfigBuilder = fxt.ActorSystemConfigBuilder.ConfigureCluster(fxt.Name);
             fxt.NodeBuilder = new ClusterNodeBuilder((GridNodeBuilder)fxt.NodeBuilder);

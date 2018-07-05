@@ -17,10 +17,10 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
-        protected Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(NodeTestFixture fixture) : base(fixture) { }
+        protected Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(SoftwareProgrammingProcessManagerFixture fixture) : base(ConfigureFixture(fixture)) { }
 
         public Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : this(ConfigureFixture(new SoftwareProgrammingProcessManagerFixture(output))) { }
+            : this(new SoftwareProgrammingProcessManagerFixture(output)) { }
 
         protected static NodeTestFixture ConfigureFixture(SoftwareProgrammingProcessManagerFixture softwareProgrammingProcessManagerFixture)
         {
@@ -56,17 +56,13 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                       .Send();
 
-            await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
 
 
-            Version<ProcessStateAggregate<SoftwareProgrammingState>>[] snapshots = null;
-
-
-            //Only_two_Snapshots_should_left()
+            //wait until process will be killed due to inactivity
 
             AwaitAssert(() =>
                         {
-                            snapshots = AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString)
+                            var snapshots = AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString)
                                                                    .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId)
                                                                    .Result;
                             Assert.Equal(2, snapshots.Length);

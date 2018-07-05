@@ -80,7 +80,7 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
-        public static NodeTestFixture PrintSystemConfig(this NodeTestFixture fixture)
+        public static T PrintSystemConfig<T>(this T fixture)where T:NodeTestFixture
         {
             fixture.OnNodePreparingEvent += (s, e) => e.NodeBuilder.Logger.Warning(fixture.ActorSystemConfigBuilder.Build().ToString());
             return fixture;

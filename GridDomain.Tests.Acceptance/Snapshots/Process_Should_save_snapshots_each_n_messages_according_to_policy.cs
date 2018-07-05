@@ -72,7 +72,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
                       .Send();
 
-            await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(continueEvent.ProcessId);
+           // await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(continueEvent.ProcessId);
 
             Version<ProcessStateAggregate<SoftwareProgrammingState>>[] snapshots = null;
 

@@ -65,23 +65,24 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e => e.MessageId == continueEvent.Id)
                       .Send();
 
-            Log.Info("Testcase enforce additional snapshot save & delete, will kill process manager");
-            await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
+            //wait until process will be killed by inactivity 
+            AwaitAssert(async () =>
+                        {
+                            var snapshots = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                                                  AggregateFactory.Default)
+                                                                             .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
-            var snapshots = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                                  AggregateFactory.Default)
-                                                             .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
-
-            //Snapshot_should_be_saved_one_time
-            Assert.Single(snapshots);
-            //Restored_process_state_should_have_correct_ids
-            Assert.True(snapshots.All(s => s.Payload.Id == processId));
-            //Snapshot_should_have_parameters_from_first_event = created event
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
-                         snapshots.First()
-                                  .Payload.State.CurrentStateName);
-            //All_snapshots_should_not_have_uncommited_events
-            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+                            //Snapshot_should_be_saved_one_time
+                            Assert.Single(snapshots);
+                            //Restored_process_state_should_have_correct_ids
+                            Assert.True(snapshots.All(s => s.Payload.Id == processId));
+                            //Snapshot_should_have_parameters_from_first_event = created event
+                            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
+                                         snapshots.First()
+                                                  .Payload.State.CurrentStateName);
+                            //All_snapshots_should_not_have_uncommited_events
+                            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+                        });
         }
     }
 }
