@@ -96,10 +96,10 @@ namespace GridDomain.Tests.Unit {
 
         }
 
-        public IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata)
+        public IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata=null)
         {
             var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new LocalMetadataEnvelopConditionBuilder());
-            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata), Node,msgConditionFactory);
+            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.New(msg.Id)), Node,msgConditionFactory);
         }
 
     }

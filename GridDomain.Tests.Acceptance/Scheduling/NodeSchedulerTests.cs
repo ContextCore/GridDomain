@@ -49,8 +49,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                                                TimeSpan? repeatInterval = null)
         {
             return new ExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
-                                        typeof(ScheduledCommandSuccessfullyProcessed),
-                                        id,
                                         timeout);
         }
 

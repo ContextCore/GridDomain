@@ -43,13 +43,7 @@ namespace GridDomain.Node.Logging
             Receive<InitializeLogger>(m =>
                                       {
                                           Context.GetLogger().Info("SerilogLoggerActor started");
-                                         // Context.System.LoggingBus.Subscribe(Self, typeof(Error));
-                                          m.LoggingBus.Subscribe(Self, typeof(Warning));
-                                          m.LoggingBus.Subscribe(Self, typeof(Info));
-                                          m.LoggingBus.Subscribe(Self, typeof(Debug));
-
-
-                                         // Context.System.EventStream.
+                                          m.LoggingBus.Subscribe(Self, typeof(LogEvent));
                                           Sender.Tell(new LoggerInitialized());
                                       });
         }

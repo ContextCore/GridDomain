@@ -99,14 +99,14 @@ namespace GridDomain.Tests.Unit.Cluster
         public IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata = null)
         {
             var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new MetadataEnvelopConditionBuilder());
-            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.Empty), Node,msgConditionFactory);
+            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.New(msg.Id)), Node,msgConditionFactory);
 
         }
 
         public IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata = null)
         {
             var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new MetadataEnvelopConditionBuilder());
-            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.Empty), Node,msgConditionFactory);
+            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.New(msg.Id)), Node,msgConditionFactory);
         }
 
         static IMessageWaiter NewClusterDebugWaiter(IExtendedGridDomainNode node, TimeSpan? timeout = null)

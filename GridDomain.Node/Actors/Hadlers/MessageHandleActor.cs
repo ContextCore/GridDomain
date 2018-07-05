@@ -62,8 +62,8 @@ namespace GridDomain.Node.Actors.Hadlers
                        ++_publishFaultCount);
 
             var faultMetadata = metadata.CreateChild(msg.Id, FaltProcessEntry);
-
-            var fault = Fault.NewGeneric(msg, ex, msg.ProcessId, typeof(THandler));
+            var faultId = "message_handle_fault_" + Guid.NewGuid();
+            var fault = Fault.NewGeneric(faultId, msg, ex, msg.ProcessId, typeof(THandler));
 
             Publisher.Publish(fault, faultMetadata);
         }

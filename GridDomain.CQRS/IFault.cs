@@ -8,6 +8,7 @@ namespace GridDomain.CQRS
     /// </summary>
     public interface IFault
     {
+        string Id { get; }
         object Message { get; }
         Exception Exception { get; }
         string ProcessId { get; }

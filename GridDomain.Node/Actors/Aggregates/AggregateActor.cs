@@ -207,7 +207,9 @@ namespace GridDomain.Node.Actors.Aggregates
             Log.Error(exception, "An error occured while command execution. {@context}", ExecutionContext);
 
             var producedFaultMetadata = ExecutionContext.CommandMetadata.CreateChild(command.Id, _domainEventProcessFailEntry);
-            var fault = Fault.NewGeneric(command, exception, command.ProcessId, typeof(TAggregate));
+            var faultId = "command_fault_" + Guid.NewGuid();
+
+            var fault = Fault.NewGeneric(faultId,command, exception, command.ProcessId, typeof(TAggregate));
 
             Project(producedFaultMetadata, fault);
             ExecutionContext.CommandSender.Tell(fault);

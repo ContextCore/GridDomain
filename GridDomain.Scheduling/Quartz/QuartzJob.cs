@@ -27,6 +27,7 @@ namespace GridDomain.Scheduling.Quartz
         private readonly ICommandExecutor _executor;
         private readonly IPublisher _publisher;
         private readonly ILogger _quartzLogger;
+        private static readonly ProcessEntry ProcessEntry = new ProcessEntry(nameof(QuartzJob), PassingCommandToExecutor, CommandRaiseTime);
 
         public QuartzJob(ILogger quartzLogger, IPublisher publisher, ICommandExecutor executor)
         {
@@ -93,16 +94,12 @@ namespace GridDomain.Scheduling.Quartz
         private async Task ProcessCommand(ICommand command, JobDataMap jobDataMap, IMessageMetadata metadata, JobKey jobKey)
         {
             var options = Get<ExecutionOptions>(jobDataMap, ExecutionOptionsKey);
-            if (options.SuccesEventType == null)
-                throw new OptionsNotFilledException("options do not have SuccessEventType for key " + jobKey);
 
             var commandMetadata = metadata.CreateChild(command.Id,
-                                                       new ProcessEntry(nameof(QuartzJob), PassingCommandToExecutor, CommandRaiseTime));
+                                                       ProcessEntry);
 
             //waiting domain event by correlation id
-            await _executor.Prepare(command, commandMetadata)
-                           .Expect(options.SuccesEventType)
-                           .Execute(options.Timeout);
+            await _executor.Execute(command, commandMetadata).TimeoutAfter(options.Timeout);
 
             _quartzLogger.Information("job {key} succeed", jobKey.Name);
 

@@ -75,8 +75,11 @@ namespace GridDomain.Scheduling.Akka
                 else
                     Sender.Tell(new Status.Failure(e));
 
-                 var fault = Fault.New(message, e, message.Command.ProcessId, typeof(SchedulingActor));
-                 _publisher.Publish(fault, message.CommandMetadata);
+                var faultId = "job_schedule_fault_" + Guid.NewGuid();
+                 var fault = Fault.New(faultId,message, e, message.Command.ProcessId, typeof(SchedulingActor));
+                var faultMetadata = message.CommandMetadata.CreateChild(faultId);
+
+                _publisher.Publish(fault, faultMetadata);
             }
         }
     }

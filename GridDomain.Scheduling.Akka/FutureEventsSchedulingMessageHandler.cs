@@ -69,7 +69,7 @@ namespace GridDomain.Scheduling.Akka
 
             var scheduleEvent = new ScheduleCommandExecution(command,
                                                              scheduleKey,
-                                                             ExecutionOptions.ForCommand(message.RaiseTime, succesEventType),
+                                                             ExecutionOptions.ForCommand(message.RaiseTime),
                                                              metadata);
 
             return _schedulerActorRef.Ask<object>(scheduleEvent).ContinueWith(t =>

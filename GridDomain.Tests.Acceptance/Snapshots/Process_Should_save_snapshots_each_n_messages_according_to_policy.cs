@@ -61,7 +61,8 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var goSleepCommand = new GoSleepCommand(startEvent.PersonId, startEvent.LovelySofaId);
 
             var continueEventB =
-                new Fault<GoSleepCommand>(goSleepCommand,
+                new Fault<GoSleepCommand>("fault_sleep",
+                                          goSleepCommand,
                                           new Exception(),
                                           typeof(object),
                                           processId,

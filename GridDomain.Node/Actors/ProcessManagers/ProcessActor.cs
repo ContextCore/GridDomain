@@ -335,10 +335,11 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
         private void FinishWithError(IMessageMetadataEnvelop processingMessage, IActorRef messageSender, Exception error)
         {
-            _log.Error(error, "Error during execution of message {@message}", processingMessage);
+            _log.Error(error, "Error during processing of message {@message}", processingMessage);
 
             var processorType = Process?.GetType() ?? typeof(TState);
-            var fault = (IFault) Fault.NewGeneric(processingMessage.Message, error.UnwrapSingle(), Id, processorType);
+            var faultId = "fault_process_transit" + Guid.NewGuid();
+            var fault = (IFault) Fault.NewGeneric(faultId,processingMessage.Message, error.UnwrapSingle(), Id, processorType);
 
             var faultMetadata = MessageMetadataExtensions.CreateChild(processingMessage.Metadata, (string) fault.ProcessId, _exceptionOnTransit);
 

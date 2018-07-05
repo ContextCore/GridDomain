@@ -28,9 +28,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Retry
             var scheduler = Node.System.GetExtension<SchedulingExtension>()
                                 .SchedulingActor;
             var command = new BoomNowCommand(Guid.NewGuid().ToString());
-            var executionOptions = new ExecutionOptions(DateTime.UtcNow.AddMilliseconds(100),
-                                                        typeof(ValueChangedSuccessfullyEvent),
-                                                        command.AggregateId);
+            var executionOptions = new ExecutionOptions(DateTime.UtcNow.AddMilliseconds(100));
 
             var scheduleCommandExecution = new ScheduleCommandExecution(command, new ScheduleKey("test", "test"), executionOptions);
             scheduler.Tell(scheduleCommandExecution);

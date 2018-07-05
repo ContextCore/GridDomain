@@ -113,7 +113,7 @@ namespace GridDomain.Tests.Common
         Task<T> LoadAggregateByActor<T>(string id) where T : Aggregate;
         Task<TState> LoadProcess<TState>(string id) where TState : class,IProcessState;
         IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata=null);// where TExpect : class;
-        IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata);// where TExpect : class;
+        IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata=null);// where TExpect : class;
     }
 
    
