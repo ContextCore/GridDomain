@@ -13,6 +13,12 @@ using IScheduler = Quartz.IScheduler;
 namespace GridDomain.Scheduling.Akka {
     public static class SchedulingExtensions
     {
+
+        public static SchedulingExtension GetSchedulingExtension(this ActorSystem sys)
+        {
+            return sys.GetExtension<SchedulingExtension>();
+        }
+
         public static string SchedulingActorPath = nameof(SchedulingActor);
             
         public static SchedulingExtension InitSchedulingExtension(this ActorSystem system,

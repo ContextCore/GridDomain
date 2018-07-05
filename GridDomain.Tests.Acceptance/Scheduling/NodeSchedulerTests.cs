@@ -33,13 +33,13 @@ namespace GridDomain.Tests.Acceptance.Scheduling
         public NodeSchedulerTests(ITestOutputHelper output) : this(new SchedulerFixture(output))
         {
             ResultHolder.Clear();
-            _schedulerActor = new Lazy<IActorRef>(() => Node.ResolveActor(nameof(SchedulingActor)).Result);
         }
 
         private const string Name = "test";
         private const string Group = "test";
-        private readonly Lazy<IActorRef> _schedulerActor;
-        private IActorRef Scheduler => _schedulerActor.Value;
+
+        private IActorRef Scheduler => Node.System.GetSchedulingExtension()
+                                           .SchedulingActor;
 
         private ExecutionOptions CreateOptions(double seconds,
                                                TimeSpan? timeout = null,
