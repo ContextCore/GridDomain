@@ -74,7 +74,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
             var aggregateId = Guid.NewGuid().ToString();
             
-            _commands = CreateAggregatePlan(100, aggregateId).ToArray();
+            _commands = CreateAggregatePlan(10, aggregateId).ToArray();
 
 
             _actorSystem = CreateActorSystem();
@@ -103,7 +103,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions directly by aggregate actor",
-            NumberOfIterations = 100,
+            NumberOfIterations = 10,
             RunMode = RunMode.Iterations,
             TestMode = TestMode.Test)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 10)]
