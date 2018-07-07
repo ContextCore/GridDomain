@@ -8,9 +8,6 @@ using LogEvent = Akka.Event.LogEvent;
 
 namespace GridDomain.Node.Logging
 {
-
-
-
     public static class LogContextNames
     {
         public const string Timestamp = "Timestamp";
@@ -25,9 +22,9 @@ namespace GridDomain.Node.Logging
                                       IRequiresMessageQueue<ILoggerMessageQueueSemantics>
     {
         private readonly ILogger _logger;
-        public static ILogger Log { get; set; }
+     //   public static ILogger Log { get; set; }
 
-        public SerilogLoggerActor() : this(Log ?? Serilog.Log.Logger) { }
+        public SerilogLoggerActor() : this(Serilog.Log.Logger) { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SerilogLogger" /> class.

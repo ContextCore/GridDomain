@@ -59,7 +59,8 @@ namespace GridDomain.Node.Cluster.CommandPipe
             private readonly IActorRef _processRegion;
             private readonly TimeSpan? _defaultTimeout;
             private readonly string _processStateName;
-            private ILoggingAdapter _log;
+            private readonly ILoggingAdapter _log;
+            private const string EmptyProcessId = "0x";
 
             public ShardedProcessMessageProcessor(IActorRef processRegion,
                                                   string processStateName,
@@ -74,21 +75,22 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
             public Task<IProcessCompleted> Process(IMessageMetadataEnvelop message)
             {
-                return _processRegion.Ask<IProcessCompleted>(MessageFactory(message), _defaultTimeout);
+                var shardedMessage = MessageFactory(message);
+                _log.Debug("Sending message {@m} to sharded process managers", shardedMessage);
+                return _processRegion.Ask<IProcessCompleted>(shardedMessage, _defaultTimeout);
             }
 
             private IMessageMetadataEnvelop MessageFactory(IMessageMetadataEnvelop m)
             {
                 string processId = null;
-                
-                if (m.Message is IHaveProcessId proc)
-                {
-                    processId = proc.ProcessId ?? "notExist";
-                }
 
-                if (m.Message is IFault f)
-                {
-                    processId = f.ProcessId ?? "notExist";
+                switch (m.Message) {
+                    case IHaveProcessId proc:
+                        processId = proc.ProcessId ?? EmptyProcessId;
+                        break;
+                    case IFault f:
+                        processId = f.ProcessId ?? EmptyProcessId;
+                        break;
                 }
 
                 if (processId != null)
@@ -98,7 +100,6 @@ namespace GridDomain.Node.Cluster.CommandPipe
                                                                                                         processId,
                                                                                                         _processStateName,
                                                                                                         m.Metadata);
-                    _log.Debug("Sending message {@m} to sharder process managers", shardedProcessMessageMetadataEnvelop);
 
                     return shardedProcessMessageMetadataEnvelop;
                 }

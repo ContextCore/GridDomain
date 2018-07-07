@@ -51,28 +51,30 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             await ChangeSeveralTimes(5, aggregateId);
 
-            await Node.KillAggregate<Balloon>(aggregateId, TimeSpan.FromSeconds(10));
+           // await Node.KillAggregate<Balloon>(aggregateId, TimeSpan.FromSeconds(10));
 
             //sql server still need some time to commit deleted snapshots;
-            await Task.Delay(TimeSpan.FromSeconds(3));
+            //await Task.Delay(TimeSpan.FromSeconds(3));
+            AwaitAssert(async () =>
+                        {
+                            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                                                  new BalloonAggregateFactory(),
+                                                                                  new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
 
-            var snapshots = await new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                                  new BalloonAggregateFactory(),
-                                                                  new BalloonAggregateFactory()).Load<Balloon>(aggregateId);
-
-            //Only_2_Snapshots_should_left()
-            Assert.Equal(2, snapshots.Length);
-            //Restored_aggregates_should_have_same_ids()
-            Assert.True(snapshots.All(s => s.Payload.Id == aggregateId));
-            //Snapshots_should_have_parameters_from_last_command()
-            Assert.Equal(_parameters.Skip(3)
-                                    .Take(2)
-                                    .Select(p => p.ToString())
-                                    .ToArray(),
-                         snapshots.Select(s => s.Payload.Title)
-                                  .ToArray());
-            //All_snapshots_should_not_have_uncommited_events()
-            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+                            //Only_2_Snapshots_should_left()
+                            Assert.Equal(2, snapshots.Length);
+                            //Restored_aggregates_should_have_same_ids()
+                            Assert.True(snapshots.All(s => s.Payload.Id == aggregateId));
+                            //Snapshots_should_have_parameters_from_last_command()
+                            Assert.Equal(_parameters.Skip(3)
+                                                    .Take(2)
+                                                    .Select(p => p.ToString())
+                                                    .ToArray(),
+                                         snapshots.Select(s => s.Payload.Title)
+                                                  .ToArray());
+                            //All_snapshots_should_not_have_uncommited_events()
+                            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+                        });
         }
     }
 }

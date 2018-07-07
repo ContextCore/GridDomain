@@ -29,7 +29,8 @@ namespace GridDomain.Node
 
         public static string GetTemplate(this LogEventLevel level)
         {
-            return  level >= LogEventLevel.Information ? DefaultTemplate : DetailedTemplate;
+           // return  level >= LogEventLevel.Information ? DefaultTemplate : DetailedTemplate;
+            return DetailedTemplate;
         }
 
         public static LoggerConfiguration WriteToFile(this LoggerConfiguration cfg, LogEventLevel level, string fileName = null)

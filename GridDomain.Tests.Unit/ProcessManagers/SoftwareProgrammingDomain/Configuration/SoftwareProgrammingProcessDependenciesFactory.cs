@@ -1,5 +1,7 @@
-﻿using GridDomain.Configuration;
+﻿using System;
+using GridDomain.Configuration;
 using GridDomain.Node.Configuration.Composition;
+using GridDomain.Tests.Common;
 using Serilog;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Configuration
@@ -9,7 +11,8 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Config
         public SoftwareProgrammingProcessDependenciesFactory()
              :base(new SoftwareProgrammingProcess(),
                  () => new SoftwareProgrammingProcess(),
-                 () => new SoftwareProgrammingProcessStateFactory())
+                 () => new SoftwareProgrammingProcessStateFactory(),
+                   new RecycleConfiguration(TimeSpan.FromMilliseconds(1000),TimeSpan.FromMilliseconds(1000)))
         {
         }
     }

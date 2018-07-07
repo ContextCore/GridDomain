@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Unit
 {
     public class NodeTestKit : TestKit
     {
-        protected NodeTestKit(NodeTestFixture fixture) : base(fixture.ActorSystemConfigBuilder.Build(), fixture.Name)
+        protected NodeTestKit(NodeTestFixture fixture) : base(Config(fixture), fixture.Name)
         {
             var testClassName = GetType().Name; 
 
@@ -23,6 +23,11 @@ namespace GridDomain.Tests.Unit
             fixture.LoggerConfiguration.WriteToFile(fixture.NodeConfig.LogLevel, testClassName);
 
             Node = fixture.CreateTestNode(node,this);
+        }
+
+        private static Config Config(NodeTestFixture fixture)
+        {
+            return fixture.ActorSystemConfigBuilder.Build();
         }
 
         protected ITestGridDomainNode Node { get; }

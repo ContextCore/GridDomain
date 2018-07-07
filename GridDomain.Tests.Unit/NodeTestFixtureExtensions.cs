@@ -33,6 +33,7 @@ namespace GridDomain.Tests.Unit
             fixture.ActorSystemConfigBuilder.Log(value);
             return fixture;
         }
+
         public static T Log<T>(this T fixture, LogConfig value) where T : NodeTestFixture
         {
             fixture.NodeConfig.LogLevel = value.LogEventLevel;
@@ -40,10 +41,21 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
-        public static T DisableInfrastructureLog<T>(this T fixture) where T : NodeTestFixture
+        public static T DisableInfrastructureLog<T>(this T fixture, LogEventLevel? escalationLevel=LogEventLevel.Warning) where T : NodeTestFixture
         {
-            fixture.LoggerConfiguration
-                   .Filter.ByExcluding(Matching.WithProperty<string>(LogContextNames.Class, s => s.StartsWith("Akka.")));
+            var propFilter = Matching.WithProperty<string>(LogContextNames.Class, s => s.StartsWith("Akka."));
+
+            if (escalationLevel.HasValue)
+            {
+                //don't exclude messages more important than escalationLevel, like errors
+                fixture.LoggerConfiguration
+                       .Filter.ByExcluding(e => e.Level <= escalationLevel && propFilter(e));
+            }
+            else
+            {
+                fixture.LoggerConfiguration
+                       .Filter.ByExcluding(e => propFilter(e));
+            }
 
             return fixture;
         }
@@ -80,9 +92,10 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
-        public static T PrintSystemConfig<T>(this T fixture)where T:NodeTestFixture
+        public static T PrintSystemConfig<T>(this T fixture) where T : NodeTestFixture
         {
-            fixture.OnNodePreparingEvent += (s, e) => e.NodeBuilder.Logger.Warning(fixture.ActorSystemConfigBuilder.Build().ToString());
+            fixture.OnNodePreparingEvent += (s, e) => e.NodeBuilder.Logger.Warning(fixture.ActorSystemConfigBuilder.Build()
+                                                                                          .ToString());
             return fixture;
         }
 

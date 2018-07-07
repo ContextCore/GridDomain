@@ -1,4 +1,5 @@
 using Akka.Actor;
+using GridDomain.Configuration;
 using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
@@ -9,17 +10,18 @@ using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Cluster.CommandPipe {
-    public class ClusterProcessStateActor<TState> : AggregateActor<ProcessStateAggregate<TState>> where TState : IProcessState
+    public class ClusterProcessStateActor<TState> : ClusterAggregateActor<ProcessStateAggregate<TState>> where TState : IProcessState
     {
         public ClusterProcessStateActor(IAggregateCommandsHandler<ProcessStateAggregate<TState>> handler,
                                         ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                                         IConstructAggregates aggregateConstructor,
                                         IConstructSnapshots snapshotsConstructor,
-                                        IActorRef customHandlersActor) : base(handler,
+                                        IActorRef customHandlersActor,
+                                        IRecycleConfiguration recycle) : base(handler,
                                                                               snapshotsPersistencePolicy,
                                                                               aggregateConstructor,
                                                                               snapshotsConstructor,
-                                                                              customHandlersActor)
+                                                                              customHandlersActor,recycle)
         {
         }
 

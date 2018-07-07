@@ -10,6 +10,7 @@ namespace GridDomain.Configuration {
     public class DefaultProcessDependencyFactory<TState> : IProcessDependencyFactory<TState>
         where TState : class, IProcessState
     {
+        public IRecycleConfiguration RecycleConfiguration { get; set; }
         private Func<IMessageRouteMap> RouteMapCreator { get; set; }
         private Func<IProcessStateFactory<TState>> ProcessStateFactory { get; set; }
         private Func<IProcess<TState>> ProcessFactory { get; set; }
@@ -23,12 +24,19 @@ namespace GridDomain.Configuration {
             return ProcessFactory();
         }
 
+        public IRecycleConfiguration CreateRecycleConfiguration()
+        {
+            return RecycleConfiguration;
+        }
+
         public ProcessStateDependencyFactory<TState> StateDependencyFactory { get; } = new ProcessStateDependencyFactory<TState>();
 
         public DefaultProcessDependencyFactory(IProcessDescriptor descriptor, 
                                                Func<IProcess<TState>> processFactory,
-                                               Func<IProcessStateFactory<TState>> processStateFactory)
+                                               Func<IProcessStateFactory<TState>> processStateFactory,
+                                               IRecycleConfiguration configuration)
         {
+            RecycleConfiguration = configuration;
             RouteMapCreator = () => MessageRouteMap.New(descriptor);
             ProcessName = descriptor.ProcessType.BeautyName();
             ProcessFactory = processFactory;

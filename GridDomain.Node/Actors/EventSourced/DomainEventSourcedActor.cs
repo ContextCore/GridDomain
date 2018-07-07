@@ -100,7 +100,6 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             Command<Shutdown.Request>(req =>
                                               {
-                                                  Log.Debug("Received shutdown request");
                                                   Monitor.IncrementMessagesReceived();
 
                                                   if (!CanShutdown(out var description))
@@ -111,11 +110,12 @@ namespace GridDomain.Node.Actors.EventSourced
                                                   
                                                   if (_snapshotsPolicy.ShouldDelete(out SnapshotSelectionCriteria c))
                                                   {
+                                                      Log.Debug("Deleting snapnotExistshots");
                                                       DeleteSnapshots(c.ToGridDomain());
                                                       _snapshotsDeleteTracker.Start(c);
+                                                      return;
                                                   }
 
-                                                  Log.Debug("Stopped");
                                                   Context.Stop(Self);
                                               });
 
@@ -157,7 +157,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected void StashMessage(object message)
         {
-            Log.Debug("Stashing message {message} current behavior is {behavior}", message, Behavior.Current);
+            Log.Debug("Stashing message {@message} current behavior is {behavior}", message, Behavior.Current);
 
             Stash.Stash();
         }

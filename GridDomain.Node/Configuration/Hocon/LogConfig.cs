@@ -58,46 +58,14 @@ namespace GridDomain.Node.Configuration.Hocon
             builder.AppendLine($"akka.actor.debug.unhandled = {GetFlag(unhandled)}");
             builder.AppendLine($"akka.log-config-on-start  = {GetFlag(configOnStart)}");
             builder.AppendLine($"akka.loglevel  = {GetVerbosity(verbosity)}");
+            builder.AppendLine($"akka.loggers  = [\"{(logActorType ?? typeof(SerilogLoggerActor)).AssemblyQualifiedShortName()}\"]");
 
             _config = builder.ToString();
         }
 
         public string Build()
         {
-           // var logLevel = _akkaLogLevels[_verbosity];
-           // var logConfig = @"
-           //    # akka.stdout-loglevel = "
-           //                 + logLevel
-           //                 + @"
-           //     akka.loglevel="
-           //                 + logLevel
-           //                 + @"
-           //    # akka.loggers=["""
-           //                 + _logActorType.AssemblyQualifiedShortName()
-           //                 + @"""]
-           //
-           //     akka.actor.debug {"
-           //                 + AdditionalLogs(_verbosity)
-           //                 + @" 
-           //           unhandled = on
-           //     }";
-           //
-           // if (_includeConfig)
-           //     logConfig += @"
-           //     akka.log-config-on-start = on";
-           //
             return _config;
         }
-
-//        private object AdditionalLogs(LogEventLevel verbosity)
-//        {
-//            return verbosity == LogEventLevel.Verbose
-//                       ? @"autoreceive = on
-//                    lifecycle = on
-//                    receive = on
-//                    router-misconfiguration = on
-//                    event-stream = on"
-//                       : "";
-//        }
     }
 }

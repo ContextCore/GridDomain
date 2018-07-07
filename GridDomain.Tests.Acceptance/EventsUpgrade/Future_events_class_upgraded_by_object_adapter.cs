@@ -47,11 +47,7 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Fact]
         public async Task Future_event_is_upgraded_by_event_adapter()
         {
-            var aggregateId = Guid.NewGuid()
-                                  .ToString();
-            await Node.Execute(new ChangeBalanceInFuture(1, aggregateId, BusinessDateTime.Now.AddSeconds(2), true));
-
-            //await Node.KillAggregate<BalanceAggregate>(aggregateId); // to enforce domain events reload from storage and upgrade.
+            await Node.Execute(new ChangeBalanceInFuture(1, "update_event_aggregate", BusinessDateTime.Now.AddSeconds(2), true));
 
             await Node.NewWaiter(TimeSpan.FromSeconds(10))
                       .Expect<BalanceChangedEvent_V1>()

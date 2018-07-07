@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Net.NetworkInformation;
 using Autofac;
 using Autofac.Core;
 using GridDomain.Configuration;
@@ -12,7 +13,7 @@ using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Cluster
 {
-    public class ClusterAggregateConfiguration<TAggregate> : AggregateConfiguration<ClusterAggregateActor<TAggregate>, TAggregate> where TAggregate : Aggregate
+    public class ClusterAggregateConfiguration<TActor,TAggregate> : AggregateConfiguration<TActor, TAggregate> where TAggregate : Aggregate
     {
         public ClusterAggregateConfiguration(IAggregateDependencyFactory<TAggregate> factory) : base(factory) { }
 
@@ -28,19 +29,38 @@ namespace GridDomain.Node.Cluster
         }
     }
 
+
+    public class ClusterProcessConfiguration<TState, TActor> : ProcessManagerConfiguration<TState, TActor> where TState : class, IProcessState {
+        public ClusterProcessConfiguration(IProcessDependencyFactory<TState> factory, string statePath) : base(factory, statePath)
+        {
+
+        }
+
+        protected override Parameter[] CreateParametersRegistration()
+        {
+            return base.CreateParametersRegistration()
+                       .Union(new[]
+                              {
+                                  new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IRecycleConfiguration),
+                                                        (pi, ctx) => ProcessDependencyFactory.CreateRecycleConfiguration())
+                              })
+                       .ToArray();
+        }
+    }
+
     public class ClusterDomainBuilder : DomainBuilder
     {
         public ClusterDomainBuilder() : base(t => Known.Paths.ShardRegion(typeof(ProcessStateAggregate<>).MakeGenericType(t))) { }
 
         protected override IContainerConfiguration CreateAggregateConfiguration<TAggregate>(IAggregateDependencyFactory<TAggregate> factory)
         {
-            return new ClusterAggregateConfiguration<TAggregate>(factory);
+            return new ClusterAggregateConfiguration<ClusterAggregateActor<TAggregate>,TAggregate>(factory);
         }
 
         public override void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory)
         {
-            var processManagerConfiguration = new ProcessManagerConfiguration<TState, ClusterProcessActor<TState>>(processDependenciesfactory, _processManagersStateActorPath(typeof(TState)));
-            var processStateConfiguration = new AggregateConfiguration<ClusterProcessStateActor<TState>, ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencyFactory);
+            var processManagerConfiguration = new ClusterProcessConfiguration<TState, ClusterProcessActor<TState>>(processDependenciesfactory, _processManagersStateActorPath(typeof(TState)));
+            var processStateConfiguration = new ClusterAggregateConfiguration<ClusterProcessStateActor<TState>, ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencyFactory);
 
             _containerConfigurations.Add(processManagerConfiguration);
             _containerConfigurations.Add(processStateConfiguration);
