@@ -9,10 +9,7 @@ using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.Aggregates.Messages;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.ProcessManagers;
-using GridDomain.Node.Actors.ProcessManagers.Messages;
-using NMoneys;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
 
 namespace GridDomain.Node
@@ -48,7 +45,6 @@ namespace GridDomain.Node
         {
             return cfg.Enrich.FromLogContext()
                       .MinimumLevel.Is(level)
-                      .Destructure.ByTransforming<Money>(r => new {r.Amount, r.CurrencyCode})
                       .Destructure.ByTransforming<Exception>(r => new {Type = r.GetType(), r.Message, r.StackTrace})
                       .Destructure.ByTransforming<MessageMetadata>(r => new {r.CasuationId, r.CorrelationId})
                       .Destructure.ByTransforming<IMessageMetadataEnvelop>(r => new {r.Message, r.Metadata})
