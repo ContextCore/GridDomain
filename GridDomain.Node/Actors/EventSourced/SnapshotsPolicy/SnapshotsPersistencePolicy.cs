@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Configuration;
+using GridDomain.Configuration.SnapshotPolicies;
 
 namespace GridDomain.Node.Actors.EventSourced.SnapshotsPolicy {
     

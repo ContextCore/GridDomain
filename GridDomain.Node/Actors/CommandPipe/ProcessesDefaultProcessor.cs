@@ -45,16 +45,16 @@ namespace GridDomain.Node.Actors.CommandPipe
             if(!processTransited.Any())
                 return ProcessesTransitComplete.NoResults;
             
-            return new ProcessesTransitComplete(messageMetadataEnvelop,CreateCommandEnvelops(processTransited).ToArray());
+            return new ProcessesTransitComplete(messageMetadataEnvelop,processTransited.SelectMany(p =>p.ProducedCommands).ToArray());
         }
 
-        private static IEnumerable<IMessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<ProcessTransited> messages)
-        {
-            return
-                messages.SelectMany(msg => msg.ProducedCommands
-                                              .Select(c => new MessageMetadataEnvelop<ICommand>(c,
-                                                                                                msg.Metadata.CreateChild(c.Id, msg.ProcessTransitEntry))));
-        }
+        //private static IEnumerable<IMessageMetadataEnvelop<ICommand>> CreateCommandEnvelops(IEnumerable<ProcessTransited> messages)
+        //{
+        //    return
+        //        messages.SelectMany(msg => msg.ProducedCommands
+        //                                      .Select(c => new MessageMetadataEnvelop<ICommand>(c,
+        //                                                                                        msg.Metadata.CreateChild(c.Id, msg.ProcessTransitEntry))));
+        //}
 
         Task IMessageProcessor.Process(IMessageMetadataEnvelop message)
         {

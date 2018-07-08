@@ -10,9 +10,11 @@ namespace GridDomain.CQRS
            Projected
     }
     
+    
     public interface ICommandExecutor
     {
-        Task Execute(ICommand command, IMessageMetadata metadata = null,CommandConfirmationMode confirm = CommandConfirmationMode.Projected);
-        ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand;
+        Task Execute<T>(T command, IMessageMetadata metadata = null,CommandConfirmationMode confirm = CommandConfirmationMode.Projected)
+            where T:ICommand;
+        ICommandExpectationBuilder Prepare<U>(U cmd, IMessageMetadata metadata = null) where U : ICommand;
     }
 }

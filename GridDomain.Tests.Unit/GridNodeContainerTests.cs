@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit
         {
             var container = new ContainerBuilder();
             var actorSystem = ActorSystemBuilders[mode]();
-            container.Register(new GridNodeContainerConfiguration(new LocalAkkaEventBusTransport(actorSystem), _logger));
+            container.Register(new GridNodeContainerConfiguration(new DefaultNodeContext(){Transport = new LocalAkkaEventBusTransport(actorSystem), Log = _logger}));
             actorSystem.Terminate();
             return container.Build();
         }

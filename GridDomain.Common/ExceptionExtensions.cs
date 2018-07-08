@@ -29,8 +29,7 @@ namespace GridDomain.Common
         {
             if (exeption == null)
                 return null;
-            var aggregateException = exeption as AggregateException;
-            return aggregateException == null ? exeption : aggregateException.InnerException.UnwrapSingle();
+            return !(exeption is AggregateException aggregateException) ? exeption : aggregateException.InnerException.UnwrapSingle();
         }
     }
 }

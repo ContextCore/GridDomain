@@ -1,9 +1,10 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands
 {
-    internal class MakeCoffeCommand : Command
+    internal class MakeCoffeCommand : Command<CoffeMachineAggregate>
     {
         public MakeCoffeCommand(string personId, string coffeMachineId) : base(personId)
         {

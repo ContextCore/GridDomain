@@ -9,9 +9,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.FutureEvents
 {
-    public class Given_aggregate_When_raising_future_event_by_commands : FutureEventsTest
+    public class Given_aggregate_When_raising_future_event_by_commands : NodeTestKit
     {
-        public Given_aggregate_When_raising_future_event_by_commands(ITestOutputHelper output) : base(output) { }
+        public Given_aggregate_When_raising_future_event_by_commands(ITestOutputHelper output) : this(new FutureEventsFixture(output)) { }
+        protected Given_aggregate_When_raising_future_event_by_commands(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task When_raising_future_event()
@@ -27,7 +28,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
             var futureEventEnvelop = waitResults.Message<FutureEventScheduledEvent>();
             var producedEvent = waitResults.Message<ValueChangedSuccessfullyEvent>();
 
-            var aggregate = await this.LoadAggregateByActor<TestFutureEventsAggregate>(testCommand.AggregateId);
+            var aggregate = await Node.LoadAggregateByActor<TestFutureEventsAggregate>(testCommand.AggregateId);
 
             //Future_event_fires_in_time()
             Assert.True(scheduledTime.Second - aggregate.ProcessedTime.Second <= 1);

@@ -25,7 +25,7 @@ namespace GridDomain.Tools.Connector {
 
         private ICommandExecutor _commandExecutor;
         private ActorSystem _consoleSystem;
-        private MessageWaiterFactory _waiterFactory;
+        private LocalMessageWaiterFactory _waiterFactory;
         private readonly ILogger _logger;
 
         public GridNodeConnector New(string nodeName, string host, int port)
@@ -50,20 +50,20 @@ namespace GridDomain.Tools.Connector {
             _consoleSystem?.Dispose();
         }
 
-        public async Task Execute(ICommand command, IMessageMetadata metadata = null, CommandConfirmationMode mode = CommandConfirmationMode.Projected)
+        public async Task Execute<T>(T command, IMessageMetadata metadata = null, CommandConfirmationMode mode = CommandConfirmationMode.Projected) where T : ICommand
         {
             if (!IsConnected) throw new NotConnectedException();
             await _commandExecutor.Execute(command, metadata, mode);
         }
 
 
-        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
             if (!IsConnected)throw new NotConnectedException();
             return _waiterFactory.NewExplicitWaiter(defaultTimeout);
         }
 
-        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public ICommandExpectationBuilder Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             if(!IsConnected) throw new NotConnectedException();
             return _commandExecutor.Prepare(cmd, metadata);
@@ -113,16 +113,20 @@ namespace GridDomain.Tools.Connector {
             var transportBridge = new RemoteAkkaEventBusTransport(new LocalAkkaEventBusTransport(_consoleSystem),
                                                                   eventBusForwarder,
                                                                   _defaultTimeout);
-                
-            _commandExecutor = new AkkaCommandPipeExecutor(_consoleSystem,
-                                                           transportBridge,
-                                                           commandExecutionActor,
-                                                           _defaultTimeout);
 
-            _waiterFactory = new MessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
+            var akkaCommandExecutor = new AkkaCommandExecutor(_consoleSystem,
+                                                              transportBridge,
+                                                           
+                                                              _defaultTimeout);
+            akkaCommandExecutor.Init(commandExecutionActor);
+            
+            _commandExecutor = akkaCommandExecutor;
+            
+
+            _waiterFactory = new LocalMessageWaiterFactory(_consoleSystem, transportBridge, _defaultTimeout);
         }
 
-        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewWaiter(defaultTimeout);
         }

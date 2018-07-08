@@ -4,6 +4,7 @@ using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
+using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
@@ -13,6 +14,12 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Unit.CommandsExecution {
     public class When_awaiting_command_execution_without_prepare_and_counting : NodeTestKit
     {
+        
+        public When_awaiting_command_execution_without_prepare_and_counting(ITestOutputHelper output) : this(new NodeTestFixture(output)){}
+        protected When_awaiting_command_execution_without_prepare_and_counting(NodeTestFixture output) :
+            base(output.Add(new BalloonCountingDomainConfiguration())){ }
+        
+        
         class BalloonCountingDomainConfiguration : IDomainConfiguration
         {
             public void Register(IDomainBuilder builder)
@@ -61,9 +68,6 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
                 CreatedCount++;
             }
         }
-
-        public When_awaiting_command_execution_without_prepare_and_counting(ITestOutputHelper output) :
-            base(new NodeTestFixture(output, new BalloonCountingDomainConfiguration())){ }
 
         [Fact]
         public async Task Then_command_executed_sync_and_parralel_message_processor_are_executed()

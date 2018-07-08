@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
     {
         class A { }
 
-        protected override Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter)
+        protected override Task<IWaitResult> ConfigureWaiter(MessagesWaiter waiter)
         {
             return waiter.Expect<string>().Or<A>().Create();
         }

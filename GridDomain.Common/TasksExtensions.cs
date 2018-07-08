@@ -40,13 +40,5 @@ namespace GridDomain.Common
                 throw new TimeoutException(message ?? "The operation has timed out.");
             }
         }
-
-        public static async Task ToChain(this IEnumerable<Task> tasks)
-        {
-            foreach (var t in tasks)
-                await t;
-        }
-
-      
     }
 }

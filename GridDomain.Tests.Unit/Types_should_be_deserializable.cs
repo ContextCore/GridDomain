@@ -6,6 +6,8 @@ using Akka.DI.Core;
 using Akka.Serialization;
 using Akka.TestKit;
 using Akka.TestKit.TestActors;
+using AutoFixture;
+using AutoFixture.Kernel;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -14,20 +16,14 @@ using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node;
 using GridDomain.Node.Serializers;
 using GridDomain.ProcessManagers;
-using GridDomain.ProcessManagers.Creation;
 using GridDomain.ProcessManagers.State;
-using GridDomain.Scheduling;
 using GridDomain.Scheduling.Akka;
 using GridDomain.Scheduling.Quartz;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
-using GridDomain.Tests.Unit.CommandPipe;
-using GridDomain.Tests.Unit.MessageWaiting;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using KellermanSoftware.CompareNetObjects;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.Kernel;
 using Xunit;
 
 namespace GridDomain.Tests.Unit
@@ -62,7 +58,7 @@ namespace GridDomain.Tests.Unit
 
         private class FakeCommand : Command
         {
-            public FakeCommand(string aggregateId) : base(aggregateId) {}
+            public FakeCommand(string aggregateId) : base(aggregateId,"fake") {}
         }
 
         protected override Assembly[] AllAssemblies { get; } = {

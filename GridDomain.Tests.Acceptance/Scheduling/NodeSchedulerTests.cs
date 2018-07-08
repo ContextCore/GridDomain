@@ -29,16 +29,17 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             }
         }
 
-        public NodeSchedulerTests(ITestOutputHelper output) : base(new SchedulerFixture(output))
+        protected NodeSchedulerTests(NodeTestFixture fixture) : base(fixture){}
+        public NodeSchedulerTests(ITestOutputHelper output) : this(new SchedulerFixture(output))
         {
             ResultHolder.Clear();
-            _schedulerActor = new Lazy<IActorRef>(() => Node.ResolveActor(nameof(SchedulingActor)).Result);
         }
 
         private const string Name = "test";
-        private const string Group = "test";
-        private readonly Lazy<IActorRef> _schedulerActor;
-        private IActorRef Scheduler => _schedulerActor.Value;
+        private const string Group = "test1";
+
+        private IActorRef Scheduler => Node.System.GetSchedulingExtension()
+                                           .SchedulingActor;
 
         private ExecutionOptions CreateOptions(double seconds,
                                                TimeSpan? timeout = null,
@@ -48,8 +49,6 @@ namespace GridDomain.Tests.Acceptance.Scheduling
                                                TimeSpan? repeatInterval = null)
         {
             return new ExecutionOptions(BusinessDateTime.UtcNow.AddSeconds(seconds),
-                                        typeof(ScheduledCommandSuccessfullyProcessed),
-                                        id,
                                         timeout);
         }
 
@@ -60,8 +59,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling
             Scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Name, Group), CreateOptions(0.5)));
             Scheduler.Tell(new ScheduleCommandExecution(testMessage, new ScheduleKey(Name, Group), CreateOptions(1)));
 
-            await Task.Delay(2000);
-            Assert.True(ResultHolder.Count == 1);
+            AwaitAssert(() => Assert.Equal(1,ResultHolder.Count),TimeSpan.FromSeconds(10),TimeSpan.FromSeconds(3));
         }
     }
 }

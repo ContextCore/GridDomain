@@ -1,6 +1,7 @@
 using System;
 using Akka;
 using Akka.Actor;
+using Akka.Persistence.Fsm;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
@@ -13,10 +14,16 @@ using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Actors.ProcessManagers
 {
+
+    public static class ProcessHubActor
+    {
+        public static string GetProcessStateActorSelection(Type t) => "user/" + t.BeautyName() + "_Hub";
+    }
     public class ProcessHubActor<TState> : PersistentHubActor where TState : class, IProcessState
     {
         private readonly string _processName;
         const string ProcessSpawnId = "NewProcessSpawner";
+
 
         public ProcessHubActor(IRecycleConfiguration recycleConf, string processName): base(recycleConf, processName)
         {

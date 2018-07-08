@@ -8,16 +8,19 @@ using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.CommandsExecution;
+using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
-    public class Metadata_from_aggregate_command_passed_to_produced_fault : BalloonDomainCommandExecutionTests
+    public class Metadata_from_aggregate_command_passed_to_produced_fault : NodeTestKit
     {
-        public Metadata_from_aggregate_command_passed_to_produced_fault(ITestOutputHelper output) : base(output) {}
+        public Metadata_from_aggregate_command_passed_to_produced_fault(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
+        protected Metadata_from_aggregate_command_passed_to_produced_fault(NodeTestFixture output) : base(output.Add(new BalloonDomainConfiguration())) {}
 
         [Fact]
         public async Task When_execute_aggregate_command_with_fault_and_metadata()
@@ -33,7 +36,7 @@ namespace GridDomain.Tests.Unit.Metadata
             var metadata = res.ReceivedMetadata;
             Assert.NotNull(metadata);
             // Result_contains_message()
-            var fault = res.Fault;
+            var fault = res.Received;
 
             Assert.NotNull(fault);
             //Result_message_has_expected_type()

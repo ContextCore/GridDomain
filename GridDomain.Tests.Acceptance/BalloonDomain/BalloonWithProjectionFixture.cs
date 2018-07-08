@@ -14,7 +14,7 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
                                             DbContextOptions<BalloonContext> dbContextOptions,
                                             NodeConfiguration cfg = null,
                                             Func<NodeConfiguration, string> configBuilder = null) :
-            base(output, cfg, configBuilder, new IDomainConfiguration[] {
+            base(output, cfg, new IDomainConfiguration[] {
             new BalloonWithProjectionDomainConfiguration(dbContextOptions)
         })
 

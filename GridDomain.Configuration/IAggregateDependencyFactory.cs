@@ -1,4 +1,5 @@
 using System;
+using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 

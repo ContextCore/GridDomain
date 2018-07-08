@@ -9,16 +9,19 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.CommandsExecution;
+using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
-    public class Metadata_from_async_aggregate_command_passed_to_produced_events : BalloonDomainCommandExecutionTests
+    public class Metadata_from_async_aggregate_command_passed_to_produced_events : NodeTestKit
     {
-        public Metadata_from_async_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : base(output) { }
+        public Metadata_from_async_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : this(new NodeTestFixture(output)) { }
+        protected Metadata_from_async_aggregate_command_passed_to_produced_events(NodeTestFixture fixture) : base(fixture.Add(new BalloonDomainConfiguration())) { }
 
         private IMessageMetadataEnvelop<BalloonTitleChanged> _answer;
         private PlanTitleChangeCommand _command;
@@ -27,8 +30,8 @@ namespace GridDomain.Tests.Unit.Metadata
         [Fact]
         public async Task When_execute_aggregate_command_with_metadata()
         {
-            _command = new PlanTitleChangeCommand(1, Guid.NewGuid().ToString());
-            _commandMetadata = MessageMetadata.New(_command.Id, Guid.NewGuid().ToString(), null);
+            _command = new PlanTitleChangeCommand(Guid.NewGuid().ToString(),1);
+            _commandMetadata = MessageMetadata.New(_command.Id, Guid.NewGuid().ToString());
 
             var res = await Node.Prepare(_command, _commandMetadata)
                                 .Expect<BalloonTitleChanged>()

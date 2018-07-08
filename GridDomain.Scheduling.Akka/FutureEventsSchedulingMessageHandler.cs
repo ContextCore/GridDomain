@@ -20,22 +20,23 @@ namespace GridDomain.Scheduling.Akka
         private readonly ProcessEntry _schedulingFutureEventProcessEntry;
         private readonly ILogger _logger;
 
-        public FutureEventsSchedulingMessageHandler(IActorRef schedulingActor, ILogger log)
+        public FutureEventsSchedulingMessageHandler(IActorRef actor, ILogger log)
         {
+            _schedulerActorRef = actor;
             _logger = log;
-            _schedulerActorRef = schedulingActor;
-
             _schedulingFutureEventProcessEntry = new ProcessEntry(GetType()
                                                                       .Name,
                                                                   "Scheduling raise future event command",
                                                                   "FutureEventScheduled event occured");
         }
+       
 
         public Task Handle(FutureEventCanceledEvent evt, IMessageMetadata metadata)
         {
+
             var key = CreateScheduleKey(evt.FutureEventId, evt.SourceId, evt.SourceName);
             return _schedulerActorRef.Ask<object>(new Unschedule(key))
-                .ContinueWith(t =>
+                                     .ContinueWith(t =>
                               {
                                   switch (t.Result)
                                   {
@@ -63,12 +64,12 @@ namespace GridDomain.Scheduling.Akka
 
             var scheduleKey = CreateScheduleKey(scheduleId, message.SourceId, message.SourceName, description);
 
-            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid().ToString());
+            var command = new RaiseScheduledDomainEventCommand(message.Id, message.SourceId, Guid.NewGuid().ToString(), message.SourceName);
             var metadata = messageMetadata.CreateChild(command.Id, _schedulingFutureEventProcessEntry);
 
             var scheduleEvent = new ScheduleCommandExecution(command,
                                                              scheduleKey,
-                                                             ExecutionOptions.ForCommand(message.RaiseTime, succesEventType),
+                                                             ExecutionOptions.ForCommand(message.RaiseTime),
                                                              metadata);
 
             return _schedulerActorRef.Ask<object>(scheduleEvent).ContinueWith(t =>

@@ -14,9 +14,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class GivenInstanceProcessWhenExceptionOnTransit : SoftwareProgrammingProcessTest
+    public class GivenInstanceProcessWhenExceptionOnTransit : NodeTestKit
     {
-        public GivenInstanceProcessWhenExceptionOnTransit(ITestOutputHelper helper) : base(helper) {}
+        public GivenInstanceProcessWhenExceptionOnTransit(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) {}
+        protected GivenInstanceProcessWhenExceptionOnTransit(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public async Task When_process_receives_a_message_that_case_process_exception()
@@ -31,12 +32,15 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             var procesStateEvent = new ProcessManagerCreated<SoftwareProgrammingState>(processState, processId);
             await Node.SaveToJournal<ProcessStateAggregate<SoftwareProgrammingState>>(processId, procesStateEvent);
 
-            var results = await Node.NewDebugWaiter()
+            var coffeMachineId = "c"; //will case process manager exception
+            
+            var coffeMakeFailed = new CoffeMakeFailedEvent(coffeMachineId, processState.PersonId).CloneForProcess(processId);
+            
+            var results = await Node.PrepareForProcessManager(coffeMakeFailed)
                                     .Expect<Fault<CoffeMakeFailedEvent>>()
-                                    .Create()
-                                    .SendToProcessManagers(new CoffeMakeFailedEvent(null, processState.PersonId), processId);
+                                    .Send(TimeSpan.FromSeconds(5));
 
-            var fault = results.Message<IFault<CoffeMakeFailedEvent>>();
+            var fault = results.Received;
             //Fault_should_be_produced_and_published()
             Assert.NotNull(fault);
             //Fault_exception_should_contains_stack_trace()

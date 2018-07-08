@@ -8,6 +8,7 @@ using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
 using Serilog;
 using Xunit;
 using Xunit.Abstractions;
+using AutoFixture;
 
 namespace GridDomain.Tests.Unit.Scenario
 {
@@ -15,7 +16,6 @@ namespace GridDomain.Tests.Unit.Scenario
     {
         public ProcessScenarioTests(ITestOutputHelper output)
         {
-            Log.Logger = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
         }
         [Fact]
         public async Task Process_scenario_transit_on_events_respecting_giving_state()

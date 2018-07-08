@@ -5,6 +5,7 @@ using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
+using GridDomain.Node;
 using GridDomain.Scheduling.Quartz.Configuration;
 using Serilog;
 using IScheduler = Quartz.IScheduler;
@@ -12,6 +13,14 @@ using IScheduler = Quartz.IScheduler;
 namespace GridDomain.Scheduling.Akka {
     public static class SchedulingExtensions
     {
+
+        public static SchedulingExtension GetSchedulingExtension(this ActorSystem sys)
+        {
+            return sys.GetExtension<SchedulingExtension>();
+        }
+
+        public static string SchedulingActorPath = nameof(SchedulingActor);
+            
         public static SchedulingExtension InitSchedulingExtension(this ActorSystem system,
                                                                   IQuartzConfig quartzConfig,
                                                                   ILogger logger,

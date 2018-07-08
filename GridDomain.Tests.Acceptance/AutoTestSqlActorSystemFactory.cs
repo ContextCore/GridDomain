@@ -6,7 +6,7 @@ using GridDomain.Tests.Common.Configuration;
 namespace GridDomain.Tests.Acceptance {
     public class AutoTestSqlActorSystemFactory : IActorSystemFactory
     {
-        public ActorSystem Create()
+        public ActorSystem CreateSystem()
         {
             return AutoTestNodeConfiguration.Default.CreateSystem(AutoTestNodeDbConfiguration.Default);
         }

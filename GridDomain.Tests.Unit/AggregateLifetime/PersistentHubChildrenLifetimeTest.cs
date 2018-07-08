@@ -41,7 +41,7 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
 
         private async Task<HealthStatus> PingChild(string payload)
         {
-            return await Child.Ask(new CheckHealth(payload), TimeSpan.FromSeconds(1)) as HealthStatus;
+            return await Child.Ask(new CheckHealth(payload), TimeSpan.FromSeconds(10)) as HealthStatus;
         }
 
         [Fact]

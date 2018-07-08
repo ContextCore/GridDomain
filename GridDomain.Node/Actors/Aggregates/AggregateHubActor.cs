@@ -40,7 +40,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                                      case CommandExecutionFailedException cf:
                                                          return Directive.Restart;
                                                      case CommandAlreadyExecutedException cae:
-                                                         return Directive.Resume;
+                                                         return Directive.Restart;
                                                      default:
                                                          return Directive.Stop;
                                              }

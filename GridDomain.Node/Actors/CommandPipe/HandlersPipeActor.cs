@@ -23,25 +23,57 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class HandlersPipeActor : ReceiveActor
     {
         public const string CustomHandlersProcessActorRegistrationName = "CustomHandlersProcessActor";
-        private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
+        protected ILoggingAdapter Log { get; } = Context.GetSeriLogger();
+
         public HandlersPipeActor(IMessageProcessor handlersCatalog, IActorRef processManagerPipeActor)
         {
-            var publisher = Context.System.GetTransport();
-            ReceiveAsync<IMessageMetadataEnvelop>(envelop =>
-                                                           {
-                                                                 Log.Debug("Received messages to project. {project}",envelop);
-                                                               
-                                                                 return handlersCatalog.Process(envelop)
-                                                                                       .ContinueWith(t =>
-                                                                                                     {
-                                                                                                         processManagerPipeActor.Tell(envelop);
-                                                                                                         publisher.Publish(envelop);
-                                                                                                         return AllHandlersCompleted.Instance;
-                                                                                        })
-                                                                                       .PipeTo(Sender);
-                                                           });
-            Receive<ProcessesTransitComplete>(t => {//just ignore 
-            });
+            Receive<Project>(envelop =>
+                             {
+                                 Log.Debug("Received messages to project. {project}", envelop);
+
+                                 foreach (var e in envelop.Messages)
+                                     handlersCatalog.Process(e)
+                                                    .ContinueWith(t =>
+                                                                  {
+                                                                      Log.Debug("Sent message {@message} to process managers",e);
+                                                                      processManagerPipeActor.Tell(e);
+                                                                      return AllHandlersCompleted.Instance;
+                                                                  })
+                                                    .PipeTo(envelop.ProjectionWaiter);
+                             });
+            Receive<ProcessesTransitComplete>(t =>
+                                              {
+                                                  //just ignore 
+                                              });
+        }
+
+        public class Project : IMessageMetadataEnvelop
+        {
+            private IMessageMetadataEnvelop Envelop { get; set; }
+
+            public Project(IActorRef projectionWaiter, IMessageMetadata metadata, params object[] messages)
+            {
+                Messages = messages.Select(m => new MessageMetadataEnvelop(m, metadata))
+                                   .ToArray();
+                ProjectionWaiter = projectionWaiter;
+                Message = Messages;
+                Metadata = metadata;
+            }
+
+            public Project(IActorRef projectionWaiter, IMessageMetadataEnvelop envelop)
+            {
+                Envelop = envelop;
+                Message = Envelop.Message;
+                Metadata = Envelop.Metadata;
+                Messages = new[] {envelop};
+                ProjectionWaiter = projectionWaiter;
+            }
+
+            public IActorRef ProjectionWaiter { get; }
+            public IReadOnlyCollection<IMessageMetadataEnvelop> Messages { get; }
+
+            public object Message { get; }
+            public IMessageMetadata Metadata { get; }
         }
     }
 }

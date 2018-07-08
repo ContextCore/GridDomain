@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Configuration;
 using Akka.TestKit.Xunit2;
 using GridDomain.Node.Configuration;
 using Serilog.Events;
@@ -13,15 +14,15 @@ namespace GridDomain.Tests.Unit.Logging {
     public class LogForCustomizedSystemTests : TestKit
     {
 
-        private static string GetConfig()
+        private static Config GetConfig()
         {
-            return ActorSystemBuilder.New()
+            return ActorSystemConfigBuilder.New()
                                      .Log(LogEventLevel.Verbose,null,true)
                                      .DomainSerialization()
                                      .RemoteActorProvider()
                                      .Remote(new NodeNetworkAddress())
                                      .InMemoryPersistence()
-                                     .BuildHocon();
+                                     .Build();
         }
         public LogForCustomizedSystemTests(ITestOutputHelper output):base(GetConfig())
         {

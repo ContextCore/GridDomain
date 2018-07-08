@@ -12,14 +12,17 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         private readonly Message _messageB = new Message("B");
         private readonly Message _messageC = new Message("C");
         private readonly Message _messageD = new Message("D");
+        private IMessagesExpectation _messagesExpectation;
 
-        protected override Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter)
+        protected override Task<IWaitResult> ConfigureWaiter(MessagesWaiter waiter)
         {
+            var configureWaiter = waiter.Expect<Message>(m => m.Id == _messageA.Id)
+                                        .Or<Message>(m => m.Id == _messageB.Id)
+                                        .And<Message>(m => m.Id == _messageC.Id)
+                                        .Create();
+            _messagesExpectation = waiter.CreateMessagesExpectation();
             return
-                waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                      .Or<Message>(m => m.Id == _messageB.Id)
-                      .And<Message>(m => m.Id == _messageC.Id)
-                      .Create();
+                configureWaiter;
         }
 
         [Fact]
@@ -30,7 +33,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
                                             MessageMetadataEnvelop.New(_messageB),
                                             MessageMetadataEnvelop.New(_messageC)
                                         };
-            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            Assert.True(_messagesExpectation.IsExpectationFulfilled(sampleObjectsReceived));
         }
 
         [Fact]

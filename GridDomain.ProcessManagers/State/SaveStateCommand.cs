@@ -3,7 +3,7 @@ using GridDomain.CQRS;
 
 namespace GridDomain.ProcessManagers.State
 {
-    public class SaveStateCommand<TState> : Command, IProcessStateCommand<TState> where TState : IProcessState
+    public class SaveStateCommand<TState> : Command<ProcessStateAggregate<TState>>, IProcessStateCommand<TState> where TState : IProcessState
     {
         public TState State { get; }
         public string MessageId { get; }

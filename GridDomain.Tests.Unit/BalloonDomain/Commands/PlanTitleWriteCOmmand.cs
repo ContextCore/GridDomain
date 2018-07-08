@@ -1,9 +1,10 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
-    public class PlanTitleWriteCommand : Command
+    public class PlanTitleWriteCommand : Command<Balloon> , IFor<BalloonCommandHandler>
     {
        
         public PlanTitleWriteCommand(int parameter, string aggregateId) : base(aggregateId)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.SnapshotPolicies;
 
 namespace GridDomain.Node.Actors.EventSourced.SnapshotsPolicy {
     public class SnapshotsSavePolicy : ISnapshotsSavePolicy

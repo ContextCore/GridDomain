@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
     public class Given_aggregate_with_upgraded_event_with_new_field : NodeTestKit
     {
         public Given_aggregate_with_upgraded_event_with_new_field(ITestOutputHelper output)
-            : base(new BalanceFixture(output).UseAdaper(new BalanceChangedDomainEventAdapter1())) {}
+            : base(new BalanceFixture(output).UseAdaper(new BalanceChangedDomainEventAdapter1()).PrintSystemConfig()) {}
 
         protected Given_aggregate_with_upgraded_event_with_new_field(NodeTestFixture fixture): base(fixture) {}
 

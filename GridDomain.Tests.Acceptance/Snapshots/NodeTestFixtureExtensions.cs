@@ -17,22 +17,22 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public static class NodeTestFixtureExtensions
     {
-        public static T SetLogLevel<T>(this T fixture, LogEventLevel value)where T:NodeTestFixture
-        {
-            fixture.NodeConfig.LogLevel = value;
-            return fixture;
-        }
-        
+      
         public static T UseSqlPersistence<T>(this T fixture, bool clearData = true, ISqlNodeDbConfiguration dbConfig = null) where T : NodeTestFixture
         {
             var persistence = dbConfig ?? new AutoTestNodeDbConfiguration();
             if (clearData)
-                fixture.OnNodePreparingEvent += (s, e) =>
-                                                {
-                                                    ClearDomainData(persistence).Wait();
-                                                };
+                fixture.ClearDomainData(dbConfig);
 
-            fixture.ConfigBuilder = n => n.ToDebugStandAloneSystemConfig(persistence);
+             fixture.ActorSystemConfigBuilder.SqlPersistence(persistence);
+
+            return fixture;
+        }
+
+        public static T ClearDomainData<T>(this T fixture, ISqlNodeDbConfiguration dbConfig = null) where T : NodeTestFixture
+        {
+            var persistence = dbConfig ?? new AutoTestNodeDbConfiguration();
+            fixture.OnNodePreparingEvent += (s, e) => ClearDomainData(persistence).Wait();
 
             return fixture;
         }
@@ -65,7 +65,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
                                        "QRTZ_TRIGGER_LISTENERS");
         }
 
-        public static Task<GridDomainNode> CreateNode(this NodeTestFixture fixt, string logFile)
+        public static Task<IExtendedGridDomainNode> CreateNode(this NodeTestFixture fixt, string logFile)
         {
             return fixt.CreateNode(new XUnitAutoTestLoggerConfiguration(fixt.Output, fixt.NodeConfig.LogLevel, logFile).CreateLogger());
         }

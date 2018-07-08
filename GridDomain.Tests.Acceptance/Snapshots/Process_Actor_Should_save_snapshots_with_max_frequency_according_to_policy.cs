@@ -29,48 +29,60 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy : NodeTestKit
     {
-        public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
-            : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
-                                                                       .InitSnapshots(5, TimeSpan.FromSeconds(60))
-                                                                       .IgnorePipeCommands()) { }
+        protected Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(NodeTestFixture fixture) : base(fixture) { }
 
-       
+        public Process_Actor_Should_save_snapshots_with_max_frequency_according_to_policy(ITestOutputHelper output)
+            : base(ConfigureFixture(new SoftwareProgrammingProcessManagerFixture(output))) { }
+
+        protected static NodeTestFixture ConfigureFixture(SoftwareProgrammingProcessManagerFixture softwareProgrammingProcessManagerFixture)
+        {
+            return softwareProgrammingProcessManagerFixture.UseSqlPersistence()
+                                                           .InitSnapshots(5, TimeSpan.FromSeconds(60))
+                                                           .IgnorePipeCommands();
+        }
+
         [Fact]
         public async Task Given_default_policy()
         {
-            var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var startEvent = new GotTiredEvent(Guid.NewGuid()
+                                                   .ToString(),
+                                               Guid.NewGuid()
+                                                   .ToString(),
+                                               Guid.NewGuid()
+                                                   .ToString());
 
-            var resTask = Node.NewDebugWaiter()
+            var resTask = Node.PrepareForProcessManager(startEvent, MessageMetadata.New(startEvent.Id, null, null))
                               .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                              .Create()
-                              .SendToProcessManagers(startEvent,MessageMetadata.New(startEvent.Id, null, null));
+                              .Send();
 
-            var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>().SourceId;
+            var processId = (await resTask).Message<ProcessReceivedMessage<SoftwareProgrammingState>>()
+                                           .SourceId;
 
             var continueEvent = new CoffeMakeFailedEvent(processId, startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
             //to avoid racy state receiving expected message from processing GotTiredEvent 
-            await Node.NewDebugWaiter()
+            await Node.PrepareForProcessManager(continueEvent.CloneForProcess(processId))
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(e => e.MessageId == continueEvent.Id)
-                      .Create()
-                      .SendToProcessManagers(continueEvent, processId);
+                      .Send();
 
-            Log.Info("Testcase enforce additional snapshot save & delete, will kill process manager");
-            await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
+            //wait until process will be killed by inactivity 
+            AwaitAssert(async () =>
+                        {
+                            var snapshots = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
+                                                                                  AggregateFactory.Default)
+                                                                             .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
 
-            var snapshots = await AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
-                                                                  AggregateFactory.Default)
-                                                             .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId);
-
-            //Snapshot_should_be_saved_one_time
-            Assert.Single(snapshots);
-            //Restored_process_state_should_have_correct_ids
-            Assert.True(snapshots.All(s => s.Payload.Id == processId));
-            //Snapshot_should_have_parameters_from_first_event = created event
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
-                         snapshots.First().Payload.State.CurrentStateName);
-            //All_snapshots_should_not_have_uncommited_events
-            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+                            //Snapshot_should_be_saved_one_time
+                            Assert.Single(snapshots);
+                            //Restored_process_state_should_have_correct_ids
+                            Assert.True(snapshots.All(s => s.Payload.Id == processId));
+                            //Snapshot_should_have_parameters_from_first_event = created event
+                            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding),
+                                         snapshots.First()
+                                                  .Payload.State.CurrentStateName);
+                            //All_snapshots_should_not_have_uncommited_events
+                            Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
+                        });
         }
     }
 }

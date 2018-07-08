@@ -1,9 +1,10 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 {
-    public class ScheduleEventInFutureCommand : Command
+    public class ScheduleEventInFutureCommand : Command<TestFutureEventsAggregate>
     {
         public ScheduleEventInFutureCommand(DateTime raiseTime, string aggregateId, string value) : base(aggregateId)
         {

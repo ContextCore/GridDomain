@@ -18,22 +18,21 @@ namespace GridDomain.Node
 {
     public class GridNodeContainerConfiguration : IContainerConfiguration
     {
-        private readonly ILogger _log;
-        private readonly IActorTransport _actorTransport;
+        private INodeContext Context { get; }
 
-        public GridNodeContainerConfiguration(IActorTransport transportMode, ILogger settingsLog)
+        public GridNodeContainerConfiguration(INodeContext context)
         {
-            _log = settingsLog;
-            _actorTransport = transportMode;
+            Context = context;
         }
 
         public void Register(ContainerBuilder container)
         {
-            container.RegisterInstance(_log);
-            container.RegisterInstance<IPublisher>(_actorTransport);
-            container.RegisterInstance<IActorSubscriber>(_actorTransport);
-            container.RegisterInstance(_actorTransport);
-            container.RegisterInstance<IMessageProcessContext>(new MessageProcessContext(_actorTransport, _log));
+            container.RegisterInstance(Context.Log);
+            container.RegisterInstance<IPublisher>(Context.Transport);
+            container.RegisterInstance<IActorSubscriber>(Context.Transport);
+            container.RegisterInstance(Context.Transport);
+            container.RegisterInstance<IMessageProcessContext>(Context);
+            container.RegisterInstance<INodeContext>(Context);
         }
     }
 }

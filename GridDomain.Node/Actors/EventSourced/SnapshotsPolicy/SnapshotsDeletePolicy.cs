@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using GridDomain.Configuration;
-using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotSelectionCriteria;
+using GridDomain.Configuration.SnapshotPolicies;
+using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotPolicies.SnapshotSelectionCriteria;
 
 namespace GridDomain.Node.Actors.EventSourced.SnapshotsPolicy {
     public class SnapshotsDeletePolicy : ISnapshotsDeletePolicy
@@ -36,7 +37,7 @@ namespace GridDomain.Node.Actors.EventSourced.SnapshotsPolicy {
         public IOperationTracker<SnapshotSelectionCriteria> Tracking => _tracker;
     }
     
-    class SnapshotsDeleteTracker : IOperationTracker<SnapshotSelectionCriteria>
+    class SnapshotsDeleteTracker : IOperationTracker<GridDomain.Configuration.SnapshotPolicies.SnapshotSelectionCriteria>
     {
         public int InProgress => _active.Count;
         private readonly HashSet<SnapshotSelectionCriteria> _active = new HashSet<SnapshotSelectionCriteria>();

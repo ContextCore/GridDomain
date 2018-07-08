@@ -5,6 +5,9 @@ namespace GridDomain.Transport.Extension {
     {
         public static TransportExtension InitLocalTransportExtension(this ActorSystem system)
         {
+            var transportExtension = system.GetExtension<TransportExtension>();
+            if (transportExtension != null) return transportExtension;
+            
             return  (TransportExtension)system.RegisterExtension(new TransportExtensionProvider(new LocalAkkaEventBusTransport(system)));
         }
 

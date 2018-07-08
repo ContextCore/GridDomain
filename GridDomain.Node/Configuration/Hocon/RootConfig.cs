@@ -1,5 +1,8 @@
 using System;
 using System.Linq;
+using Akka.Configuration;
+using Akka.Configuration.Hocon;
+using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node.Configuration.Hocon
 {
@@ -14,11 +17,25 @@ namespace GridDomain.Node.Configuration.Hocon
 
         public string Build()
         {
-            var configStrings = _parts.Select(p => p.Build()).ToArray();
-            var configString = string.Join(Environment.NewLine, configStrings);
-            return @"akka {
-" + configString + @"
-}";
+            var cfg = ByStringParse();
+            return cfg;
+        }
+
+        private string ByStringParse()
+        {
+            var configs = _parts.Select(p => p.Build()
+                                              .ToString())
+                                .ToArray();
+
+
+            var configString = string.Join(Environment.NewLine, configs);
+            return configString;
+        }
+
+        private string ByFallbacks()
+        {
+            return  _parts.Select(p => p.Build())
+                         .Aggregate(Config.Empty, (a, c) => a.WithFallback(c)).ToString();
         }
     }
 }

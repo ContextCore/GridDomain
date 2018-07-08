@@ -52,7 +52,8 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
 
         public AggregateSnapshotRepository(string connString,
                                            IConstructAggregates aggregatesConstructor,
-                                           IConstructSnapshots snapshotsConstructor
+                                           IConstructSnapshots snapshotsConstructor,
+                                           int serializerId = 21
                                            ) : this(new DbContextOptionsBuilder().UseSqlServer(connString).Options,
                                                                                               aggregatesConstructor,
                                                     snapshotsConstructor) { }
@@ -89,7 +90,8 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
                                Manifest = snapshot.GetType().AssemblyQualifiedShortName(),
                                PersistenceId = EntityActorName.New<T>(aggregate.Id).Name,
                                Snapshot = new DomainSerializer().ToBinary(snapshot),
-                               Timestamp = BusinessDateTime.UtcNow
+                               Timestamp = BusinessDateTime.UtcNow,
+                               
                            };
                 await repo.Save(item.PersistenceId, item);
             }

@@ -4,17 +4,18 @@ using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller :
-        BalloonDomainCommandExecutionTests
+    public class When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller:NodeTestKit
     {
-        public When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller(
-            ITestOutputHelper output) : base(output) {}
+        public When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
+        protected When_execute_command_expecting_several_events_Then_all_of_them_should_be_availabe_for_caller(NodeTestFixture output) : base(output.Add(new BalloonDomainConfiguration())) {}
 
         private object[] _allReceivedMessages;
 

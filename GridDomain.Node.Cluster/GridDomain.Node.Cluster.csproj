@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj">
+      <Project>{334DBDCC-BF94-4787-93DA-8AA29956A861}</Project>
+      <Name>GridDomain.Node.Persistence.Sql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
+    <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj">
+      <Project>{AED1BC61-D13E-454B-A07B-B443A9097298}</Project>
+      <Name>GridDomain.Tests.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Akka.Cluster" Version="1.3.8" />
+    <PackageReference Include="Akka.Cluster.Sharding" Version="1.3.8-beta66" />
+    <PackageReference Include="Akka.Cluster.Tools" Version="1.3.8" />
+  </ItemGroup>
+</Project>

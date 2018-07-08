@@ -5,15 +5,18 @@ using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
+using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class Execute_command_until_projection_build_notification_fetching_results : BalloonDomainCommandExecutionTests
+    public class Execute_command_until_projection_build_notification_fetching_results : NodeTestKit
     {
-        public Execute_command_until_projection_build_notification_fetching_results(ITestOutputHelper output) : base(output) {}
+        public Execute_command_until_projection_build_notification_fetching_results(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
+        protected Execute_command_until_projection_build_notification_fetching_results(NodeTestFixture output) : base(output.Add(new BalloonDomainConfiguration())) {}
 
         [Fact]
         public async Task Given_command_executes_with_waiter_When_fetching_results()
@@ -25,7 +28,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                                     .Execute();
 
             var changedEvent = results.Received;
-            var aggregate = await this.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
+            var aggregate = await Node.LoadAggregateByActor<Balloon>(syncCommand.AggregateId);
 
             //Results_contains_received_messages()
             Assert.NotEmpty(results.All);

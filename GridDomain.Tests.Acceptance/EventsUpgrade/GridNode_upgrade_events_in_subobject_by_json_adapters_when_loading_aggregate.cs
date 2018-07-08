@@ -3,12 +3,14 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
+using GridDomain.Node.Configuration;
 using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,10 +18,16 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
 {
     public class GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate : NodeTestKit
     {
+        protected GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate(NodeTestFixture fixture):base(fixture){}
         public GridNode_upgrade_events_in_subobject_by_json_adapters_when_loading_aggregate(ITestOutputHelper output)
-            : base(
-                   new BalloonFixture(output).UseSqlPersistence().
-                                        UseAdaper(new String01Adapter())) { }
+            : this(ConfigureDomain(new BalloonFixture(output))) { }
+
+        protected static NodeTestFixture ConfigureDomain(BalloonFixture fixture)
+        {
+            return fixture.UseSqlPersistence()
+                          .UseAdaper(new String01Adapter())
+                          .LogLevel(LogEventLevel.Verbose);
+        }
 
         private class String01Adapter : ObjectAdapter<string, string>
         {
@@ -32,11 +40,13 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
         [Fact]
         public async Task Then_domain_events_should_be_upgraded_by_json_custom_adapter()
         {
-            var cmd = new InflateNewBallonCommand(1, Guid.NewGuid().ToString());
+            var cmd = new InflateNewBallonCommand(1,
+                                                  Guid.NewGuid()
+                                                      .ToString());
 
-            await Node.Prepare(cmd).
-                       Expect<BalloonCreated>().
-                       Execute();
+            await Node.Prepare(cmd)
+                      .Expect<BalloonCreated>()
+                      .Execute();
 
             var aggregate = await Node.LoadAggregate<Balloon>(cmd.AggregateId);
 

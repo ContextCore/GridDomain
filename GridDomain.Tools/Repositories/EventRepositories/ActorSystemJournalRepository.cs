@@ -58,7 +58,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
 
         public static ActorSystemEventRepository New(IActorSystemFactory factory, EventsAdaptersCatalog eventsAdaptersCatalog)
         {
-            var actorSystem = factory.Create();
+            var actorSystem = factory.CreateSystem();
             actorSystem.InitDomainEventsSerialization(eventsAdaptersCatalog);
             return new ActorSystemEventRepository(actorSystem);
         }

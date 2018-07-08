@@ -1,10 +1,13 @@
 using System;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Events
 {
     public class BalloonTitleChanged : DomainEvent,
-                                               IHaveProcessingHistory
+                                       IHaveProcessingHistory,
+                                       IFor<Balloon>
+    
     {
         public BalloonTitleChanged(string value,
                                    string sourceId,

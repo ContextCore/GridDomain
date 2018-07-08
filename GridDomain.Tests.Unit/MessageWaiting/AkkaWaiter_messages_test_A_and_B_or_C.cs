@@ -13,7 +13,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         private C _messageC;
         class B { }
         class C { }
-        protected override Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter)
+        protected override Task<IWaitResult> ConfigureWaiter(MessagesWaiter waiter)
         {
             _messageA = "testMsg";
             _messageC = new C();

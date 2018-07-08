@@ -1,3 +1,4 @@
+using Akka.Configuration;
 using GridDomain.EventSourcing;
 
 namespace GridDomain.Node.Configuration.Hocon

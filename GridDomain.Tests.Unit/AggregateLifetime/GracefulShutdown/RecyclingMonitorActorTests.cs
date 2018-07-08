@@ -5,6 +5,7 @@ using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.RecycleMonitor;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common;
+using Quartz.Logging;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,7 +13,7 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
     public class RecyclingMonitorActorTests:TestKit
     {
-        public RecyclingMonitorActorTests(ITestOutputHelper output):base(new ActorSystemBuilder().Log(LogEventLevel.Debug).BuildHocon(),"test",output)
+        public RecyclingMonitorActorTests(ITestOutputHelper output):base(new ActorSystemConfigBuilder().Log(LogEventLevel.Debug).Build(),"test",output)
         {
         }
 

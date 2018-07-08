@@ -15,42 +15,46 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class ProcessManagerProducedEventsAndCommandsHasProcessId : SoftwareProgrammingProcessTest
+    public class ProcessManagerProducedEventsAndCommandsHasProcessId : NodeTestKit
     {
-        public ProcessManagerProducedEventsAndCommandsHasProcessId(ITestOutputHelper helper) : base(helper) { }
-
-        [Fact]
-        public async Task When_dispatch_command_than_command_should_have_right_processId()
-        {
-            Node.Pipe.ProcessesPipeActor.Tell(new Initialize(TestActor));
-
-            var processCreatedMsg = await Node.NewDebugWaiter()
-                                              .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-                                              .Create()
-                                              .SendToProcessManagers(new GotTiredEvent(Guid.NewGuid().ToString()));
-
-            var processCompleteMsg = FishForMessage<IMessageMetadataEnvelop<ICommand>>(m => true, TimeSpan.FromHours(1));
-            var command = processCompleteMsg.Message;
-
-            Assert.Equal(processCreatedMsg.Message<ProcessStateEvent>()
-                                          .SourceId,
-                         command.ProcessId);
-            Assert.IsAssignableFrom<MakeCoffeCommand>(command);
-        }
+        protected ProcessManagerProducedEventsAndCommandsHasProcessId(NodeTestFixture fixture) : base(fixture) { }
+        public ProcessManagerProducedEventsAndCommandsHasProcessId(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) { }
 
         [Fact]
         public async Task When_process_created_from_event_with_processId_new_Id_is_generated()
         {
-            var domainEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var domainEvent = new GotTiredEvent(Guid.NewGuid()
+                                                    .ToString(),
+                                                Guid.NewGuid()
+                                                    .ToString(),
+                                                Guid.NewGuid()
+                                                    .ToString());
 
-            var waitResults = await Node.NewDebugWaiter()
+            var waitResults = await Node.PrepareForProcessManager(domainEvent)
                                         .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-                                        .Create()
-                                        .SendToProcessManagers(domainEvent);
+                                        .Send();
 
             Assert.NotEqual(domainEvent.ProcessId,
                             waitResults.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
                                        .State.Id);
+        }
+
+        [Fact]
+        public async Task When_dispatch_command_than_command_should_have_right_processId()
+        {
+            var messages = await Node.PrepareForProcessManager(new GotTiredEvent(Guid.NewGuid()
+                                                                                     .ToString()))
+                                     .Expect<MakeCoffeCommand>()
+                                     .And<ProcessManagerCreated<SoftwareProgrammingState>>()
+                                     .Send();
+
+            var command = messages.Message<MakeCoffeCommand>();
+            var processCreatedEvent = messages.Message<ProcessStateEvent>();
+
+            Assert.Equal(processCreatedEvent.SourceId,
+                         command.ProcessId);
+
+            Assert.IsAssignableFrom<MakeCoffeCommand>(command);
         }
     }
 }

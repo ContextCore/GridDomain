@@ -1,3 +1,5 @@
+using Akka.Configuration;
+
 namespace GridDomain.Node.Configuration.Hocon
 {
     internal class InMemoryJournalConfig : IHoconConfig
@@ -11,16 +13,18 @@ namespace GridDomain.Node.Configuration.Hocon
 
         public string Build()
         {
-            return @"
-                 journal {
+            var build = _eventAdaptersConfig.Build();
+            string config = @"
+                 akka.persistence.journal {
                     plugin = ""akka.persistence.journal.inmem""
                     inmem {
                             class = ""Akka.Persistence.Journal.MemoryJournal, Akka.Persistence""
                             plugin-dispatcher = ""akka.actor.default-dispatcher""
-                            " + _eventAdaptersConfig.Build() + @"
+                            " + build.ToString() + @"
                                 }
                         }
 ";
+            return config;
         }
     }
 }

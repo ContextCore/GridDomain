@@ -17,9 +17,10 @@ namespace GridDomain.EventSourcing
         public IReadOnlyCollection<Type> RegisteredCommands => Catalog.Keys.ToArray();
         public Type AggregateType { get; } = typeof(TAggregate);
 
-        public Task<TAggregate> ExecuteAsync(TAggregate aggregate, ICommand command)
+        public async Task<TAggregate> ExecuteAsync(TAggregate aggregate, ICommand command)
         {
-            return Get(command).Invoke(aggregate, command);
+            var commandExecutionDelegate = Get(command);
+            return await commandExecutionDelegate(aggregate, command);
         }
 
         public override CommandExecutionDelegate<TAggregate> Get(ICommand command)
@@ -38,8 +39,8 @@ namespace GridDomain.EventSourcing
         protected internal void Map<TCommand>(Func<TCommand, TAggregate, Task> commandExecutor) where TCommand : ICommand
         {
             Add<TCommand>(async (a,c) => {
-                                await commandExecutor((TCommand)c, a);
-                                return a;
+                              await commandExecutor((TCommand) c, a);
+                              return a;
                           });
         }
 
@@ -53,7 +54,7 @@ namespace GridDomain.EventSourcing
             Add<TCommand>( async (a, c) =>
                             {
                                 commandExecutor((TCommand) c, a);
-                                //need async await for proper esception handling
+                                //need async await for proper exception handling
                                 return await Task.FromResult(a);
                             });
         }
@@ -65,7 +66,7 @@ namespace GridDomain.EventSourcing
         /// <param name="aggregateCreator"></param>
         protected internal void Map<TCommand>(Func<TCommand, TAggregate> aggregateCreator) where TCommand : ICommand
         {
-            Add<TCommand>( (a, c) => Task.FromResult(aggregateCreator((TCommand)c)));
+            Add<TCommand>(async (a, c) => await Task.FromResult(aggregateCreator((TCommand)c)));
         }
     }
 }

@@ -4,7 +4,7 @@ using GridDomain.ProcessManagers;
 
 namespace GridDomain.Node.Actors.ProcessManagers.Messages
 {
-    class GetProcessState
+    public class GetProcessState
     {
         public string Id { get; }
 
@@ -12,6 +12,5 @@ namespace GridDomain.Node.Actors.ProcessManagers.Messages
         {
             Id = id;
         }
-
     }
 }

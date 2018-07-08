@@ -16,7 +16,7 @@ namespace GridDomain.Node {
             }
             catch 
             {
-                system.Log.Error($"Cant deserialize {type} with wire");
+                system.Log.Error($"Cant deserialize {type} with hyperion");
                 throw;
             }
         }

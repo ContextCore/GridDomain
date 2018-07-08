@@ -6,6 +6,7 @@ using Akka;
 using Akka.Actor;
 using Akka.DI.Core;
 using Akka.Event;
+using GreenPipes.Contexts;
 using GridDomain.Common;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
@@ -38,23 +39,22 @@ namespace GridDomain.Node.Actors.ProcessManagers
         private readonly ProcessEntry _producedCommand;
         private readonly IProcessStateFactory<TState> _processStateFactory;
         private readonly IPublisher _publisher;
-        private readonly ILoggingAdapter _log;
+        public ILoggingAdapter Log { get; }
         private BehaviorQueue Behavior { get; }
         private ActorMonitor Monitor { get; }
         private IActorRef _stateAggregateActor;
-        private static readonly string ProcessStateActorSelection = "user/" + typeof(TState).BeautyName() + "_Hub";
         private readonly ActorSelection _stateActorSelection;
         public IProcess<TState> Process { get; private set; }
         public TState State { get; private set; }
 
         public IStash Stash { get; set; }
 
-        private string Id { get; }
+        protected string Id { get; }
 
         class ProcessExecutionContext
         {
-            public TState PendingState { get; private set;}
-            public IMessageMetadataEnvelop ProcessingMessage { get;private set;}
+            public TState PendingState { get; private set; }
+            public IMessageMetadataEnvelop ProcessingMessage { get; private set; }
             public IActorRef ProcessingMessageSender { get; private set; }
 
             public bool IsFinished => PendingState == null;
@@ -62,14 +62,14 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             public void StartNewExecution(TState pendingState, IMessageMetadataEnvelop msg, IActorRef sender)
             {
-                if(IsInitializing) 
+                if (IsInitializing)
                     throw new InvalidOperationException("Cannot start new execution while initializing");
 
                 PendingState = pendingState ?? throw new ProcessStateNullException();
                 ProcessingMessage = msg;
                 ProcessingMessageSender = sender;
             }
-            
+
             public void Clear()
             {
                 PendingState = null;
@@ -80,7 +80,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
         }
 
         private ProcessExecutionContext ExecutionContext { get; } = new ProcessExecutionContext();
-        public ProcessActor(IProcess<TState> process, IProcessStateFactory<TState> processStateFactory)
+
+        public ProcessActor(IProcess<TState> process, IProcessStateFactory<TState> processStateFactory, string stateActorPath)
 
         {
             Process = process;
@@ -89,16 +90,16 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             if (!EntityActorName.TryParseId(Self.Path.Name, out var id))
                 throw new BadNameFormatException();
-            
+
             Id = id;
 
             _publisher = Context.System.GetTransport();
             _processStateFactory = processStateFactory;
-            _log = Context.GetSeriLogger();
+            Log = Context.GetSeriLogger();
 
             _exceptionOnTransit = ProcessManagerActorConstants.ExceptionOnTransit(Self.Path.Name);
             _producedCommand = ProcessManagerActorConstants.ProcessProduceCommands(Self.Path.Name);
-            _stateActorSelection = Context.System.ActorSelection(ProcessStateActorSelection);
+            _stateActorSelection = Context.System.ActorSelection(stateActorPath);
 
             Behavior.Become(InitializingBehavior, nameof(InitializingBehavior));
         }
@@ -113,41 +114,52 @@ namespace GridDomain.Node.Actors.ProcessManagers
         private void InitializingBehavior()
         {
             ExecutionContext.IsInitializing = true;
-            
+
             _stateActorSelection.ResolveOne(TimeSpan.FromSeconds(10))
                                 .PipeTo(Self);
 
-            Receive<Status.Failure>(f => throw new CannotFindProcessStatePersistenceActor(ProcessStateActorSelection));
+            Receive<Status.Failure>(f => throw new CannotFindProcessStatePersistenceActor(f.Cause.ToString()));
             Receive<IActorRef>(r =>
-                              {
-                                  _stateAggregateActor = r;
-                                  _stateAggregateActor.Tell(new GetProcessState(Id));
-                              });
+                               {
+                                   _stateAggregateActor = r;
+                                   _stateAggregateActor.Ask<ProcesStateMessage<TState>>(CreateGetStateMessage(), TimeSpan.FromSeconds(3))
+                                                       .PipeTo(Self);
+                               });
+            Receive<Status.Failure>(r =>
+                                    {
+                                        Log.Error("Timeout passed waiting for state data from state actor");
+                                        throw r.Cause;
+                                    });
             Receive<ProcesStateMessage<TState>>(ss =>
                                                 {
                                                     State = ss.State;
                                                     ExecutionContext.IsInitializing = false;
                                                     Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
                                                 });
+
             StashingMessagesToProcessBehavior("process is initializing");
+        }
+
+        protected virtual object CreateGetStateMessage()
+        {
+            return new GetProcessState(Id);
         }
 
         private void StashMessage(object m, string reason)
         {
-            _log.Debug("Stashing message {message} because {reason}", m, reason);
+            Log.Debug("Stashing message {message} because {reason}", m, reason);
             Stash.Stash();
         }
 
-        private void AwaitingMessageBehavior()
+        protected virtual void AwaitingMessageBehavior()
         {
             Stash.Unstash();
 
             Receive<IMessageMetadataEnvelop>(env =>
                                              {
-
                                                  if (env.Message is ProcessRedirect redirect)
                                                  {
-                                                     _log.Debug("Received redirected message");
+                                                     Log.Debug("Received redirected message");
                                                      Self.Tell(redirect.MessageToRedirect, Sender);
                                                      Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
                                                      return;
@@ -160,11 +172,11 @@ namespace GridDomain.Node.Actors.ProcessManagers
                                                  }
                                                  else
                                                  {
-                                                     if(Id != GetProcessId(env.Message))
+                                                     if (Id != GetProcessId(env.Message))
                                                      {
-                                                         _log.Error("Received message {@message} "
-                                                                    + "targeting different process. Process will not proceed.",
-                                                                    env);
+                                                         Log.Error("Received message {@message} "
+                                                                   + "targeting different process. Process will not proceed.",
+                                                                   env);
 
                                                          FinishWithError(env, Sender, new ProcessIdMismatchException());
                                                          return;
@@ -180,44 +192,48 @@ namespace GridDomain.Node.Actors.ProcessManagers
         private void ProxifyingCommandsBehavior()
         {
             Receive<Shutdown.Request>(r =>
-                                              {
-                                                  if (ExecutionContext.IsInitializing)
-                                                  {
-                                                      _log.Debug("Process gracefull shutdown request declined. Waiting initializtion to finish");
-                                                      return;
-                                                  }
-                                                  
-                                                  if (!ExecutionContext.IsFinished)
-                                                  {
-                                                      _log.Debug("Process gracefull shutdown request declined. Waiting process execution to finish");
-                                                      return;
-                                                  }
-                                                  
-                                                   _log.Debug("Terminating process due to gracefull shutdown request");
-                                                   Context.Stop(Self);
-                                              });
+                                      {
+                                          if (ExecutionContext.IsInitializing)
+                                          {
+                                              Log.Debug("Process gracefull shutdown request declined. Waiting initializtion to finish");
+                                              return;
+                                          }
+
+                                          if (!ExecutionContext.IsFinished)
+                                          {
+                                              Log.Debug("Process gracefull shutdown request declined. Waiting process execution to finish");
+                                              return;
+                                          }
+                                                                    // process state should be stopped due to inactivity - only process actor can send 
+                                          //commands to state actor
+                                          Log.Debug("Stopped by request");
+                                          Context.Stop(Self);
+                                      });
 
 
             Receive<CheckHealth>(s => Sender.Tell(new HealthStatus(s.Payload)));
 
-            Receive<NotifyOnPersistenceEvents>(c => ((ICanTell)_stateAggregateActor ?? _stateActorSelection).Tell(c, Sender));
+            Receive<NotifyOnPersistenceEvents>(c => ((ICanTell) _stateAggregateActor ?? _stateActorSelection).Tell(c, Sender));
         }
 
-       
+        protected virtual object GetShutdownMessage(Shutdown.Request r)
+        {
+            return r;
+        }
+
         private void CreatingProcessBehavior()
         {
-
             Receive<CreateNewProcess>(c =>
                                       {
-                                          _log.Debug("Creating new process instance from {@message}", c);
+                                          Log.Debug("Creating new process instance from {@message}", c);
                                           var pendingState = _processStateFactory.Create(c.Message.Message);
 
                                           ExecutionContext.StartNewExecution(pendingState, c.Message, Sender);
-                                        
+
                                           var cmd = new CreateNewStateCommand<TState>(ExecutionContext.PendingState.Id, ExecutionContext.PendingState);
                                           //will reply with CommandExecuted
-                                          _stateAggregateActor.Tell(new MessageMetadataEnvelop<ICommand>(cmd, ExecutionContext.ProcessingMessage.Metadata));
-                                          Behavior.Become(AwaitingCreationConfirmationBehavior,nameof(AwaitingCreationConfirmationBehavior));
+                                          _stateAggregateActor.Tell(EnvelopStateCommand(cmd, ExecutionContext.ProcessingMessage.Metadata));
+                                          Behavior.Become(AwaitingCreationConfirmationBehavior, nameof(AwaitingCreationConfirmationBehavior));
                                       });
 
             void AwaitingCreationConfirmationBehavior()
@@ -226,28 +242,47 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
                 //from state aggregate actor after persist
                 Receive<AggregateActor.CommandExecuted>(c =>
-                                         {
-                                             _log.Debug("Process instance created by message {@processResult}", ExecutionContext.ProcessingMessage);
+                                                        {
+                                                            Log.Debug("Process instance created by message {@processResult}", ExecutionContext.ProcessingMessage);
 
-                                             var pendingStateId = ExecutionContext.PendingState.Id;
-                                             if(Id != pendingStateId)
-                                             {
-                                                 _log.Debug("Redirecting message to newly created process state instance, {id}", pendingStateId);
-                                                 var redirect = new MessageMetadataEnvelop(new ProcessRedirect(pendingStateId, ExecutionContext.ProcessingMessage), ExecutionContext.ProcessingMessage.Metadata);
-                                                 //requesting redirect from parent - persistence hub 
-                                                 Context.Parent.Tell(redirect, ExecutionContext.ProcessingMessageSender);
-                                                 Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
-                                                 ExecutionContext.Clear();
-                                                 return;
-                                             }
-                                             
-                                             State = ExecutionContext.PendingState;
-                                             Self.Tell(ExecutionContext.ProcessingMessage, ExecutionContext.ProcessingMessageSender);
-                                             Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
-                                             ExecutionContext.Clear();
-                                         });
+                                                            var pendingStateId = ExecutionContext.PendingState.Id;
+                                                            if (Id != pendingStateId)
+                                                            {
+                                                                Log.Debug("Redirecting message to newly created process state instance, {id}", pendingStateId);
+                                                                var processRedirect = new ProcessRedirect(pendingStateId, ExecutionContext.ProcessingMessage);
+
+                                                                var redirect = Envelop(processRedirect, ExecutionContext.ProcessingMessage.Metadata);
+
+                                                                //requesting redirect from parent - persistence hub 
+                                                                RedirectActor()
+                                                                    .Tell(redirect, ExecutionContext.ProcessingMessageSender);
+                                                                Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
+                                                                ExecutionContext.Clear();
+                                                                return;
+                                                            }
+
+                                                            State = ExecutionContext.PendingState;
+                                                            Self.Tell(ExecutionContext.ProcessingMessage, ExecutionContext.ProcessingMessageSender);
+                                                            Behavior.Become(TransitingProcessBehavior, nameof(TransitingProcessBehavior));
+                                                            ExecutionContext.Clear();
+                                                        });
                 StashingMessagesToProcessBehavior("process is waiting for process instance creation");
             }
+        }
+
+        protected virtual IActorRef RedirectActor()
+        {
+            return Context.Parent;
+        }
+
+        protected virtual IMessageMetadataEnvelop Envelop(ProcessRedirect processRedirect, IMessageMetadata metadata)
+        {
+            return new MessageMetadataEnvelop(processRedirect, metadata);
+        }
+
+        protected virtual IMessageMetadataEnvelop EnvelopStateCommand(ICommand cmd, IMessageMetadata metadata)
+        {
+            return new MessageMetadataEnvelop<ICommand>(cmd, metadata);
         }
 
         private void TransitingProcessBehavior()
@@ -258,11 +293,11 @@ namespace GridDomain.Node.Actors.ProcessManagers
 
             Receive<IMessageMetadataEnvelop>(messageEnvelop =>
                                              {
-                                                 _log.Debug("Transiting process by {@message}", messageEnvelop);
+                                                 Log.Debug("Transiting process by {@message}", messageEnvelop);
 
                                                  processingEnvelop = messageEnvelop;
                                                  processingMessageSender = Sender;
-                                                 var pendingState = (TState)State.Clone();
+                                                 var pendingState = (TState) State.Clone();
                                                  Behavior.Become(() => AwaitingTransitionConfirmationBehavior(pendingState), nameof(AwaitingTransitionConfirmationBehavior));
                                                  Process.Transit(pendingState, messageEnvelop.Message)
                                                         .PipeTo(Self);
@@ -271,29 +306,30 @@ namespace GridDomain.Node.Actors.ProcessManagers
             void AwaitingTransitionConfirmationBehavior(TState pendingState)
             {
                 Receive<IReadOnlyCollection<ICommand>>(transitionResult =>
-                                               {
-                                                   _log.Debug("Process was transited, new state is {@state}", pendingState);
-                                                   producedCommands = transitionResult;
-                                                   var cmd = new SaveStateCommand<TState>(Id,
-                                                                                          pendingState,
-                                                                                          GetMessageId(processingEnvelop));
-                                                   //will reply back with CommandExecuted
-                                                   _stateAggregateActor.Tell(new MessageMetadataEnvelop<SaveStateCommand<TState>>(cmd, processingEnvelop.Metadata));
-                                               });
+                                                       {
+                                                           Log.Debug("Process was transited, new state is {@state}", pendingState);
+                                                           producedCommands = transitionResult;
+                                                           var cmd = new SaveStateCommand<TState>(Id,
+                                                                                                  pendingState,
+                                                                                                  GetMessageId(processingEnvelop));
+                                                           //will reply back with CommandExecuted
+                                                           _stateAggregateActor.Tell(EnvelopStateCommand(cmd, processingEnvelop.Metadata));
+                                                       });
                 Receive<AggregateActor.CommandExecuted>(c =>
-                                         {
-                                             State = pendingState;
-                                             processingMessageSender.Tell(new ProcessTransited(producedCommands,processingEnvelop.Metadata,
-                                                                          _producedCommand,
-                                                                          State));
-                                             _log.Debug("Process dispatched {count} commands {@commands}", producedCommands?.Count ?? 0, producedCommands);
+                                                        {
+                                                            State = pendingState;
+                                                            processingMessageSender.Tell(new ProcessTransited(producedCommands,
+                                                                                                              processingEnvelop.Metadata,
+                                                                                                              _producedCommand,
+                                                                                                              State));
+                                                            Log.Debug("Process dispatched {count} commands {@commands}", producedCommands?.Count ?? 0, producedCommands);
 
-                                             Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
-                                             pendingState = null;
-                                             processingMessageSender = null;
-                                             processingEnvelop = null;
-                                             producedCommands = null;
-                                         });
+                                                            Behavior.Become(AwaitingMessageBehavior, nameof(AwaitingMessageBehavior));
+                                                            pendingState = null;
+                                                            processingMessageSender = null;
+                                                            processingEnvelop = null;
+                                                            producedCommands = null;
+                                                        });
 
                 Receive<Status.Failure>(f => FinishWithError(processingEnvelop, processingMessageSender, f.Cause));
 
@@ -308,15 +344,17 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 case IHaveId e: return e.Id;
                 case IFault<ICommand> e: return e.Message.Id;
             }
+
             throw new CannotGetProcessIdFromMessageException(processingEnvelop);
         }
 
         private void FinishWithError(IMessageMetadataEnvelop processingMessage, IActorRef messageSender, Exception error)
         {
-            _log.Error(error, "Error during execution of message {@message}", processingMessage);
+            Log.Error(error, "Error during processing of message {@message}", processingMessage);
 
             var processorType = Process?.GetType() ?? typeof(TState);
-            var fault = (IFault) Fault.NewGeneric(processingMessage.Message, error.UnwrapSingle(), Id, processorType);
+            var faultId = "fault_process_transit" + Guid.NewGuid();
+            var fault = (IFault) Fault.NewGeneric(faultId, processingMessage.Message, error.UnwrapSingle(), Id, processorType);
 
             var faultMetadata = MessageMetadataExtensions.CreateChild(processingMessage.Metadata, (string) fault.ProcessId, _exceptionOnTransit);
 
@@ -335,15 +373,18 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 case IFault f: return f.ProcessId;
                 case IHaveProcessId p: return p.ProcessId;
             }
+
             throw new CannotGetProcessIdFromMessageException(msg);
         }
     }
 
+    internal class MessageReceivedOnTerminationException : Exception
+    {
+        public MessageReceivedOnTerminationException() : base("Received a new message to process after State asked to terminate") { }
+    }
+
     internal class ProcessStateNullException : Exception
     {
-        public ProcessStateNullException():base("Process state, produced by state factory is null, check factory for possible errors")
-        {
-            
-        }
+        public ProcessStateNullException() : base("Process state, produced by state factory is null, check factory for possible errors") { }
     }
 }

@@ -1,90 +1,166 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Akka.Actor;
 using Akka.DI.AutoFac;
 using Akka.DI.Core;
-using Akka.Util.Internal;
 using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
-using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors;
+using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
-using GridDomain.Transport.Remote;
 using GridDomain.Transport;
 using GridDomain.Transport.Extension;
 using Serilog;
-using Serilog.Core;
-using ICommand = GridDomain.CQRS.ICommand;
 
-namespace GridDomain.Node
-{
-    public class GridDomainNode : IGridDomainNode
+namespace GridDomain.Node {
+    public class GridDomainLocalNode : GridDomainNode
     {
-        private ICommandExecutor _commandExecutor;
-
-        private bool _stopping;
-        private IMessageWaiterFactory _waiterFactory;
-        internal CommandPipe Pipe;
-
-        public GridDomainNode(IActorSystemFactory actorSystemFactory, params IDomainConfiguration[] domainConfigurations)
-            :this(domainConfigurations,actorSystemFactory, new DefaultLoggerConfiguration().CreateLogger().ForContext<GridDomainNode>())
-        { }
-        public GridDomainNode(IActorSystemFactory actorSystemFactory, ILogger log, params IDomainConfiguration[] domainConfigurations)
-            : this(domainConfigurations, actorSystemFactory, log)
-        { }
-        public GridDomainNode(IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan timeout, params IDomainConfiguration[] domainConfigurations)
-            : this(domainConfigurations, actorSystemFactory, log, timeout)
-        { }
-
-        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan? defaultTimeout = null)
+        private AkkaCommandExecutor _akkaCommandExecutor;
+        public GridDomainLocalNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan defaultTimeout) : base(domainConfigurations, actorSystemFactory, log, defaultTimeout) { }
+        
+        protected override ICommandExecutor CreateCommandExecutor()
         {
-            DomainConfigurations = domainConfigurations.ToList();
-            if(!DomainConfigurations.Any())
-                throw new NoDomainConfigurationException();
-
-            DefaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(10);
-            Log = log;
-            _actorSystemFactory = actorSystemFactory;
+            _akkaCommandExecutor = new AkkaCommandExecutor(System,Transport,DefaultTimeout);
+            return _akkaCommandExecutor;
         }
 
-        public EventsAdaptersCatalog EventsAdaptersCatalog { get; private set; }
-        public IActorTransport Transport { get; private set; }
-        public ActorSystem System { get; private set; }
-        private IActorRef ActorTransportProxy { get; set; }
+        protected override IActorCommandPipe CreateCommandPipe()
+        {
+            return new LocalCommandPipe(System);
+        }
 
-        private IContainer Container { get; set; }
-        private ContainerBuilder _containerBuilder;
-        private readonly IActorSystemFactory _actorSystemFactory;
-        public ILogger Log { get; }
-        internal readonly List<IDomainConfiguration> DomainConfigurations;
-        public TimeSpan DefaultTimeout { get; }
+        protected override IActorTransport CreateTransport()
+        {
+            return System.InitLocalTransportExtension().Transport;
+        }
 
-        public Guid Id { get; } = Guid.NewGuid();
-        public event EventHandler<GridDomainNode> Initializing = delegate { };
+        protected override async Task StartMessageRouting()
+        {
+            await base.StartMessageRouting();
+            _akkaCommandExecutor.Init(Pipe.CommandExecutor);
+        }
 
-        public Task Execute(ICommand command, IMessageMetadata metadata = null, CommandConfirmationMode mode = CommandConfirmationMode.Projected)
+        protected override DomainBuilder CreateDomainBuilder()
+        {
+            return new DomainBuilder(ProcessHubActor.GetProcessStateActorSelection);
+        }
+    }
+
+    public interface INodeContext :IMessageProcessContext
+    {
+           ActorSystem System { get;}
+           IActorTransport Transport { get; }
+           ICommandExecutor Executor { get; }
+    }
+
+    public static class DomainBuilderExtensions
+    {
+        public static HandlerRegistrator<INodeContext,TMessage, THandler> RegisterNodeHandler<TMessage, THandler>(this IDomainBuilder builder, Func<INodeContext, THandler> producer) where THandler : IHandler<TMessage>
+                                                                                                                                                                               where TMessage : class, IHaveProcessId, IHaveId
+        {
+            return new HandlerRegistrator<INodeContext,TMessage, THandler>(producer, builder);
+        }
+    }
+    
+    public class DefaultNodeContext : INodeContext
+    {
+        public ICommandExecutor Executor { get; set; }
+        public ActorSystem System { get;  set;}
+        public IActorTransport Transport { get;  set;}
+        public IPublisher Publisher => Transport;
+        public ILogger Log { get;  set;}
+    }
+    
+    public abstract class GridDomainNode : IExtendedGridDomainNode
+    {
+        private ICommandExecutor _commandExecutor
+        {
+            get => _context.Executor;
+            set => _context.Executor = value;
+        }
+        
+        private IMessageWaiterFactory _waiterFactory;
+        public IActorCommandPipe Pipe { get; protected set; }
+
+        protected abstract ICommandExecutor CreateCommandExecutor();
+        protected abstract IActorCommandPipe CreateCommandPipe();
+        protected abstract IActorTransport CreateTransport();
+        
+        public IMessageWaiter NewWaiter(TimeSpan? defaultTimeout = null)
+        {
+            return _waiterFactory.NewWaiter(defaultTimeout);
+        }
+        public Task Execute<T>(T command, IMessageMetadata metadata = null, CommandConfirmationMode mode = CommandConfirmationMode.Projected) where T : ICommand
         {
             return _commandExecutor.Execute(command, metadata, mode);
         }
 
-        public IMessageWaiter<Task<IWaitResult>> NewExplicitWaiter(TimeSpan? defaultTimeout = null)
+        public IMessageWaiter NewExplicitWaiter(TimeSpan? defaultTimeout = null)
         {
             return _waiterFactory.NewExplicitWaiter(defaultTimeout ?? DefaultTimeout);
         }
 
-        public ICommandWaiter Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
+        public ICommandExpectationBuilder Prepare<T>(T cmd, IMessageMetadata metadata = null) where T : ICommand
         {
             return _commandExecutor.Prepare(cmd, metadata);
         }
+        
+        private bool _stopping;
 
+        protected GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, 
+                                  IActorSystemFactory actorSystemFactory,
+                                  ILogger log, 
+                                  TimeSpan defaultTimeout)
+        {
+            _domainConfigurations = domainConfigurations.ToList();
+            if(!_domainConfigurations.Any())
+                throw new NoDomainConfigurationException();
+            if (_domainConfigurations.Any(d => d == null))
+                throw new InvalidDomainConfigurationException();
+            
+            DefaultTimeout = defaultTimeout;
+            Log = log;
+            _actorSystemFactory = actorSystemFactory;
+            EventsAdaptersCatalog = new EventsAdaptersCatalog();
+            Initialize();
+        }
+
+        public EventsAdaptersCatalog EventsAdaptersCatalog { get; private set; }
+        
+        public IActorTransport Transport { get => _context.Transport;
+            private set => _context.Transport = value;
+        }
+
+        public ActorSystem System
+        {
+            get => _context.System;
+            private set => _context.System = value;
+        }
+
+        private IContainer Container { get; set; }
+        private readonly IActorSystemFactory _actorSystemFactory;
+        public ILogger Log
+        {
+            get => _context.Log;
+            private set => _context.Log = value;
+        }
+        
+        private readonly List<IDomainConfiguration> _domainConfigurations;
+        public TimeSpan DefaultTimeout { get; }
+        public Guid Id { get; } = Guid.NewGuid();
+
+        readonly DefaultNodeContext _context = new DefaultNodeContext();
+        private INodeContext Context => _context;
+        
         public void Dispose()
         {
             Stop().Wait();
@@ -98,65 +174,80 @@ namespace GridDomain.Node
         public async Task Start()
         {
             Log.Information("Starting GridDomain node {Id}", Id);
+            
+            var domainBuilder = InitDomainBuilder();
 
-            _stopping = false;
-            EventsAdaptersCatalog = new EventsAdaptersCatalog();
-            _containerBuilder = new ContainerBuilder();
+            await ConfigureDomain(domainBuilder);
+            
+            _commandExecutor = CreateCommandExecutor();
 
-            System = _actorSystemFactory.Create();
-            System.RegisterOnTermination(OnSystemTermination);
+            BuildContainer(domainBuilder);
+            
+            await StartMessageRouting();
 
-            System.InitLocalTransportExtension();
-            Transport = System.GetTransport();
-
-            _containerBuilder.Register(new GridNodeContainerConfiguration(Transport, Log));
-            _waiterFactory = new MessageWaiterFactory(System, Transport, DefaultTimeout);
-
-            Initializing.Invoke(this, this);
-
-            System.InitDomainEventsSerialization(EventsAdaptersCatalog);
-
-            ActorTransportProxy = System.ActorOf(Props.Create(() => new LocalTransportProxyActor()), nameof(ActorTransportProxy));
-
-            //var appInsightsConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
-            //var perfCountersConfig = AppInsightsConfigSection.Default ?? new DefaultAppInsightsConfiguration();
-            //
-            //if(appInsightsConfig.IsEnabled)
-            //{
-            //    var monitor = new ActorAppInsightsMonitor(appInsightsConfig.Key);
-            //    ActorMonitoringExtension.RegisterMonitor(System, monitor);
-            //}
-            //if(perfCountersConfig.IsEnabled)
-            //    ActorMonitoringExtension.RegisterMonitor(System, new ActorPerformanceCountersMonitor());
-
-            _commandExecutor = await CreateCommandExecutor();
-            _containerBuilder.RegisterInstance(_commandExecutor);
-
-            var domainBuilder = CreateDomainBuilder();
-            domainBuilder.Configure(_containerBuilder);
-
-            Container = _containerBuilder.Build();
-            System.AddDependencyResolver(new AutoFacDependencyResolver(Container, System));
-            domainBuilder.Configure(Pipe);
-            var nodeController = System.ActorOf(Props.Create(() => new GridNodeController(Pipe.CommandExecutor,ActorTransportProxy)), nameof(GridNodeController));
-
-            await nodeController.Ask<GridNodeController.Alive>(GridNodeController.HeartBeat.Instance);
+            await CreateControllerActor();
 
             Log.Information("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
         }
 
-        private async Task<ICommandExecutor> CreateCommandExecutor()
+        protected virtual async Task StartMessageRouting()
         {
-            Pipe = new CommandPipe(System);
-            var commandExecutorActor = await Pipe.Init(_containerBuilder);
-            return new AkkaCommandPipeExecutor(System, Transport, commandExecutorActor, DefaultTimeout);
+            await Pipe.StartRoutes();
         }
 
-        private DomainBuilder CreateDomainBuilder()
+        protected virtual async Task ConfigureDomain(DomainBuilder domainBuilder)
         {
-            var domainBuilder = new DomainBuilder();
-          
-            DomainConfigurations.ForEach(c => domainBuilder.Register(c));
+            await domainBuilder.Configure(Pipe);
+        }
+        
+
+        private async Task CreateControllerActor()
+        {
+            var nodeController = System.ActorOf(Props.Create(() => new GridNodeController()), nameof(GridNodeController));
+
+            await nodeController.Ask<GridNodeController.Alive>(GridNodeController.HeartBeat.Instance);
+        }
+
+        protected void BuildContainer(DomainBuilder domainBuilder)
+        {
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.Register(new GridNodeContainerConfiguration(Context));
+
+            System.InitDomainEventsSerialization(EventsAdaptersCatalog);
+
+            domainBuilder.Configure(containerBuilder);
+
+            containerBuilder.RegisterInstance(_commandExecutor);
+            containerBuilder.Register(Pipe);
+            
+            Container = containerBuilder.Build();
+            System.AddDependencyResolver(new AutoFacDependencyResolver(Container, System));
+        }
+
+        protected virtual void Initialize()
+        {
+            _stopping = false;
+
+            System = _actorSystemFactory.CreateSystem();
+            Pipe = CreateCommandPipe();
+
+            System.RegisterOnTermination(OnSystemTermination);
+            Transport = CreateTransport();
+
+            _waiterFactory = CreateMessageWaiterFactory();
+        }
+
+        protected virtual IMessageWaiterFactory CreateMessageWaiterFactory()
+        {
+            return new LocalMessageWaiterFactory(System, Transport, DefaultTimeout);
+        }
+
+        protected abstract DomainBuilder CreateDomainBuilder();
+        
+        protected virtual DomainBuilder InitDomainBuilder()
+        {
+            var domainBuilder = CreateDomainBuilder();
+            _domainConfigurations.ForEach(c => domainBuilder.Register(c));
             return domainBuilder;
         }
 
@@ -178,9 +269,7 @@ namespace GridDomain.Node
             Log.Information("GridDomain node {Id} stopped", Id);
         }
 
-        public IMessageWaiter<Task<IWaitResult>> NewWaiter(TimeSpan? defaultTimeout = null)
-        {
-            return _waiterFactory.NewWaiter(defaultTimeout);
-        }
     }
+
+    public class InvalidDomainConfigurationException : Exception { }
 }

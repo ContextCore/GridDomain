@@ -27,7 +27,5 @@ namespace GridDomain.Common
         public MessageMetadataEnvelop(T message, IMessageMetadata metadata) : base(message, metadata) {}
 
         public new T Message => (T) base.Message;
-
-     
     }
 }

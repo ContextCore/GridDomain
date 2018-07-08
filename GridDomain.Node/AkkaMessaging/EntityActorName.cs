@@ -5,14 +5,24 @@ namespace GridDomain.Node.AkkaMessaging
 {
     public class EntityActorName
     {
-        private static readonly string Separator = ":";
+        private const string Separator = "_";
 
         internal EntityActorName(string entityName, string id)
         {
             Id = id;
-            Name = entityName + Separator + id;
+            Name = GetFullName(entityName, id);
         }
 
+        public static string GetFullName(Type entityType, string id)
+        {
+            return GetFullName(entityType.BeautyName(), id);
+        }
+        
+        public static string GetFullName(string entity, string id)
+        {
+            return entity + Separator + id;
+        }
+        
         public string Id { get; }
 
         public string Name { get; }

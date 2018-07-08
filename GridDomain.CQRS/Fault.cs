@@ -7,8 +7,8 @@ namespace GridDomain.CQRS
     public class Fault<T> : Fault,
                             IFault<T>
     {
-        public Fault(T message, Exception exception, Type processorType, string processId, DateTime occuredTime)
-            : base(message, exception, processorType, processId, occuredTime)
+        public Fault(string id, T message, Exception exception, Type processorType, string processId, DateTime occuredTime)
+            : base(id, message, exception, processorType, processId, occuredTime)
         {
             Message = message;
         }
@@ -16,12 +16,14 @@ namespace GridDomain.CQRS
         public new T Message { get; }
     }
 
+
     public class Fault : IFault
     {
         private static readonly MethodInfo MethodOpenType = typeof(Fault).GetTypeInfo().GetMethod(nameof(New));
 
-        public Fault(object message, Exception exception, Type processor, string processId, DateTime occuredTime)
+        public Fault(string id, object message, Exception exception, Type processor, string processId, DateTime occuredTime)
         {
+            Id = id;
             Message = message;
             Exception = exception;
             OccuredTime = occuredTime;
@@ -32,14 +34,15 @@ namespace GridDomain.CQRS
         public Exception Exception { get; }
         public string ProcessId { get; }
         public DateTime OccuredTime { get; }
+        public string Id { get; }
         public object Message { get; }
         public Type Processor { get; }
 
-        public static Fault NewGeneric(object msg, Exception exception, string processId, Type processorType)
+        public static Fault NewGeneric(string id,object msg, Exception exception, string processId, Type processorType)
         {
             var msgType = msg.GetType();
             var method = MethodOpenType.MakeGenericMethod(msgType);
-            return (Fault) method.Invoke(null, new[] {msg, exception, processId, processorType});
+            return (Fault) method.Invoke(null, new[] {id, msg, exception, processId, processorType});
         }
 
         public static Type TypeFor(object msg)
@@ -47,9 +50,9 @@ namespace GridDomain.CQRS
             return typeof(Fault<>).MakeGenericType(msg.GetType());
         }
 
-        public static Fault<T> New<T>(T msg, Exception ex, string processId, Type processorType = null)
+        public static Fault<T> New<T>(string id, T msg, Exception ex, string processId, Type processorType = null)
         {
-            return new Fault<T>(msg, ex, processorType, processId, BusinessDateTime.UtcNow);
+            return new Fault<T>(id, msg, ex, processorType, processId, BusinessDateTime.UtcNow);
         }
     }
 }

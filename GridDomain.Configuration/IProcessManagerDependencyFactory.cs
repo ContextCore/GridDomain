@@ -7,6 +7,7 @@ namespace GridDomain.Configuration {
     {
         IProcessStateFactory<TState> CreateStateFactory();
         IProcess<TState> CreateProcess();
+        IRecycleConfiguration CreateRecycleConfiguration();
         IAggregateDependencyFactory<ProcessStateAggregate<TState>> StateDependencyFactory { get; }
         string ProcessName { get; }
     }

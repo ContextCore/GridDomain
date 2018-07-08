@@ -18,45 +18,41 @@ using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node.Configuration.Composition
 {
-    internal class ProcessManagerConfiguration<TState> : IContainerConfiguration where TState : class, IProcessState
+    public class ProcessManagerConfiguration<TState,TActor> : IContainerConfiguration where TState : class, IProcessState
     {
-        private readonly IProcessDependencyFactory<TState> _processDependencyFactory;
+        protected readonly IProcessDependencyFactory<TState> ProcessDependencyFactory;
+        private readonly string _statePath;
 
-        internal ProcessManagerConfiguration(IProcessDependencyFactory<TState> factory)
+        public ProcessManagerConfiguration(IProcessDependencyFactory<TState> factory, string statePath)
         {
-            _processDependencyFactory = factory;
+            _statePath = statePath;
+            ProcessDependencyFactory = factory;
         }
-
-        //private void RegisterStateAggregate<TStateActorType>(ContainerBuilder container)
-        //{
-        //    container.Register(new AggregateConfiguration<TStateActorType, ProcessStateAggregate<TState>>(CommandAggregateHandler.New<ProcessStateAggregate<TState>>(),
-        //                                                                                                  _processDependencyFactory.StateDependencyFactory.CreatePersistencePolicy,
-        //                                                                                                  _processDependencyFactory.StateDependencyFactory.CreateAggregateFactory(),
-        //                                                                                                  _processDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration()));
-        //}
 
         public void Register(ContainerBuilder container)
         {
-            IProcess<TState> process = _processDependencyFactory.CreateProcess();
-            container.RegisterInstance<IProcessStateFactory<TState>>(_processDependencyFactory.CreateStateFactory());
+            IProcess<TState> process = ProcessDependencyFactory.CreateProcess();
+            container.RegisterInstance<IProcessStateFactory<TState>>(ProcessDependencyFactory.CreateStateFactory());
             container.RegisterInstance<IProcess<TState>>(process);
-            container.RegisterType<ProcessActor<TState>>();
 
-            container.RegisterType<ProcessActor<TState>>()
-                     .WithParameters(new Parameter[] {
-                                                         new TypedParameter(typeof(IProcess<TState>),  _processDependencyFactory.CreateProcess()),
-                                                         new TypedParameter(typeof(IProcessStateFactory<TState>),  _processDependencyFactory.CreateStateFactory()),
-                                                         new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
-                                                                               (pi, ctx) => ctx.ResolveNamed<IActorRef>(_processDependencyFactory.ProcessName))
-                                                     });
+            
+            container.RegisterType<TActor>()
+                     .WithParameters(CreateParametersRegistration());
 
-            var persistentChildsRecycleConfiguration = _processDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration();
-            container.Register<ProcessHubActor<TState>>(c => new ProcessHubActor<TState>(persistentChildsRecycleConfiguration, _processDependencyFactory.ProcessName));
+            var persistentChildsRecycleConfiguration = ProcessDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration();
+            container.Register<ProcessHubActor<TState>>(c => new ProcessHubActor<TState>(persistentChildsRecycleConfiguration, ProcessDependencyFactory.ProcessName));
 
 
-            //for direct access to process state from repositories and for generalization
-           // RegisterStateAggregate<AggregateActor<ProcessStateAggregate<TState>>>(container);
-           // container.Register<AggregateHubActor<ProcessStateAggregate<TState>>>(c => new AggregateHubActor<ProcessStateAggregate<TState>>(persistentChildsRecycleConfiguration));
+        }
+
+        protected virtual Parameter[] CreateParametersRegistration()
+        {
+            return new Parameter[] {
+                                       new TypedParameter(typeof(IProcess<TState>),  ProcessDependencyFactory.CreateProcess()),
+                                       new TypedParameter(typeof(IProcessStateFactory<TState>),  ProcessDependencyFactory.CreateStateFactory()),
+                                       new TypedParameter(typeof(string),  _statePath),
+                                                         
+                                   };
         }
     }
 }

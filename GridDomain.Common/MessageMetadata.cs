@@ -9,7 +9,7 @@ namespace GridDomain.Common
         {
             MessageId = messageId;
             CasuationId = casuationId;
-            CorrelationId = correlationId;
+            CorrelationId = correlationId ?? messageId;
             History = history ?? new ProcessHistory(null);
         }
 

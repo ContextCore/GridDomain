@@ -1,41 +1,69 @@
+using System;
 using Akka.Actor;
 using Akka.Persistence;
+using Akka.Util.Internal;
+using GridDomain.Common;
+using GridDomain.CQRS;
 
 namespace GridDomain.Node.Actors.Aggregates
 {
-    public class CommandStateActor : ReceivePersistentActor
+
+    public class CommandStateActor : ReceiveActor
     {
-        private CommandState State { get; set; }
+        private PersistenceExtension Extension { get; }
+        private IActorRef Journal { get; }
+        readonly int _instanceId;
+        readonly string writerId = Guid.NewGuid().ToString();
+        private static readonly AtomicCounter InstanceCounter = new AtomicCounter(1);
+        private readonly string _persistenceId;
+        bool _notified;
 
-        public CommandStateActor()
+        public CommandStateActor(string persistenceId)
         {
-            State = CommandState.New;
-            PersistenceId = Self.Path.Name;
-            Command<AcceptCommandExecution>(a =>
-                                            {
-                                                if (State != CommandState.Executed)
-                                                    Sender.Tell(Accepted.Instance);
-                                                else
-                                                    Sender.Tell(Rejected.Instance);
-                                            });
-            Command<CommandSucceed>(s => Persist(CommandState.Executed, e => State = e));
-            Command<CommandFailed>(s => Persist(CommandState.Failed, e => State = e));
-            Recover<CommandState>(s => State = s);
+            _persistenceId = persistenceId;
+            _instanceId = InstanceCounter.GetAndIncrement();
+            Extension = Persistence.Instance.Apply(ActorBase.Context.System);
+            Journal = Extension.JournalFor("");
+            IActorRef commandWaiter = null;
+            
+            //If current command state was not persisted into db, persist will succeed
+            //otherwise we will get exception from journal 
+
+            Receive<ICommand>(c =>
+                                    {
+                                        commandWaiter = Sender;
+                                        Persist(c, 1);
+                                    });
+            //it is default, fast path
+            Receive<WriteMessageSuccess>(s => NotifyOnce(commandWaiter, Accepted.Instance),
+                                         s => s.ActorInstanceId == _instanceId);
+
+            //if something went wrong, need to read data from db 
+            Receive<WriteMessageRejected>(s => NotifyOnce(commandWaiter, Rejected.Instance),
+                                          s => s.ActorInstanceId == _instanceId);
+
+            Receive<WriteMessageFailure>(s => NotifyOnce(commandWaiter, Rejected.Instance),
+                                         s => s.ActorInstanceId == _instanceId);
         }
 
-        public override string PersistenceId { get; }
-
-        private enum CommandState
+        private void NotifyOnce(IActorRef commandWaiter, object instance)
         {
-            New,
-            Executed,
-            Failed
+            if (_notified) return;
+            commandWaiter.Tell(instance);
+            _notified = true;
         }
 
-        public class AcceptCommandExecution
+        private void Persist(object commandState, int sequenceNr)
         {
-            private AcceptCommandExecution() { }
-            public static AcceptCommandExecution Instance { get; } = new AcceptCommandExecution();
+            AtomicWrite atomicWrite = new AtomicWrite(new Persistent(commandState, 
+                                                                     sequenceNr, 
+                                                                     _persistenceId, 
+                                                                     commandState.GetType().FullName,
+                                                                     false,
+                                                                     Self,
+                                                                     writerId));
+            
+            Journal.Tell(new WriteMessages(new IPersistentEnvelope[] {atomicWrite}, Self, _instanceId));
         }
 
         public class Accepted
@@ -48,18 +76,6 @@ namespace GridDomain.Node.Actors.Aggregates
         {
             private Rejected() { }
             public static Rejected Instance { get; } = new Rejected();
-        }
-
-        public class CommandFailed
-        {
-            private CommandFailed() { }
-            public static CommandFailed Instance { get; } = new CommandFailed();
-        }
-
-        public class CommandSucceed
-        {
-            private CommandSucceed() { }
-            public static CommandSucceed Instance { get; } = new CommandSucceed();
         }
     }
 }

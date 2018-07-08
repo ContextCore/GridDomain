@@ -1,5 +1,6 @@
 using System;
 using GridDomain.Configuration.MessageRouting;
+using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 

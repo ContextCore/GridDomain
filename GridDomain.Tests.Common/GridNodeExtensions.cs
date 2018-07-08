@@ -21,52 +21,128 @@ using GridDomain.Tools.Repositories.EventRepositories;
 
 namespace GridDomain.Tests.Common
 {
+ 
+    public interface IConditionedProcessManagerSender<T> : IConditionedProcessManagerSender
+    {
+        new Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
+    }
+    public interface IConditionedProcessManagerSender: IMessageFilter<IConditionedProcessManagerSender>
+    {
+        Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
+    }
+
+    
+    public interface IProcessManagerExpectationBuilder
+    {
+        IConditionedProcessManagerSender<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class; 
+    }
+
+    public class ProcessManagerExpectationBuilder : IProcessManagerExpectationBuilder
+    {
+        private readonly IExtendedGridDomainNode _extendedGridDomainNode;
+        private readonly object _msg;
+        private readonly MessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
+
+        public ProcessManagerExpectationBuilder(object msg, IExtendedGridDomainNode node, MessageConditionFactory<Task<IWaitResult>> messageConditionFactory)
+        {
+            _messageConditionFactory = messageConditionFactory;
+            _msg = msg;
+            _extendedGridDomainNode = node;
+        }
+
+        public IConditionedProcessManagerSender<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+        {
+            var sender = new ConditionedProcessManagerSender<TMsg>(_extendedGridDomainNode,
+                                                                   _msg,
+                                                                   _messageConditionFactory);
+            sender.And<TMsg>(filter);
+            return sender;
+        }
+
+        class ConditionedProcessManagerSender<T> : IConditionedProcessManagerSender<T> where T : class
+        {
+            private readonly MessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
+            private readonly IExtendedGridDomainNode _node;
+            private readonly object _msg;
+
+            public ConditionedProcessManagerSender(IExtendedGridDomainNode node,
+                                                   object msg,
+                                                   MessageConditionFactory<Task<IWaitResult>> messageConditionFactory)
+            {
+                _msg = msg;
+                _node = node;
+                _messageConditionFactory = messageConditionFactory;
+            }
+
+            async Task<IWaitResult<T>> IConditionedProcessManagerSender<T>.Send(TimeSpan? timeout, bool failOnAnyFault)
+            {
+                return WaitResult.Parse<T>(await Send(timeout, failOnAnyFault));
+            }
+
+            public IConditionedProcessManagerSender And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+            {
+                _messageConditionFactory.And(filter);
+                return this;
+            }
+
+            public IConditionedProcessManagerSender Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
+            {
+                _messageConditionFactory.Or(filter);
+                return this;
+            }
+
+
+            public async Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
+            {
+                var defaultTimeout = timeout ?? _node.DefaultTimeout;
+
+                var waiter = new MessagesWaiter(_node.System, _node.Transport, defaultTimeout, _messageConditionFactory);
+                var results = waiter.Start();
+
+                _node.Pipe.ProcessesPipeActor.Tell(_msg);
+
+                return await results;
+            }
+        }
+    }
+
+
+
+    public interface ITestGridDomainNode : IExtendedGridDomainNode
+    {
+        Task<T> LoadAggregateByActor<T>(string id) where T : Aggregate;
+        Task<TState> LoadProcess<TState>(string id) where TState : class,IProcessState;
+        IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata=null);// where TExpect : class;
+        IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata=null);// where TExpect : class;
+    }
+
+   
     public static class GridNodeExtensions
     {
 
-        public static async Task<WarmUpResult> WarmUpProcessManager<TProcess>(this GridDomainNode node, string id,TimeSpan? timeout = null)
+        public static async Task<WarmUpResult> WarmUpProcessManager<TProcess>(this IExtendedGridDomainNode node, string id,TimeSpan? timeout = null)
         {
             var processHub = await node.LookupProcessHubActor<TProcess>(timeout);
             return await processHub.Ask<WarmUpResult>(new WarmUpChild(id));
         }
 
-
-        public static Task SendToProcessManagers(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null)
+        public static async Task<TState> GetTransitedState<TState>(this ITestGridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
         {
-            return node.Pipe.ProcessesPipeActor.Ask<ProcessesTransitComplete>(new MessageMetadataEnvelop(msg), timeout);
+            var res = await node.PrepareForProcessManager(msg)
+                          .Expect<ProcessReceivedMessage<TState>>()
+                          .Send(timeout);
+            
+            return res.Received.State;
         }
 
-        public static async Task<TExpect> SendToProcessManager<TExpect>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TExpect : class
+        public static async Task<TState> GetCreatedState<TState>(this ITestGridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
         {
-            var res = await node.NewDebugWaiter(timeout)
-                                .Expect<TExpect>()
-                                .Create()
-                                .SendToProcessManagers(msg);
-
-            return res.Message<TExpect>();
+            var res = await node.PrepareForProcessManager(msg).Expect<ProcessManagerCreated<TState>>().Send(timeout);
+            return res.Received.State;
         }
 
-        public static async Task<TState> GetTransitedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
-        {
-            var res = await node.SendToProcessManager<ProcessReceivedMessage<TState>>(msg,timeout);
-            return res.State;
-        }
 
-        public static async Task<TState> GetCreatedState<TState>(this GridDomainNode node, DomainEvent msg, TimeSpan? timeout = null) where TState : IProcessState
-        {
-            var res = await node.SendToProcessManager<ProcessManagerCreated<TState>>(msg, timeout);
-            return res.State;
-        }
-
-        public static IMessageWaiter<AnyMessagePublisher> NewDebugWaiter(this GridDomainNode node, TimeSpan? timeout = null)
-        {
-            var conditionBuilder = new MetadataConditionBuilder<AnyMessagePublisher>();
-            var waiter = new LocalMessagesWaiter<AnyMessagePublisher>(node.System, node.Transport, timeout ?? node.DefaultTimeout, conditionBuilder);
-            conditionBuilder.CreateResultFunc = t => new AnyMessagePublisher(node.Pipe, waiter);
-            return waiter;
-        }
-
-        public static async Task<TAggregate> LoadAggregate<TAggregate>(this GridDomainNode node, string id)
+        public static async Task<TAggregate> LoadAggregate<TAggregate>(this IExtendedGridDomainNode node, string id)
             where TAggregate : Aggregate
         {
             using (var eventsRepo = new ActorSystemEventRepository(node.System))
@@ -76,7 +152,7 @@ namespace GridDomain.Tests.Common
             }
         }
 
-        public static async Task<object[]> LoadFromJournal(this GridDomainNode node, string id)
+        public static async Task<object[]> LoadFromJournal(this IExtendedGridDomainNode node, string id)
         {
             using (var repo = new ActorSystemJournalRepository(node.System))
             {
@@ -84,7 +160,7 @@ namespace GridDomain.Tests.Common
             }
         }
 
-        public static async Task SaveToJournal(this GridDomainNode node, string id, params object[] messages)
+        public static async Task SaveToJournal(this IExtendedGridDomainNode node, string id, params object[] messages)
         {
             using (var repo = new ActorSystemJournalRepository(node.System, false))
             {
@@ -92,7 +168,7 @@ namespace GridDomain.Tests.Common
             }
         }
 
-        public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, TAggregate aggregate) where TAggregate : Aggregate
+        public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, TAggregate aggregate) where TAggregate : Aggregate
         {
             var domainEvents = ((IAggregate) aggregate).GetUncommittedEvents()
                                                        .ToArray();
@@ -102,14 +178,14 @@ namespace GridDomain.Tests.Common
             aggregate.ClearUncommitedEvents();
         }
 
-        public static async Task SaveToJournal<TAggregate>(this GridDomainNode node, string id, params DomainEvent[] messages)
+        public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, string id, params DomainEvent[] messages)
             where TAggregate : Aggregate
         {
             var name = EntityActorName.New<TAggregate>(id).Name;
             await node.SaveToJournal(name, messages);
         }
 
-        public static async Task<IActorRef> LookupAggregateActor<T>(this GridDomainNode node,
+        public static async Task<IActorRef> LookupAggregateActor<T>(this IExtendedGridDomainNode node,
                                                                     string id,
                                                                     TimeSpan? timeout = null) where T : IAggregate
         {
@@ -117,13 +193,13 @@ namespace GridDomain.Tests.Common
             return await node.ResolveActor($"{typeof(T).Name}_Hub/{name}", timeout);
         }
 
-        public static async Task<IActorRef> LookupAggregateHubActor<T>(this GridDomainNode node, TimeSpan? timeout = null)
+        public static async Task<IActorRef> LookupAggregateHubActor<T>(this IExtendedGridDomainNode node, TimeSpan? timeout = null)
             where T : IAggregate
         {
             return await node.ResolveActor($"{typeof(T).Name}_Hub", timeout);
         }
 
-        public static async Task KillAggregate<TAggregate>(this GridDomainNode node, string id, TimeSpan? timeout = null)
+        public static async Task KillAggregate<TAggregate>(this IExtendedGridDomainNode node, string id, TimeSpan? timeout = null)
             where TAggregate : Aggregate
         {
             IActorRef aggregateHubActor;
@@ -140,7 +216,7 @@ namespace GridDomain.Tests.Common
             await ShutDownHubActor(node, id, aggregateActor, aggregateHubActor, timeout);
         }
 
-        private static async Task ShutDownHubActor(GridDomainNode node, string id, IActorRef aggregateActor, IActorRef aggregateHubActor, TimeSpan? timeout=null)
+        private static async Task ShutDownHubActor(IExtendedGridDomainNode node, string id, IActorRef aggregateActor, IActorRef aggregateHubActor, TimeSpan? timeout=null)
         {
             using (var inbox = Inbox.Create(node.System))
             {
@@ -153,7 +229,7 @@ namespace GridDomain.Tests.Common
             }
         }
 
-        public static async Task KillProcessManager<TProcess, TState>(this GridDomainNode node, string id, TimeSpan? timeout = null)
+        public static async Task KillProcessManager<TProcess, TState>(this IExtendedGridDomainNode node, string id, TimeSpan? timeout = null)
             where TState : IProcessState
         {
             var hub = await node.LookupProcessHubActor<TProcess>(timeout);
@@ -179,7 +255,7 @@ namespace GridDomain.Tests.Common
 
         }
 
-        public static async Task<IActorRef> LookupProcessActor<TProcess, TData>(this GridDomainNode node,
+        public static async Task<IActorRef> LookupProcessActor<TProcess, TData>(this IExtendedGridDomainNode node,
                                                                                 string id,
                                                                                TimeSpan? timeout = null) where TData : IProcessState
         {
@@ -188,12 +264,12 @@ namespace GridDomain.Tests.Common
             return await node.ResolveActor($"{type}_Hub/{name}", timeout);
         }
 
-        public static async Task<IActorRef> LookupProcessHubActor<TProcess>(this GridDomainNode node, TimeSpan? timeout = null)
+        public static async Task<IActorRef> LookupProcessHubActor<TProcess>(this IExtendedGridDomainNode node, TimeSpan? timeout = null)
         {
             return await node.ResolveActor($"{typeof(TProcess).BeautyName()}_Hub", timeout);
         }
 
-        public static async Task<IActorRef> ResolveActor(this GridDomainNode node, string actorPath, TimeSpan? timeout = null)
+        public static async Task<IActorRef> ResolveActor(this IExtendedGridDomainNode node, string actorPath, TimeSpan? timeout = null)
         {
             return await node.System.ActorSelection("user/" + actorPath).ResolveOne(timeout ?? node.DefaultTimeout);
         }

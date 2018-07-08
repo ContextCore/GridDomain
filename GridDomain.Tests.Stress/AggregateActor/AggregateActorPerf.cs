@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Monitoring;
+using Akka.Monitoring.StatsD;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -38,10 +40,16 @@ namespace GridDomain.Tests.Stress.AggregateActor {
 
         protected AggregateActorPerf(ITestOutputHelper output,string actorSystemConfig)
         {
-            _testOutputHelper = output;
             _actorSystemConfig = actorSystemConfig;
+            _testOutputHelper = output;
             Trace.Listeners.Clear();
             Trace.Listeners.Add(new XunitTraceListener(output));
+            
+        }
+
+        protected virtual ActorSystem CreateActorSystem()
+        {
+             return ActorSystem.Create("PerfTest",_actorSystemConfig);
         }
 
         class CustomHandlersActorDummy : ReceiveActor
@@ -66,10 +74,16 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
             var aggregateId = Guid.NewGuid().ToString();
             
-            _commands = CreateAggregatePlan(100, aggregateId).ToArray();
+            _commands = CreateAggregatePlan(10, aggregateId).ToArray();
+
+
+            _actorSystem = CreateActorSystem();
             
-             
-            _actorSystem = ActorSystem.Create("test",_actorSystemConfig);
+            var statsDmonitor = new ActorStatsDMonitor("localhost",32768,GetType().Name);
+            
+            var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_actorSystem, 
+                                                                             statsDmonitor); //new ActorAppInsightsMonitor(), new ActorPerformanceCountersMonitor ();
+
             _actorSystem.InitLocalTransportExtension();
             _actorSystem.InitDomainEventsSerialization(new EventsAdaptersCatalog());
             var log = new XUnitAutoTestLoggerConfiguration(_testOutputHelper,LogEventLevel.Warning,GetType().Name).CreateLogger();
@@ -89,14 +103,30 @@ namespace GridDomain.Tests.Stress.AggregateActor {
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measuring command executions directly by aggregate actor",
-            NumberOfIterations = 3,
+            NumberOfIterations = 10,
             RunMode = RunMode.Iterations,
             TestMode = TestMode.Test)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 10)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
-        public void MeasureCommandExecution()
+        public void MeasureCommandExecution_until_projection()
         {
-            Task.WhenAll(_commands.Select(c => _aggregateActor.Ask<Node.Actors.Aggregates.AggregateActor.CommandProjected>(new MessageMetadataEnvelop<ICommand>(c, MessageMetadata.Empty))
+            foreach (var command in _commands)
+            {
+                _aggregateActor.Ask<Node.Actors.Aggregates.AggregateActor.CommandProjected>(new MessageMetadataEnvelop<ICommand>(command, MessageMetadata.Empty))
+                               .ContinueWith(c =>   _counter.Increment()).Wait();
+            }
+        }
+        
+        [NBenchFact]
+        [PerfBenchmark(Description = "Measuring command executions directly by aggregate actor, without projection",
+            NumberOfIterations = 10,
+            RunMode = RunMode.Iterations,
+            TestMode = TestMode.Test)]
+        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 10)]
+        [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
+        public void MeasureCommandExecution_without_projection()
+        {
+            Task.WhenAll(_commands.Select(c => _aggregateActor.Ask<Node.Actors.Aggregates.AggregateActor.CommandExecuted>(new MessageMetadataEnvelop<ICommand>(c, MessageMetadata.Empty))
                                                               .ContinueWith(t => _counter.Increment())))
                 .Wait();
         }

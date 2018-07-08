@@ -17,66 +17,63 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 {
     public class Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown : NodeTestKit
     {
+        protected Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(SoftwareProgrammingProcessManagerFixture fixture) : base(ConfigureFixture(fixture)) { }
+
         public Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown(ITestOutputHelper output)
-            : base(new SoftwareProgrammingProcessManagerFixture(output).UseSqlPersistence()
-                                                                       .InitSnapshots(2)
-                                                                       .IgnorePipeCommands()) { }
+            : this(new SoftwareProgrammingProcessManagerFixture(output)) { }
+
+        protected static NodeTestFixture ConfigureFixture(SoftwareProgrammingProcessManagerFixture softwareProgrammingProcessManagerFixture)
+        {
+            return softwareProgrammingProcessManagerFixture.UseSqlPersistence()
+                                                           .InitSnapshots(2)
+                                                           .IgnorePipeCommands();
+        }
 
         [Fact]
         public async Task Given_save_on_each_message_policy_and_keep_2_snapshots()
         {
-            var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var startEvent = new GotTiredEvent(Guid.NewGuid()
+                                                   .ToString(),
+                                               Guid.NewGuid()
+                                                   .ToString(),
+                                               Guid.NewGuid()
+                                                   .ToString());
 
-            var res = await Node.NewDebugWaiter()
+            var res = await Node.PrepareForProcessManager(startEvent)
                                 .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-                                .Create()
-                                .SendToProcessManagers(startEvent);
+                                .Send();
 
             var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>()
                                .SourceId;
 
-            var continueEventA = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(),
+            var continueEventA = new CoffeMakeFailedEvent(Guid.NewGuid()
+                                                              .ToString(),
                                                           startEvent.PersonId,
                                                           BusinessDateTime.UtcNow,
                                                           processId);
 
-            await Node.SendToProcessManagers(continueEventA);
-
-            await Node.KillProcessManager<SoftwareProgrammingProcess, SoftwareProgrammingState>(processId);
-
-
-            Version<ProcessStateAggregate<SoftwareProgrammingState>>[] snapshots=null;
+            await Node.PrepareForProcessManager(continueEventA)
+                      .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
+                      .Send();
 
 
-            //Only_two_Snapshots_should_left()
+
+            //wait until process will be killed due to inactivity
 
             AwaitAssert(() =>
                         {
-                            snapshots = AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString)
+                            var snapshots = AggregateSnapshotRepository.New(AutoTestNodeDbConfiguration.Default.JournalConnectionString)
                                                                    .Load<ProcessStateAggregate<SoftwareProgrammingState>>(processId)
                                                                    .Result;
                             Assert.Equal(2, snapshots.Length);
-                            
+
                             // Restored_aggregates_should_have_same_ids()
                             Assert.True(snapshots.All(s => s.Payload.Id == processId));
 
-                            // First_Snapshots_should_have_coding_state_from_first_event()
-                            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee),
-                                         snapshots.First()
-                                                  .Payload.State.CurrentStateName);
-
-                            //Last_Snapshots_should_have_coding_state_from_last_event()
-                            Assert.Equal(nameof(SoftwareProgrammingProcess.Sleeping),
-                                         snapshots.Last()
-                                                  .Payload.State.CurrentStateName);
-
-                            //All_snapshots_should_not_have_uncommited_events()
                             Assert.Empty(snapshots.SelectMany(s => s.Payload.GetEvents()));
                         },
                         TimeSpan.FromSeconds(10),
                         TimeSpan.FromSeconds(1));
-
-         
         }
     }
 }

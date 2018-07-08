@@ -6,6 +6,7 @@ using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Configuration
 {
+    
     public class BalloonDomainConfiguration : IDomainConfiguration
     {
         public BalloonDependencyFactory BalloonDependencyFactory { get; }

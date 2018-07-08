@@ -1,3 +1,5 @@
+using Akka.Configuration;
+
 namespace GridDomain.Node.Configuration.Hocon
 {
     internal class LocalFilesystemSnapshotConfig : IHoconConfig
@@ -5,7 +7,7 @@ namespace GridDomain.Node.Configuration.Hocon
         public string Build()
         {
             return @" 
-             snapshot-store {
+             akka.persistence.snapshot-store {
                             plugin = ""akka.persistence.snapshot-store.local""
                             local {
                                     class = ""Akka.Persistence.Snapshot.LocalSnapshotStore, Akka.Persistence""

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
@@ -9,28 +10,27 @@ namespace GridDomain.Transport
     public class LocalAkkaEventBusTransport : IActorTransport
     {
         private readonly EventStream _bus;
-        private readonly ILoggingAdapter _log;
         public readonly IDictionary<Type, List<IActorRef>> Subscribers = new Dictionary<Type, List<IActorRef>>();
 
         public LocalAkkaEventBusTransport(ActorSystem system)
         {
             _bus = system.EventStream;
-            _log = system.Log;
         }
 
-        public void Subscribe<TMessage>(IActorRef actor)
+        public Task Subscribe<TMessage>(IActorRef actor)
         {
-            Subscribe(typeof(TMessage), actor);
+            return Subscribe(typeof(TMessage), actor);
         }
 
-        public void Unsubscribe(IActorRef actor, Type topic)
+        public Task Unsubscribe(IActorRef actor, Type topic)
         {
             _bus.Unsubscribe(actor, topic);
+            return Task.CompletedTask;
         }
 
-        public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
+        public Task Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter)
         {
-            Subscribe(messageType, actor);
+            return Subscribe(messageType, actor);
         }
 
         public void Publish(object msg)
@@ -43,7 +43,7 @@ namespace GridDomain.Transport
             _bus.Publish(new MessageMetadataEnvelop(msg, metadata));
         }
 
-        public void Subscribe(Type messageType, IActorRef actor)
+        public Task Subscribe(Type messageType, IActorRef actor)
         {
             List<IActorRef> subscribers;
             if (!Subscribers.TryGetValue(messageType, out subscribers))
@@ -54,6 +54,7 @@ namespace GridDomain.Transport
             subscribers.Add(actor);
 
             _bus.Subscribe(actor, messageType);
+            return Task.CompletedTask;
         }
     }
 }

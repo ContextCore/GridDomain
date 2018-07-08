@@ -1,9 +1,10 @@
 using System;
 using GridDomain.CQRS;
+using GridDomain.ProcessManagers;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
-    public class InflateNewBallonCommand : Command
+    public class InflateNewBallonCommand : Command<Balloon>, IFor<BalloonCommandHandler>
     {
         public InflateNewBallonCommand(int title, string aggregateId) : base(aggregateId)
         {

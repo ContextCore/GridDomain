@@ -10,37 +10,41 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
+    
+    
     public class Given_process_When_publishing_several_start_messages : NodeTestKit
     {
+        protected Given_process_When_publishing_several_start_messages(NodeTestFixture fixture):base(fixture){} 
+        
         public Given_process_When_publishing_several_start_messages(ITestOutputHelper helper): 
-            base(new SoftwareProgrammingProcessManagerFixture(helper).IgnorePipeCommands()) {}
+            this(new SoftwareProgrammingProcessManagerFixture(helper).IgnorePipeCommands()) {}
 
         [Fact]
         public async Task Then_separate_process_startes_on_each_message()
         {
             
-            var startMessageA = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var startMessageA = new GotTiredEvent("man_1", "sofa_1", "machine_1");
 
-            var resA = await Node.NewDebugWaiter()
+            var resA = await Node.PrepareForProcessManager(startMessageA)
                                  .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                                 .Create()
-                                 .SendToProcessManagers(startMessageA);
+                                 .Send();
 
-            var stateA = resA.Message<ProcessReceivedMessage<SoftwareProgrammingState>>().State;
+            var stateA = resA.Received.State;
 
-            var secondStartMessageB = new SleptWellEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            Assert.Equal(startMessageA.SourceId, stateA.PersonId);
 
-            var resB = await Node.NewDebugWaiter()
+            var secondStartMessageB = new SleptWellEvent("man_2", "sofa_2");
+
+            var resB = await Node.PrepareForProcessManager(secondStartMessageB)
                                  .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                                 .Create()
-                                 .SendToProcessManagers(secondStartMessageB);
+                                 .Send();
 
-            var stateB = resB.Message<ProcessReceivedMessage<SoftwareProgrammingState>>().State;
+            var stateB = resB.Received.State;
 
-            Assert.Equal(secondStartMessageB.SofaId, stateB.SofaId);
-            //Process_has_correct_state()
-            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), stateB.CurrentStateName);
             Assert.NotEqual(stateA.Id, stateB.Id);
+            Assert.Equal(secondStartMessageB.SofaId, stateB.SofaId);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), stateB.CurrentStateName);
+         
         }
     }
 }

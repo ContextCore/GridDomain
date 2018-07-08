@@ -18,8 +18,16 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
                                                                               Predicate<TMsg> selector = null)
         {
             var sel = selector ?? (m => true);
-            var loosyTypedEnvelop = res.All.OfType<IMessageMetadataEnvelop>().First(t => t.Message is TMsg && sel((TMsg)t.Message));
-            return new MessageMetadataEnvelop<TMsg>((TMsg)loosyTypedEnvelop.Message, loosyTypedEnvelop.Metadata);
+            var expectedMessages = res.All.OfType<IMessageMetadataEnvelop>().Where(t => t.Message is TMsg).ToArray();
+                if(!expectedMessages.Any())
+                    throw new InvalidOperationException($"{typeof(IMessageMetadataEnvelop)} messages with expected type {typeof(TMsg)} were not received");
+                        
+             
+            var resA =  expectedMessages.FirstOrDefault(t => sel((TMsg)t.Message));
+            if (resA == null)
+                throw new InvalidOperationException("Received messages do not satisfy filter");
+            
+            return new MessageMetadataEnvelop<TMsg>((TMsg)resA.Message, resA.Metadata);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Common;
 
@@ -18,21 +19,21 @@ namespace GridDomain.Transport.Remote
             _local = local;
         }
 
-        public void Subscribe<TMessage>(IActorRef actor)
+        public Task Subscribe<TMessage>(IActorRef actor)
         {
-            Subscribe(typeof(TMessage), actor);
+            return Subscribe(typeof(TMessage), actor);
         }
 
-        public void Unsubscribe(IActorRef actor, Type topic)
+        public async Task Unsubscribe(IActorRef actor, Type topic)
         {
-            _local.Unsubscribe(actor, topic);
-            _remoteSubscriber.Ask<UnsubscribeAck>(new Unsubscribe(actor, topic), _timeout).Wait();
+            await _local.Unsubscribe(actor, topic);
+            await _remoteSubscriber.Ask<UnsubscribeAck>(new Unsubscribe(actor, topic), _timeout);
         }
 
-        public void Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter = null)
+        public async Task Subscribe(Type messageType, IActorRef actor, IActorRef subscribeNotificationWaiter = null)
         {
-            _local.Subscribe(messageType, actor, subscribeNotificationWaiter);
-            _remoteSubscriber.Ask<SubscribeAck>(new Subscribe(actor, messageType, subscribeNotificationWaiter)).Wait();
+            await _local.Subscribe(messageType, actor, subscribeNotificationWaiter);
+            await _remoteSubscriber.Ask<SubscribeAck>(new Subscribe(actor, messageType, subscribeNotificationWaiter));
         }
 
         public void Publish(object msg)

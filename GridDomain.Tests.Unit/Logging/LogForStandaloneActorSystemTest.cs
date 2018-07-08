@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node.Configuration;
 using GridDomain.Tests.Common.Configuration;
-using NMoneys;
 using Serilog.Core;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,14 +29,6 @@ namespace GridDomain.Tests.Unit.Logging {
             Assert.True(Sys.Log.IsWarningEnabled);
 
             Sys.Log.Info(Sys.Settings.ToString());
-        }
-
-        [Fact(Skip = "Only for manual run")]
-        public void Should_simplify_Money_class()
-        {
-            _logger.Error(new InvalidOperationException("ohshitwaddap"),
-                          "MONEY TEST {@placeholder}",
-                          new {Money = new Money(123, CurrencyIsoCode.RUB)});
         }
 
         [Fact(Skip = "Only for manual run")]

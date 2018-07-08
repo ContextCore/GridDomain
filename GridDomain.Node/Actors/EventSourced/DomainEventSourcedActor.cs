@@ -6,13 +6,14 @@ using Akka.Event;
 using Akka.Persistence;
 using GridDomain.Common;
 using GridDomain.Configuration;
+using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.AkkaMessaging;
-using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotSelectionCriteria;
+using SnapshotSelectionCriteria = GridDomain.Configuration.SnapshotPolicies.SnapshotSelectionCriteria;
 using SubscribeAck = GridDomain.Transport.Remote.SubscribeAck;
 
 namespace GridDomain.Node.Actors.EventSourced
@@ -72,8 +73,10 @@ namespace GridDomain.Node.Actors.EventSourced
                                        Log.Debug("Built state from snapshot #{snapshotNum}", offer.Metadata.SequenceNr);
                                    });
 
+            var recoveryTimer = Monitor.StartMeasureTime("Recovery");
             Recover<RecoveryCompleted>(message =>
                                        {
+                                           recoveryTimer.Stop();
                                            Log.Debug("Recovery completed");
                                            NotifyPersistenceWatchers(message);
                                        });
@@ -97,7 +100,6 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             Command<Shutdown.Request>(req =>
                                               {
-                                                  Log.Debug("Received shutdown request");
                                                   Monitor.IncrementMessagesReceived();
 
                                                   if (!CanShutdown(out var description))
@@ -106,13 +108,14 @@ namespace GridDomain.Node.Actors.EventSourced
                                                       return;
                                                   }
                                                   
-                                                  if (_snapshotsPolicy.ShouldDelete(out GridDomain.Configuration.SnapshotSelectionCriteria c))
+                                                  if (_snapshotsPolicy.ShouldDelete(out SnapshotSelectionCriteria c))
                                                   {
+                                                      Log.Debug("Deleting snapnotExistshots");
                                                       DeleteSnapshots(c.ToGridDomain());
                                                       _snapshotsDeleteTracker.Start(c);
+                                                      return;
                                                   }
 
-                                                  Log.Debug("Stopped");
                                                   Context.Stop(Self);
                                               });
 
@@ -154,7 +157,7 @@ namespace GridDomain.Node.Actors.EventSourced
 
         protected void StashMessage(object message)
         {
-            Log.Debug("Stashing message {message} current behavior is {behavior}", message, Behavior.Current);
+            Log.Debug("Stashing message {@message} current behavior is {behavior}", message, Behavior.Current);
 
             Stash.Stash();
         }

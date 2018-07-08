@@ -7,5 +7,6 @@ namespace GridDomain.CQRS
     {
         string ProcessId { get; }
         string AggregateId { get; }
+        string AggregateType { get; }
     }
 }

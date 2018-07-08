@@ -1,19 +1,21 @@
 using System;
 using System.Threading.Tasks;
-using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
+using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.CommandsExecution
 {
-    public class Execute_command_waiting_aggregate_event : BalloonDomainCommandExecutionTests
+    public class Execute_command_waiting_aggregate_event : NodeTestKit
     {
-        public Execute_command_waiting_aggregate_event(ITestOutputHelper output) : base(output) {}
+        public Execute_command_waiting_aggregate_event(ITestOutputHelper output) : this(new NodeTestFixture(output)) {}
+        protected Execute_command_waiting_aggregate_event(NodeTestFixture fixture) : base(fixture.Add(new BalloonDomainConfiguration())) {}
 
         [Fact]
         public async Task After_wait_ends_aggregate_should_be_changed()
@@ -32,7 +34,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
         [Fact]
         public async Task After_wait_of_async_command_aggregate_should_be_changed()
         {
-            var cmd = new PlanTitleChangeCommand(42, Guid.NewGuid(), Guid.NewGuid(), TimeSpan.FromMilliseconds(50));
+            var cmd = new PlanTitleChangeCommand(Guid.NewGuid().ToString(), 42);
             var res = await Node.Prepare(cmd)
                                 .Expect<BalloonTitleChanged>(e => e.SourceId == cmd.AggregateId)
                                 .Execute();
@@ -66,20 +68,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution
                       .ShouldThrow<TimeoutException>();
         }
         
-        [Fact]
-        public async Task MessageWaiter_after_cmd_execute_should_waits_until_aggregate_event()
-        {
-            var cmd = new PlanTitleWriteCommand(100, Guid.NewGuid());
-            var waiter = Node.NewExplicitWaiter()
-                             .Expect<MessageMetadataEnvelop>(e => (e.Message as BalloonTitleChanged)?.SourceId == cmd.AggregateId)
-                             .Create();
-
-            await Node.Execute(cmd);
-
-            var res = await waiter;
-
-            Assert.Equal(cmd.Parameter.ToString(), res.Message<BalloonTitleChanged>().Value);
-        }
+       
 
         [Fact]
         public async Task Wait_for_timeout_command_throws_excpetion()

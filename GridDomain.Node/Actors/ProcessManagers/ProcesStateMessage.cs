@@ -1,6 +1,6 @@
 namespace GridDomain.Node.Actors.ProcessManagers
 {
-    class ProcesStateMessage<T>
+    public class ProcesStateMessage<T>
     {
         public T State { get; }
 

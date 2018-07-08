@@ -39,7 +39,7 @@ namespace GridDomain.Node.Serializers
         ///     Completely unique value to identify this implementation of the
         ///     <see cref="Akka.Serialization.Serializer" /> used to optimize network traffic
         /// </summary>
-        public override int Identifier => 21;
+        public override int Identifier => 101010;
 
         // <summary>
         // Serializes the given object into a byte array

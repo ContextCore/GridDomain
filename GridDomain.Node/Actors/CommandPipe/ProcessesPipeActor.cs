@@ -1,44 +1,59 @@
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 
-namespace GridDomain.Node.Actors.CommandPipe {
+namespace GridDomain.Node.Actors.CommandPipe
+{
+    public class LocalProcessesPipeActor : ProcessesPipeActor
+    {
+        public LocalProcessesPipeActor(IMessageProcessor<ProcessesTransitComplete> processor) : base(processor) { }
+
+        public override IMessageMetadataEnvelop EnvelopCommand(ICommand cmd, IMessageMetadataEnvelop initialMessage)
+        {
+            return new MessageMetadataEnvelop<ICommand>(cmd, initialMessage.Metadata.CreateChild(cmd));
+        }
+    }
+
     /// <summary>
     ///     Synhronize process managers transition and produced command execution for produced domain events
     ///     If message process policy is set to synchronized, will process such events one after one
     ///     Will process all other messages in parallel
     /// </summary>
-    public class ProcessesPipeActor : ReceiveActor
+    public abstract class ProcessesPipeActor : ReceiveActor
     {
         public const string ProcessManagersPipeActorRegistrationName = nameof(ProcessManagersPipeActorRegistrationName);
-        private IActorRef _commandExecutionActor;
+        protected IActorRef CommandExecutionActor;
         private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
+
         public ProcessesPipeActor(IMessageProcessor<ProcessesTransitComplete> processor)
         {
             Receive<Initialize>(i =>
                                 {
-                                    _commandExecutionActor = i.CommandExecutorActor;
+                                    CommandExecutionActor = i.CommandExecutorActor;
                                     Sender.Tell(Initialized.Instance);
                                 });
             //part of events or fault from command execution
             Receive<IMessageMetadataEnvelop>(env =>
                                              {
-                                                 var sender = Sender;
                                                  Log.Debug("Start process managers for message {@env}", env);
-                                                 processor.Process(env).ContinueWith(t =>
-                                                                                     {
-                                                                                         var m = t.Result;
-                                                                                         Log.Debug("Process managers transited. {@res}", m);
-                                                                                         
-                                                                                         foreach(var envelop in m.ProducedCommands)
-                                                                                             _commandExecutionActor.Tell(envelop);
-                                                                                         
-                                                                                         sender.Tell(m);
-                                                                                     });
+                                                 processor.Process(env)
+                                                          .ContinueWith(t =>
+                                                                        {
+                                                                            var m = t.Result;
+                                                                            Log.Debug("Process managers transited. {@res}", m);
+
+                                                                            foreach (var command in m.ProducedCommands)
+                                                                                CommandExecutionActor.Tell(EnvelopCommand(command, m.InitialMessage));
+
+                                                                            return m;
+                                                                        })
+                                                          .PipeTo(Sender);
                                              });
         }
-    
+
+        public abstract IMessageMetadataEnvelop EnvelopCommand(ICommand cmd, IMessageMetadataEnvelop initialMessage);
     }
 }

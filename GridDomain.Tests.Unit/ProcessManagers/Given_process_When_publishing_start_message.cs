@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.EventSourcing;
+using GridDomain.ProcessManagers;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
@@ -8,9 +10,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.ProcessManagers
 {
-    public class Given_process_When_publishing_start_message : SoftwareProgrammingProcessTest
+    public class Given_process_When_publishing_start_message : NodeTestKit
     {
-        public Given_process_When_publishing_start_message(ITestOutputHelper helper) : base(helper) {}
+        public Given_process_When_publishing_start_message(ITestOutputHelper helper) : this(new SoftwareProgrammingProcessManagerFixture(helper)) {}
+        protected Given_process_When_publishing_start_message(NodeTestFixture fixture) : base(fixture) {}
 
         [Fact]
         public async Task When_publishing_start_message_A()
@@ -22,7 +25,6 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             //process_has_correct_state()
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), state.CurrentStateName);
         }
-
 
         [Fact]
         public async Task When_publishing_start_message_B()

@@ -17,6 +17,7 @@ namespace GridDomain.Tests.Stress.AnemicEF {
         private readonly IEFCommand[] _efCommands;
         private const string TotalCommandsExecutedCounter = "TotalCommandsExecutedCounter";
         private Counter _counter;
+        private IEnumerable<InflateNewBallonCommandEF> _inflateNewBallonCommandEfs;
 
         protected AnemicModelEFContextPerformance(ITestOutputHelper output, DbContextOptions<BalloonContext> options) 
         {
@@ -26,6 +27,11 @@ namespace GridDomain.Tests.Stress.AnemicEF {
             _efCommands = Enumerable.Range(0, 20)
                                     .SelectMany(n => CreateAggregatePlan(20))
                                     .ToArray();
+            _inflateNewBallonCommandEfs = Enumerable.Range(0, 100)
+                                                    .Select(i => new InflateNewBallonCommandEF(Guid.NewGuid()
+                                                                                                   .ToString(),
+                                                                                               "1",
+                                                                                               () => new BalloonContext()));
         }
         [PerfSetup]
 
@@ -46,6 +52,21 @@ namespace GridDomain.Tests.Stress.AnemicEF {
         public void MeasureCommandExecution()
         {
             Task.WhenAll(_efCommands.Select(c => c.Execute()
+                                                  .ContinueWith(t => _counter.Increment())))
+                .Wait();
+        }
+        
+        [NBenchFact]
+        [PerfBenchmark(Description = "Measuring row inserts into a tabla",
+            NumberOfIterations = 3,
+            RunMode = RunMode.Iterations,
+            TestMode = TestMode.Test)]
+        [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThan, 50)]
+        [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
+
+        public void MeasureRowInsertCommandExecution()
+        {
+            Task.WhenAll(_inflateNewBallonCommandEfs.Select(c => c.Execute()
                                                   .ContinueWith(t => _counter.Increment())))
                 .Wait();
         }

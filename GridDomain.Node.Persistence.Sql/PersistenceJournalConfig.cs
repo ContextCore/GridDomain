@@ -1,4 +1,5 @@
 using System;
+using Akka.Configuration;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Configuration.Hocon;
 
@@ -30,7 +31,7 @@ namespace GridDomain.Node.Persistence.Sql
                 ?? "Akka.Persistence.SqlServer.Journal.SqlServerJournal, Akka.Persistence.SqlServer";
 
             var persistenceJournalConfig = @"
-            journal {
+            akka.persistence.journal {
                     plugin = ""akka.persistence.journal.sql-server""
 
                     sql-server {

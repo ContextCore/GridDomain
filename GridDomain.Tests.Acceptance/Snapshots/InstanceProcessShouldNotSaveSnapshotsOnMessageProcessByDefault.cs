@@ -1,10 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
+using GridDomain.Tests.Unit;
 using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
@@ -14,9 +16,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Acceptance.Snapshots
 {
-    public class InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault : SoftwareProgrammingProcessTest
+    public class InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault : NodeTestKit
     {
-        public InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault(ITestOutputHelper helper) : base(helper) {}
+        public InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault(ITestOutputHelper output) : this(new SoftwareProgrammingProcessManagerFixture(output)) { }
+        protected InstanceProcessShouldNotSaveSnapshotsOnMessageProcessByDefault(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task Given_default_policy()
@@ -24,19 +27,17 @@ namespace GridDomain.Tests.Acceptance.Snapshots
             var startEvent = new GotTiredEvent(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var res = await
-                Node.NewDebugWaiter()
+                Node.PrepareForProcessManager(startEvent)
                     .Expect<ProcessManagerCreated<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToProcessManagers(startEvent);
+                    .Send();
 
             var processId = res.Message<ProcessManagerCreated<SoftwareProgrammingState>>().SourceId;
 
             var continueEvent = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(), startEvent.PersonId, BusinessDateTime.UtcNow, processId);
 
-            await Node.NewDebugWaiter()
+            await Node.PrepareForProcessManager(continueEvent)
                     .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>()
-                    .Create()
-                    .SendToProcessManagers(continueEvent);
+                    .Send();
 
             //saving snapshot
             await Task.Delay(200);

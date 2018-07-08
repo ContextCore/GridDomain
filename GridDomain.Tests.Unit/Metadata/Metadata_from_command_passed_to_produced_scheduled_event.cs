@@ -15,9 +15,10 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Metadata
 {
-    public class Metadata_from_command_passed_to_produced_scheduled_event : FutureEventsTest
+    public class Metadata_from_command_passed_to_produced_scheduled_event : NodeTestKit
     {
-        public Metadata_from_command_passed_to_produced_scheduled_event(ITestOutputHelper output) : base(output) {}
+        public Metadata_from_command_passed_to_produced_scheduled_event(ITestOutputHelper output) : this(new FutureEventsFixture(output)) { }
+        protected Metadata_from_command_passed_to_produced_scheduled_event(NodeTestFixture fixture) : base(fixture) { }
 
         [Fact]
         public async Task When_execute_aggregate_command()

@@ -12,28 +12,32 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         private readonly Message _messageB = new Message("B");
         private readonly Message _messageC = new Message("C");
         private readonly Message _messageD = new Message("D");
+        private IMessagesExpectation _messageConditionFactory;
 
-        protected override Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter)
+        protected override Task<IWaitResult> ConfigureWaiter(MessagesWaiter waiter)
         {
-            return
-                Waiter.Expect<Message>(m => m.Id == _messageA.Id)
-                      .Or<Message>(m => m.Id == _messageB.Id)
-                      .Or<Message>(m => m.Id == _messageC.Id)
-                      .Create();
+            var messageConditionFactory = Waiter.Expect<Message>(m => m.Id == _messageA.Id);
+            var result = 
+                messageConditionFactory
+                    .Or<Message>(m => m.Id == _messageB.Id)
+                    .Or<Message>(m => m.Id == _messageC.Id)
+                    .Create();
+            _messageConditionFactory = Waiter.CreateMessagesExpectation();
+            return result;
         }
 
         [Fact]
         public void Condition_wait_end_should_be_true_on_A()
         {
-            var sampleObjectsReceived = new object[] { MessageMetadataEnvelop.New(_messageA)};
-            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            var sampleObjectsReceived = new object[] {MessageMetadataEnvelop.New(_messageA)};
+            Assert.True(_messageConditionFactory.IsExpectationFulfilled(sampleObjectsReceived));
         }
 
         [Fact]
         public void Condition_wait_end_should_be_true_on_B()
         {
-            var sampleObjectsReceived = new object[] { MessageMetadataEnvelop.New(_messageA) };
-            Assert.True(Waiter.ConditionBuilder.StopCondition(sampleObjectsReceived));
+            var sampleObjectsReceived = new object[] {MessageMetadataEnvelop.New(_messageA)};
+            Assert.True(_messageConditionFactory.IsExpectationFulfilled(sampleObjectsReceived));
         }
 
         [Fact]

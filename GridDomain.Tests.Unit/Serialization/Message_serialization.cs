@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.Serialization {
         public void Message_Envelop_should_be_serializable()
         {
             var evt = new BalloonTitleChanged("123",Guid.NewGuid().ToString());
-            var fault = new Fault<BalloonTitleChanged>(evt, new Exception(), typeof(object), Guid.NewGuid().ToString(), DateTime.Now);
+            var fault = new Fault<BalloonTitleChanged>("fault_title_change",evt, new Exception(), typeof(object), Guid.NewGuid().ToString(), DateTime.Now);
             //Fault
             //ballonTitleChanged
             var msg = new MessageMetadataEnvelop<Fault<BalloonTitleChanged>>(fault,MessageMetadata.Empty);

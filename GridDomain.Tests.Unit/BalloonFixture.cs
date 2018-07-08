@@ -1,12 +1,16 @@
 using System;
+using Akka.Actor;
 using GridDomain.Node;
 using GridDomain.Node.Actors;
 using GridDomain.Node.Actors.EventSourced;
 using GridDomain.Node.Actors.EventSourced.SnapshotsPolicy;
+using GridDomain.Node.Configuration;
 using GridDomain.Scheduling.Quartz.Configuration;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.ProcessManagers;
+using Serilog;
+using Serilog.Events;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
@@ -20,9 +24,8 @@ namespace GridDomain.Tests.Unit
             this.EnableScheduling(config);
             _balloonDomainConfiguration = new BalloonDomainConfiguration();
             Add(_balloonDomainConfiguration);
-
         }
-        
+
         public BalloonFixture EnableSnapshots(
             int keep = 1,
             TimeSpan? maxSaveFrequency = null,

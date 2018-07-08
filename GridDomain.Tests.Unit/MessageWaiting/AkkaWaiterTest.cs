@@ -21,11 +21,11 @@ namespace GridDomain.Tests.Unit.MessageWaiting
         {
             _actorSystem = TestActorSystem.Create();
             _transport = new LocalAkkaEventBusTransport(_actorSystem);
-            Waiter = new LocalMessagesWaiter(_actorSystem, _transport, TimeSpan.FromSeconds(1));
+            Waiter = new MessagesWaiter(_actorSystem, _transport, TimeSpan.FromSeconds(1));
             _results = ConfigureWaiter(Waiter);
         }
 
-        protected LocalMessagesWaiter Waiter { get; }
+        protected MessagesWaiter Waiter { get; }
 
         public TimeSpan DefaultTimeout { get; } = TimeSpan.FromMilliseconds(150);
 
@@ -34,7 +34,7 @@ namespace GridDomain.Tests.Unit.MessageWaiting
             _actorSystem.Terminate().Wait();
         }
 
-        protected abstract Task<IWaitResult> ConfigureWaiter(LocalMessagesWaiter waiter);
+        protected abstract Task<IWaitResult> ConfigureWaiter(MessagesWaiter waiter);
 
         protected void Publish(params object[] messages)
         {

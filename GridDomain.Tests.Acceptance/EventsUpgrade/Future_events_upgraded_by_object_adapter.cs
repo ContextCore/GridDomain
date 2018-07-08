@@ -18,16 +18,17 @@ namespace GridDomain.Tests.Acceptance.EventsUpgrade
     public class Future_events_upgraded_by_object_adapter : NodeTestKit
     {
         public Future_events_upgraded_by_object_adapter(ITestOutputHelper output)
-            : base(CreateFixture(output))
-        { }
+            : this(ConfigureDomain(new BalanceFixture(output,new PersistedQuartzConfig()))) { }
 
-        private static NodeTestFixture CreateFixture(ITestOutputHelper output)
+        protected Future_events_upgraded_by_object_adapter(NodeTestFixture fixture) : base(fixture) { }
+
+        protected static NodeTestFixture ConfigureDomain(BalanceFixture balanceFixture)
         {
             var cfg = new PersistedQuartzConfig();
-            return new BalanceFixture(output, cfg).UseSqlPersistence()
-                                                  .InitFastRecycle(TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(400))
-                                                  .UseAdaper(new IncreaseBy100Adapter())
-                                                  .ClearQuartzPersistence(cfg.ConnectionString);
+            return balanceFixture.UseSqlPersistence()
+                                 .InitFastRecycle(TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(400))
+                                 .UseAdaper(new IncreaseBy100Adapter())
+                                 .ClearQuartzPersistence(cfg.ConnectionString);
         }
 
         private class IncreaseBy100Adapter : ObjectAdapter<BalanceChangedEvent_V1, BalanceChangedEvent_V1>

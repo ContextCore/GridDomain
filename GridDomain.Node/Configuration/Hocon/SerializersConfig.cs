@@ -1,4 +1,6 @@
 using System;
+using Akka.Configuration;
+using Akka.Serialization;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Serializers;
@@ -19,21 +21,22 @@ namespace GridDomain.Node.Configuration.Hocon
 
         public string Build()
         {
-            var actorConfig = @"   
-       actor {
+            string actorConfig = @"   
+       akka.actor {
              serialize-messages = " + (_serializeMessages ? "on" : "off") + @"
              serialize-creators = " + (_serializeCreators ? "on" : "off") + @"
              serializers {
-                        hyp = """ + typeof(DebugHyperionSerializer).AssemblyQualifiedShortName() + @"""
-                        json = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
+                        hyperion = """ + typeof(DebugHyperionSerializer).AssemblyQualifiedShortName() + @"""
+                        domain = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              
              serialization-bindings {
-                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = json
-                                   """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = json
+                                   """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = domain
+                                   """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = domain
                                   # for local snapshots storage
-                                   ""Akka.Persistence.Serialization.Snapshot, Akka.Persistence"" = json
-                                   ""System.Object"" = hyp
+                                   """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = domain
+                                   ""System.Object"" = hyperion
+                                   """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyperion
 
              }
        }";

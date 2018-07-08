@@ -10,7 +10,6 @@ namespace GridDomain.CQRS
     public interface IWaitResult<out T> : IWaitResult
     {
         T Received { get; }
-        IFault Fault { get; }
         IMessageMetadata ReceivedMetadata { get; }
     }
 }
