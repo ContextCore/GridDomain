@@ -1,22 +1,8 @@
-using System;
-using System.Threading.Tasks;
-using Akka.Actor;
-using GridDomain.Common;
-using GridDomain.Configuration;
-using GridDomain.Node;
-using GridDomain.Node.Configuration.Composition;
-using GridDomain.Scheduling.Akka;
-using GridDomain.Scheduling.Akka.Messages;
-using GridDomain.Scheduling.Quartz;
-using GridDomain.Scheduling.Quartz.Retry;
-using GridDomain.Tests.Acceptance.Scheduling.TestHelpers;
-using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit;
+using GridDomain.Tests.Acceptance.Scheduling;
 using GridDomain.Tests.Unit.Cluster;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.Scheduling
+namespace GridDomain.Tests.Acceptance.Cluster.Scheduling
 {
     public class Cluster_NodeSchedulerTests : NodeSchedulerTests
     {

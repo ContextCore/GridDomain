@@ -1,18 +1,9 @@
-using System;
-using System.Threading.Tasks;
-using GridDomain.CQRS;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.BalloonDomain;
-using GridDomain.Tests.Unit.BalloonDomain.Commands;
-using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.Cluster;
-using GridDomain.Tests.Unit.ProcessManagers;
-using GridDomain.Tools.Repositories.AggregateRepositories;
-using Serilog.Events;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.Snapshots
+namespace GridDomain.Tests.Acceptance.Cluster.Snapshots
 {
     public class Cluster_Aggregate_Should_Not_save_snapshots_on_message_process_by_default : Aggregate_Should_Not_save_snapshots_on_message_process_by_default
     {

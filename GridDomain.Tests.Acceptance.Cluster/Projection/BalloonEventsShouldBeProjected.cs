@@ -1,17 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using GridDomain.CQRS;
-using GridDomain.Tests.Acceptance.BalloonDomain;
+﻿using GridDomain.Tests.Acceptance.BalloonDomain;
+using GridDomain.Tests.Acceptance.Projection;
 using GridDomain.Tests.Acceptance.Snapshots;
-using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.BalloonDomain.Commands;
-using GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders;
 using GridDomain.Tests.Unit.Cluster;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.Projection
+namespace GridDomain.Tests.Acceptance.Cluster.Projection
 {
     public class Cluster_BalloonEventsShouldBeProjected : BalloonEventsShouldBeProjected
     {

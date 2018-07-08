@@ -1,20 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using GridDomain.CQRS;
-using GridDomain.EventSourcing;
-using GridDomain.Tests.Acceptance.EventsUpgrade;
+﻿using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit;
-using GridDomain.Tests.Unit.BalloonDomain;
-using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.Cluster;
-using GridDomain.Tests.Unit.ProcessManagers;
-using GridDomain.Tools;
-using GridDomain.Tools.Repositories.AggregateRepositories;
-using Serilog.Events;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.Snapshots
+namespace GridDomain.Tests.Acceptance.Cluster.Snapshots
 {
     public class Cluster_Aggregate_should_recover_from_snapshot : Aggregate_should_recover_from_snapshot
     {

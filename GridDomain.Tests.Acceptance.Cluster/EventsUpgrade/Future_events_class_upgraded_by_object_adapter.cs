@@ -1,23 +1,8 @@
-using System;
-using System.Threading.Tasks;
-using GridDomain.Common;
-using GridDomain.CQRS;
-using GridDomain.EventSourcing.Adapters;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.Scheduling.Quartz.Configuration;
-using GridDomain.Tests.Acceptance.Snapshots;
-using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit;
+using GridDomain.Tests.Acceptance.EventsUpgrade;
 using GridDomain.Tests.Unit.Cluster;
-using GridDomain.Tests.Unit.EventsUpgrade;
-using GridDomain.Tests.Unit.EventsUpgrade.Domain;
-using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
-using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
-using Serilog.Events;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.EventsUpgrade
+namespace GridDomain.Tests.Acceptance.Cluster.EventsUpgrade
 {
     public class Cluster_Future_events_class_upgraded_by_object_adapter : Future_events_class_upgraded_by_object_adapter
     {

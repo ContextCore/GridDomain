@@ -1,20 +1,9 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using GridDomain.Common;
-using GridDomain.Node.AkkaMessaging.Waiting;
-using GridDomain.ProcessManagers.State;
-using GridDomain.Tests.Common;
-using GridDomain.Tests.Unit;
+using GridDomain.Tests.Acceptance.Snapshots;
 using GridDomain.Tests.Unit.Cluster;
 using GridDomain.Tests.Unit.ProcessManagers;
-using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
-using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
-using GridDomain.Tools.Repositories.AggregateRepositories;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Acceptance.Snapshots
+namespace GridDomain.Tests.Acceptance.Cluster.Snapshots
 {
     public class Cluster_Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown : Process_actor_Should_delete_snapshots_according_to_policy_on_shutdown
     {

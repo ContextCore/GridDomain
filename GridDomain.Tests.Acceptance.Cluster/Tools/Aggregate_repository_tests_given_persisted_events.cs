@@ -5,7 +5,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.Persistence.Sql;
-using GridDomain.Tests.Common.Configuration;
+using GridDomain.Tests.Acceptance.Tools;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tools.Repositories;
@@ -13,7 +13,7 @@ using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using Xunit;
 
-namespace GridDomain.Tests.Acceptance.Tools
+namespace GridDomain.Tests.Acceptance.Cluster.Tools
 {
     public class Aggregate_repository_tests_given_persisted_events
     {
