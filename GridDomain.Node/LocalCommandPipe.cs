@@ -7,7 +7,6 @@ using Akka.Event;
 using Akka.Routing;
 using Autofac;
 using GridDomain.Common;
-using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Actors;
@@ -18,19 +17,11 @@ using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.Hadlers;
 using GridDomain.Node.Actors.ProcessManagers;
-using GridDomain.Node.Configuration;
 using GridDomain.ProcessManagers.DomainBind;
 using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Node
 {
-    public interface IActorCommandPipe: IMessagesRouter, IDisposable, IContainerConfiguration
-    {
-        IActorRef ProcessesPipeActor { get; }
-        IActorRef HandlersPipeActor { get; }
-        IActorRef CommandExecutor { get; }
-    }
-
     public class LocalCommandPipe: IActorCommandPipe
     {
         private readonly TypeCatalog<IActorRef, object> _aggregatesCatalog = new TypeCatalog<IActorRef, object>();

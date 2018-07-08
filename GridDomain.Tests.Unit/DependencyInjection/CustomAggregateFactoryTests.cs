@@ -108,16 +108,4 @@ namespace GridDomain.Tests.Unit.DependencyInjection
             Assert.Equal(10, evt.Received.Produced); //from injected dependency
         }
     }
-
-    internal class Created : DomainEvent
-    {
-        public int InitialValue { get; }
-        public int Produced { get; }
-
-        public Created(string id, int initialValue, int produced):base(id)
-        {
-            InitialValue = initialValue;
-            Produced = produced;
-        }
-    }
 }

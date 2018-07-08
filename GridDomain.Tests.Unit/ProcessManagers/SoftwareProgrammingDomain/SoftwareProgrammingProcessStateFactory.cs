@@ -27,14 +27,4 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
             throw new CannotCreateStateFromMessageException(message);
         }
     }
-
-    public class CannotCreateStateFromMessageException : Exception
-    {
-        public object Msg { get; }
-
-        public CannotCreateStateFromMessageException(object msg)
-        {
-            Msg = msg;
-        }
-    }
 }

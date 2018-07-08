@@ -3,21 +3,10 @@ using Akka.Dispatch;
 using Akka.Event;
 using GridDomain.Common;
 using Serilog;
-using Serilog.Core;
 using LogEvent = Akka.Event.LogEvent;
 
 namespace GridDomain.Node.Logging
 {
-    public static class LogContextNames
-    {
-        public const string Timestamp = "Timestamp";
-        public const string ClassShortName = "ClassName";
-        public const string Class = "Class";
-        public const string SourceContext = Constants.SourceContextPropertyName;
-        public const string Path = "Path";
-        public const string Thread = "Thread";
-    }
-
     public class SerilogLoggerActor : ReceiveActor,
                                       IRequiresMessageQueue<ILoggerMessageQueueSemantics>
     {

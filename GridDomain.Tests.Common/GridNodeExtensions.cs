@@ -12,7 +12,6 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.PersistentHub;
 using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.AkkaMessaging;
-using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tools;
@@ -21,102 +20,11 @@ using GridDomain.Tools.Repositories.EventRepositories;
 
 namespace GridDomain.Tests.Common
 {
- 
-    public interface IConditionedProcessManagerSender<T> : IConditionedProcessManagerSender
-    {
-        new Task<IWaitResult<T>> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
-    }
     public interface IConditionedProcessManagerSender: IMessageFilter<IConditionedProcessManagerSender>
     {
         Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true);
     }
 
-    
-    public interface IProcessManagerExpectationBuilder
-    {
-        IConditionedProcessManagerSender<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class; 
-    }
-
-    public class ProcessManagerExpectationBuilder : IProcessManagerExpectationBuilder
-    {
-        private readonly IExtendedGridDomainNode _extendedGridDomainNode;
-        private readonly object _msg;
-        private readonly MessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
-
-        public ProcessManagerExpectationBuilder(object msg, IExtendedGridDomainNode node, MessageConditionFactory<Task<IWaitResult>> messageConditionFactory)
-        {
-            _messageConditionFactory = messageConditionFactory;
-            _msg = msg;
-            _extendedGridDomainNode = node;
-        }
-
-        public IConditionedProcessManagerSender<TMsg> Expect<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
-        {
-            var sender = new ConditionedProcessManagerSender<TMsg>(_extendedGridDomainNode,
-                                                                   _msg,
-                                                                   _messageConditionFactory);
-            sender.And<TMsg>(filter);
-            return sender;
-        }
-
-        class ConditionedProcessManagerSender<T> : IConditionedProcessManagerSender<T> where T : class
-        {
-            private readonly MessageConditionFactory<Task<IWaitResult>> _messageConditionFactory;
-            private readonly IExtendedGridDomainNode _node;
-            private readonly object _msg;
-
-            public ConditionedProcessManagerSender(IExtendedGridDomainNode node,
-                                                   object msg,
-                                                   MessageConditionFactory<Task<IWaitResult>> messageConditionFactory)
-            {
-                _msg = msg;
-                _node = node;
-                _messageConditionFactory = messageConditionFactory;
-            }
-
-            async Task<IWaitResult<T>> IConditionedProcessManagerSender<T>.Send(TimeSpan? timeout, bool failOnAnyFault)
-            {
-                return WaitResult.Parse<T>(await Send(timeout, failOnAnyFault));
-            }
-
-            public IConditionedProcessManagerSender And<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
-            {
-                _messageConditionFactory.And(filter);
-                return this;
-            }
-
-            public IConditionedProcessManagerSender Or<TMsg>(Predicate<TMsg> filter = null) where TMsg : class
-            {
-                _messageConditionFactory.Or(filter);
-                return this;
-            }
-
-
-            public async Task<IWaitResult> Send(TimeSpan? timeout = null, bool failOnAnyFault = true)
-            {
-                var defaultTimeout = timeout ?? _node.DefaultTimeout;
-
-                var waiter = new MessagesWaiter(_node.System, _node.Transport, defaultTimeout, _messageConditionFactory);
-                var results = waiter.Start();
-
-                _node.Pipe.ProcessesPipeActor.Tell(_msg);
-
-                return await results;
-            }
-        }
-    }
-
-
-
-    public interface ITestGridDomainNode : IExtendedGridDomainNode
-    {
-        Task<T> LoadAggregateByActor<T>(string id) where T : Aggregate;
-        Task<TState> LoadProcess<TState>(string id) where TState : class,IProcessState;
-        IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata=null);// where TExpect : class;
-        IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata=null);// where TExpect : class;
-    }
-
-   
     public static class GridNodeExtensions
     {
 

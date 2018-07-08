@@ -11,75 +11,14 @@ using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors;
-using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Node.Serializers;
 using GridDomain.Transport;
-using GridDomain.Transport.Extension;
 using Serilog;
 
 namespace GridDomain.Node {
-    public class GridDomainLocalNode : GridDomainNode
-    {
-        private AkkaCommandExecutor _akkaCommandExecutor;
-        public GridDomainLocalNode(IEnumerable<IDomainConfiguration> domainConfigurations, IActorSystemFactory actorSystemFactory, ILogger log, TimeSpan defaultTimeout) : base(domainConfigurations, actorSystemFactory, log, defaultTimeout) { }
-        
-        protected override ICommandExecutor CreateCommandExecutor()
-        {
-            _akkaCommandExecutor = new AkkaCommandExecutor(System,Transport,DefaultTimeout);
-            return _akkaCommandExecutor;
-        }
-
-        protected override IActorCommandPipe CreateCommandPipe()
-        {
-            return new LocalCommandPipe(System);
-        }
-
-        protected override IActorTransport CreateTransport()
-        {
-            return System.InitLocalTransportExtension().Transport;
-        }
-
-        protected override async Task StartMessageRouting()
-        {
-            await base.StartMessageRouting();
-            _akkaCommandExecutor.Init(Pipe.CommandExecutor);
-        }
-
-        protected override DomainBuilder CreateDomainBuilder()
-        {
-            return new DomainBuilder(ProcessHubActor.GetProcessStateActorSelection);
-        }
-    }
-
-    public interface INodeContext :IMessageProcessContext
-    {
-           ActorSystem System { get;}
-           IActorTransport Transport { get; }
-           ICommandExecutor Executor { get; }
-    }
-
-    public static class DomainBuilderExtensions
-    {
-        public static HandlerRegistrator<INodeContext,TMessage, THandler> RegisterNodeHandler<TMessage, THandler>(this IDomainBuilder builder, Func<INodeContext, THandler> producer) where THandler : IHandler<TMessage>
-                                                                                                                                                                               where TMessage : class, IHaveProcessId, IHaveId
-        {
-            return new HandlerRegistrator<INodeContext,TMessage, THandler>(producer, builder);
-        }
-    }
-    
-    public class DefaultNodeContext : INodeContext
-    {
-        public ICommandExecutor Executor { get; set; }
-        public ActorSystem System { get;  set;}
-        public IActorTransport Transport { get;  set;}
-        public IPublisher Publisher => Transport;
-        public ILogger Log { get;  set;}
-    }
-    
     public abstract class GridDomainNode : IExtendedGridDomainNode
     {
         private ICommandExecutor _commandExecutor
@@ -270,6 +209,4 @@ namespace GridDomain.Node {
         }
 
     }
-
-    public class InvalidDomainConfigurationException : Exception { }
 }

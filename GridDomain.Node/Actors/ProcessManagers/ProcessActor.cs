@@ -377,14 +377,4 @@ namespace GridDomain.Node.Actors.ProcessManagers
             throw new CannotGetProcessIdFromMessageException(msg);
         }
     }
-
-    internal class MessageReceivedOnTerminationException : Exception
-    {
-        public MessageReceivedOnTerminationException() : base("Received a new message to process after State asked to terminate") { }
-    }
-
-    internal class ProcessStateNullException : Exception
-    {
-        public ProcessStateNullException() : base("Process state, produced by state factory is null, check factory for possible errors") { }
-    }
 }

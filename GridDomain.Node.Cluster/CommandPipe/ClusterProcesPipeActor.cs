@@ -143,6 +143,4 @@ namespace GridDomain.Node.Cluster.CommandPipe
             return new ShardedCommandMetadataEnvelop(cmd,initialMessage.Metadata.CreateChild(cmd));
         }
     }
-
-    internal class CannotExtractProcessIdException : Exception { }
 }

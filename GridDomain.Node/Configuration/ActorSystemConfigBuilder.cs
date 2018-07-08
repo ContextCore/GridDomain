@@ -8,14 +8,6 @@ using Serilog;
 
 namespace GridDomain.Node.Configuration
 {
-    public interface IActorSystemConfigBuilder
-    {
-        void Add(IHoconConfig cfg);
-        Config Build();
-        ActorSystemConfigBuilder Clone();
-        IActorSystemFactory BuildActorSystemFactory(string systemName);
-    }
-
     public class ActorSystemConfigBuilder : IActorSystemConfigBuilder
     {
         private List<IHoconConfig> Configs { get; set; } = new List<IHoconConfig>();

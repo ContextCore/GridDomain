@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using DotNetty.Codecs.Base64;
-using GridDomain.Common;
 
 namespace GridDomain.Node.AkkaMessaging.Waiting
 {
@@ -15,31 +14,6 @@ namespace GridDomain.Node.AkkaMessaging.Waiting
         protected override bool CheckMessageType(object receivedMessage, Type t, Func<object, bool> domainMessageFilter = null)
         {
             return base.CheckMessageType(receivedMessage.SafeUnenvelope(), t, domainMessageFilter);
-        }
-    }
-
-    public static class ObjectExtensions
-    {
-        public static object SafeUnenvelope(this object msg)
-        {
-            return (msg as IMessageMetadataEnvelop)?.Message;
-        }
-
-        public static bool SafeCheckCorrelation(this object msg, string correlationId)
-        {
-            return (msg as IMessageMetadataEnvelop)?.Metadata?.CorrelationId == correlationId;
-        }
-    }
-
-    public class LocalMetadataEnvelopConditionBuilder : MetadataEnvelopConditionBuilder
-    {
-        protected override Func<object, bool> AddFilter(Type messageType, Func<object, bool> filter = null)
-        {
-            AcceptedMessageTypes.Add(typeof(MessageMetadataEnvelop));
-
-            bool FilterWithAdapter(object o) => CheckMessageType(o, messageType, filter);
-            MessageFilters.Add(FilterWithAdapter);
-            return FilterWithAdapter;
         }
     }
 }

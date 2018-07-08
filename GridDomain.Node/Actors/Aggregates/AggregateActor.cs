@@ -25,8 +25,6 @@ using GridDomain.Transport.Extension;
 
 namespace GridDomain.Node.Actors.Aggregates
 {
-    public class CommandAlreadyExecutedException : Exception { }
-
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>

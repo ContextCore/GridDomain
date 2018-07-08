@@ -4,28 +4,7 @@ using Akka.Event;
 using GridDomain.Common;
 using Serilog;
 
-namespace GridDomain.Node.Logging
-{
-    public class LoggingExtension : IExtension
-    {
-        public IActorRef Logger { get; }
-
-        public LoggingExtension(IActorRef logger)
-        {
-            Logger = logger;
-        }
-    }
-
-    public static class LoggingExtensions
-    {
-        public static LoggingExtension InitSerilogExtension(this ActorSystem system, ILogger log, string name=null)
-        {
-            return (LoggingExtension) system.RegisterExtension(new LoggingExtensionProvider(log,name));
-        }
-
-      
-    }
-
+namespace GridDomain.Node.Logging {
     public class LoggingExtensionProvider : ExtensionIdProvider<LoggingExtension>
     {
         private readonly ILogger _logger;

@@ -12,12 +12,4 @@ namespace GridDomain.Node.Actors.CommandPipe {
     {
         void Add(Type messageType, IMessageProcessor messageProcessor);
     }
-
-    public static class CompositeMessageProcessorExtensions
-    {
-        public static void Add<TMessage>(this ICompositeMessageProcessor proc, IMessageProcessor messageProcessor)
-        {
-            proc.Add(typeof(TMessage), messageProcessor);
-        }
-    }
 }
