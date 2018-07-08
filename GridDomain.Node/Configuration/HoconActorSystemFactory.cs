@@ -1,5 +1,4 @@
 using Akka.Actor;
-using Akka.Cluster.Tools.Singleton;
 using Akka.Configuration;
 
 namespace GridDomain.Node.Configuration
