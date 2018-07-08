@@ -9,7 +9,6 @@ using Akka.DI.Core;
 using Autofac;
 using GridDomain.Common;
 using GridDomain.Configuration;
-using GridDomain.Configuration.MessageRouting;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.Adapters;
 using GridDomain.Node.Actors;
