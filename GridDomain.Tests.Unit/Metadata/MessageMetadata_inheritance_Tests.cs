@@ -1,6 +1,6 @@
 using System;
+using AutoFixture;
 using GridDomain.Common;
-using Ploeh.AutoFixture;
 using Xunit;
 
 namespace GridDomain.Tests.Unit.Metadata

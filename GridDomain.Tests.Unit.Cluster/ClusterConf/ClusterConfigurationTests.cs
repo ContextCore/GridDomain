@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
-using FluentAssertions;
 using GridDomain.Common;
 using GridDomain.Node.Cluster;
 using GridDomain.Node.Cluster.CommandPipe;
@@ -86,8 +85,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
                                                            .ToArray();
 
             //All members of cluster should be reachable
-            knownClusterAddresses.Should()
-                                 .BeEquivalentTo(akkaCluster.Members);
+            Assert.Equal(akkaCluster.Members,knownClusterAddresses);
         }
 
         [Fact]

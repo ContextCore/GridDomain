@@ -1,6 +1,5 @@
 using System;
 using Akka.Actor;
-using Akka.Streams.Implementation.Fusing;
 using Akka.TestKit.Xunit2;
 using GridDomain.Node.Actors.EventSourced.Messages;
 using GridDomain.Node.Actors.RecycleMonitor;

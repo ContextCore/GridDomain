@@ -11,7 +11,6 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using GridDomain.Tests.Common;
-using NMoneys;
 using Serilog;
 using Serilog.Events;
 using Xunit.Abstractions;

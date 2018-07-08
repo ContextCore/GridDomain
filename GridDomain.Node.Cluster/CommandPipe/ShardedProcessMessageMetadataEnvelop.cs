@@ -1,5 +1,4 @@
 using System;
-using Akka.TestKit;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
 using GridDomain.Node.AkkaMessaging;

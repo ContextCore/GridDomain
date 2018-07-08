@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using AutoFixture.Dsl;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers;
 using GridDomain.Tests.Common;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.Dsl;
 
 namespace GridDomain.Tests.Scenarios {
     public static class ProcessScenario
