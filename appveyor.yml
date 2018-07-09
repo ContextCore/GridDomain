@@ -1,0 +1,108 @@
+version: 2.2.{build}
+branches:
+  only:
+  - master
+  - /hotfix.*/
+  - 2.0.0
+image: Visual Studio 2017
+configuration: Release
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}-alfa'
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}-alfa'
+  package_version: '{version}-alfa'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}-alfa'
+environment:
+  WriteModel: Server=(local);Database=master;User ID=sa;Password=Password12!
+  ReadModel: Server=(local);Database=AutoTestRead;User ID=sa;Password=Password12!
+  APPVEYOR_RDP_PASSWORD:
+    secure: wdSMAMdS/O0zMUdCuf87Rw==
+  Quartz: Server=(local);Database=Quartz;User ID=sa;Password=Password12!
+services: mssql2016
+cache: packages  -> **\packages.config
+build_script:
+- ps: |
+    nuget sources add -Name pro_nbench -Source "https://ci.appveyor.com/nuget/pro-nbench-xunit"
+    nuget sources add -Name autoFixture_Night -Source "https://www.myget.org/F/autofixture/api/v3/index.json"
+    nuget update -self
+    nuget restore -verbosity quiet GridDomain.sln
+
+    msbuild GridDomain.sln /p:Configuration=Release /v:Minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:GeneratePackageOnBuild=true /p:IncludeSymbols=true
+test_script:
+- ps: |    	
+   
+    function ExecuteSQL($mode, $sql)
+    {
+      sqlcmd -S "(local)\SQL2016" -U "sa" -P "Password12!" $mode $sql
+    }
+    
+    function PushTestLogs($projectName)	
+    {	
+        $name=$projectName+"_Logs_$env:APPVEYOR_BUILD_VERSION.zip"	
+        $logDirectory = "C:\\projects\\griddomain\\GridDomain.Tests.$projectName\\bin\\Release\\netcoreapp2.0\\Logs"
+
+        if(!(Test-Path -Path $logDirectory)){
+          Write-Output "Logs directory not found at $logDirectory"
+          return
+        }
+
+        $logpath = "$logDirectory\\*"	
+        7z a $name $logpath	
+        Push-AppveyorArtifact $name	
+    }	
+    	
+    function OpenRdp()	
+    {	
+        $blockRdp = $true;	
+        iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))	
+    }	
+    	
+    function RunTest($name, $addition="")
+    {	
+        cd C:\\projects\\griddomain\\GridDomain.Tests.$name	
+
+        dotnet xunit -fxversion 2.0.3 -framework netcoreapp2.0  -noshadow -configuration Release -nobuild $additionParameters
+
+        if($LastExitCode -ne 0){	
+             PushTestLogs -projectName $name 
+             exit $LastExitCode
+        }	
+
+        PushTestLogs -projectName $name 
+    }	
+    
+    ExecuteSQL -mode "-Q" -sql 'Use [master]; CREATE DATABASE [AutoTestRead];'
+    ExecuteSQL -mode "-i" -sql 'GridDomain.Node\Persistence.sql'
+    ExecuteSQL -mode "-i" -sql 'GridDomain.Node\Human_schema.sql'	
+
+    #for memory-optimized Quartz tables 
+    New-Item -ItemType directory -Path C:\GridDomainQuartz | Out-Null
+    ExecuteSQL -mode "-i" -sql 'GridDomain.Scheduling\CreateDatabase.sql'
+    #to ensure table is created. Weird, but many times acceptance tests was failing on first access to write db via EF repository	
+    ExecuteSQL -mode "-Q" -sql 'USE [AutoTestWrite]; SELECT * FROM [Snapshots]'	
+    	
+    RunTest -name "Unit"
+
+    RunTest -name "Acceptance"
+
+    #RunTest -name "Stress" -addition '-xml C:\projects\griddomain\stress_results.xml'
+    	
+    #Get-Content C:\\projects\\griddomain\\stress_results.xml
+artifacts:
+- path: '**\GridDomain.*.nupkg'
+  name: Packages
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/griddomain/api/v2/package
+  api_key:
+    secure: jF3VOqctqN9MK8lLs+Vlfs2Trv4Gs9BLV/R4HX6ZtC1JQaoezDssjjtP/28Ptkd7
+  skip_symbols: false
+  symbol_server: https://www.myget.org/F/griddomain/symbols/api/v2/package
