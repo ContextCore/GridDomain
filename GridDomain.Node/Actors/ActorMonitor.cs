@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Monitoring;
-using Akka.Monitoring.Impl;
 using GridDomain.Common;
 using GridDomain.CQRS;
 
@@ -28,12 +26,12 @@ namespace GridDomain.Node.Actors
 
         public void Increment(string counterName)
         {
-            _context.IncrementCounter(GetCounterName(counterName));
+          //  _context.IncrementCounter(GetCounterName(counterName));
         }
         
         public void Timing(string counterName,long time, double sampleRate = 1D)
         {
-            _context.Timing(GetCounterName(counterName), time, sampleRate);
+           // _context.Timing(GetCounterName(counterName), time, sampleRate);
         }
 
         public interface ITimer
@@ -87,7 +85,7 @@ namespace GridDomain.Node.Actors
 
         public void Gauge(string name)
         {
-            _context.Gauge(GetCounterName(name));
+           // _context.Gauge(GetCounterName(name));
         }
         
         public void Increment<T>()
@@ -97,22 +95,22 @@ namespace GridDomain.Node.Actors
 
         public void IncrementMessagesReceived()
         {
-            Increment(CounterNames.ReceivedMessages);
+            Increment("ReceivedMessages");
         }
 
         public void IncrementActorRestarted()
         {
-            Increment(CounterNames.ActorRestarts);
+            Increment("ActorRestarts");
         }
 
         public void IncrementActorStopped()
         {
-            Increment(CounterNames.ActorsStopped);
+            Increment("ActorsStopped");
         }
 
         public void IncrementActorStarted()
         {
-            Increment(CounterNames.ActorsCreated);
+            Increment("ActorsCreated");
         }
     }
 }
