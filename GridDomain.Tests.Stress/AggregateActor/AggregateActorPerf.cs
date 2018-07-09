@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Monitoring;
-using Akka.Monitoring.StatsD;
 using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
@@ -79,10 +77,10 @@ namespace GridDomain.Tests.Stress.AggregateActor {
 
             _actorSystem = CreateActorSystem();
             
-            var statsDmonitor = new ActorStatsDMonitor("localhost",32768,GetType().Name);
-            
-            var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_actorSystem, 
-                                                                             statsDmonitor); //new ActorAppInsightsMonitor(), new ActorPerformanceCountersMonitor ();
+            //var statsDmonitor = new ActorStatsDMonitor("localhost",32768,GetType().Name);
+            //
+            //var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_actorSystem, 
+            //                                                                 statsDmonitor); //new ActorAppInsightsMonitor(), new ActorPerformanceCountersMonitor ();
 
             _actorSystem.InitLocalTransportExtension();
             _actorSystem.InitDomainEventsSerialization(new EventsAdaptersCatalog());
