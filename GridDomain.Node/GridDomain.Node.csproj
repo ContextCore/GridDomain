@@ -27,6 +27,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
+    <PackageReference Include="Akka.Monitoring" Version="0.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
