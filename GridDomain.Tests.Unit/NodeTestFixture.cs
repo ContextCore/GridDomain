@@ -44,27 +44,7 @@ namespace GridDomain.Tests.Unit
         {
             Output = output;
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
-
-            if (cfg == null)
-            {
-                var b = new System.Diagnostics.StackTrace();
-
-                string name = b.GetFrame(1)
-                               .GetMethod()
-                               .DeclaringType.BeautyName();
-
-                    var mthd = b.GetFrames().Select(f =>
-                                                    {
-                                                        var method = f.GetMethod();
-                                                        return new {method, FactAttribute = method.GetAttribute<FactAttribute>(), TheoryAttribute = method.GetAttribute<TheoryAttribute>()};
-                                                    }).FirstOrDefault(a => a.FactAttribute != null || a.TheoryAttribute != null);
-                if (mthd != null)
-                    name = mthd.method.DeclaringType.BeautyName();
-
-                cfg = new AutoTestNodeConfiguration(name);
-            }
-
-            NodeConfig = cfg;
+            NodeConfig = cfg ?? new AutoTestNodeConfiguration();
             LoggerConfiguration = new DefaultLoggerConfiguration(NodeConfig.LogLevel, NodeConfig.Name);
             ActorSystemConfigBuilder = new ActorSystemConfigBuilder();
 
