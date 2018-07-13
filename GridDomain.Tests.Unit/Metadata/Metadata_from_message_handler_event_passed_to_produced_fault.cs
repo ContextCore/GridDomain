@@ -19,7 +19,7 @@ namespace GridDomain.Tests.Unit.Metadata
     public class Metadata_from_message_handler_event_passed_to_produced_fault : NodeTestKit
     {
         public Metadata_from_message_handler_event_passed_to_produced_fault(ITestOutputHelper output)
-            : this(new NodeTestFixture(output, new []{new FaultyBalloonProjectionDomainConfiguration()})) {}
+            : this(new NodeTestFixture(output, new FaultyBalloonProjectionDomainConfiguration())) {}
         
         protected Metadata_from_message_handler_event_passed_to_produced_fault(NodeTestFixture fixture):base(fixture){}
 

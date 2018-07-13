@@ -16,10 +16,9 @@ namespace GridDomain.Node
         public Action<ActorSystem> ActorInit = delegate { };
         private Action<ActorSystem> _transport;
 
-        public GridNodeBuilder()
+        public GridNodeBuilder(ILogger log)
         {
-            Logger = new DefaultLoggerConfiguration().CreateLogger()
-                                                     .ForContext<GridDomainNode>();
+            Logger = log;
             DefaultTimeout = TimeSpan.FromSeconds(10);
             Configurations = new IDomainConfiguration[] { };
         }
