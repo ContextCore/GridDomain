@@ -82,10 +82,12 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
                                                          .TimeoutAfter(TimeSpan.FromSeconds(5000));
 
             var knownClusterAddresses = knownClusterMembers.Members.Select(m => m.Address)
+                                                           .OrderBy(m =>m.Port)
                                                            .ToArray();
 
+            
             //All members of cluster should be reachable
-            Assert.Equal(akkaCluster.Members,knownClusterAddresses);
+            Assert.Equal(akkaCluster.Members.OrderBy(m =>m.Port).ToArray(),knownClusterAddresses);
         }
 
         [Fact]

@@ -32,10 +32,10 @@ namespace GridDomain.Tests.Unit.Snapshots.SavePolicy
                 var policy = Given();
                 Assert.True(policy.ShouldSave(1));
                 policy.Tracking.Start(1);
-                Assert.False(policy.ShouldSave(1));
-                Assert.False(policy.ShouldSave(2));
+                Assert.False(policy.ShouldSave(1),"saving seq 1");
+                Assert.False(policy.ShouldSave(2),"saving seq 2");
                 await Task.Delay(policy.MaxSaveFrequency);
-                Assert.True(policy.ShouldSave(2));
+                Assert.True(policy.ShouldSave(2),"saving seq 2 after waiting");
             }
         
             [Fact]
