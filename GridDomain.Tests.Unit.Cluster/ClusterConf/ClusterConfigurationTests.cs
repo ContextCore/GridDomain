@@ -10,6 +10,7 @@ using GridDomain.Node.Cluster.Configuration;
 using GridDomain.Node.Configuration;
 using Serilog.Core;
 using Serilog.Events;
+using Should.Fluent;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -35,12 +36,12 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         public async Task Cluster_can_start_with_predefined_and_automatic_seed_nodes()
         {
             using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
-                                                             .Cluster()
-                                                             .AutoSeeds(3)
-                                                             .Seeds(10010)
-                                                             .Workers(1)
-                                                             .Build()
-                                                             .CreateInTime())
+                                                                   .Cluster()
+                                                                   .AutoSeeds(3)
+                                                                   .Seeds(10010)
+                                                                   .Workers(1)
+                                                                   .Build()
+                                                                   .CreateInTime())
             {
                 await CheckClusterStarted(akkaCluster);
             }
@@ -50,11 +51,11 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         public async Task Cluster_can_start_with_automatic_seed_nodes()
         {
             using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
-                                                             .Cluster()
-                                                             .AutoSeeds(3)
-                                                             .Workers(1)
-                                                             .Build()
-                                                             .CreateInTime())
+                                                                   .Cluster()
+                                                                   .AutoSeeds(3)
+                                                                   .Workers(1)
+                                                                   .Build()
+                                                                   .CreateInTime())
             {
                 await CheckClusterStarted(akkaCluster);
             }
@@ -64,11 +65,11 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         public async Task Cluster_can_start_with_static_seed_nodes()
         {
             using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
-                                                             .Cluster()
-                                                             .Seeds(10011)
-                                                             .Workers(1)
-                                                             .Build()
-                                                             .CreateInTime())
+                                                                   .Cluster()
+                                                                   .Seeds(10011)
+                                                                   .Workers(1)
+                                                                   .Build()
+                                                                   .CreateInTime())
             {
                 await CheckClusterStarted(akkaCluster);
             }
@@ -82,26 +83,29 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
                                                          .TimeoutAfter(TimeSpan.FromSeconds(5000));
 
             var knownClusterAddresses = knownClusterMembers.Members.Select(m => m.Address)
-                                                           .OrderBy(m =>m.Port)
+                                                           .Distinct()
+                                                           .OrderBy(m => m.Port)
                                                            .ToArray();
 
-            
+
             //All members of cluster should be reachable
-            Assert.Equal(akkaCluster.Members.OrderBy(m =>m.Port).ToArray(),knownClusterAddresses);
+            Assert.Equal(akkaCluster.Members.OrderBy(m => m.Port)
+                                    .ToArray(),
+                         knownClusterAddresses);
         }
 
         [Fact]
         public async Task Cluster_can_host_an_actor_with_shard_region_with_predefined_seeds()
         {
             using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
-                                                             .Log(LogEventLevel.Verbose)
-                                                             .Cluster()
-                                                             .Seeds(10030)
-                                                             .AutoSeeds(1)
-                                                             .Workers(1)
-                                                             .Build()
-                                                             .OnClusterUp(ActivateShardRegion)
-                                                             .CreateInTime())
+                                                                   .Log(LogEventLevel.Verbose)
+                                                                   .Cluster()
+                                                                   .Seeds(10030)
+                                                                   .AutoSeeds(1)
+                                                                   .Workers(1)
+                                                                   .Build()
+                                                                   .OnClusterUp(ActivateShardRegion)
+                                                                   .CreateInTime())
             {
                 await CheckClusterCanHostAnActor(akkaCluster);
             }
@@ -111,13 +115,13 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
         public async Task Cluster_can_host_an_actor_with_shard_region_with_auto_seeds()
         {
             using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
-                                                             .Log(LogEventLevel.Verbose)
-                                                             .Cluster()
-                                                             .AutoSeeds(2)
-                                                             .Workers(2)
-                                                             .Build()
-                                                             .OnClusterUp(ActivateShardRegion)
-                                                             .CreateInTime())
+                                                                   .Log(LogEventLevel.Verbose)
+                                                                   .Cluster()
+                                                                   .AutoSeeds(2)
+                                                                   .Workers(2)
+                                                                   .Build()
+                                                                   .OnClusterUp(ActivateShardRegion)
+                                                                   .CreateInTime())
             {
                 await CheckClusterCanHostAnActor(akkaCluster);
             }

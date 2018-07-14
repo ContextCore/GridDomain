@@ -6,7 +6,7 @@ using GridDomain.Configuration.SnapshotPolicies;
 namespace GridDomain.Node.Actors.EventSourced.SnapshotsPolicy {
     public class SnapshotsSavePolicy : ISnapshotsSavePolicy
     {
-        private int _saveOnEach;
+        private readonly int _saveOnEach;
         public SnapshotsSaveTracker Traker { get; }
         public TimeSpan MaxSaveFrequency { get; }
         public SnapshotsSavePolicy(int saveOnEach = 1, TimeSpan? maxSaveFrequency=null)

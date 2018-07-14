@@ -32,9 +32,9 @@ namespace GridDomain.Node.Actors.EventSourced.SnapshotsPolicy {
 
         public void Complete(long seqNumber)
         {
+            LastSaveTime = BusinessDateTime.UtcNow;
             _active.RemoveWhere(s => s <= seqNumber);
             GreatestSavedNumber = Math.Max(seqNumber, GreatestSavedNumber);
-            LastSaveTime = BusinessDateTime.UtcNow;
         }
 
         public void Fail(long seqNumber)
