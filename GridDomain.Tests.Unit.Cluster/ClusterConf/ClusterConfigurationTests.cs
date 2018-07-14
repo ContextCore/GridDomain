@@ -10,7 +10,6 @@ using GridDomain.Node.Cluster.Configuration;
 using GridDomain.Node.Configuration;
 using Serilog.Core;
 using Serilog.Events;
-using Should.Fluent;
 using Xunit;
 using Xunit.Abstractions;
 
