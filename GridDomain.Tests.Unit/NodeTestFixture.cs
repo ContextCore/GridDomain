@@ -66,14 +66,7 @@ namespace GridDomain.Tests.Unit
         public NodeConfiguration NodeConfig { get; }
         public string Name => NodeConfig.Name;
 
-        private const int DefaultTimeOutSec =
-#if DEBUG
-            10; //in debug mode all messages serialization is enabled, and it slows down all tests greatly
-#endif
-#if !DEBUG
-            3;
-#endif
-        public TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(DefaultTimeOutSec);
+        public TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(10);
         public Func<IExtendedGridDomainNode, TestKit, ITestGridDomainNode> TestNodeBuilder { get; set; }
 
         public void Dispose()
