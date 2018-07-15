@@ -41,6 +41,12 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
+        public static T LogToFile<T>(this T fixture, string name, LogEventLevel? level = null) where T : NodeTestFixture
+        {
+            fixture.LoggerConfiguration.WriteToFile(level ?? fixture.NodeConfig.LogLevel, name);
+            return fixture;
+        }
+
         public static T DisableInfrastructureLog<T>(this T fixture, LogEventLevel? escalationLevel=LogEventLevel.Warning) where T : NodeTestFixture
         {
             var propFilter = Matching.WithProperty<string>(LogContextNames.Class, s => s.StartsWith("Akka."));

@@ -20,7 +20,7 @@ namespace GridDomain.Tests.Stress.AggregateActor
         private static string ActorSystemConfig()
         {
             var cfg = new StressTestNodeConfiguration();
-            return NodeConfigurationExtensions.ToStandAloneSystemConfig(ActorSystemConfigBuilder.New(), AutoTestNodeDbConfiguration.Default, cfg.LogLevel, cfg.Address)
+            return NodeConfigurationExtensions.ToStandAloneSystemConfig(new ActorSystemConfigBuilder(), AutoTestNodeDbConfiguration.Default, cfg.LogLevel, cfg.Address)
                                               .Build()
                                               .ToString();
         }

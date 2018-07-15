@@ -35,7 +35,6 @@ namespace GridDomain.Node.Cluster.Configuration
         }
 
         private static readonly IPEndPoint DefaultLoopbackEndpoint = new IPEndPoint(IPAddress.Loopback, port: 0);
-     //   private ILogger Logger { get; }
 
         public static int GetAvailablePort()
         {

@@ -27,10 +27,9 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
 {
+
     public class NodeTestFixture : IDisposable
     {
-       
-
         public ITestOutputHelper Output { get; }
 
         public readonly List<IDomainConfiguration> DomainConfigurations = new List<IDomainConfiguration>();
@@ -126,6 +125,7 @@ namespace GridDomain.Tests.Unit
         {
             return LoggerConfiguration.Default(NodeConfig.LogLevel)
                                       .XUnit(NodeConfig.LogLevel, Output)
+                                      .WriteToFile(NodeConfig.LogLevel,NodeConfig.Name)
                                       .CreateLogger();
         }
 

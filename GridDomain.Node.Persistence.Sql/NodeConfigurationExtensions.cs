@@ -10,7 +10,7 @@ namespace GridDomain.Node.Persistence.Sql
         public static ActorSystem CreateSystem(this NodeConfiguration conf, ISqlNodeDbConfiguration cfg)
         {
             return ActorSystem.Create(conf.Name,
-                                      ToStandAloneSystemConfig(ActorSystemConfigBuilder.New(), cfg, conf.LogLevel, conf.Address)
+                                      ToStandAloneSystemConfig(new ActorSystemConfigBuilder(), cfg, conf.LogLevel, conf.Address)
                                           .Build());
         }
 

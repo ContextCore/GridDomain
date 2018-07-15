@@ -23,16 +23,11 @@ namespace GridDomain.Tests.Unit.Cluster
 {
     public class AggregateShardingTests
     {
-        private readonly Logger _logger;
         private readonly ITestOutputHelper _testOutputHelper;
 
         public AggregateShardingTests(ITestOutputHelper output)
         {
             _testOutputHelper = output;
-            _logger = new XUnitAutoTestLoggerConfiguration(output,
-                                                           LogEventLevel.Information,
-                                                           GetType()
-                                                               .Name).CreateLogger();
         }
 
         [Fact]
@@ -68,7 +63,7 @@ namespace GridDomain.Tests.Unit.Cluster
 
         private async Task<ClusterInfo> CreateClusterNodes(BalloonFixture domainFixture, List<IGridDomainNode> nodes)
         {
-            return await ActorSystemConfigBuilder.New(_logger)
+            return await new ActorSystemConfigBuilder()
                                            .Log(LogEventLevel.Information)
                                            .DomainSerialization()
                                            .Cluster("test")
@@ -77,7 +72,7 @@ namespace GridDomain.Tests.Unit.Cluster
                                            .Build()
                                            .OnClusterUp(async s =>
                                                         {
-                                                            var node = await domainFixture.CreateNode(() => s, _logger);
+                                                            var node = await domainFixture.CreateNode(() => s);
                                                             nodes.Add(node);
                                                         })
                                            .CreateInTime();

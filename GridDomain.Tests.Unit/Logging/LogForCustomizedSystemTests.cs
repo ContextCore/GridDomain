@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.Logging {
 
         private static Config GetConfig()
         {
-            return ActorSystemConfigBuilder.New()
+            return new ActorSystemConfigBuilder()
                                      .Log(LogEventLevel.Verbose,null,true)
                                      .DomainSerialization()
                                      .RemoteActorProvider()
