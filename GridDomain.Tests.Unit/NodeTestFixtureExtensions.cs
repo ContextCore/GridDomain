@@ -69,7 +69,7 @@ namespace GridDomain.Tests.Unit
         public static NodeTestFixture EnableScheduling(this NodeTestFixture fixture, IQuartzConfig config = null, bool clearScheduledData = true)
         {
             IQuartzConfig quartzConfig = config ?? new InMemoryQuartzConfig(new InMemoryRetrySettings(5, TimeSpan.FromMinutes(10), new DefaultExceptionPolicy()));
-            fixture.DomainConfigurations.Add(new FutureAggregateHandlersDomainConfiguration());
+            fixture.Add(new FutureAggregateHandlersDomainConfiguration());
 
             fixture.OnNodeCreatedEvent += (o, node) =>
                                           {

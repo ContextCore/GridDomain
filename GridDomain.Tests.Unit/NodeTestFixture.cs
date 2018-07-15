@@ -32,7 +32,8 @@ namespace GridDomain.Tests.Unit
     {
         public ITestOutputHelper Output { get; }
 
-        public readonly List<IDomainConfiguration> DomainConfigurations = new List<IDomainConfiguration>();
+        public  IReadOnlyCollection<IDomainConfiguration> DomainConfigurations => _domainConfigurations;
+        private readonly List<IDomainConfiguration> _domainConfigurations = new List<IDomainConfiguration>();
 
         public NodeTestFixture(ITestOutputHelper output, IDomainConfiguration domainConfiguration) : this(output, domainConfiguration:new[] {domainConfiguration}) { }
 
@@ -44,19 +45,18 @@ namespace GridDomain.Tests.Unit
             Output = output;
             DefaultTimeout = defaultTimeout ?? DefaultTimeout;
             NodeConfig = cfg ?? new AutoTestNodeConfiguration();
-            LoggerConfiguration = new DefaultLoggerConfiguration(NodeConfig.LogLevel, NodeConfig.Name);
+            LoggerConfiguration = new LoggerConfiguration();
             ActorSystemConfigBuilder = new ActorSystemConfigBuilder();
 
             NodeConfig.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder, true);
 
             TestNodeBuilder = (node, kit) => new TestLocalNode(node, kit);
-            NodeBuilder = new GridNodeBuilder(new DefaultLoggerConfiguration(NodeConfig.LogLevel, NodeConfig.Name).CreateLogger())
+            NodeBuilder = new GridNodeBuilder()
                           .Timeout(DefaultTimeout)
                           .Transport(sys => sys.InitLocalTransportExtension());
 
             if (domainConfiguration != null)
-                foreach (var c in domainConfiguration)
-                    Add(c);
+                _domainConfigurations.AddRange(domainConfiguration);
         }
 
         public IActorSystemConfigBuilder ActorSystemConfigBuilder { get; set; }
@@ -84,7 +84,7 @@ namespace GridDomain.Tests.Unit
 
         public NodeTestFixture Add(IDomainConfiguration config)
         {
-            DomainConfigurations.Add(config);
+            _domainConfigurations.Add(config);
             return this;
         }
 

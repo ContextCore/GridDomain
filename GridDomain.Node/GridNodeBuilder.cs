@@ -16,15 +16,17 @@ namespace GridDomain.Node
         public Action<ActorSystem> ActorInit = delegate { };
         private Action<ActorSystem> _transport;
 
-        public GridNodeBuilder(ILogger log)
+        public GridNodeBuilder()
         {
-            Logger = log;
             DefaultTimeout = TimeSpan.FromSeconds(10);
             Configurations = new IDomainConfiguration[] { };
         }
 
         public virtual IGridDomainNode Build()
         {
+            if(Logger == null)
+                throw new InvalidOperationException("Configure Logger before building grid node");
+
             var factory = new DelegateActorSystemFactory(ActorProducers, _transport+ActorInit);
             return new GridDomainLocalNode(Configurations, factory, Logger, DefaultTimeout);
         }
