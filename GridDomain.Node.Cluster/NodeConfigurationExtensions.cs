@@ -33,7 +33,8 @@ namespace GridDomain.Node.Cluster
             return actorSystemConfigBuilder
                    .Cluster(confName)
                    .Seeds(otherSeeds)
-                   .AutoSeeds(1)
+                   .AutoSeeds(2)
+                   .Workers(2)
                    .Workers(workerNodes);
         }
     }
