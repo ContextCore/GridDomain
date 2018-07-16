@@ -4,29 +4,7 @@ branches:
   - develop
 image: Ubuntu
 init:
-- sh: >-
-    ls
-
-    cd ~/projects/griddomain-tvtpq
-
-    ls
-
-
-    sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'
-
-
-
-    sqlcmd -S localhost -U "sa" -P "Password12!" -Q "Use [master]; CREATE DATABASE [AutoTestRead];"
-
-
-
-    sqlcmd -S localhost -U "sa" -P "Password12!" -i "GridDomain.Node.Persistence.Sql\Persistence.sql"
-
-
-    sqlcmd -S localhost -U "sa" -P "Password12!" -i "GridDomain.Node.Persistence.Sql\Human_schema.sql"
-
-
-    sqlcmd -S localhost -U "sa" -P "Password12!" -i "GridDomain.Scheduling\CreateDatabase.sql"
+- sh: "sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
