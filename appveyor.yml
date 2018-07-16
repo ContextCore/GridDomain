@@ -22,8 +22,8 @@ build_script:
     set -e 
     printenv APPVEYOR_BUILD_VERSION
     printenv APPVEYOR_BUILD_NUMBER
-    dotnet build GridDomain.sln -c Release -v Minimal /l:\"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll\"
-    dotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:\"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll\""
+    dotnet build GridDomain.sln -c Release -v Minimal /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
+    dotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
 test_script:
 - sh: |
     ls
@@ -34,7 +34,7 @@ test_script:
       cd $testsFolder
       dotnet test --no-build --configuration Release --no-restore --logger trx > TestsOutput.txt
       TestResult=$?
-      path=~/projects/griddomain-tvtpq/\"$testsFolder\"/bin/Release/netcoreapp2.0/Logs/*
+      path=~/projects/griddomain-tvtpq/"$testsFolder"/bin/Release/netcoreapp2.0/Logs/*
       echo $path
       7z a $testsName\"Output\" TestResults/*
       7z a $testsName\"Logs\" $path
@@ -46,7 +46,7 @@ test_script:
       cd ..
     }
     runTests UnitTests GridDomain.Tests.Unit
-    runTests ClusterUnitTests GridDomain.Tests.Unit.Cluster"
+    runTests ClusterUnitTests GridDomain.Tests.Unit.Cluster
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
