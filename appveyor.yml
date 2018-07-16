@@ -18,9 +18,35 @@ environment:
   APPVEYOR_SSH_BLOCK: true
 services: mssql
 build_script:
-- sh: "set -e \n\nprintenv APPVEYOR_BUILD_VERSION\nprintenv APPVEYOR_BUILD_NUMBER\n\ndotnet build GridDomain.sln -c Release -v Minimal /l:\"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll\"\n\ndotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:\"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll\""
+- sh: |
+    set -e 
+    printenv APPVEYOR_BUILD_VERSION
+    printenv APPVEYOR_BUILD_NUMBER
+    dotnet build GridDomain.sln -c Release -v Minimal /l:\"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll\"
+    dotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:\"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll\""
 test_script:
-- sh: "ls\n\nrunTests()\n{\n\ntestsName=$1\ntestsFolder=$2\n\ncd $testsFolder\n\ndotnet test --no-build --configuration Release --no-restore --logger trx > TestsOutput.txt\n\nTestResult=$?\npath=~/projects/griddomain-tvtpq/\"$testsFolder\"/bin/Release/netcoreapp2.0/Logs/*\n\necho $path\n\n7z a $testsName\"Output\" TestResults/*\n7z a $testsName\"Logs\" $path\n\nif [ $TestResult -ne 0 ];then\n   echo should exiting...\n   #exit #$TestResult\nfi\n\necho continue \n\ncd ..\n}\n\nrunTests UnitTests GridDomain.Tests.Unit\nrunTests ClusterUnitTests GridDomain.Tests.Unit.Cluster"
+- sh: |
+    ls
+    runTests()
+    {
+      testsName=$1
+      testsFolder=$2
+      cd $testsFolder
+      dotnet test --no-build --configuration Release --no-restore --logger trx > TestsOutput.txt
+      TestResult=$?
+      path=~/projects/griddomain-tvtpq/\"$testsFolder\"/bin/Release/netcoreapp2.0/Logs/*
+      echo $path
+      7z a $testsName\"Output\" TestResults/*
+      7z a $testsName\"Logs\" $path
+      if [ $TestResult -ne 0 ];then
+         echo should exiting...
+            #exit #$TestResult
+      fi
+      echo continue 
+      cd ..
+    }
+    runTests UnitTests GridDomain.Tests.Unit
+    runTests ClusterUnitTests GridDomain.Tests.Unit.Cluster"
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
