@@ -3,8 +3,8 @@ branches:
   only:
   - develop
 image: Ubuntu
-init:
-- sh: "sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
+#init:
+#- sh: "sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
