@@ -16,7 +16,7 @@ dotnet_csproj:
 environment:
   APPVEYOR_SSH_KEY: ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI7S8beSMm0ePKq3CM3r4a0W/7OU+cwb8ZPyMoeeTtz0q0sPHoO1psD1jPh/2+v8UKToLdDJxhtxbkNTv8WeVME=
   APPVEYOR_SSH_BLOCK: true
-services: mssql
+services: mssql2017
 build_script:
 - sh: "set -e \n\nprintenv APPVEYOR_BUILD_VERSION\nprintenv APPVEYOR_BUILD_NUMBER\n\ndotnet build GridDomain.sln -c Release -v Minimal /l:\"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll\"\n\ndotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:\"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll\""
 test_script:
