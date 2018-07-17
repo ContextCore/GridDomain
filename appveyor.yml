@@ -22,6 +22,8 @@ build_script:
     set -e 
     server="(local)\SQL2017"
     echo $server
+    curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
+    
     sqlcmd -S $server -U SA -P Password12! -Q 'select @@VERSION'
     printenv APPVEYOR_BUILD_VERSION
     printenv APPVEYOR_BUILD_NUMBER
