@@ -3,7 +3,8 @@ stack: mssql
 branches:
   only:
   - develop
-image: Ubuntu
+image: Previous Ubuntu
+
 #init:
 #- sh: "sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
 dotnet_csproj:
