@@ -3,7 +3,7 @@ version: 1.0.{build}
 branches:
   only:
   - develop
-image:  Ubuntu
+image: Ubuntu
 
 #init:
 #- sh: "sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
@@ -24,8 +24,8 @@ build_script:
     #set -e 
     
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
-    sqlcmd -S localhost -U SA -P 'Password12!' -Q 'select @@VERSION'
-    appveyor exit
+    #sqlcmd -S localhost -U SA -P 'Password12!' -Q 'select @@VERSION'
+    #appveyor exit
     printenv APPVEYOR_BUILD_VERSION
     printenv APPVEYOR_BUILD_NUMBER
     dotnet build GridDomain.sln -c Release -v Minimal /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
@@ -51,8 +51,23 @@ test_script:
       echo continue 
       cd ..
     }
+
+    sqlcmd -S localhost -U SA -P 'Password12!' -Q 'select @@VERSION'
+
+    sqlcmd -S localhost -U SA -P "Password12!" -Q "Use [master]; CREATE DATABASE [AutoTestRead];"
+
+    sqlcmd -S localhost -U SA -P "Password12!" -i "GridDomain.Node.Persistence.Sql\Persistence.sql"
+
+    sqlcmd -S localhost -U SA -P "Password12!" -i "GridDomain.Node.Persistence.Sql\Human_schema.sql"
+
+    sqlcmd -S localhost -U SA -P "Password12!" -i "GridDomain.Scheduling\CreateDatabase.sql"
+
     runTests UnitTests GridDomain.Tests.Unit
     runTests ClusterUnitTests GridDomain.Tests.Unit.Cluster
+    runTests ClusterUnitTests GridDomain.Tests.Acceptance
+    runTests ClusterUnitTests GridDomain.Tests.Acceptance.Cluster
+
+
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
