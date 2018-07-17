@@ -20,7 +20,9 @@ services: mssql
 build_script:
 - sh: |
     set -e 
-    sqlcmd -S "(local)\SQL2017" -U SA -P Password12! -Q 'select @@VERSION'
+    server="sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
+    echo $server
+    sqlcmd -S $server -U SA -P Password12! -Q 'select @@VERSION'
     printenv APPVEYOR_BUILD_VERSION
     printenv APPVEYOR_BUILD_NUMBER
     dotnet build GridDomain.sln -c Release -v Minimal /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
