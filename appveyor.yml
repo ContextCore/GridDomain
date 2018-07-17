@@ -36,8 +36,8 @@ test_script:
       TestResult=$?
       path=~/projects/griddomain-tvtpq/"$testsFolder"/bin/Release/netcoreapp2.0/Logs/*
       echo $path
-      7z a $testsName\"Output\" TestResults/*
-      7z a $testsName\"Logs\" $path
+      7z a "$testsName"Output TestResults/*
+      7z a "$testsName"Logs $path
       if [ $TestResult -ne 0 ];then
          echo should exiting...
             #exit #$TestResult
