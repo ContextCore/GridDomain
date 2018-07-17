@@ -32,7 +32,7 @@ build_script:
     dotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
 test_script:
 - sh: |
-    ls
+    
     runTests()
     {
       testsName=$1
@@ -52,15 +52,16 @@ test_script:
       cd ..
     }
 
+    ls 
     sqlcmd -S localhost -U SA -P 'Password12!' -Q 'select @@VERSION'
 
     sqlcmd -S localhost -U SA -P "Password12!" -Q "Use [master]; CREATE DATABASE [AutoTestRead];"
 
-    sqlcmd -S localhost -U SA -P "Password12!" -i "GridDomain.Node.Persistence.Sql\Persistence.sql"
+    sqlcmd -S localhost -U SA -P "Password12!" -i GridDomain.Node.Persistence.Sql/Persistence.sql
 
-    sqlcmd -S localhost -U SA -P "Password12!" -i "GridDomain.Node.Persistence.Sql\Human_schema.sql"
+    sqlcmd -S localhost -U SA -P "Password12!" -i GridDomain.Node.Persistence.Sql/Human_schema.sql
 
-    sqlcmd -S localhost -U SA -P "Password12!" -i "GridDomain.Scheduling\CreateDatabase.sql"
+    sqlcmd -S localhost -U SA -P "Password12!" -i GridDomain.Scheduling/CreateDatabase.sql
 
     runTests UnitTests GridDomain.Tests.Unit
     runTests ClusterUnitTests GridDomain.Tests.Unit.Cluster
