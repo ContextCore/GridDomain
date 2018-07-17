@@ -20,12 +20,16 @@ environment:
 services: mssql
 build_script:
 - sh: |
-    set -e 
-    server="(local)\SQL2017"
-    echo $server
+    #set -e 
+    #server="(local)\SQL2017"
+    #echo $server
     
     sqlcmd -S localhost -U SA -P 'Password12!' -Q 'select @@VERSION'
-    systemctl status mssql-server.service
+    sqlcmd -S (local) -U SA -P 'Password12!' -Q 'select @@VERSION'
+    sqlcmd -S (local)\SQL2017 -U SA -P 'Password12!' -Q 'select @@VERSION'
+    sqlcmd -S '(local)\SQL2017' -U SA -P 'Password12!' -Q 'select @@VERSION'
+    sqlcmd -S 127.0.0.1 -U SA -P 'Password12!' -Q 'select @@VERSION'
+    appveyor exit
     printenv APPVEYOR_BUILD_VERSION
     printenv APPVEYOR_BUILD_NUMBER
     dotnet build GridDomain.sln -c Release -v Minimal /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
