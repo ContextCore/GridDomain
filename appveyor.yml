@@ -20,7 +20,7 @@ services: mssql
 build_script:
 - sh: |
     set -e 
-    server="sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
+    server="(local)\SQL2017"
     echo $server
     sqlcmd -S $server -U SA -P Password12! -Q 'select @@VERSION'
     printenv APPVEYOR_BUILD_VERSION
