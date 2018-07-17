@@ -3,7 +3,7 @@ version: 1.0.{build}
 branches:
   only:
   - develop
-image: Previous Ubuntu
+image:  Ubuntu
 
 #init:
 #- sh: "sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
@@ -22,14 +22,9 @@ services: mssql
 build_script:
 - sh: |
     #set -e 
-    #server="(local)\SQL2017"
-    #echo $server
+    
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
     sqlcmd -S localhost -U SA -P 'Password12!' -Q 'select @@VERSION'
-    sqlcmd -S (local) -U SA -P 'Password12!' -Q 'select @@VERSION'
-    sqlcmd -S (local)\SQL2017 -U SA -P 'Password12!' -Q 'select @@VERSION'
-    sqlcmd -S '(local)\SQL2017' -U SA -P 'Password12!' -Q 'select @@VERSION'
-    sqlcmd -S 127.0.0.1 -U SA -P 'Password12!' -Q 'select @@VERSION'
     appveyor exit
     printenv APPVEYOR_BUILD_VERSION
     printenv APPVEYOR_BUILD_NUMBER
