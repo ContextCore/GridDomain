@@ -10,7 +10,7 @@ GO
 -- NOTE: Modify database, path, filegroup, and file names as required
 ALTER DATABASE [Quartz] ADD FILEGROUP [MemoryOptimizedData] CONTAINS MEMORY_OPTIMIZED_DATA
 GO
-ALTER DATABASE [Quartz] ADD FILE ( NAME = N'MemoryOptimizedData', FILENAME = N'QuartzMemoryOptimizedData' ) TO FILEGROUP [MemoryOptimizedData]
+ALTER DATABASE [Quartz] ADD FILE ( NAME = N'MemoryOptimizedData', FILENAME = N'~/projects/QuartzMemoryOptimizedData' ) TO FILEGROUP [MemoryOptimizedData]
 GO
 ALTER DATABASE [Quartz] SET MEMORY_OPTIMIZED_ELEVATE_TO_SNAPSHOT = ON
 GO
