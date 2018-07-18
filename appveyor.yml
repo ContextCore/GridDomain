@@ -42,10 +42,14 @@ test_script:
       cd $testsFolder
       dotnet test --no-build --configuration Release --no-restore --logger trx > TestsOutput.txt
       TestResult=$?
-      path=~/projects/griddomain-tvtpq/"$testsFolder"/bin/Release/netcoreapp2.0/Logs/*
+      path=~/projects/griddomain-mdlr7/"$testsFolder"/bin/Release/netcoreapp2.0/Logs/*
       echo $path
-      7z a "$testsName"Output TestResults/*
-      7z a "$testsName"Logs ~/projects/griddomain-tvtpq/"$testsFolder"/bin/Release/netcoreapp2.0/Logs/*
+
+      zip -j -r ./"$testsName"Output.zip ./TestResults/*
+      zip -j -r ./"$testsName"Logs.zip ./bin/Release/netcoreapp2.0/Logs/*
+
+      #7z a "$testsName"Output TestResults/*
+      #7z a "$testsName"Logs ~/projects/griddomain-mdlr7/"$testsFolder"/bin/Release/netcoreapp2.0/Logs/*
 
       if [ $TestResult -ne 0 ];then
          echo should exiting...
@@ -82,5 +86,5 @@ test_script:
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
-- path: '**\*.7z'
+- path: '**\*.zip'
   name: UnitTestResults
