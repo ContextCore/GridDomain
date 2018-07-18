@@ -64,7 +64,6 @@ namespace GridDomain.Tests.Unit
         public IGridNodeBuilder NodeBuilder { get; set; }
         public IExtendedGridDomainNode Node { get; private set; }
         public NodeConfiguration NodeConfig { get; }
-        public string Name => NodeConfig.Name;
 
         public TimeSpan DefaultTimeout { get; } = Debugger.IsAttached ? TimeSpan.FromHours(1) : TimeSpan.FromSeconds(10);
         public Func<IExtendedGridDomainNode, TestKit, ITestGridDomainNode> TestNodeBuilder { get; set; }
@@ -118,7 +117,7 @@ namespace GridDomain.Tests.Unit
         {
             return LoggerConfiguration.Default(NodeConfig.LogLevel)
                                       .XUnit(NodeConfig.LogLevel, Output)
-                                      .WriteToFile(NodeConfig.LogLevel,NodeConfig.Name)
+                                    //  .WriteToFile(NodeConfig.LogLevel,NodeConfig.Name)
                                       .CreateLogger();
         }
 

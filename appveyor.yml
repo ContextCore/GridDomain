@@ -67,8 +67,8 @@ test_script:
 
     #runTests UnitTests GridDomain.Tests.Unit
     #runTests ClusterUnitTests GridDomain.Tests.Unit.Cluster
-    runTests ClusterUnitTests GridDomain.Tests.Acceptance
-    runTests ClusterUnitTests GridDomain.Tests.Acceptance.Cluster
+    runTests AcceptanceTests GridDomain.Tests.Acceptance
+    runTests ClusterAcceptanceTests GridDomain.Tests.Acceptance.Cluster
 
 
 artifacts:
