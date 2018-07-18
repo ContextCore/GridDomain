@@ -78,7 +78,7 @@ test_script:
 
     runTests AcceptanceTests GridDomain.Tests.Acceptance
 
-    curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
+    #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
 
     runTests ClusterAcceptanceTests GridDomain.Tests.Acceptance.Cluster
 
