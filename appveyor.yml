@@ -46,7 +46,7 @@ test_script:
       echo $path
       7z a "$testsName"Output TestResults/*
       7z a "$testsName"Logs ~/projects/griddomain-tvtpq/"$testsFolder"/bin/Release/netcoreapp2.0/Logs/*
-      
+
       if [ $TestResult -ne 0 ];then
          echo should exiting...
             #exit #$TestResult
@@ -73,6 +73,9 @@ test_script:
 
 
     runTests AcceptanceTests GridDomain.Tests.Acceptance
+
+    curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
+
     runTests ClusterAcceptanceTests GridDomain.Tests.Acceptance.Cluster
 
 
