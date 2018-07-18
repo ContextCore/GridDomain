@@ -18,6 +18,8 @@ dotnet_csproj:
 environment:
   APPVEYOR_SSH_KEY: ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI7S8beSMm0ePKq3CM3r4a0W/7OU+cwb8ZPyMoeeTtz0q0sPHoO1psD1jPh/2+v8UKToLdDJxhtxbkNTv8WeVME=
   APPVEYOR_SSH_BLOCK: true
+  WriteModel: Server=(local);Database=master;User ID=sa;Password=Password12!
+  ReadModel: Server=(local);Database=AutoTestRead;User ID=sa;Password=Password12!
 services: mssql
 build_script:
 - sh: |
