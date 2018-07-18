@@ -26,10 +26,9 @@ build_script:
     #set -e 
     
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
-    #sqlcmd -S localhost -U SA -P 'Password12!' -Q 'select @@VERSION'
-    #appveyor exit
+    
     printenv APPVEYOR_BUILD_VERSION
-    printenv APPVEYOR_BUILD_NUMBER
+    
     dotnet build GridDomain.sln -c Release -v Minimal /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
     dotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
 test_script:
@@ -48,9 +47,6 @@ test_script:
       zip -j -r ./"$testsName"Output.zip ./TestResults/*
       zip -j -r ./"$testsName"Logs.zip ./bin/Release/netcoreapp2.0/Logs/*
 
-      #7z a "$testsName"Output TestResults/*
-      #7z a "$testsName"Logs ~/projects/griddomain-mdlr7/"$testsFolder"/bin/Release/netcoreapp2.0/Logs/*
-
       if [ $TestResult -ne 0 ];then
          echo should exiting...
             #exit #$TestResult
@@ -68,14 +64,12 @@ test_script:
 
     sqlcmd -S localhost -U SA -P "Password12!" -i GridDomain.Node.Persistence.Sql/Human_schema.sql
 
-    mkdir ~/projects/QuartzMemoryOptimizedData
+    #mkdir ~/QuartzMemoryOptimizedData
 
     sqlcmd -S localhost -U SA -P "Password12!" -i GridDomain.Scheduling/CreateDatabase.sql
 
-    #runTests UnitTests GridDomain.Tests.Unit
-    #runTests ClusterUnitTests GridDomain.Tests.Unit.Cluster
-
-
+    runTests UnitTests GridDomain.Tests.Unit
+    runTests ClusterUnitTests GridDomain.Tests.Unit.Cluster
     runTests AcceptanceTests GridDomain.Tests.Acceptance
 
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
@@ -87,4 +81,4 @@ artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
 - path: '**\*.zip'
-  name: UnitTestResults
+  name: estResults
