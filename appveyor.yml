@@ -82,3 +82,11 @@ artifacts:
   name: Packages
 - path: '**\*.zip'
   name: TestResults
+deploy:
+  provider: NuGet
+  server:   https://www.myget.org/F/griddomain/api/v2/package
+  api_key:
+    secure: jF3VOqctqN9MK8lLs+Vlfs2Trv4Gs9BLV/R4HX6ZtC1JQaoezDssjjtP/28Ptkd7
+  skip_symbols: false
+  symbol_server:  https://www.myget.org/F/griddomain/symbols/
+  artifact: /.*\.nupkg/
