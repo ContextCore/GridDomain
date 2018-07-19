@@ -20,6 +20,7 @@ environment:
   APPVEYOR_SSH_BLOCK: true
   WriteModel: Server=localhost;Database=master;User ID=sa;Password=Password12!
   ReadModel: Server=localhost;Database=AutoTestRead;User ID=sa;Password=Password12!
+  Quartz: Server=localhost;Database=Quartz;User ID=sa;Password=Password12!
 services: mssql
 build_script:
 - sh: |
