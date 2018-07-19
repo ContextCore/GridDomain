@@ -81,4 +81,4 @@ artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
 - path: '**\*.zip'
-  name: estResults
+  name: TestResults
