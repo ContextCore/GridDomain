@@ -9,8 +9,12 @@ install:
 - ps: |
     ls 
     $tag = git describe --tags --abbrev=0
+    echo $tag
     $version = $env:appveyor_build_number
-    Update-AppveyorBuild -Version "$tag+$version"
+    echo $version
+    $fullVersion = "$tag+$version"
+    echo fullVersion
+    Update-AppveyorBuild -Version $tag
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
