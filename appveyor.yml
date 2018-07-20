@@ -18,7 +18,7 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{version}-alfa+{build}}'
+  version: '{version}-alfa+{build}'
   package_version: '{version}-alfa+{build}'
   assembly_version: '{version}'
   file_version: '{version}.{build}'
