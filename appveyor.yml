@@ -18,11 +18,11 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{version}-alfa'
-  package_version: '{version}-alfa'
+  version: '{version}-alfa+{build}}'
+  package_version: '{version}-alfa+{build}'
   assembly_version: '{version}'
-  file_version: '{version}'
-  informational_version: '{version}-alfa'
+  file_version: '{version}.{build}'
+  informational_version: '{version}'
 environment:
   APPVEYOR_SSH_KEY: ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI7S8beSMm0ePKq3CM3r4a0W/7OU+cwb8ZPyMoeeTtz0q0sPHoO1psD1jPh/2+v8UKToLdDJxhtxbkNTv8WeVME=
   APPVEYOR_SSH_BLOCK: true
