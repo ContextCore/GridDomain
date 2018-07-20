@@ -7,10 +7,9 @@ image: Ubuntu
 
 init:
 - ps: |
-  $tag = git describe --tags --abbrev=0
-  $version = $env:appveyor_build_number
-  Update-AppveyorBuild -Version "$tag+$version"
-#- sh: "sqlcmd -S localhost -U SA -P Password12! -Q 'select @@VERSION'"
+    $tag = git describe --tags --abbrev=0
+    $version = $env:appveyor_build_number
+    Update-AppveyorBuild -Version "$tag+$version"
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
