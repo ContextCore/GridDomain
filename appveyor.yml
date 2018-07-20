@@ -5,7 +5,7 @@ branches:
   - develop
 image: Ubuntu
 
-init:
+install:
 - ps: |
     ls 
     $tag = git describe --tags --abbrev=0
