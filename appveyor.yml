@@ -22,7 +22,7 @@ install:
     $fullVersion = "$tag_version+$build_number"
 
     if($pre){
-      $fullVersion = "tag_version-$build_number"
+      $fullVersion = "$tag_version-$build_number"
     }
 
 
