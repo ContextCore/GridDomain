@@ -23,44 +23,30 @@ namespace GridDomain.Tests.Unit.Metadata
         public Metadata_from_async_aggregate_command_passed_to_produced_events(ITestOutputHelper output) : this(new NodeTestFixture(output)) { }
         protected Metadata_from_async_aggregate_command_passed_to_produced_events(NodeTestFixture fixture) : base(fixture.Add(new BalloonDomainConfiguration())) { }
 
-        private IMessageMetadataEnvelop<BalloonTitleChanged> _answer;
-        private PlanTitleChangeCommand _command;
-        private MessageMetadata _commandMetadata;
 
         [Fact]
         public async Task When_execute_aggregate_command_with_metadata()
         {
-            _command = new PlanTitleChangeCommand(Guid.NewGuid().ToString(),1);
-            _commandMetadata = MessageMetadata.New(_command.Id, Guid.NewGuid().ToString());
+            var command = new PlanTitleChangeCommand(Guid.NewGuid().ToString(),1);
+            var commandMetadata = MessageMetadata.New(command.Id, Guid.NewGuid().ToString());
 
-            var res = await Node.Prepare(_command, _commandMetadata)
+            var res = await Node.Prepare(command, commandMetadata)
                                 .Expect<BalloonTitleChanged>()
                                 .Execute();
 
-            _answer = res.MessageWithMetadata<BalloonTitleChanged>();
-            //Result_contains_metadata()
-            Assert.NotNull(_answer.Metadata);
-            //Result_contains_message()
-            Assert.NotNull(_answer.Message);
+            var evt = res.Received;
+            var meta = res.ReceivedMetadata;
+
             //Result_message_has_expected_type()
-            Assert.IsAssignableFrom<BalloonTitleChanged>(_answer.Message);
+            Assert.IsAssignableFrom<BalloonTitleChanged>(evt);
             //Result_message_has_expected_id()
-            Assert.Equal(_command.AggregateId, _answer.Message.SourceId);
+            Assert.Equal(command.AggregateId, evt.SourceId);
             //Result_message_has_expected_value()
-            Assert.Equal(_command.Parameter.ToString(), _answer.Message.Value);
+            Assert.Equal(command.Parameter.ToString(), evt.Value);
             //Result_metadata_has_command_id_as_casuation_id()
-            Assert.Equal(_command.Id, _answer.Metadata.CasuationId);
+            Assert.Equal(command.Id, meta.CasuationId);
             //Result_metadata_has_correlation_id_same_as_command_metadata()
-            Assert.Equal(_commandMetadata.CorrelationId, _answer.Metadata.CorrelationId);
-            //Result_metadata_has_processed_history_filled_from_aggregate()
-            //Assert.Equal(1, _answer.Metadata.History?.Steps.Count);
-            ////Result_metadata_has_processed_correct_filled_history_step()
-            //var step = _answer.Metadata.History.Steps.First();
-            //Assert.Equal(AggregateActorName.New<Balloon>(_command.AggregateId)
-            //                               .Name,
-            //    step.Who);
-            //Assert.Equal(AggregateActorConstants.CommandExecutionCreatedAnEvent, step.Why);
-            //Assert.Equal(AggregateActorConstants.PublishingEvent, step.What);
+            Assert.Equal(commandMetadata.CorrelationId, meta.CorrelationId);
         }
     }
 }

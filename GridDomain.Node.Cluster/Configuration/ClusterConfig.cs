@@ -5,23 +5,25 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Node.Cluster.Configuration.Hocon;
 using GridDomain.Node.Configuration;
+using GridDomain.Node.Logging;
 using Serilog;
 
 namespace GridDomain.Node.Cluster.Configuration
 {
+    /// <summary>
+    /// Create a cluster from several actor systems hosted in one machine (local)
+    /// </summary>
     public class ClusterConfig
     {
-        public ILogger Logger { get; }
         private readonly List<IActorSystemConfigBuilder> _seedNodes = new List<IActorSystemConfigBuilder>();
         private readonly List<IActorSystemConfigBuilder> _autoSeedNodes = new List<IActorSystemConfigBuilder>();
         private readonly List<IActorSystemConfigBuilder> _workerNodes = new List<IActorSystemConfigBuilder>();
-        
+
         private Func<ActorSystem, Task> _onMemberUp = s => Task.CompletedTask;
         private Func<ActorSystem, Task> _additionalInit = s => Task.CompletedTask;
 
-        public ClusterConfig(string name, ILogger logger=null)
+        public ClusterConfig(string name)
         {
-            Logger = logger ?? Serilog.Log.Logger;
             Name = name;
         }
 
@@ -32,7 +34,7 @@ namespace GridDomain.Node.Cluster.Configuration
 
         public IEnumerable<IActorSystemConfigBuilder> AllNodes => SeedNodes.Union(AutoSeedNodes)
                                                                            .Union(WorkerNodes);
-        
+
         public void AddAutoSeed(params IActorSystemConfigBuilder[] configBuilder)
         {
             _autoSeedNodes.AddRange(configBuilder);
@@ -51,6 +53,17 @@ namespace GridDomain.Node.Cluster.Configuration
         public ClusterConfig OnClusterUp(Func<ActorSystem, Task> sys)
         {
             _onMemberUp += sys;
+            return this;
+        }
+
+        public ClusterConfig Log(ILogger log)
+        {
+            var logger = log;
+            AdditionalInit(s =>
+                           {
+                               s.InitSerilogExtension(logger);
+                               return Task.CompletedTask;
+                           });
             return this;
         }
 

@@ -22,7 +22,6 @@ namespace GridDomain.Node {
 
         public static string GetTemplate(this LogEventLevel level)
         {
-            // return  level >= LogEventLevel.Information ? DefaultTemplate : DetailedTemplate;
             return DetailedTemplate;
         }
 
@@ -30,11 +29,9 @@ namespace GridDomain.Node {
         {
             var template =  level.GetTemplate();
             if (fileName != null)
-            {
                 return cfg.WriteTo.File($"./Logs/{fileName}.log", level, template);
-            }
-            else
-                return cfg.WriteTo.RollingFile("./Logs/log_{HalfHour}.txt", level, template);
+
+            return cfg.WriteTo.RollingFile("./Logs/log_{HalfHour}.txt", level, template);
         }
 
         public static LoggerConfiguration Default(this LoggerConfiguration cfg, LogEventLevel level)

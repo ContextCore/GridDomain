@@ -4,18 +4,12 @@ using Akka.Configuration;
 using Akka.Event;
 using GridDomain.Node.Actors.Logging;
 using GridDomain.Node.Configuration.Hocon;
-using Serilog;
 
 namespace GridDomain.Node.Configuration
 {
     public class ActorSystemConfigBuilder : IActorSystemConfigBuilder
     {
         private List<IHoconConfig> Configs { get; set; } = new List<IHoconConfig>();
-
-        public static ActorSystemConfigBuilder New(ILogger log = null)
-        {
-            return new ActorSystemConfigBuilder();
-        }
 
         public void Add(IHoconConfig cfg)
         {

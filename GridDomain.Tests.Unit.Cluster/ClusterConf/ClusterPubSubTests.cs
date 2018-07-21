@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf {
         [Fact]
         public async Task Cluster_can_host_a_distributed_pubsub()
         {
-            using (var akkaCluster = await ActorSystemConfigBuilder.New(_logger)
+            using (var akkaCluster = await new ActorSystemConfigBuilder()
                                                              .Log(LogEventLevel.Verbose)
                                                              .Cluster("testNexta")
                                                              .Seeds(10030)

@@ -225,8 +225,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
         {
             Receive<CreateNewProcess>(c =>
                                       {
-                                          Log.Debug("Creating new process instance from {@message}", c);
                                           var pendingState = _processStateFactory.Create(c.Message.Message);
+                                          Log.Debug("Creating new process instance {id} from {@message}", pendingState.Id, c);
 
                                           ExecutionContext.StartNewExecution(pendingState, c.Message, Sender);
 
@@ -243,9 +243,10 @@ namespace GridDomain.Node.Actors.ProcessManagers
                 //from state aggregate actor after persist
                 Receive<AggregateActor.CommandExecuted>(c =>
                                                         {
-                                                            Log.Debug("Process instance created by message {@processResult}", ExecutionContext.ProcessingMessage);
-
                                                             var pendingStateId = ExecutionContext.PendingState.Id;
+
+                                                            Log.Debug("Process instance {id} created by message {@processResult}", pendingStateId, ExecutionContext.ProcessingMessage);
+
                                                             if (Id != pendingStateId)
                                                             {
                                                                 Log.Debug("Redirecting message to newly created process state instance, {id}", pendingStateId);

@@ -7,7 +7,6 @@ namespace GridDomain.Node.Cluster.Configuration {
     public static class ClusterConfigBuilderExtensions
     {
        
-
     
         public static ClusterConfigBuilder Seeds(this ClusterConfigBuilder builder, params int[] ports)
         {

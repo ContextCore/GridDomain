@@ -1,6 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>СCluster part for GridDomain - framework for distributed business applications development using DDD\ES architecture scaled by CQRS and actor model.</Description>
+    <Authors>aleskov</Authors>
+    <Company>aleskov</Company>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Copyright>aleskov</Copyright>
+    <PackageLicenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/andreyleskov/GridDomain/</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/andreyleskov/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/andreyleskov/GridDomain/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>CQRS ES DDD Akka</PackageTags>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0</Version>
+    <NoWarn>NU5105</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj">

@@ -2,7 +2,7 @@ using System;
 using GridDomain.Node.AkkaMessaging.Waiting;
 
 namespace GridDomain.Node.Cluster.MessageWaiting {
-    public class ClusterCorrelationConditionBuilder<T> : ConditionBuilder
+    public class ClusterCorrelationConditionBuilder : ConditionBuilder
     {
         private readonly string _correlationId;
 

@@ -12,6 +12,7 @@ using GridDomain.Node.AkkaMessaging;
 using GridDomain.Node.AkkaMessaging.Waiting;
 using GridDomain.Node.Cluster;
 using GridDomain.Node.Cluster.CommandPipe;
+using GridDomain.Node.Cluster.MessageWaiting;
 using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
@@ -98,14 +99,16 @@ namespace GridDomain.Tests.Unit.Cluster
 
         public IProcessManagerExpectationBuilder PrepareForProcessManager(DomainEvent msg, MessageMetadata metadata = null)
         {
-            var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new MetadataEnvelopConditionBuilder());
-            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.New(msg.Id)), Node,msgConditionFactory);
+            metadata = metadata ?? MessageMetadata.New(msg.Id);
+            var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new ClusterCorrelationConditionBuilder(metadata.CorrelationId));
+            return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata), Node,msgConditionFactory);
 
         }
 
         public IProcessManagerExpectationBuilder PrepareForProcessManager(IFault msg, MessageMetadata metadata = null)
         {
-            var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new MetadataEnvelopConditionBuilder());
+            metadata = metadata ?? MessageMetadata.New(msg.Id);
+            var msgConditionFactory = new MessageConditionFactory<Task<IWaitResult>>(new ClusterCorrelationConditionBuilder(metadata.CorrelationId));
             return new ProcessManagerExpectationBuilder(new MessageMetadataEnvelop(msg,metadata ?? MessageMetadata.New(msg.Id)), Node,msgConditionFactory);
         }
 

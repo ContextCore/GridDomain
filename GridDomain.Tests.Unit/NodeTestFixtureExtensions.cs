@@ -41,6 +41,12 @@ namespace GridDomain.Tests.Unit
             return fixture;
         }
 
+        public static T LogToFile<T>(this T fixture, string name, LogEventLevel? level = null) where T : NodeTestFixture
+        {
+            fixture.LoggerConfiguration.WriteToFile(level ?? fixture.NodeConfig.LogLevel, name);
+            return fixture;
+        }
+
         public static T DisableInfrastructureLog<T>(this T fixture, LogEventLevel? escalationLevel=LogEventLevel.Warning) where T : NodeTestFixture
         {
             var propFilter = Matching.WithProperty<string>(LogContextNames.Class, s => s.StartsWith("Akka."));
@@ -63,7 +69,7 @@ namespace GridDomain.Tests.Unit
         public static NodeTestFixture EnableScheduling(this NodeTestFixture fixture, IQuartzConfig config = null, bool clearScheduledData = true)
         {
             IQuartzConfig quartzConfig = config ?? new InMemoryQuartzConfig(new InMemoryRetrySettings(5, TimeSpan.FromMinutes(10), new DefaultExceptionPolicy()));
-            fixture.DomainConfigurations.Add(new FutureAggregateHandlersDomainConfiguration());
+            fixture.Add(new FutureAggregateHandlersDomainConfiguration());
 
             fixture.OnNodeCreatedEvent += (o, node) =>
                                           {

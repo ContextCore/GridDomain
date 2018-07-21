@@ -14,7 +14,7 @@ namespace GridDomain.Node.Configuration
 
         public static IActorSystemConfigBuilder ToStandAloneInMemorySystem(this NodeConfiguration conf, bool serializeMessagesCreators = false)
         {
-            return conf.ConfigureStandAloneInMemorySystem(ActorSystemConfigBuilder.New(), serializeMessagesCreators);
+            return conf.ConfigureStandAloneInMemorySystem(new ActorSystemConfigBuilder(), serializeMessagesCreators);
         }
 
         public static IActorSystemConfigBuilder ConfigureStandAloneInMemorySystem(this NodeConfiguration conf, IActorSystemConfigBuilder configBuilder, bool serializeMessagesCreators = false)

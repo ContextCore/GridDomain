@@ -114,7 +114,7 @@ namespace GridDomain.Scheduling.Quartz
         }
 
         public static IJobDetail Create(ScheduleKey key,
-                                        Command command,
+                                        ICommand command,
                                         IMessageMetadata metadata,
                                         ExecutionOptions executionOptions)
         {

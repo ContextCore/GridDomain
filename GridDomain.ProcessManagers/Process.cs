@@ -12,7 +12,7 @@ namespace GridDomain.ProcessManagers
 {
     public abstract class Process<TState> : AutomatonymousStateMachine<TState>, IProcess<TState> where TState : class, IProcessState
     {
-        protected Action<Command> Dispatch { get; private set; }
+        protected Action<ICommand> Dispatch { get; private set; }
         protected Process()
         {
             InstanceState(d => d.CurrentStateName);
@@ -20,7 +20,7 @@ namespace GridDomain.ProcessManagers
        
         protected async Task<IReadOnlyCollection<ICommand>> TransitMessage<TMessage>(Event<TMessage> evt, TMessage message, TState state)
         {
-            var commandsToDispatch = new List<Command>();
+            var commandsToDispatch = new List<ICommand>();
             Dispatch = c => {
                                 c.ProcessId = state.Id;
                                 commandsToDispatch.Add(c);

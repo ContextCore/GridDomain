@@ -14,6 +14,7 @@ using GridDomain.Node.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
+using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Xunit;
@@ -23,31 +24,23 @@ namespace GridDomain.Tests.Unit.Cluster
 {
     public class AggregateShardingTests
     {
-        private readonly Logger _logger;
         private readonly ITestOutputHelper _testOutputHelper;
 
         public AggregateShardingTests(ITestOutputHelper output)
         {
             _testOutputHelper = output;
-            _logger = new XUnitAutoTestLoggerConfiguration(output,
-                                                           LogEventLevel.Information,
-                                                           GetType()
-                                                               .Name).CreateLogger();
         }
 
         [Fact]
         public async Task Cluster_Node_can_execute_commands_and_wait_for_events()
         {
-            var domainFixture = new BalloonFixture(_testOutputHelper);
-            List<IGridDomainNode> nodes = new List<IGridDomainNode>();
-            using (var cluster = await CreateClusterNodes(domainFixture, nodes))
+            using (var cluster = await CreateClusterNodes("canExecuteCommandsWithEventsWait", nameof(Cluster_Node_can_execute_commands_and_wait_for_events)))
             {
-                var node = nodes.First();
+                var node = cluster.Nodes.First();
 
-                var res = await node
-                                .Prepare(new InflateNewBallonCommand(123, "myBalloon"))
-                                .Expect<BalloonCreated>()
-                                .Execute();
+                var res = await node.Prepare(new InflateNewBallonCommand(123, "myBalloon"))
+                                    .Expect<BalloonCreated>()
+                                    .Execute();
 
                 Assert.Equal("myBalloon", res.Received.SourceId);
             }
@@ -56,31 +49,60 @@ namespace GridDomain.Tests.Unit.Cluster
         [Fact]
         public async Task Cluster_Node_can_execute_commands()
         {
-            var domainFixture = new BalloonFixture(_testOutputHelper);
-            List<IGridDomainNode> nodes = new List<IGridDomainNode>();
-            using (var cluster = await CreateClusterNodes(domainFixture, nodes))
+            using (var cluster = await CreateClusterNodes("canExecuteCOmmands", nameof(Cluster_Node_can_execute_commands)))
             {
-                var gridDomainNode = nodes.First();
+                var gridDomainNode = cluster.Nodes.First();
 
                 await gridDomainNode.Execute(new InflateNewBallonCommand(123, "myBalloon"), CommandConfirmationMode.Executed);
             }
         }
 
-        private async Task<ClusterInfo> CreateClusterNodes(BalloonFixture domainFixture, List<IGridDomainNode> nodes)
+        class ClusterNodes : IDisposable
         {
-            return await ActorSystemConfigBuilder.New(_logger)
-                                           .Log(LogEventLevel.Information)
-                                           .DomainSerialization()
-                                           .Cluster("test")
-                                           .AutoSeeds(1)
-                                           .Workers(2)
-                                           .Build()
-                                           .OnClusterUp(async s =>
-                                                        {
-                                                            var node = await domainFixture.CreateNode(() => s, _logger);
-                                                            nodes.Add(node);
-                                                        })
-                                           .CreateInTime();
+            public ClusterNodes(IReadOnlyCollection<IGridDomainNode> nodes, ClusterInfo cluster)
+            {
+                Nodes = nodes;
+                Cluster = cluster;
+            }
+
+            public ClusterInfo Cluster { get; }
+            public IReadOnlyCollection<IGridDomainNode> Nodes { get; }
+
+            public void Dispose()
+            {
+                Cluster?.Dispose();
+            }
+        }
+
+        private async Task<ClusterNodes> CreateClusterNodes(string clusterName, string logFileName)
+        {
+            var nodes = new List<IGridDomainNode>();
+
+            var clusterInfo = await new ActorSystemConfigBuilder()
+                                    .Log(LogEventLevel.Verbose)
+                                    .DomainSerialization()
+                                    .Cluster(clusterName)
+                                    .AutoSeeds(2)
+                                    .Workers(2)
+                                    .Build()
+                                    .OnClusterUp(async s =>
+                                                 {
+                                                     try
+                                                     {
+                                                         var fixture = new BalloonFixture(_testOutputHelper).LogToFile(logFileName);
+                                                         var node = await fixture.CreateNode(() => s);
+                                                         nodes.Add(node);
+                                                     }
+                                                     catch (Exception ex)
+                                                     {
+                                                         var errorLogger = new LoggerConfiguration().WriteToFile(LogEventLevel.Verbose, logFileName)
+                                                                                                    .CreateLogger();
+                                                         errorLogger.Error(ex, "Error during grid node creation for cluster");
+                                                     }
+                                                 })
+                                    .CreateInTime();
+
+            return new ClusterNodes(nodes, clusterInfo);
         }
     }
 }

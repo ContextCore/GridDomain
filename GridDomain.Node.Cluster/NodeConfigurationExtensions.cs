@@ -14,7 +14,7 @@ namespace GridDomain.Node.Cluster
                                                   int workerNodes = 0,
                                                   params INodeNetworkAddress[] otherSeeds)
         {
-            return ConfigureCluster(ActorSystemConfigBuilder.New(), conf.Name, workerNodes, otherSeeds)
+            return ConfigureCluster(new ActorSystemConfigBuilder(), conf.Name, workerNodes, otherSeeds)
                    .Build()
                    .Create();
         }
@@ -23,7 +23,7 @@ namespace GridDomain.Node.Cluster
                                                                 int workerNodes = 0,
                                                                 params INodeNetworkAddress[] otherSeeds)
         {
-            return ConfigureCluster(ActorSystemConfigBuilder.New(), conf.Name, workerNodes, otherSeeds)
+            return ConfigureCluster(new ActorSystemConfigBuilder(), conf.Name, workerNodes, otherSeeds)
                    .Build()
                    .SeedNodes.First();
         }
@@ -33,7 +33,8 @@ namespace GridDomain.Node.Cluster
             return actorSystemConfigBuilder
                    .Cluster(confName)
                    .Seeds(otherSeeds)
-                   .AutoSeeds(1)
+                   .AutoSeeds(2)
+                   .Workers(2)
                    .Workers(workerNodes);
         }
     }

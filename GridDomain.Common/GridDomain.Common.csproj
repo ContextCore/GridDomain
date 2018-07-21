@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <NoWarn>NU5105</NoWarn>
     <TargetFramework>netstandard1.6</TargetFramework>
     <Authors>aleskov</Authors>
     <Company>aleskov</Company>

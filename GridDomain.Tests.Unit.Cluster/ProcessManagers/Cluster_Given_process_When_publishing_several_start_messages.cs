@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Unit.Cluster.ProcessManagers
         public Cluster_Given_process_When_publishing_several_start_messages(ITestOutputHelper helper) :
             base(new SoftwareProgrammingProcessManagerFixture(helper).IgnorePipeCommands()
                                                                      .Clustered()
-                                                                     .LogLevel(LogEventLevel.Verbose)
+                                                                     .LogToFile(nameof(Cluster_Given_process_When_publishing_several_start_messages))
                                                                      .DisableInfrastructureLog()) { }
     }
 }

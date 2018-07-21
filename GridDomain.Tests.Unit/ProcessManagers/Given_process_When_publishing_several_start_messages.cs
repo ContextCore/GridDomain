@@ -30,8 +30,10 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                  .Send();
 
             var stateA = resA.Received.State;
+            this.Log.Info("Got state A : {@state}",stateA);
 
             Assert.Equal(startMessageA.SourceId, stateA.PersonId);
+            Assert.Equal(nameof(SoftwareProgrammingProcess.MakingCoffee), stateA.CurrentStateName);
 
             var secondStartMessageB = new SleptWellEvent("man_2", "sofa_2");
 
@@ -40,11 +42,14 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                  .Send();
 
             var stateB = resB.Received.State;
+            this.Log.Info("Got state B : {@state}",stateB);
 
             Assert.NotEqual(stateA.Id, stateB.Id);
             Assert.Equal(secondStartMessageB.SofaId, stateB.SofaId);
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), stateB.CurrentStateName);
-         
+
+
+            
         }
     }
 }
