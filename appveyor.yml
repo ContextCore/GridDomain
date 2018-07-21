@@ -12,7 +12,7 @@ install:
     echo "Got tag $tag from git"
     $build_number = $env:APPVEYOR_BUILD_NUMBER
     echo "Got build number $build_number from appveyor"
-    $env:VERSION = $tag
+    $env:APP_VERSION = $tag
     echo "Set version environment variable to $env:VERSION"
     $fullVersion = "$tag+$build_number"
     echo "Full version is $fullVersion"
@@ -20,11 +20,11 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{version}-alfa+{build}'
-  package_version: '{version}-alfa+{build}'
-  assembly_version: '{version}'
-  file_version: '{version}.{build}'
-  informational_version: '{version}'
+  version: '{app_version}-alfa+{build}'
+  package_version: '{app_version}-alfa+{build}'
+  assembly_version: '{app_version}'
+  file_version: '{app_version}.{build}'
+  informational_version: '{app_version}'
 environment:
   APPVEYOR_SSH_KEY: ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI7S8beSMm0ePKq3CM3r4a0W/7OU+cwb8ZPyMoeeTtz0q0sPHoO1psD1jPh/2+v8UKToLdDJxhtxbkNTv8WeVME=
   APPVEYOR_SSH_BLOCK: true
