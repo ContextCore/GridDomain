@@ -6,7 +6,7 @@ namespace GridDomain.Scheduling.Akka.Messages
 {
     public class ScheduleCommandExecution
     {
-        public ScheduleCommandExecution(Command command,
+        public ScheduleCommandExecution(ICommand command,
                                         ScheduleKey key,
                                         ExecutionOptions options,
                                         IMessageMetadata commandMetadata=null)
@@ -17,7 +17,7 @@ namespace GridDomain.Scheduling.Akka.Messages
             CommandMetadata = commandMetadata ?? MessageMetadata.Empty;
         }
 
-        public Command Command { get; }
+        public ICommand Command { get; }
         public IMessageMetadata CommandMetadata { get; }
         public ScheduleKey Key { get; }
         public ExecutionOptions Options { get; }

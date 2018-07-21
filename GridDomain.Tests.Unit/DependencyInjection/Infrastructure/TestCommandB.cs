@@ -1,4 +1,5 @@
 using System;
+using GridDomain.CQRS;
 using GridDomain.ProcessManagers;
 
 namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
