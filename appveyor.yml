@@ -1,5 +1,4 @@
 version: 1.0.{build}
-#stack: mssql
 branches:
   only:
   - develop
@@ -51,8 +50,6 @@ environment:
 services: mssql
 build_script:
 - sh: |
-    #set -e 
-    
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
     
     printenv APPVEYOR_BUILD_VERSION
