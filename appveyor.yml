@@ -19,11 +19,18 @@ install:
     $build_number = $env:APPVEYOR_BUILD_NUMBER
     echo "Got build number $build_number from appveyor"
 
+    $fullVersion = "$tag_version+$build_number"
+
+    if($pre){
+      $fullVersion = "tag_version-$build_number"
+    }
+
+
     $env:APP_VERSION = "$major.$minor.$patch"
 
     echo "Set APP_VERSION environment variable to $env:APP_VERSION"
 
-    $fullVersion = "$tag_version+$build_number"
+  
     echo "Full version is $fullVersion"
 
     Update-AppveyorBuild -Version $fullVersion
