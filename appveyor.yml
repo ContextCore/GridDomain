@@ -22,6 +22,7 @@ install:
     $fullVersion = "$tag_version+$build_number"
 
     if($pre){
+      echo "Found a preview version, will add build number to it"
       $fullVersion = "$tag_version-$build_number"
     }
 
@@ -30,7 +31,6 @@ install:
 
     echo "Set APP_VERSION environment variable to $env:APP_VERSION"
 
-  
     echo "Full version is $fullVersion"
 
     Update-AppveyorBuild -Version $fullVersion
