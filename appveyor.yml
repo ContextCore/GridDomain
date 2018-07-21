@@ -10,10 +10,10 @@ install:
     ls 
     $tag = git describe --tags --abbrev=0
     echo "Got tag $tag from git"
-    $build_number = $env:appveyor_build_number  
+    $build_number = $env:APPVEYOR_BUILD_NUMBER
     echo "Got build number $build_number from appveyor"
-    $env:version = $tag
-    echo "Set version environment variable to $env:version"
+    $env:VERSION = $tag
+    echo "Set version environment variable to $env:VERSION"
     $fullVersion = "$tag+$build_number"
     echo "Full version is $fullVersion"
     Update-AppveyorBuild -Version $fullVersion
