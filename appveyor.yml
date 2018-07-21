@@ -7,7 +7,7 @@ image: Ubuntu
 
 install:
 - ps: |
-    ls 
+    #ls 
     $tag_version = git describe --tags --abbrev=0
     $tag_version -match "^(?<major>\d+)(\.(?<minor>\d+))?(\.(?<patch>\d+))?(\-(?<pre>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$" | Out-Null
     echo "Got tag $tag_version from git"
@@ -31,8 +31,8 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{tag_version}+{build}'
-  package_version: '{tag_version}+{build}'
+  version: '{app_version}+{build}'
+  package_version: '{app_version}+{build}'
   assembly_version: '{app_version}'
   file_version: '{app_version}.{build}'
   informational_version: '{app_version}'
@@ -49,7 +49,7 @@ build_script:
     
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
     
-    printenv APPVEYOR_BUILD_VERSION
+    #printenv APPVEYOR_BUILD_VERSION
     
     dotnet build GridDomain.sln -c Release -v Minimal /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
     dotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
@@ -77,7 +77,7 @@ test_script:
       cd ..
     }
 
-    ls 
+    #ls 
     sqlcmd -S localhost -U SA -P 'Password12!' -Q 'select @@VERSION'
 
     sqlcmd -S localhost -U SA -P "Password12!" -Q "Use [master]; CREATE DATABASE [AutoTestRead];"
