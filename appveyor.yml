@@ -30,7 +30,7 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '$(app_version)+{build}'
+  version: '{version}'
   package_version: '$(app_version)+{build}'
   assembly_version: '$(app_version)'
   file_version: '$(app_version).{build}'
