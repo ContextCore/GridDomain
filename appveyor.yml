@@ -8,20 +8,31 @@ image: Ubuntu
 install:
 - ps: |
     ls 
-    $tag = git describe --tags --abbrev=0
-    echo "Got tag $tag from git"
+    $tag_version = git describe --tags --abbrev=0
+    $tag_version -match "^(?<major>\d+)(\.(?<minor>\d+))?(\.(?<patch>\d+))?(\-(?<pre>[0-9A-Za-z\-\.]+))?(\+(?<build>[0-9A-Za-z\-\.]+))?$" | Out-Null
+    echo "Got tag $tag_version from git"
+
+    $major = [int]$matches['major']
+    $minor = [int]$matches['minor']
+    $patch = [int]$matches['patch']
+    $pre = [string]$matches['pre']
+
     $build_number = $env:APPVEYOR_BUILD_NUMBER
     echo "Got build number $build_number from appveyor"
-    $env:APP_VERSION = $tag
-    echo "Set version environment variable to $env:VERSION"
-    $fullVersion = "$tag+$build_number"
+
+    $env:APP_VERSION = "$major.$minor.$patch"
+
+    echo "Set APP_VERSION environment variable to $env:APP_VERSION"
+
+    $fullVersion = "$tag_version+$build_number"
     echo "Full version is $fullVersion"
+
     Update-AppveyorBuild -Version $fullVersion
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{app_version}-alfa+{build}'
-  package_version: '{app_version}-alfa+{build}'
+  version: '{tag_version}+{build}'
+  package_version: '{tag_version}+{build}'
   assembly_version: '{app_version}'
   file_version: '{app_version}.{build}'
   informational_version: '{app_version}'
