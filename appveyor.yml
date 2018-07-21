@@ -31,11 +31,11 @@ install:
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{app_version}+{build}'
-  package_version: '{app_version}+{build}'
-  assembly_version: '{app_version}'
-  file_version: '{app_version}.{build}'
-  informational_version: '{app_version}'
+  version: '$(app_version)+{build}'
+  package_version: '$(app_version)+{build}'
+  assembly_version: '$(app_version)'
+  file_version: '$(app_version).{build}'
+  informational_version: '$(app_version)'
 environment:
   APPVEYOR_SSH_KEY: ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI7S8beSMm0ePKq3CM3r4a0W/7OU+cwb8ZPyMoeeTtz0q0sPHoO1psD1jPh/2+v8UKToLdDJxhtxbkNTv8WeVME=
   APPVEYOR_SSH_BLOCK: true
@@ -49,7 +49,8 @@ build_script:
     
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
     
-    #printenv APPVEYOR_BUILD_VERSION
+    printenv APPVEYOR_BUILD_VERSION
+     printenv APP_VERSION
     
     dotnet build GridDomain.sln -c Release -v Minimal /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
     dotnet pack GridDomain.sln -c Release -v Minimal --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
