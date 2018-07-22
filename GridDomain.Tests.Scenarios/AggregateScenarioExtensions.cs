@@ -3,31 +3,36 @@ using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 
 namespace GridDomain.Tests.Scenarios {
+
+
+
+
     public static class AggregateScenarioExtensions
     {
 
-        public static async Task<AggregateScenario<TAggregate>> Check<TAggregate>(this Task<AggregateScenario<TAggregate>> scenario) where TAggregate : Aggregate
+        public static async Task<IAggregateScenarioRun<TAggregate>> Check<TAggregate>(this Task<IAggregateScenarioRun<TAggregate>> scenarioRun) where TAggregate : Aggregate
         {
-            var sc = await scenario;
+            var sc = await scenarioRun;
             return sc.Check();
         }
 
-        public static AggregateScenario<TAggregate> Check<TAggregate>(this AggregateScenario<TAggregate> scenario) where TAggregate : Aggregate
+        public static IAggregateScenarioRun<TAggregate> Check<TAggregate>(this IAggregateScenarioRun<TAggregate> scenarioRun) where TAggregate : Aggregate
         {
-            LogDebugInfo(scenario);
-            EventsExtensions.CompareEvents(scenario.ExpectedEvents, scenario.ProducedEvents);
-            return scenario;
+            LogDebugInfo(scenarioRun);
+            EventsExtensions.CompareEvents(scenarioRun.Scenario.ExpectedEvents, scenarioRun.ProducedEvents);
+            return scenarioRun;
         }
 
-        private static void LogDebugInfo<TAggregate>(AggregateScenario<TAggregate> sc) where TAggregate : Aggregate
+       
+        private static void LogDebugInfo<TAggregate>(IAggregateScenarioRun<TAggregate> scenarioRun) where TAggregate : Aggregate
         {
-            var logger = sc.Log;
-            foreach (var cmd in sc.GivenCommands)
-                sc.Log.Information("Command: {@cmd}", cmd);
+            var logger = scenarioRun.Log;
+            foreach (var cmd in scenarioRun.Scenario.GivenCommands)
+                scenarioRun.Log.Information("Command: {@cmd}", cmd);
 
-            logger.Information("Given events:\r\n{@events}",  sc.GivenEvents);
-            logger.Information("Produced events:\r\n{@events}",  sc.ProducedEvents);
-            logger.Information("Expected events:\r\n{@events}",  sc.ExpectedEvents);
+            logger.Information("Given events:\r\n{@events}",  scenarioRun.Scenario.GivenEvents);
+            logger.Information("Produced events:\r\n{@events}",  scenarioRun.ProducedEvents);
+            logger.Information("Expected events:\r\n{@events}",  scenarioRun.Scenario.ExpectedEvents);
         }
     }
 }
