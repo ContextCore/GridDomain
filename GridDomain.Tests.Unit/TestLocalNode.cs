@@ -61,7 +61,7 @@ namespace GridDomain.Tests.Unit {
         public IActorTransport Transport => Node.Transport;
 
         public IActorCommandPipe Pipe => Node.Pipe;
-        public Task Start()
+        public Task<IGridDomainNode> Start()
         {
             return Node.Start();
         }

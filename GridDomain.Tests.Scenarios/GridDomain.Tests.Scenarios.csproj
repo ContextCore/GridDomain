@@ -17,6 +17,7 @@
       <Project>{3FF79114-BAC6-4B56-838F-CD63F0894A38}</Project>
       <Name>GridDomain.EventSourcing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GridDomain.Node.Cluster\GridDomain.Node.Cluster.csproj" />
     <ProjectReference Include="..\GridDomain.ProcessManagers\GridDomain.ProcessManagers.csproj">
       <Project>{EEE0F83B-D1C2-49B7-8460-4F9DE743C698}</Project>
       <Name>GridDomain.ProcessManagers</Name>

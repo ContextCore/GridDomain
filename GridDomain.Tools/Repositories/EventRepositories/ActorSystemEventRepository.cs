@@ -8,7 +8,7 @@ namespace GridDomain.Tools.Repositories.EventRepositories
     public class ActorSystemEventRepository : ActorSystemJournalRepository,
                                               IRepository<DomainEvent>
     {
-        public ActorSystemEventRepository(ActorSystem config) : base(config) {}
+        public ActorSystemEventRepository(ActorSystem system) : base(system) {}
 
         public Task Save(string id, params DomainEvent[] messages)
         {

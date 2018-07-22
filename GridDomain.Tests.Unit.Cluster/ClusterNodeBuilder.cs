@@ -15,7 +15,7 @@ namespace GridDomain.Tests.Unit.Cluster {
             _builder = builder;
         }
 
-        public IGridDomainNode Build()
+        public IExtendedGridDomainNode Build()
         {
             var factory = new DelegateActorSystemFactory(_builder.ActorProducers, _builder.ActorInit);
 

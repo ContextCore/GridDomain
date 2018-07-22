@@ -5,7 +5,7 @@ using Serilog;
 
 namespace GridDomain.Node {
     public interface IGridNodeBuilder {
-        IGridDomainNode Build();
+        IExtendedGridDomainNode Build();
         GridNodeBuilder ActorSystem(Func<ActorSystem> sys);
         GridNodeBuilder Initialize(Action<ActorSystem> sys);
         GridNodeBuilder Transport(Action<ActorSystem> sys);

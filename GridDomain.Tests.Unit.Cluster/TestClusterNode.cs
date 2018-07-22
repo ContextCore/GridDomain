@@ -64,7 +64,7 @@ namespace GridDomain.Tests.Unit.Cluster
 
         public IActorCommandPipe Pipe => Node.Pipe;
 
-        public Task Start()
+        public Task<IGridDomainNode> Start()
         {
             return Node.Start();
         }

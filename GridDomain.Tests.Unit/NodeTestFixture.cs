@@ -108,7 +108,7 @@ namespace GridDomain.Tests.Unit
 
             var node = NodeBuilder.Build();
 
-            var gridDomainNode = (GridDomainNode) node;
+            var gridDomainNode = node;
 
             return StartNode(gridDomainNode);
         }

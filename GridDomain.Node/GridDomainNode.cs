@@ -108,7 +108,7 @@ namespace GridDomain.Node {
             Log.Information("grid node Actor system terminated");
         }
 
-        public async Task Start()
+        public async Task<IGridDomainNode> Start()
         {
             Log.Information("Starting GridDomain node {Id}", Id);
             
@@ -125,6 +125,7 @@ namespace GridDomain.Node {
             await CreateControllerActor();
 
             Log.Information("GridDomain node {Id} started at home {Home}", Id, System.Settings.Home);
+            return this;
         }
 
         protected virtual async Task StartMessageRouting()

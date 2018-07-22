@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Common;
 
-namespace GridDomain.Tests.Scenarios {
+namespace GridDomain.Tests.Scenarios.Runners {
 
 
 

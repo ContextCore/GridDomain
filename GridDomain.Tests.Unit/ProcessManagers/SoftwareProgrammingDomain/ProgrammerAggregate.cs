@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 
         public ProgrammerAggregate(string id, string personId) : this(id)
         {
-            Emit(new[] {new PersonCreated(id, personId)});
+            Emit(new[]{new PersonCreated(id, personId)});
         }
 
         public string PersonId { get; private set; }

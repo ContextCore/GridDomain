@@ -5,7 +5,7 @@ using GridDomain.Common;
 using GridDomain.Node.Cluster;
 using GridDomain.Node.Cluster.Configuration;
 
-namespace GridDomain.Tests.Unit.Cluster
+namespace GridDomain.Node.Cluster
 {
     public static class ClusterConfigExtensions
     {

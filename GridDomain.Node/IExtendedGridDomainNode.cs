@@ -12,7 +12,7 @@ namespace GridDomain.Node {
         TimeSpan DefaultTimeout { get; }
         IActorTransport Transport { get; }
         IActorCommandPipe Pipe { get; }
-        Task Start();
+        Task<IGridDomainNode> Start();
         Task Stop();
         ILogger Log { get; }
         EventsAdaptersCatalog EventsAdaptersCatalog { get; }

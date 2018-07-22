@@ -22,7 +22,7 @@ namespace GridDomain.Node
             Configurations = new IDomainConfiguration[] { };
         }
 
-        public virtual IGridDomainNode Build()
+        public virtual IExtendedGridDomainNode Build()
         {
             if(Logger == null)
                 throw new InvalidOperationException("Configure Logger before building grid node");
