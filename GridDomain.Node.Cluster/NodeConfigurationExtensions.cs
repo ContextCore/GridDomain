@@ -16,7 +16,7 @@ namespace GridDomain.Node.Cluster
         {
             return ConfigureCluster(new ActorSystemConfigBuilder(), conf.Name, workerNodes, otherSeeds)
                    .Build()
-                   .Create();
+                   .CreateCluster();
         }
 
         public static ClusterConfigBuilder ConfigureCluster(this IActorSystemConfigBuilder actorSystemConfigBuilder, string confName, int workerNodes = 0, params INodeNetworkAddress[] otherSeeds)

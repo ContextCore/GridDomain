@@ -16,14 +16,12 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
  {
      public class AggregateScenarioClusterTests
      {
-
-         private readonly Logger _log;
-         private ITestOutputHelper _testOutputHelper;
+         private readonly ITestOutputHelper _testOutputHelper;
 
          public AggregateScenarioClusterTests(ITestOutputHelper output)
          {
              _testOutputHelper = output;
-             _log = new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)).CreateLogger();
+             new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)).CreateLogger();
          }
 
          [Fact]

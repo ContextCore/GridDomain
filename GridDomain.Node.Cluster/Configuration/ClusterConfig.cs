@@ -72,7 +72,7 @@ namespace GridDomain.Node.Cluster.Configuration
             return this;
         }
 
-        public async Task<ClusterInfo> Create()
+        public async Task<ClusterInfo> CreateCluster()
         {
             var actorSystemBuilders = SeedNodes.Concat(WorkerNodes)
                                                .Concat(AutoSeedNodes)

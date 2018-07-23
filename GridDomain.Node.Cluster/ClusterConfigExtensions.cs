@@ -14,7 +14,7 @@ namespace GridDomain.Node.Cluster
             timeout = timeout ?? TimeSpan.FromSeconds(15);
 
             return cfg
-                   .Create()
+                   .CreateCluster()
                    .TimeoutAfter(timeout.Value, "Cluster was not formed in time");
         }
 
