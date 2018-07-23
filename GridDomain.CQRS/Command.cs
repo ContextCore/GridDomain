@@ -18,7 +18,7 @@ namespace GridDomain.CQRS
 
         protected Command(string id, string aggregateId, string processId, string aggregateType) : this(id, aggregateId, processId, BusinessDateTime.UtcNow, aggregateType) {}
 
-        protected Command(string id, string aggregateId, DateTime time,string aggregateType) : this(id, aggregateId, Guid.Empty.ToString(), time, aggregateType) {}
+        protected Command(string id, string aggregateId, DateTime time,string aggregateType) : this(id, aggregateId, null, time, aggregateType) {}
 
         protected Command(string id, string aggregateId,string aggregateType) : this(id, aggregateId, BusinessDateTime.UtcNow,aggregateType) {}
 

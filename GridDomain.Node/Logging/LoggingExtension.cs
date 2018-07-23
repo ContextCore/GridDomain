@@ -1,14 +1,17 @@
 ﻿using Akka.Actor;
+using Serilog;
 
 namespace GridDomain.Node.Logging
 {
     public class LoggingExtension : IExtension
     {
-        public IActorRef Logger { get; }
+        public ILogger Logger { get; }
+        public IActorRef LogActor { get; }
 
-        public LoggingExtension(IActorRef logger)
+        public LoggingExtension(IActorRef logActor, ILogger log)
         {
-            Logger = logger;
+            Logger = log;
+            LogActor = logActor;
         }
     }
 }

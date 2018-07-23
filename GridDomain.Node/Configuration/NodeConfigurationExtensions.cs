@@ -20,7 +20,7 @@ namespace GridDomain.Node.Configuration
         public static IActorSystemConfigBuilder ConfigureStandAloneInMemorySystem(this NodeConfiguration conf, IActorSystemConfigBuilder configBuilder, bool serializeMessagesCreators = false)
         {
             return configBuilder.LocalInMemory(serializeMessagesCreators)
-                                .Log(conf.LogLevel)
+                                .EmitLogLevel(conf.LogLevel)
                                 .Remote(conf.Address);
         }
     }

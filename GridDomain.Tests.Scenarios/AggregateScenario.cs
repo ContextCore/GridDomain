@@ -16,7 +16,6 @@ namespace GridDomain.Tests.Scenarios
             GivenCommands = givenCommands;
             ExpectedEvents = expectedEvents;
 
-
             string commandAggregateId = null;
             string eventsAggregateId = null;
 
@@ -39,25 +38,33 @@ namespace GridDomain.Tests.Scenarios
                 eventsAggregateId = GivenEvents.First()
                                                .SourceId;
                 if (GivenEvents.Any(c => c.SourceId != eventsAggregateId))
-                    throw new EventsBelongToDifferentAggregateTypesException();
+                    throw new GivenEventsBelongToDifferentAggregateTypesException();
             }
 
 
-            if (commandAggregateId!= null && eventsAggregateId!= null && commandAggregateId != eventsAggregateId)
+            if (commandAggregateId != null && eventsAggregateId != null && commandAggregateId != eventsAggregateId)
                 throw new CommandsAndEventsHasDifferentAggregateIdsException();
 
-            AggregateId = eventsAggregateId;
+            AggregateId = eventsAggregateId ?? commandAggregateId;
+
+            if (AggregateId == null)
+                throw new CannotDetermineAggregateIdException();
+
+            if (ExpectedEvents != null && ExpectedEvents.Any(e => e.SourceId != AggregateId))
+                throw new ExpectedEventsBelongToDifferentAggregateTypesException();
         }
 
-        public IReadOnlyCollection<DomainEvent> ExpectedEvents { get; }
+        public IReadOnlyCollection<DomainEvent> ExpectedEvents { get;   }
         public IReadOnlyCollection<DomainEvent> GivenEvents { get; }
         public IReadOnlyCollection<ICommand> GivenCommands { get; }
         public string AggregateId { get; }
     }
 
+    public class ExpectedEventsBelongToDifferentAggregateTypesException : Exception { }
+
     public class CommandsAndEventsHasDifferentAggregateIdsException : Exception { }
 
-    public class EventsBelongToDifferentAggregateTypesException : Exception { }
+    public class GivenEventsBelongToDifferentAggregateTypesException : Exception { }
 
     public class CommandsBelongToDifferentAggregateIdsException : Exception { }
 }

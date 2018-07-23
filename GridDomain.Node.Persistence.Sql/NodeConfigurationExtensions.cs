@@ -21,7 +21,7 @@ namespace GridDomain.Node.Persistence.Sql
                                                                          bool serializeMessagesCreators = false)
         {
             return actorSystemConfigBuilder
-                   .Log(logEventLevel)
+                   .EmitLogLevel(logEventLevel)
                    .DomainSerialization(serializeMessagesCreators)
                    .RemoteActorProvider()
                    .Remote(nodeNetworkAddress)

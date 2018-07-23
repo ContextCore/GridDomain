@@ -1,6 +1,8 @@
+using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using Serilog;
@@ -21,14 +23,17 @@ namespace GridDomain.Tests.Scenarios.Runners
             var eventsRepository = new ActorSystemEventRepository(_extendedGridDomainNode.System);
             var aggregateRepository = new AggregateRepository(eventsRepository, _extendedGridDomainNode.EventsAdaptersCatalog);
 
-            await eventsRepository.Save(scenario.AggregateId);
+            if(scenario.GivenEvents.Any())
+            {
+                await eventsRepository.Save<TAggregate>(scenario.AggregateId,scenario.GivenEvents.ToArray());
+            }
 
             foreach (var command in scenario.GivenCommands)
             {
                 await _extendedGridDomainNode.Execute(command);
             }
 
-            var events = await eventsRepository.Load(scenario.AggregateId);
+            var events = await eventsRepository.Load<TAggregate>(scenario.AggregateId);
             var aggregate = await aggregateRepository.LoadAggregate<TAggregate>(scenario.AggregateId);
 
             return new AggregateScenarioRun<TAggregate>(scenario, aggregate, events, Log);

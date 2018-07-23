@@ -117,7 +117,6 @@ namespace GridDomain.Tests.Unit
         {
             return LoggerConfiguration.Default(NodeConfig.LogLevel)
                                       .XUnit(NodeConfig.LogLevel, Output)
-                                    //  .WriteToFile(NodeConfig.LogLevel,NodeConfig.Name)
                                       .CreateLogger();
         }
 

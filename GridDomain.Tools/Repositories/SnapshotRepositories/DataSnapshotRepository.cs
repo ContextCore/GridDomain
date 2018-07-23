@@ -35,14 +35,14 @@ namespace GridDomain.Tools.Repositories.SnapshotRepositories
             
         }
 
-        public Task Save(string id, params T[] messages)
+        public Task Save(string aggregateId, params T[] messages)
         {
             int seqNum = 0;
-            return _snapItemRepository.Save(id,
+            return _snapItemRepository.Save(aggregateId,
                                             messages.Select(s => new SnapshotItem()
                                                                 {
                                                                     Manifest = typeof(T).FullName,
-                                                                    PersistenceId = id,
+                                                                    PersistenceId = aggregateId,
                                                                     SequenceNr =  ++seqNum,
                                                                     Snapshot = _domainSerializer.ToBinary(s),
                                                                     Timestamp = BusinessDateTime.Now
@@ -50,9 +50,9 @@ namespace GridDomain.Tools.Repositories.SnapshotRepositories
                                                     .ToArray());
         }
 
-        public async Task<T[]> Load(string id)
+        public async Task<T[]> Load(string persistenceId)
         {
-            var rawData = await _snapItemRepository.Load(id);
+            var rawData = await _snapItemRepository.Load(persistenceId);
             return rawData.Select(d => _domainSerializer.FromBinary(d.Snapshot, typeof(T)))
                           .Cast<T>()
                           .ToArray();

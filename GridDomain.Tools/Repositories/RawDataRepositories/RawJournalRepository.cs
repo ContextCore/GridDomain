@@ -22,10 +22,10 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
 
         public void Dispose() {}
 
-        public async Task Save(string id, params JournalItem[] messages)
+        public async Task Save(string aggregateId, params JournalItem[] messages)
         {
             foreach (var m in messages)
-                m.PersistenceId = id;
+                m.PersistenceId = aggregateId;
 
             using (var context = new AkkaSqlPersistenceContext(_dbOptions))
             {
@@ -34,11 +34,11 @@ namespace GridDomain.Tools.Repositories.RawDataRepositories
             }
         }
 
-        public async Task<JournalItem[]> Load(string id)
+        public async Task<JournalItem[]> Load(string persistenceId)
         {
             using (var context = new AkkaSqlPersistenceContext(_dbOptions))
             {
-                return await context.Journal.Where(j => j.PersistenceId == id).OrderBy(j => j.SequenceNr).ToArrayAsync();
+                return await context.Journal.Where(j => j.PersistenceId == persistenceId).OrderBy(j => j.SequenceNr).ToArrayAsync();
             }
         }
 

@@ -25,9 +25,9 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             _system = system;
         }
 
-        public async Task Save(string id, params object[] messages)
+        public async Task Save(string aggregateId, params object[] messages)
         {
-            var persistActor = CreateEventsPersistActor(id);
+            var persistActor = CreateEventsPersistActor(aggregateId);
             try
             {
                 foreach (var o in messages)
@@ -39,9 +39,9 @@ namespace GridDomain.Tools.Repositories.EventRepositories
             }
         }
 
-        public async Task<object[]> Load(string id)
+        public async Task<object[]> Load(string persistenceId)
         {
-            var persistActor = CreateEventsPersistActor(id);
+            var persistActor = CreateEventsPersistActor(persistenceId);
             try
             {
                 //load actor will notify caller automatically when it will load all events

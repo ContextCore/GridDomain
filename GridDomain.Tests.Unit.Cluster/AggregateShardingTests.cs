@@ -79,7 +79,7 @@ namespace GridDomain.Tests.Unit.Cluster
             var nodes = new List<IGridDomainNode>();
 
             var clusterInfo = await new ActorSystemConfigBuilder()
-                                    .Log(LogEventLevel.Verbose)
+                                    .EmitLogLevel(LogEventLevel.Verbose)
                                     .DomainSerialization()
                                     .Cluster(clusterName)
                                     .AutoSeeds(2)

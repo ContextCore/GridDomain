@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 namespace GridDomain.Tests.Unit.AggregateLifetime.GracefulShutdown {
     public class RecyclingMonitorActorTests:TestKit
     {
-        public RecyclingMonitorActorTests(ITestOutputHelper output):base(new ActorSystemConfigBuilder().Log(LogEventLevel.Debug).Build(),"test",output)
+        public RecyclingMonitorActorTests(ITestOutputHelper output):base(new ActorSystemConfigBuilder().EmitLogLevel(LogEventLevel.Debug).Build(),"test",output)
         {
         }
 

@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.EventSourcing;
+using GridDomain.Node.AkkaMessaging;
 
 namespace GridDomain.Tools.Repositories.EventRepositories
 {
@@ -10,15 +11,25 @@ namespace GridDomain.Tools.Repositories.EventRepositories
     {
         public ActorSystemEventRepository(ActorSystem system) : base(system) {}
 
-        public Task Save(string id, params DomainEvent[] messages)
+        public Task Save(string aggregateId, params DomainEvent[] messages)
         {
-            return base.Save(id, messages);
+            return base.Save(aggregateId, messages);
         }
 
-        public new async Task<DomainEvent[]> Load(string id)
+        public Task Save<TAggregate>(string aggregateId, params DomainEvent[] events)
         {
-            var objects = await base.Load(id);
+            return Save(EntityActorName.New<TAggregate>(aggregateId).ToString(), events);
+        }
+
+        public new async Task<DomainEvent[]> Load(string persistenceId)
+        {
+            var objects = await base.Load(persistenceId);
             return objects.Cast<DomainEvent>().ToArray();
+        }
+
+        public  async Task<DomainEvent[]> Load<TAggregate>(string persistenceId)
+        {
+            return await Load(EntityActorName.New<TAggregate>(persistenceId).ToString());
         }
     }
 }

@@ -41,13 +41,13 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
             var  logger = CreateLogger(_output, nameof(Cluster_can_start_with_predefined_and_automatic_seed_nodes));
 
             using (var akkaCluster = await new ActorSystemConfigBuilder()
-                                           .Log(LogEventLevel.Verbose)
+                                           .EmitLogLevel(LogEventLevel.Verbose)
                                            .Cluster()
                                            .AutoSeeds(3)
                                            .Seeds(10010)
                                            .Workers(1)
                                            .Build()
-                                           .Log(logger)
+                                           .Log(s => logger)
                                            .CreateInTime())
             {
                 await CheckClusterStarted(akkaCluster);
@@ -60,12 +60,12 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
             var  logger = CreateLogger(_output, nameof(Cluster_can_start_with_automatic_seed_nodes));
 
             using (var akkaCluster = await new ActorSystemConfigBuilder()
-                                           .Log(LogEventLevel.Verbose)
+                                           .EmitLogLevel(LogEventLevel.Verbose)
                                            .Cluster()
                                            .AutoSeeds(3)
                                            .Workers(1)
                                            .Build()
-                                           .Log(logger)
+                                           .Log(s => logger)
                                            .CreateInTime())
             {
                 await CheckClusterStarted(akkaCluster);
@@ -78,12 +78,12 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
             var  logger = CreateLogger(_output, nameof(Cluster_can_start_with_static_seed_nodes));
 
             using (var akkaCluster = await new ActorSystemConfigBuilder()
-                                           .Log(LogEventLevel.Verbose)
+                                           .EmitLogLevel(LogEventLevel.Verbose)
                                            .Cluster()
                                            .Seeds(10011)
                                            .Workers(1)
                                            .Build()
-                                           .Log(logger)
+                                           .Log(s => logger)
                                            .CreateInTime())
             {
                 await CheckClusterStarted(akkaCluster);
@@ -115,13 +115,13 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
             var  logger = CreateLogger(_output, nameof(Cluster_can_host_an_actor_with_shard_region_with_predefined_seeds));
 
             using (var akkaCluster = await new ActorSystemConfigBuilder()
-                                           .Log(LogEventLevel.Verbose)
+                                           .EmitLogLevel(LogEventLevel.Verbose)
                                            .Cluster()
                                            .Seeds(10030)
                                            .AutoSeeds(1)
                                            .Workers(1)
                                            .Build()
-                                           .Log(logger)
+                                           .Log(s => logger)
                                            .OnClusterUp(ActivateShardRegion)
                                            .CreateInTime())
             {
@@ -135,12 +135,12 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
             var  logger = CreateLogger(_output, nameof(Cluster_can_host_an_actor_with_shard_region_with_auto_seeds));
 
             using (var akkaCluster = await new ActorSystemConfigBuilder()
-                                           .Log(LogEventLevel.Verbose)
+                                           .EmitLogLevel(LogEventLevel.Verbose)
                                            .Cluster()
                                            .AutoSeeds(2)
                                            .Workers(2)
                                            .Build()
-                                           .Log(logger)
+                                           .Log(s => logger)
                                            .OnClusterUp(ActivateShardRegion)
                                            .CreateInTime())
             {

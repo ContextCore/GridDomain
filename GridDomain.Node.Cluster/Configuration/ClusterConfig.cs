@@ -56,12 +56,11 @@ namespace GridDomain.Node.Cluster.Configuration
             return this;
         }
 
-        public ClusterConfig Log(ILogger log)
+        public ClusterConfig Log(Func<ActorSystem,ILogger> logProduser)
         {
-            var logger = log;
             AdditionalInit(s =>
                            {
-                               s.InitSerilogExtension(logger);
+                               s.InitSerilogExtension(logProduser(s));
                                return Task.CompletedTask;
                            });
             return this;

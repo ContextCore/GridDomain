@@ -18,7 +18,10 @@ namespace GridDomain.Tools.Repositories
                            m.Match()
                             .With<SnapshotOffer>(so => { })
                             .With<RecoveryCompleted>(f => { })
-                            .Default(e => { _events.Add(e); });
+                            .Default(e =>
+                                     {
+                                         _events.Add(e);
+                                     });
                        });
 
             Command<Persist>(m =>

@@ -29,10 +29,6 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GridDomain.Node.Cluster\GridDomain.Node.Cluster.csproj">
-      <Project>{7C62FF2C-5BB2-4F91-B88B-48CAB967D95F}</Project>
-      <Name>GridDomain.Node.Cluster</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GridDomain.Node.Persistence.Sql\GridDomain.Node.Persistence.Sql.csproj" />
     <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
     <ProjectReference Include="..\GridDomain.Scheduling.Akka\GridDomain.Scheduling.Akka.csproj" />

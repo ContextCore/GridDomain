@@ -6,12 +6,12 @@ using Serilog;
 namespace GridDomain.Node {
     public interface IGridNodeBuilder {
         IExtendedGridDomainNode Build();
-        GridNodeBuilder ActorSystem(Func<ActorSystem> sys);
-        GridNodeBuilder Initialize(Action<ActorSystem> sys);
-        GridNodeBuilder Transport(Action<ActorSystem> sys);
-        GridNodeBuilder Log(ILogger log);
+        IGridNodeBuilder ActorSystem(Func<ActorSystem> sys);
+        IGridNodeBuilder Initialize(Action<ActorSystem> sys);
+        IGridNodeBuilder Transport(Action<ActorSystem> sys);
+        IGridNodeBuilder Log(ILogger log);
         ILogger Logger { get; }
-        GridNodeBuilder DomainConfigurations(params IDomainConfiguration[] domainConfigurations);
-        GridNodeBuilder Timeout(TimeSpan timeout);
+        IGridNodeBuilder DomainConfigurations(params IDomainConfiguration[] domainConfigurations);
+        IGridNodeBuilder Timeout(TimeSpan timeout);
     }
 }

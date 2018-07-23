@@ -30,7 +30,7 @@ namespace GridDomain.Tests.Unit
         public static T LogLevel<T>(this T fixture, LogEventLevel value) where T : NodeTestFixture
         {
             fixture.NodeConfig.LogLevel = value;
-            fixture.ActorSystemConfigBuilder.Log(value);
+            fixture.ActorSystemConfigBuilder.EmitLogLevel(value);
             return fixture;
         }
 

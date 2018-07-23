@@ -26,7 +26,7 @@ namespace GridDomain.Node.Logging {
                     .TimeoutAfter(_actorCreateTimeout)
                     .Wait();
             
-            return new LoggingExtension(logActor);
+            return new LoggingExtension(logActor, _logger);
         }
     }
 }

@@ -14,13 +14,14 @@ namespace GridDomain.Tests.Common
     {
         private static readonly ComparisonConfig StrictConfig = new ComparisonConfig {DoublePrecision = 0.0001};
 
-        private static readonly ComparisonConfig Ignore_Id_DateCreated
+        private static readonly ComparisonConfig Ignore_Id_DateCreated_History
             = new ComparisonConfig
               {
                   MembersToIgnore = new[]
                                     {
                                         nameof(DomainEvent.CreatedTime),
-                                        nameof(DomainEvent.Id)
+                                        nameof(DomainEvent.Id),
+                                        "History"
                                     }.ToList(),
                   CustomComparers = new List<BaseTypeComparer>
                                     {
@@ -68,7 +69,7 @@ namespace GridDomain.Tests.Common
                                          IEnumerable<DomainEvent> published,
                                          CompareLogic logic = null)
         {
-            CompareByLogic(expected, published, logic ?? new CompareLogic(Ignore_Id_DateCreated));
+            CompareByLogic(expected, published, logic ?? new CompareLogic(Ignore_Id_DateCreated_History));
         }
 
         /// <summary>

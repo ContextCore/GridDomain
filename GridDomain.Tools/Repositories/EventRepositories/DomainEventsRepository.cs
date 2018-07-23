@@ -25,14 +25,14 @@ namespace GridDomain.Tools.Repositories.EventRepositories
         public void Dispose() {}
 
         //Event order matter!!
-        public async Task Save(string id, params DomainEvent[] messages)
+        public async Task Save(string aggregateId, params DomainEvent[] messages)
         {
             long counter = 0;
 
             var journalEntries =
                 messages.Select(
                                 m =>
-                                    new JournalItem(id,
+                                    new JournalItem(aggregateId,
                                                     ++counter,
                                                     false,
                                                     m.GetType().AssemblyQualifiedShortName(),
@@ -40,12 +40,12 @@ namespace GridDomain.Tools.Repositories.EventRepositories
                                                     "",
                                                     _serializer.ToBinary(m)));
 
-            await _rawDataRepo.Save(id, journalEntries.ToArray());
+            await _rawDataRepo.Save(aggregateId, journalEntries.ToArray());
         }
 
-        public async Task<DomainEvent[]> Load(string id)
+        public async Task<DomainEvent[]> Load(string persistenceId)
         {
-            return (await _rawDataRepo.Load(id)).Select(d =>
+            return (await _rawDataRepo.Load(persistenceId)).Select(d =>
                                                         {
                                                             try
                                                             {

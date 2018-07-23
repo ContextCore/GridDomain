@@ -19,7 +19,7 @@ namespace GridDomain.Node {
                 system.Log.Error($"Cant deserialize {type} with hyperion");
                 throw;
             }
-        }
+        } 
 
         public override byte[] ToBinary(object obj)
         {
@@ -28,9 +28,9 @@ namespace GridDomain.Node {
                 return base.ToBinary(obj);
 
             }
-            catch
+            catch(Exception ex)
             {
-                system.Log.Error($"Cant serialize {obj.GetType()} with hyperion");
+                system.Log.Error(ex,$"Cant serialize {obj.GetType()} with hyperion");
                 throw;
             }
         }
