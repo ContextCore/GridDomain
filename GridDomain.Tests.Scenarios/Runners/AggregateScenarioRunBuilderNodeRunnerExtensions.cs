@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Akka.DI.AutoFac;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.EventSourcing.CommonDomain;
@@ -17,7 +18,7 @@ namespace GridDomain.Tests.Scenarios.Runners
 {
     public static class AggregateScenarioRunBuilderNodeRunnerExtensions
     {
-        public static async Task<IAggregateScenarioRun<TAggregate>> ClusterNode<TAggregate>(this IAggregateScenarioRunBuilder builder,
+        public static async Task<IAggregateScenarioRun<TAggregate>> Node<TAggregate>(this IAggregateScenarioRunBuilder builder,
                                                                                             IDomainConfiguration domainConfig,
                                                                                             Func<LoggerConfiguration> logConfigurtionFactory
         ) where TAggregate : class, IAggregate
@@ -28,15 +29,15 @@ namespace GridDomain.Tests.Scenarios.Runners
         public static async Task<IAggregateScenarioRun<TAggregate>> Cluster<TAggregate>(this IAggregateScenarioRunBuilder builder,
                                                                                         IDomainConfiguration domainConfig,
                                                                                         Func<LoggerConfiguration> logConfigurationFactory,
-                                                                                        int autoSeeds = 2,
-                                                                                        int workers = 2,
+                                                                                        int autoSeeds = 1,
+                                                                                        int workers = 1,
                                                                                         string name = null) where TAggregate : class, IAggregate
         {
             var nodes = new List<IExtendedGridDomainNode>();
 
             var clusterConfig = new ActorSystemConfigBuilder()
-                                .EmitLogLevel(LogEventLevel.Verbose)
-                                .DomainSerialization()
+                                .EmitLogLevel(LogEventLevel.Verbose,true)
+                                .DomainSerialization(true)
                                 .Cluster(name ?? "ClusterAggregateScenario" + typeof(TAggregate).BeautyName())
                                 .AutoSeeds(autoSeeds)
                                 .Workers(workers)
@@ -44,9 +45,13 @@ namespace GridDomain.Tests.Scenarios.Runners
                                 .Log(s => logConfigurationFactory()
                                              .WriteToFile(LogEventLevel.Verbose,"GridNodeSystem"+ s.GetAddress().Port)
                                              .CreateLogger())
-                                .OnClusterUp(async s =>
-                                             {
+
+                                .OnClusterUp(async s=>
+                                                {
                                                  var ext = s.GetExtension<LoggingExtension>();
+                                                  
+                                               //  var container = new Autofac.ContainerBuilder().Build();
+                                              //   var r = new AutoFacDependencyResolver(container,s);
 
                                                  var node = new ClusterNodeBuilder()
                                                             .ActorSystem(() => s)

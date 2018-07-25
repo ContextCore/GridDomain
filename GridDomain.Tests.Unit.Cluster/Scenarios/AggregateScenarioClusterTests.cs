@@ -21,7 +21,9 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
          public AggregateScenarioClusterTests(ITestOutputHelper output)
          {
              _testOutputHelper = output;
-             new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)).CreateLogger();
+             
+             Serilog.Log.Logger = new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests))
+                                    .CreateLogger();
          }
 
          [Fact]
@@ -60,7 +62,7 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
                              .When(new InflateNewBallonCommand(42, aggregateId))
                              .Then(new BalloonCreated("42", aggregateId))
                              .Run
-                             .ClusterNode<Balloon>(new BalloonDomainConfiguration(), 
+                             .Node<Balloon>(new BalloonDomainConfiguration(), 
                                                () => new XUnitAutoTestLoggerConfiguration(_testOutputHelper,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)));
 
              var producedAggregate = run.Aggregate;

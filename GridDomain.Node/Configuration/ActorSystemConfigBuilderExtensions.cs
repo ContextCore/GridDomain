@@ -8,7 +8,7 @@ namespace GridDomain.Node.Configuration {
     
     public static class ActorSystemConfigBuilderExtensions
     {
-        public static IActorSystemConfigBuilder EmitLogLevel(this IActorSystemConfigBuilder builder, LogEventLevel verbosity, Type logActorType = null, bool writeConfig=false)
+        public static IActorSystemConfigBuilder EmitLogLevel(this IActorSystemConfigBuilder builder, LogEventLevel verbosity, bool writeConfig = false, Type logActorType = null)
         {
             builder.Add(new LogConfig(verbosity, logActorType: logActorType ?? typeof(SerilogLoggerActor), configOnStart:writeConfig));
             return builder;
