@@ -35,8 +35,9 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
                              .When(new InflateNewBallonCommand(42, aggregateId))
                              .Then(new BalloonCreated("42", aggregateId))
                              .Run
-                             .Cluster<Balloon>(new BalloonDomainConfiguration(), 
-                                               () => new XUnitAutoTestLoggerConfiguration(_testOutputHelper,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)));
+                             .TestCluster<Balloon>(new BalloonDomainConfiguration(), 
+                                               () => new XUnitAutoTestLoggerConfiguration(_testOutputHelper,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)),
+                                               name: "ClusterScenario");
 
              var producedAggregate = run.Aggregate;
 

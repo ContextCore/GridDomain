@@ -84,7 +84,7 @@ namespace GridDomain.Node
                     if (confirmationMode == CommandConfirmationMode.Executed) return true;
                     break;
                 case IFault fault:
-                    throw fault.Exception;
+                    throw fault?.Exception ?? new CannotExtractExceptionFromFaultException(fault);
                 case Status.Failure failure:
                     throw failure.Cause;
                 default:
@@ -111,6 +111,14 @@ namespace GridDomain.Node
                                            .ToString(),
                                        string.Empty,
                                        new ProcessHistory(new[] {ExecuteMetadataEntry}));
+        }
+    }
+
+    internal class CannotExtractExceptionFromFaultException : Exception
+    {
+        public CannotExtractExceptionFromFaultException(IFault fault)
+        {
+            throw new NotImplementedException();
         }
     }
 }

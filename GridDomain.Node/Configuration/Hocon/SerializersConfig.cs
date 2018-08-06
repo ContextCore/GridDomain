@@ -27,6 +27,7 @@ namespace GridDomain.Node.Configuration.Hocon
              serialize-creators = " + (_serializeCreators ? "on" : "off") + @"
              serializers {
                         hyperion = """ + typeof(DebugHyperionSerializer).AssemblyQualifiedShortName() + @"""
+                         #hyperion = ""Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion""
                         domain = """ + typeof(DomainEventsJsonAkkaSerializer).AssemblyQualifiedShortName() + @"""
              }
              
@@ -36,7 +37,7 @@ namespace GridDomain.Node.Configuration.Hocon
                                   # for local snapshots storage
                                    """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = domain
                                    ""System.Object"" = hyperion
-                                   """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyperion
+                                  # """+ typeof(Object).AssemblyQualifiedShortName() + @""" = hyperion
 
              }
        }";

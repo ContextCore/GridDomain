@@ -23,10 +23,10 @@ namespace GridDomain.Tests.Scenarios.Runners
                                                                                             Func<LoggerConfiguration> logConfigurtionFactory
         ) where TAggregate : class, IAggregate
         {
-            return await Cluster<TAggregate>(builder, domainConfig, logConfigurtionFactory, 1, 0, "ClusterNodeAggregateScenario_" + typeof(TAggregate).BeautyName());
+            return await TestCluster<TAggregate>(builder, domainConfig, logConfigurtionFactory, 1, 0, "NodeScenario" + typeof(TAggregate).BeautyName());
         }
 
-        public static async Task<IAggregateScenarioRun<TAggregate>> Cluster<TAggregate>(this IAggregateScenarioRunBuilder builder,
+        public static async Task<IAggregateScenarioRun<TAggregate>> TestCluster<TAggregate>(this IAggregateScenarioRunBuilder builder,
                                                                                         IDomainConfiguration domainConfig,
                                                                                         Func<LoggerConfiguration> logConfigurationFactory,
                                                                                         int autoSeeds = 1,
@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Scenarios.Runners
 
             var clusterConfig = new ActorSystemConfigBuilder()
                                 .EmitLogLevel(LogEventLevel.Verbose,true)
-                                .DomainSerialization(true)
+                                .DomainSerialization()
                                 .Cluster(name ?? "ClusterAggregateScenario" + typeof(TAggregate).BeautyName())
                                 .AutoSeeds(autoSeeds)
                                 .Workers(workers)
@@ -49,10 +49,6 @@ namespace GridDomain.Tests.Scenarios.Runners
                                 .OnClusterUp(async s=>
                                                 {
                                                  var ext = s.GetExtension<LoggingExtension>();
-                                                  
-                                               //  var container = new Autofac.ContainerBuilder().Build();
-                                              //   var r = new AutoFacDependencyResolver(container,s);
-
                                                  var node = new ClusterNodeBuilder()
                                                             .ActorSystem(() => s)
                                                             .DomainConfigurations(domainConfig)
@@ -66,7 +62,7 @@ namespace GridDomain.Tests.Scenarios.Runners
 
             using (await clusterConfig.CreateCluster())
             {
-                var runner = new AggregateScenarioNodeRunner<TAggregate>(nodes.First());
+                var runner = new AggregateScenarioClusterInMemoryRunner<TAggregate>(nodes.ToArray());
 
                 var run = await runner.Run(builder.Scenario);
 

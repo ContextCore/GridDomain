@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Akka.Cluster.Sharding;
+using Akka.DI.Core;
 using GridDomain.Configuration;
 using GridDomain.Configuration.SnapshotPolicies;
 using GridDomain.EventSourcing;
@@ -9,13 +10,28 @@ using GridDomain.Node.Actors.EventSourced.Messages;
 
 namespace GridDomain.Node.Cluster
 {
+
+    public class ClusterAggregateActorCell<T>:ReceiveActor where T : class, IAggregate
+    {
+        public ClusterAggregateActorCell()
+        {
+            var props = Context.DI()
+                               .Props<ClusterAggregateActor<T>>();
+            var aggregate = Context.ActorOf(props,Self.Path.Name);
+
+            ReceiveAny(o => aggregate.Forward(o));
+        }
+      
+    }
+
+
     public class ClusterAggregateActor<T> : AggregateActor<T> where T : class, IAggregate
     {
         public ClusterAggregateActor(IAggregateCommandsHandler<T> handler,
                                      ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                                      IConstructAggregates aggregateConstructor,
                                      IConstructSnapshots snapshotsConstructor,
-                                     IActorRef customHandlersActor,
+                                     IActorRefAdapter customHandlersActor,
                                      IRecycleConfiguration recycle
                                      ) : base(handler,
                                                                            snapshotsPersistencePolicy,

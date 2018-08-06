@@ -2,16 +2,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using Akka.Actor.Dsl;
 using Akka.DI.Core;
 using GridDomain.Common;
+using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.Hadlers;
 
 namespace GridDomain.Node.Cluster.CommandPipe {
+
+
+
+    public class ClusterHandlersPipeActorCell : UntypedActor
+    {
+        private IActorRef _handler;
+
+        public ClusterHandlersPipeActorCell()
+        {
+            var props = Context.System.DI()
+                               .Props<ClusterHandlersPipeActor>();
+
+            _handler = Context.ActorOf(props,Self.Path.Name);
+        }
+
+        protected override void OnReceive(object message)
+        {
+            _handler.Forward(message);
+        }
+    }
+
     public class ClusterHandlersPipeActor : HandlersPipeActor
     {
-        public ClusterHandlersPipeActor(MessageMap map, IActorRef processActor) : base(CreateRoutess(Context, map), processActor) { }
+        public ClusterHandlersPipeActor(MessageMap map, IActorRefAdapter processActor) : base(CreateRoutess(Context, map), processActor.GetRef()) { }
 
         private static IMessageProcessor CreateRoutess(IUntypedActorContext system, MessageMap messageRouteMap)
         {

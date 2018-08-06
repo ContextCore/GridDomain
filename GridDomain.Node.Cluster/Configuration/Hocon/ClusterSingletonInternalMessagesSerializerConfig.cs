@@ -14,7 +14,7 @@ namespace GridDomain.Node.Cluster.Configuration.Hocon {
                                      ""Akka.Cluster.Tools.Singleton.IClusterSingletonMessage, Akka.Cluster.Tools"" : akka-singleton
                                  }
                                  serialization-identifiers : {
-                                     ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools"" : 13
+                                     ""Akka.Cluster.Tools.Singleton.Serialization.ClusterSingletonMessageSerializer, Akka.Cluster.Tools"" : 14
                                  }
                              }
                     ";
