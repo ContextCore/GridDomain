@@ -31,7 +31,7 @@ namespace GridDomain.Node.Cluster
                                      ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                                      IConstructAggregates aggregateConstructor,
                                      IConstructSnapshots snapshotsConstructor,
-                                     IActorRefAdapter customHandlersActor,
+                                     IActorRef customHandlersActor,
                                      IRecycleConfiguration recycle
                                      ) : base(handler,
                                                                            snapshotsPersistencePolicy,

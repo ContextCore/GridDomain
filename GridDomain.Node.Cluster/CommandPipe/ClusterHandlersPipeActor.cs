@@ -34,7 +34,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
 
     public class ClusterHandlersPipeActor : HandlersPipeActor
     {
-        public ClusterHandlersPipeActor(MessageMap map, IActorRefAdapter processActor) : base(CreateRoutess(Context, map), processActor.GetRef()) { }
+        public ClusterHandlersPipeActor(MessageMap map, IActorRef processActor) : base(CreateRoutess(Context, map), processActor) { }
 
         private static IMessageProcessor CreateRoutess(IUntypedActorContext system, MessageMap messageRouteMap)
         {

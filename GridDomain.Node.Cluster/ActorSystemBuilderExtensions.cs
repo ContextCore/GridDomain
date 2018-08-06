@@ -23,10 +23,10 @@ namespace GridDomain.Node.Cluster {
         {
             name = name ?? "TestCluster" + configBuilder.GetHashCode();
             configBuilder.Add(new PubSubConfig());
-            configBuilder.Add(new PubSubSerializerConfig());
+           // configBuilder.Add(new PubSubSerializerConfig());
           //  configBuilder.Add(new CustomConfig(@"akka.remote={}"));
-            configBuilder.Add(new ClusterSingletonInternalMessagesSerializerConfig());
-            configBuilder.Add(new ClusterShardingMessagesSerializerConfig());
+          //  configBuilder.Add(new ClusterSingletonInternalMessagesSerializerConfig());
+          //  configBuilder.Add(new ClusterShardingMessagesSerializerConfig());
           //  configBuilder.Add(new HyperionForAll());
             configBuilder.Add(new ClusterActorProviderConfig());
            // builder.Add(new AutoTerminateProcessOnClusterShutdown());
@@ -37,7 +37,7 @@ namespace GridDomain.Node.Cluster {
         public static IActorSystemFactory BuildClusterSystemFactory(this IActorSystemConfigBuilder configBuilder, string name)
         {
             Config hocon = configBuilder.Build();
-            var factory = new HoconActorSystemFactory(name, hocon.WithFallback(ClusterSingletonManager.DefaultConfig()));
+            var factory = new HoconActorSystemFactory(name, hocon);//.WithFallback(ClusterSingletonManager.DefaultConfig()));
             return factory;
         }
     }
