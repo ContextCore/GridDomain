@@ -17,13 +17,14 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
      public class AggregateScenarioClusterTests
      {
          private readonly ITestOutputHelper _testOutputHelper;
+         private Logger _logger;
 
          public AggregateScenarioClusterTests(ITestOutputHelper output)
          {
              _testOutputHelper = output;
-             
-             Serilog.Log.Logger = new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests))
-                                    .CreateLogger();
+
+             _logger = new XUnitAutoTestLoggerConfiguration(output,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)).CreateLogger();
+             Serilog.Log.Logger = _logger;
          }
 
          [Fact]
@@ -35,7 +36,7 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
                              .When(new InflateNewBallonCommand(42, aggregateId))
                              .Then(new BalloonCreated("42", aggregateId))
                              .Run
-                             .TestCluster<Balloon>(new BalloonDomainConfiguration(), 
+                             .Cluster<Balloon>(new BalloonDomainConfiguration(), 
                                                () => new XUnitAutoTestLoggerConfiguration(_testOutputHelper,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)),
                                                name: "ClusterScenario");
 
@@ -63,8 +64,7 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
                              .When(new InflateNewBallonCommand(42, aggregateId))
                              .Then(new BalloonCreated("42", aggregateId))
                              .Run
-                             .Node<Balloon>(new BalloonDomainConfiguration(), 
-                                               () => new XUnitAutoTestLoggerConfiguration(_testOutputHelper,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)));
+                             .Node<Balloon>(new BalloonDomainConfiguration(),_logger);
 
              var producedAggregate = run.Aggregate;
 
