@@ -1,7 +1,7 @@
 # GridDomain
 [![Build status](https://ci.appveyor.com/api/projects/status/fhmbb4x5cmybnl0d?svg=true)](https://ci.appveyor.com/project/contextcore/griddomain/branch/develop)
 
-Nuget feed: https://www.myget.org/F/griddomain-dev
+Nuget feed: https://www.myget.org/gallery/griddomain-dev
 
 GridDomain is a framework for the fast construction of extensible, maintainable and scalable applications providing value. It allows developers to focus on domain and business problems rather than infrastructure, performance, persistence implementation and design.
 
