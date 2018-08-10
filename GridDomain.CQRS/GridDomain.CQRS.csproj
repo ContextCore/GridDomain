@@ -4,11 +4,11 @@
     <Description>Libraries for domain development</Description>
     <PackageTags>CQRS ES DDD Akka</PackageTags>
     <Copyright>Copyright © aleskov</Copyright>
-    <PackageIconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
-    <PackageProjectUrl>https://github.com/solomoto-dev/GridDomain/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/solomoto-dev/GridDomain/</RepositoryUrl>
+    <PackageIconUrl>https://github.com/contextcore/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/contextcore/GridDomain/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/contextcore/GridDomain/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/contextcore/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>

@@ -6,10 +6,10 @@
     <Company>aleskov</Company>
     <Description>Common classes and abstraction for griddomain</Description>
     <Copyright>Copyright © aleskov</Copyright>
-    <PackageLicenseUrl>https://github.com/solomoto-dev/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/solomoto-dev/GridDomain/</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/solomoto-dev/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/solomoto-dev/GridDomain/</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/contextcore/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/contextcore/GridDomain/</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/contextcore/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/contextcore/GridDomain/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>CQRS ES DDD Akka</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
