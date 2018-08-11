@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using AutoFixture;
 using AutoFixture.Kernel;
-using Xunit;
 
 namespace GridDomain.Tests.Common
 {
@@ -88,11 +87,18 @@ namespace GridDomain.Tests.Common
             {
                 AddFailedTypes(sb, results.Where(r => !r.IsOk));
                 AddOkTypes(sb, results.Where(r => r.IsOk));
-                Assert.True(false, sb.ToString());
+                throw new CheckFailedException(sb.ToString());
             }
 
             AddOkTypes(sb, results.Where(r => r.IsOk));
-            Assert.True(true, sb.ToString());
+        }
+
+        public class CheckFailedException : Exception
+        {
+            public CheckFailedException(string toString)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         protected static RestoreResult[] RestoreAll(ObjectDeserializationChecker checker, params object[] objects)

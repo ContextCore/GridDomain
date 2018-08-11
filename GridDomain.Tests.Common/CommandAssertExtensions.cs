@@ -2,16 +2,13 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
-using Xunit;
 
 namespace GridDomain.Tests.Common
 {
     public static class XUnitAssertExtensions
     {
-        
         public static async Task<TEx> CommandShouldThrow<TEx>(this Task t, Predicate<TEx> predicate = null) where TEx : Exception
         {
-            //return t.ShouldThrow(predicate);
             var commandException = await t.ShouldThrow<CommandExecutionFailedException>();
             var exception = commandException.InnerException.UnwrapSingle();
             return CheckException(exception, predicate);
@@ -28,14 +25,16 @@ namespace GridDomain.Tests.Common
                 return CheckException(ex, predicate);
             }
 
-            Assert.False(true, "No exception was raised");
-            throw new Exception();
+            throw new ExpectedExceptionWasNotRaisedException();
         }
+
+        public class ExpectedExceptionWasNotRaisedException : Exception { }
 
         private static TEx CheckException<TEx>(Exception ex, Predicate<TEx> predicate = null) where TEx : Exception
         {
             var exception = ex.UnwrapSingle();
-            Assert.IsAssignableFrom<TEx>(exception);
+            if (!(exception is TEx))
+                throw new ExpectedExceptionWasNotRaisedException();
 
             if (predicate != null && !predicate((TEx) exception))
                 throw new PredicateNotMatchException();

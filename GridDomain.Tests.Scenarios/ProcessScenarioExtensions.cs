@@ -1,8 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using GridDomain.ProcessManagers;
 using GridDomain.Tests.Common;
 using KellermanSoftware.CompareNetObjects;
-using Xunit;
 
 namespace GridDomain.Tests.Scenarios
 {
@@ -29,11 +29,14 @@ namespace GridDomain.Tests.Scenarios
 
         private static void CheckOnlyStateNameChanged<TData>(this ProcessScenario<TData> scenario, string stateName) where TData : class, IProcessState
         {
-            Assert.Equal(stateName, scenario.State.CurrentStateName);
+            if(stateName != scenario.State.CurrentStateName)
+                  throw new StateNameMismatchException();
             EventsExtensions.CompareState(scenario.InitialState,
                                           scenario.State,
                                           Compare.Ignore(nameof(IProcessState.CurrentStateName)));
         }
+
+        private class StateNameMismatchException : Exception { }
 
         public static async Task<ProcessScenario<TData>> CheckStateName<TData>(this Task<ProcessScenario<TData>> scenarioInProgress, string stateName) where TData : class, IProcessState
         {
@@ -43,7 +46,8 @@ namespace GridDomain.Tests.Scenarios
 
         public static ProcessScenario<TData> CheckStateName<TData>(this ProcessScenario<TData> scenario, string stateName) where TData : class, IProcessState
         {
-            Assert.Equal(stateName, scenario.State.CurrentStateName);
+            if(stateName != scenario.State.CurrentStateName)
+                        throw new StateNameMismatchException();
             return scenario;
         }
 

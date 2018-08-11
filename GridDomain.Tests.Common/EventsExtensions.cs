@@ -6,7 +6,6 @@ using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers;
 using KellermanSoftware.CompareNetObjects;
 using KellermanSoftware.CompareNetObjects.TypeComparers;
-using Xunit;
 
 namespace GridDomain.Tests.Common
 {
