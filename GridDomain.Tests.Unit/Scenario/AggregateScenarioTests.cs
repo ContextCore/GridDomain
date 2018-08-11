@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
+using GridDomain.Scenarios;
+using GridDomain.Scenarios.Runners;
 using GridDomain.Tests.Common;
-using GridDomain.Tests.Scenarios;
-using GridDomain.Tests.Scenarios.Runners;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;

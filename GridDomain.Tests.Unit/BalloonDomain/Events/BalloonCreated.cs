@@ -3,7 +3,7 @@ using GridDomain.EventSourcing;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Events
 {
-    public class BalloonCreated : DomainEvent,
+    public class BalloonCreated : DomainEvent<Balloon>,
                                   IHaveProcessingHistory
     {
         public BalloonCreated(string value,

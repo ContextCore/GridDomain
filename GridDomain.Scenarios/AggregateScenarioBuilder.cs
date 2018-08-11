@@ -1,7 +1,7 @@
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.Scenarios
+namespace GridDomain.Scenarios
 {
     public class AggregateScenarioBuilder : IAggregateScenarioBuilder
     {

@@ -3,7 +3,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using Serilog;
 
-namespace GridDomain.Tests.Scenarios {
+namespace GridDomain.Scenarios {
     public class AggregateScenarioRun<TAggregate> : IAggregateScenarioRun<TAggregate> where TAggregate : IAggregate
     {
         public AggregateScenarioRun(IAggregateScenario scenario, TAggregate aggregate, IReadOnlyCollection<DomainEvent> producedEvents, ILogger log)

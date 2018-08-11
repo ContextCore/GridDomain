@@ -1,20 +1,17 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Cluster.Routing;
 using Akka.Configuration;
 using Akka.DI.AutoFac;
 using Akka.DI.Core;
-using Akka.Routing;
 using Autofac;
-using GridDomain.Tests.Common;
+using GridDomain.Node;
 using Serilog;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Node {
+namespace GridDomain.Tests.Unit.Cluster.Scenarios {
     public class AkkaClusterSimpleTEst 
     {
         private ITestOutputHelper _testOutputHelper;

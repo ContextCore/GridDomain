@@ -1,4 +1,4 @@
-namespace GridDomain.Tests.Scenarios {
+namespace GridDomain.Scenarios {
 
     public class AggregateScenarioRunBuilder: IAggregateScenarioRunBuilder
     {

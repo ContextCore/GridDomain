@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using GridDomain.CQRS;
 
-namespace GridDomain.Tests.Scenarios {
+namespace GridDomain.Scenarios {
     public class CommandsBelongToDifferentAggregateTypesException : Exception
     {
         public IReadOnlyCollection<ICommand> Commands { get; }

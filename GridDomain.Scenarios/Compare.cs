@@ -1,7 +1,7 @@
 using System.Linq;
 using KellermanSoftware.CompareNetObjects;
 
-namespace GridDomain.Tests.Scenarios {
+namespace GridDomain.Scenarios {
     public static class Compare
     {
         public static CompareLogic Ignore(params string[] members)

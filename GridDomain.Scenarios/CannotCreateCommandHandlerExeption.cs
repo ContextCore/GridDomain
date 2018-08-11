@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Scenarios
+namespace GridDomain.Scenarios
 {
     public class CannotCreateCommandHandlerExeption : Exception {}
 }

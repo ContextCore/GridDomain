@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.Scenarios 
+namespace GridDomain.Scenarios 
 {
     public interface IAggregateScenario
     {

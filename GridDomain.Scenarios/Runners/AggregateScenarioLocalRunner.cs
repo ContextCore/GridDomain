@@ -5,7 +5,7 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using Serilog;
 
-namespace GridDomain.Tests.Scenarios.Runners
+namespace GridDomain.Scenarios.Runners
 {
     public class AggregateScenarioLocalRunner<TAggregate> : IAggregateScenarioRunner<TAggregate> where TAggregate : class, IAggregate
     {

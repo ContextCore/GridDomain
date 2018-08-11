@@ -1,12 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using GridDomain.Configuration;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using Serilog;
 
-namespace GridDomain.Tests.Scenarios.Runners
+namespace GridDomain.Scenarios.Runners
 {
     public static class AggregateScenarioRunBuilderLocalRunnerExtensions
     {

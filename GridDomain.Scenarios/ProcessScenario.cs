@@ -8,9 +8,8 @@ using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers;
-using GridDomain.Tests.Common;
 
-namespace GridDomain.Tests.Scenarios {
+namespace GridDomain.Scenarios {
     public static class ProcessScenario
     {
         public static ProcessScenario<TState> New<TState>(IProcess<TState> process,

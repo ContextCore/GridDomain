@@ -3,6 +3,11 @@ using GridDomain.Common;
 
 namespace GridDomain.EventSourcing
 {
+    public class DomainEvent<T> : DomainEvent, IFor<T>
+    {
+        protected DomainEvent(string sourceId, string processId = null, string id = null, DateTime? createdTime = null) : base(sourceId, processId, id, createdTime) { }
+    }
+
     public class DomainEvent : ISourcedEvent, IHaveId, IHaveProcessId
     {
         protected DomainEvent(string sourceId, string processId = null, string id = null, DateTime? createdTime = null)

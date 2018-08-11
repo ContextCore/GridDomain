@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Akka.DI.AutoFac;
 using GridDomain.Common;
 using GridDomain.Configuration;
 using GridDomain.EventSourcing.CommonDomain;
@@ -15,24 +14,22 @@ using GridDomain.Node.Persistence.Sql;
 using Serilog;
 using Serilog.Events;
 
-namespace GridDomain.Tests.Scenarios.Runners
+namespace GridDomain.Scenarios.Runners
 {
     public static class AggregateScenarioRunBuilderNodeRunnerExtensions
     {
+
         public static async Task<IAggregateScenarioRun<TAggregate>> Node<TAggregate>(this IAggregateScenarioRunBuilder builder,
-                                                                                            IDomainConfiguration domainConfig,
-                                                                                            ILogger logger = null,
-                                                                                            string sqlPersistenceConnectionString = null)
+                                                                                     IDomainConfiguration domainConfig,
+                                                                                     ILogger logger,
+                                                                                     string sqlPersistenceConnectionString = null)
             where TAggregate : class, IAggregate
         {
-           
-            
-            
             var name = "NodeScenario" + typeof(TAggregate).BeautyName();
             var nodes = new List<IExtendedGridDomainNode>();
 
             var actorSystemConfigBuilder = new ActorSystemConfigBuilder()
-                                           .EmitLogLevel(LogEventLevel.Verbose,true)
+                                           .EmitLogLevel(LogEventLevel.Verbose, true)
                                            .DomainSerialization();
             if (sqlPersistenceConnectionString != null)
                 actorSystemConfigBuilder = actorSystemConfigBuilder.SqlPersistence(new DefaultNodeDbConfiguration(sqlPersistenceConnectionString));
@@ -42,7 +39,7 @@ namespace GridDomain.Tests.Scenarios.Runners
                                 .AutoSeeds(1)
                                 .Build()
                                 .Log(s => logger)
-                                .OnClusterUp(async s=>
+                                .OnClusterUp(async s =>
                                              {
                                                  var ext = s.GetExtension<LoggingExtension>();
                                                  var node = new ClusterNodeBuilder()
@@ -53,7 +50,7 @@ namespace GridDomain.Tests.Scenarios.Runners
                                                  nodes.Add(node);
                                                  await node.Start();
                                              });
-             
+
             using (await clusterConfig.CreateCluster())
             {
                 var runner = new AggregateScenarioNodeRunner<TAggregate>(nodes.First());
@@ -63,7 +60,6 @@ namespace GridDomain.Tests.Scenarios.Runners
                 return run;
             }
         }
-
 
         public static async Task<IAggregateScenarioRun<TAggregate>> Cluster<TAggregate>(this IAggregateScenarioRunBuilder builder,
                                                                                         IDomainConfiguration domainConfig,
@@ -76,7 +72,7 @@ namespace GridDomain.Tests.Scenarios.Runners
             var nodes = new List<IExtendedGridDomainNode>();
 
             var clusterConfig = new ActorSystemConfigBuilder()
-                                .EmitLogLevel(LogEventLevel.Verbose,true)
+                                .EmitLogLevel(LogEventLevel.Verbose, true)
                                 .DomainSerialization()
                                 .SqlPersistence(new DefaultNodeDbConfiguration(sqlPersistenceConnectionString))
                                 .Cluster(name ?? "ClusterAggregateScenario" + typeof(TAggregate).BeautyName())
@@ -84,11 +80,13 @@ namespace GridDomain.Tests.Scenarios.Runners
                                 .Workers(workers)
                                 .Build()
                                 .Log(s => (logConfigurationFactory ?? (() => new LoggerConfiguration()))()
-                                             .WriteToFile(LogEventLevel.Verbose,"GridNodeSystem"+ s.GetAddress().Port)
-                                             .CreateLogger())
-
-                                .OnClusterUp(async s=>
-                                                {
+                                          .WriteToFile(LogEventLevel.Verbose,
+                                                       "GridNodeSystem"
+                                                       + s.GetAddress()
+                                                          .Port)
+                                          .CreateLogger())
+                                .OnClusterUp(async s =>
+                                             {
                                                  var ext = s.GetExtension<LoggingExtension>();
                                                  var node = new ClusterNodeBuilder()
                                                             .ActorSystem(() => s)
@@ -110,29 +108,31 @@ namespace GridDomain.Tests.Scenarios.Runners
                 return run;
             }
         }
-   
+
         public static async Task<IAggregateScenarioRun<TAggregate>> Cluster<TAggregate>(this IAggregateScenarioRunBuilder builder,
                                                                                         IDomainConfiguration domainConfig,
                                                                                         Func<LoggerConfiguration> logConfigurationFactory = null,
-                                                                                        int autoSeeds = 1,
-                                                                                        int workers = 1,
+                                                                                        int autoSeeds = 2,
+                                                                                        int workers = 2,
                                                                                         string name = null) where TAggregate : class, IAggregate
         {
             var nodes = new List<IExtendedGridDomainNode>();
 
             var clusterConfig = new ActorSystemConfigBuilder()
-                                .EmitLogLevel(LogEventLevel.Verbose,true)
+                                .EmitLogLevel(LogEventLevel.Verbose, true)
                                 .DomainSerialization()
                                 .Cluster(name ?? "ClusterAggregateScenario" + typeof(TAggregate).BeautyName())
                                 .AutoSeeds(autoSeeds)
                                 .Workers(workers)
                                 .Build()
                                 .Log(s => (logConfigurationFactory ?? (() => new LoggerConfiguration()))()
-                                             .WriteToFile(LogEventLevel.Verbose,"GridNodeSystem"+ s.GetAddress().Port)
-                                             .CreateLogger())
-
-                                .OnClusterUp(async s=>
-                                                {
+                                          .WriteToFile(LogEventLevel.Verbose,
+                                                       "GridNodeSystem"
+                                                       + s.GetAddress()
+                                                          .Port)
+                                          .CreateLogger())
+                                .OnClusterUp(async s =>
+                                             {
                                                  var ext = s.GetExtension<LoggingExtension>();
                                                  var node = new ClusterNodeBuilder()
                                                             .ActorSystem(() => s)

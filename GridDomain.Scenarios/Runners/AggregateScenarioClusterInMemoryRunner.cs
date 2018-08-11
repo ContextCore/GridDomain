@@ -7,7 +7,7 @@ using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using Serilog;
 
-namespace GridDomain.Tests.Scenarios.Runners {
+namespace GridDomain.Scenarios.Runners {
     public class AggregateScenarioClusterInMemoryRunner<TAggregate> : IAggregateScenarioRunner<TAggregate> where TAggregate : class, IAggregate
     {
         private readonly IExtendedGridDomainNode[] _nodes;

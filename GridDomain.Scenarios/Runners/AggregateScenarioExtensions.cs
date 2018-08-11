@@ -1,10 +1,7 @@
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
-using GridDomain.Tests.Common;
 
-namespace GridDomain.Tests.Scenarios.Runners {
-
-
+namespace GridDomain.Scenarios.Runners {
 
 
     public static class AggregateScenarioExtensions

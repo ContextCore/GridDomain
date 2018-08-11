@@ -2,7 +2,7 @@ using System;
 using KellermanSoftware.CompareNetObjects;
 using KellermanSoftware.CompareNetObjects.TypeComparers;
 
-namespace GridDomain.Tests.Scenarios {
+namespace GridDomain.Scenarios {
     public class AnyIdStringAwareComparer : BaseTypeComparer
     {
         public AnyIdStringAwareComparer(RootComparer rootComparer) : base(rootComparer) {}

@@ -1,14 +1,12 @@
 using System.Linq;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node;
-using GridDomain.Node.AkkaMessaging;
 using GridDomain.Tools.Repositories.AggregateRepositories;
 using GridDomain.Tools.Repositories.EventRepositories;
 using Serilog;
 
-namespace GridDomain.Tests.Scenarios.Runners
+namespace GridDomain.Scenarios.Runners
 {
     public class AggregateScenarioNodeRunner<TAggregate> : IAggregateScenarioRunner<TAggregate> where TAggregate : class, IAggregate
     {

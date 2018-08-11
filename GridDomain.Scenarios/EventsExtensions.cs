@@ -4,11 +4,10 @@ using System.Text;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.ProcessManagers;
-using GridDomain.Tests.Common;
 using KellermanSoftware.CompareNetObjects;
 using KellermanSoftware.CompareNetObjects.TypeComparers;
 
-namespace GridDomain.Tests.Scenarios
+namespace GridDomain.Scenarios
 {
     public static class EventsExtensions
     {
