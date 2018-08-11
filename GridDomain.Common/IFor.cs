@@ -1,4 +1,4 @@
-﻿namespace GridDomain.CQRS {
+﻿namespace GridDomain.Common {
     /// <summary>
     /// Marker interface just to simplify navigation from command to its Aggregate or handler
     /// </summary>

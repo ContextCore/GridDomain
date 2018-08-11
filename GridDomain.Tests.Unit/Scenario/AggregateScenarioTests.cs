@@ -10,6 +10,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
+using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using Serilog;
 using Serilog.Core;
@@ -148,6 +149,26 @@ namespace GridDomain.Tests.Unit.Scenario
                                                          .Given(new PersonCreated(aggregateId, aggregateId))
                                                          .Run
                                                          .Local<ProgrammerAggregate>(_log);
+            //aggregate is changed 
+            Assert.Equal(aggregateId, scenario.Aggregate.PersonId);
+            Assert.Equal(aggregateId, scenario.Aggregate.Id);
+
+            //no events was produced
+            Assert.Empty(scenario.ProducedEvents);
+
+            //scenario check is OK
+            scenario.Check();
+        }
+        
+        [Fact]
+        public async Task Given_factory_When_defined_scenario_has_given_it_is_applied_even_without_command()
+        {
+            var aggregateId = "personA";
+
+            var scenario = await AggregateScenarioBuilder.New()
+                                                         .Given(new PersonCreated(aggregateId, aggregateId))
+                                                         .Run
+                                                         .Local(new AggregateFactory(), CommandAggregateHandler.New<ProgrammerAggregate>(), _log);
             //aggregate is changed 
             Assert.Equal(aggregateId, scenario.Aggregate.PersonId);
             Assert.Equal(aggregateId, scenario.Aggregate.Id);
