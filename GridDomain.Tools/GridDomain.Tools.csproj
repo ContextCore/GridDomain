@@ -8,7 +8,7 @@
     <Copyright>aleskov</Copyright>
     <PackageLicenseUrl>https://github.com/andreyleskov/GridDomain/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/andreyleskov/GridDomain/</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/andreyleskov/GridDomain/blob/master/grid-domain-icon.png</PackageIconUrl>
+    <PackageIconUrl>https://github.com/andreyleskov/GridDomain/blob/develop/Logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/andreyleskov/GridDomain/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>CQRS ES DDD Akka</PackageTags>
