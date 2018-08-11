@@ -61,15 +61,11 @@ namespace GridDomain.Tests.Unit.Scenario
             var aggregateId = Guid.NewGuid()
                                   .ToString();
 
-            var builder = AggregateScenarioBuilder.New()
-                                                  .When(new InflateNewBallonCommand(42, aggregateId))
-                                                  .Then(new BalloonCreated("42", aggregateId));
-
-            var scenario = builder.Build();
-
-            var runner = LocalRunner.New<Balloon, BalloonCommandHandler>(_log);
-
-            var run = await runner.Run(scenario);
+            var run = await AggregateScenarioBuilder.New()
+                                                    .When(new InflateNewBallonCommand(42, aggregateId))
+                                                    .Then(new BalloonCreated("42", aggregateId))
+                                                    .Run
+                                                    .Local<Balloon, BalloonCommandHandler>();
 
             var producedAggregate = run.Aggregate;
 
@@ -86,7 +82,6 @@ namespace GridDomain.Tests.Unit.Scenario
             run.Check();
         }
 
-
         [Fact]
         public async Task When_defined_aggregate_handler_then_it_can_execute_commands_and_produce_events()
         {
@@ -94,13 +89,11 @@ namespace GridDomain.Tests.Unit.Scenario
                                   .ToString();
 
 
-            var scenario = AggregateScenarioBuilder.New()
-                                                   .When(new InflateNewBallonCommand(42, aggregateId))
-                                                   .Then(new BalloonCreated("42", aggregateId))
-                                                   .Build();
-
-            var runner = LocalRunner.New<Balloon, BalloonCommandHandler>(_log);
-            var run = await runner.Run(scenario);
+            var run = await AggregateScenarioBuilder.New()
+                                                    .When(new InflateNewBallonCommand(42, aggregateId))
+                                                    .Then(new BalloonCreated("42", aggregateId))
+                                                    .Run
+                                                    .Local<Balloon, BalloonCommandHandler>(_log);
 
             //aggregate is changed 
             Assert.Equal("42", run.Aggregate.Title);
@@ -159,7 +152,7 @@ namespace GridDomain.Tests.Unit.Scenario
             //scenario check is OK
             scenario.Check();
         }
-        
+
         [Fact]
         public async Task Given_factory_When_defined_scenario_has_given_it_is_applied_even_without_command()
         {

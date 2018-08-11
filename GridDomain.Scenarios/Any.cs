@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Tests.Common
+namespace GridDomain.Tests.Scenarios
 {
     public static class Any
     {

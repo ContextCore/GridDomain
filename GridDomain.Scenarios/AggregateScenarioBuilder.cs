@@ -1,21 +1,22 @@
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 
-namespace GridDomain.Tests.Scenarios {
-    public class AggregateScenarioBuilder:IAggregateScenarioBuilder
+namespace GridDomain.Tests.Scenarios
+{
+    public class AggregateScenarioBuilder : IAggregateScenarioBuilder
     {
         public static IAggregateScenarioBuilder New()
         {
             return new AggregateScenarioBuilder();
         }
 
-        private DomainEvent[] _domainEvents={};
-        private Command[] _commands={};
-        private DomainEvent[] _exprectedEvents={};
+        private DomainEvent[] _domainEvents = { };
+        private Command[] _commands = { };
+        private DomainEvent[] _exprectedEvents = { };
 
         public IAggregateScenario Build()
         {
-            return new AggregateScenario(_domainEvents,_commands,_exprectedEvents);
+            return new AggregateScenario(_domainEvents, _commands, _exprectedEvents);
         }
 
         public IAggregateScenarioBuilder Given(params DomainEvent[] events)
@@ -36,6 +37,6 @@ namespace GridDomain.Tests.Scenarios {
             return this;
         }
 
-        public IAggregateScenarioRunBuilder Run => new AggregateScenarioRunBuilder(Build());
+        public IAggregateScenarioRunBuilder Run => Build().Run();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GridDomain.Tests.Common {
+namespace GridDomain.Tests.Scenarios {
     public class ProducedEventsDifferException : Exception
     {
         public ProducedEventsDifferException(string message):base(message)

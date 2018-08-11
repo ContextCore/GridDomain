@@ -9,7 +9,7 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
 {   
-    public abstract class Aggregate : IAggregate,
+    public abstract class  Aggregate : IAggregate,
                                       IMemento,
                                       IEquatable<IAggregate>
     {
