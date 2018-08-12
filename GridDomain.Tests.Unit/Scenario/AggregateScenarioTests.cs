@@ -216,7 +216,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                           .Run
                                           .Local<Balloon, BalloonCommandHandler>(_log)
                                           .Check()
-                                          .CommandShouldThrow((Predicate<CannotFindAggregateCommandHandlerExeption>) null);
+                                          .ShouldThrow((Predicate<CannotFindAggregateCommandHandlerExeption>) null);
         }
 
         [Fact]
@@ -230,7 +230,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                           .Run
                                           .Local<Balloon, BalloonCommandHandler>(_log)
                                           .Check()
-                                          .CommandShouldThrow((Predicate<BalloonException>) null);
+                                          .ShouldThrow((Predicate<BalloonException>) null);
         }
     }
 }

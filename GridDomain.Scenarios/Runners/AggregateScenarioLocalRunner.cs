@@ -37,9 +37,8 @@ namespace GridDomain.Scenarios.Runners
                 }
                 catch (Exception ex)
                 {
-                    var commandExecutionFailedException = new CommandExecutionFailedException(cmd, ex);
-                    Log.Error(commandExecutionFailedException, "failed to execute an aggregate command");
-                    throw commandExecutionFailedException;
+                    Log.Error(ex, "failed to execute an aggregate command");
+                    throw;
                 }
             }
 
