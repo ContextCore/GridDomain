@@ -9,7 +9,7 @@ namespace GridDomain.Scenarios.Runners
 {
     public static class AggregateScenarioRunBuilderLocalRunnerExtensions
     {
-        public static async Task<IAggregateScenarioRun<TAggregate>> Local<TAggregate, TAggregateCommandsHandler>(this IAggregateScenarioRunBuilder builder, ILogger log = null) where TAggregate : class, IAggregate where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>
+        public static async Task<IAggregateScenarioRun<TAggregate>> Local<TAggregate, TAggregateCommandsHandler>(this IAggregateScenarioRunBuilder builder, ILogger log = null) where TAggregate : class, IAggregate where TAggregateCommandsHandler : IAggregateCommandsHandler<TAggregate>,new()
         {
             return await Local(builder, CreateCommandsHandler<TAggregate, TAggregateCommandsHandler>(), log);
         }
