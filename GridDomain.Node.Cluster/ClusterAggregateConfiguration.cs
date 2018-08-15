@@ -7,7 +7,7 @@ using GridDomain.Node.Configuration.Composition;
 namespace GridDomain.Node.Cluster {
     public class ClusterAggregateConfiguration<TActor,TAggregate> : AggregateConfiguration<TActor, TAggregate> where TAggregate : Aggregate
     {
-        public ClusterAggregateConfiguration(IAggregateDependencyFactory<TAggregate> factory) : base(factory) { }
+        public ClusterAggregateConfiguration(IAggregateDependencies<TAggregate> factory) : base(factory) { }
 
         protected override Parameter[] CreateParametersRegistration()
         {
@@ -15,7 +15,7 @@ namespace GridDomain.Node.Cluster {
                        .Union(new[]
                               {
                                   new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IRecycleConfiguration),
-                                                        (pi, ctx) => AggregateDependencyFactory.CreateRecycleConfiguration())
+                                                        (pi, ctx) => AggregateDependencies.CreateRecycleConfiguration())
                               })
                        .ToArray();
         }

@@ -29,7 +29,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
             public void Register(IDomainBuilder builder)
             {
                 var dep = new Dependency(10);
-                var factory = DefaultAggregateDependencyFactory.ForCommandAggregate<AggregateWithDependency>(new CustomAggregateFactory(dep));
+                var factory = AggregateDependencies.ForCommandAggregate<AggregateWithDependency>(new CustomAggregateFactory(dep));
                 builder.RegisterAggregate(factory);
             }
         }

@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
         public void Register(IDomainBuilder builder)
         {
             var commandHandler = new TestAggregatesCommandHandler(new TestDependencyImplementation());
-            var aggregateDependencyFactory = DefaultAggregateDependencyFactory.New(commandHandler);
+            var aggregateDependencyFactory = AggregateDependencies.New(commandHandler);
             aggregateDependencyFactory.AggregateFactoryCreator = () => new TestAggregateFactory(new TestDependencyImplementation());
             aggregateDependencyFactory.SnapshotsFactoryCreator = () => new TestAggregateFactory(new TestDependencyImplementation());
             builder.RegisterAggregate(aggregateDependencyFactory);

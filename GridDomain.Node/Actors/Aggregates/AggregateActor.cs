@@ -45,7 +45,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
-                              IConstructAggregates aggregateConstructor,
+                              IAggregateFactory aggregateConstructor,
                               IConstructSnapshots snapshotsConstructor,
                               IActorRef customHandlersActor) : base(aggregateConstructor, snapshotsConstructor, snapshotsPersistencePolicy)
         {

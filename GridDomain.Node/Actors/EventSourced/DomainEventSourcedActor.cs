@@ -31,7 +31,7 @@ namespace GridDomain.Node.Actors.EventSourced
         private readonly IConstructSnapshots _snapshotsConstructor;
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
-        protected DomainEventSourcedActor(IConstructAggregates aggregateConstructor, 
+        protected DomainEventSourcedActor(IAggregateFactory aggregateConstructor, 
                                           IConstructSnapshots snapshotsConstructor,
                                           ISnapshotsPersistencePolicy policy)
         {

@@ -20,11 +20,11 @@ namespace GridDomain.Node.Configuration.Composition
     public class AggregateConfiguration<TAggregateActor, TAggregate> : IContainerConfiguration
         where TAggregate : Aggregate
     {
-        protected readonly IAggregateDependencyFactory<TAggregate> AggregateDependencyFactory;
+        protected readonly IAggregateDependencies<TAggregate> AggregateDependencies;
 
-        public AggregateConfiguration(IAggregateDependencyFactory<TAggregate> factory)
+        public AggregateConfiguration(IAggregateDependencies<TAggregate> factory)
         {
-            AggregateDependencyFactory = factory;
+            AggregateDependencies = factory;
         }
        
         public void Register(ContainerBuilder container)
@@ -38,13 +38,13 @@ namespace GridDomain.Node.Configuration.Composition
         protected virtual Parameter[] CreateParametersRegistration()
         {
             return new Parameter[] { 
-                                       new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), AggregateDependencyFactory.CreateCommandsHandler()),
+                                       new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), AggregateDependencies.CreateCommandsHandler()),
                                        new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IPublisher),
                                                              (pi, ctx) => ctx.Resolve<IPublisher>()),
                                        new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
-                                                             (pi, ctx) => ((Func<ISnapshotsPersistencePolicy>) AggregateDependencyFactory.CreatePersistencePolicy)()),
-                                       new TypedParameter(typeof(IConstructAggregates), AggregateDependencyFactory.CreateAggregateFactory()),
-                                       new TypedParameter(typeof(IConstructSnapshots), AggregateDependencyFactory.CreateSnapshotsFactory()),
+                                                             (pi, ctx) => ((Func<ISnapshotsPersistencePolicy>) AggregateDependencies.CreatePersistencePolicy)()),
+                                       new TypedParameter(typeof(IAggregateFactory), AggregateDependencies.CreateAggregateFactory()),
+                                       new TypedParameter(typeof(IConstructSnapshots), AggregateDependencies.CreateSnapshotsFactory()),
                                        new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
                                                              (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))
                                    };
@@ -52,7 +52,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         protected virtual void RegisterHub(ContainerBuilder container)
         {
-            container.Register<AggregateHubActor<TAggregate>>(c => new AggregateHubActor<TAggregate>(AggregateDependencyFactory.CreateRecycleConfiguration()));
+            container.Register<AggregateHubActor<TAggregate>>(c => new AggregateHubActor<TAggregate>(AggregateDependencies.CreateRecycleConfiguration()));
         }
     }
 }

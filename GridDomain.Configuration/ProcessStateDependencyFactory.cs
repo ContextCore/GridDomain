@@ -5,9 +5,9 @@ using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.State;
 
 namespace GridDomain.Configuration {
-    public class ProcessStateDependencyFactory<TState> : DefaultAggregateDependencyFactory<ProcessStateAggregate<TState>> where TState : IProcessState
+    public class ProcessStateDependencies<TState> : AggregateDependencies<ProcessStateAggregate<TState>> where TState : IProcessState
     {
-        public ProcessStateDependencyFactory():base(() => CommandAggregateHandler.New<ProcessStateAggregate<TState>>(), () => EmptyRouteMap.Instance)
+        public ProcessStateDependencies():base(() => CommandAggregateHandler.New<ProcessStateAggregate<TState>>(), () => EmptyRouteMap.Instance)
         {
         }
     }

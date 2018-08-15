@@ -9,7 +9,7 @@ namespace GridDomain.Tests.Stress.NodeCommandExecution {
     {
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(new BalloonDependencyFactory());
+            builder.RegisterAggregate(new BalloonDependencies());
         }
     }
 

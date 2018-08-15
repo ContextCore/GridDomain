@@ -5,11 +5,11 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.Configuration
 {
-    public interface IAggregateDependencyFactory<TAggregate> : IRouteMapFactory where TAggregate : IAggregate
+    public interface IAggregateDependencies<TAggregate> : IRouteMapFactory where TAggregate : IAggregate
     {
         IAggregateCommandsHandler<TAggregate> CreateCommandsHandler();
         ISnapshotsPersistencePolicy CreatePersistencePolicy();
-        IConstructAggregates CreateAggregateFactory();
+        IAggregateFactory CreateAggregateFactory();
         IConstructSnapshots  CreateSnapshotsFactory();
         IRecycleConfiguration CreateRecycleConfiguration();
     }

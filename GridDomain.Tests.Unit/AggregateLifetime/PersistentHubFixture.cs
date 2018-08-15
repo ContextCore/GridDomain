@@ -25,11 +25,11 @@ namespace GridDomain.Tests.Unit.AggregateLifetime
         private IDomainConfiguration CreateDomainConfiguration(TimeSpan childClearPeriod, TimeSpan childMaxInactiveTime)
         {
             var recycleCfg = new RecycleConfiguration(childClearPeriod, childMaxInactiveTime);
-            var balloonDependencyFactory = new BalloonDependencyFactory() {RecycleConfigurationCreator = 
+            var balloonDependencyFactory = new BalloonDependencies() {RecycleConfigurationCreator = 
                                                                               () => recycleCfg};
             
             var processManagerDependenciesFactory = new SoftwareProgrammingProcessDependenciesFactory();
-            processManagerDependenciesFactory.StateDependencyFactory.RecycleConfigurationCreator 
+            processManagerDependenciesFactory.StateDependencies.RecycleConfigurationCreator 
                 = () => recycleCfg;
 
             return new DomainConfiguration(b => b.RegisterAggregate(balloonDependencyFactory),

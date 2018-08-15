@@ -39,7 +39,7 @@ namespace GridDomain.Node.Configuration.Composition
             container.RegisterType<TActor>()
                      .WithParameters(CreateParametersRegistration());
 
-            var persistentChildsRecycleConfiguration = ProcessDependencyFactory.StateDependencyFactory.CreateRecycleConfiguration();
+            var persistentChildsRecycleConfiguration = ProcessDependencyFactory.StateDependencies.CreateRecycleConfiguration();
             container.Register<ProcessHubActor<TState>>(c => new ProcessHubActor<TState>(persistentChildsRecycleConfiguration, ProcessDependencyFactory.ProcessName));
 
 

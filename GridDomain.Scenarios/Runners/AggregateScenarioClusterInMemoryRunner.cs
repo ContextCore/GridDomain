@@ -17,7 +17,7 @@ namespace GridDomain.Scenarios.Runners {
             _nodes = nodes;
         }
 
-        public async Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario scenario)
+        public async Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario<TAggregate> scenario)
         {
            
             if(scenario.GivenEvents.Any())

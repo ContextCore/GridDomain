@@ -14,7 +14,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
     {
         public ClusterProcessStateActor(IAggregateCommandsHandler<ProcessStateAggregate<TState>> handler,
                                         ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
-                                        IConstructAggregates aggregateConstructor,
+                                        IAggregateFactory aggregateConstructor,
                                         IConstructSnapshots snapshotsConstructor,
                                         IActorRef customHandlersActor,
                                         IRecycleConfiguration recycle) : base(handler,

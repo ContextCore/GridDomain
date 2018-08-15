@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Acceptance.BalloonDomain
 
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(new BalloonDependencyFactory());
+            builder.RegisterAggregate(new BalloonDependencies());
 
             BalloonContext BalloonContextProducer () => new BalloonContext(_dbContextOptions);
 

@@ -1,5 +1,5 @@
 using System;
 
-namespace GridDomain.Scenarios {
+namespace GridDomain.Scenarios.Builders {
     public class CannotDetermineAggregateIdException : Exception { }
 }

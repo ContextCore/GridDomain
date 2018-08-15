@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution {
         {
             public void Register(IDomainBuilder builder)
             {
-                builder.RegisterAggregate(new BalloonDependencyFactory());
+                builder.RegisterAggregate(new BalloonDependencies());
                 builder.RegisterHandler<BalloonCreated, CountingMessageHandler>().AsSync();
                 builder.RegisterHandler<BalloonCreated, SlowCountingMessageHandler>(c => new SlowCountingMessageHandler(c.Publisher)).AsFireAndForget();
                 builder.RegisterHandler<BalloonTitleChanged, CountingMessageHandler>().AsSync();

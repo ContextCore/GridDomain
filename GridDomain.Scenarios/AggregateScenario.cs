@@ -1,13 +1,33 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
+using GridDomain.Scenarios.Builders;
 
 namespace GridDomain.Scenarios
 {
+    public class AggregateScenario<T> : AggregateScenario, IAggregateScenario<T> where T : IAggregate
+    {
+        public AggregateScenario(IReadOnlyCollection<DomainEvent> givenEvents,
+                                 IReadOnlyCollection<ICommand> givenCommands,
+                                 IReadOnlyCollection<DomainEvent> expectedEvents,
+                                 IAggregateDependencies<T> factory) : base(givenEvents, givenCommands, expectedEvents)
+        {
+            Dependencies = factory;
+        }
+        public IAggregateDependencies<T> Dependencies { get; }
+    }
+
     public class AggregateScenario : IAggregateScenario
     {
+
+        public static IAggregateScenarioBuilder<T> New<T>() where T : IAggregate
+        {
+            return new AggregateScenarioBuilder<T>();
+        }
+
         public AggregateScenario(IReadOnlyCollection<DomainEvent> givenEvents,
                                  IReadOnlyCollection<ICommand> givenCommands,
                                  IReadOnlyCollection<DomainEvent> expectedEvents)
@@ -54,17 +74,9 @@ namespace GridDomain.Scenarios
                 throw new ExpectedEventsBelongToDifferentAggregateTypesException();
         }
 
-        public IReadOnlyCollection<DomainEvent> ExpectedEvents { get;   }
+        public IReadOnlyCollection<DomainEvent> ExpectedEvents { get; }
         public IReadOnlyCollection<DomainEvent> GivenEvents { get; }
         public IReadOnlyCollection<ICommand> GivenCommands { get; }
         public string AggregateId { get; }
     }
-
-    public class ExpectedEventsBelongToDifferentAggregateTypesException : Exception { }
-
-    public class CommandsAndEventsHasDifferentAggregateIdsException : Exception { }
-
-    public class GivenEventsBelongToDifferentAggregateTypesException : Exception { }
-
-    public class CommandsBelongToDifferentAggregateIdsException : Exception { }
 }

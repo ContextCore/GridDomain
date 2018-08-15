@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using GridDomain.Configuration;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node;
 using GridDomain.Tools.Repositories.AggregateRepositories;
@@ -11,13 +12,15 @@ namespace GridDomain.Scenarios.Runners
     public class AggregateScenarioNodeRunner<TAggregate> : IAggregateScenarioRunner<TAggregate> where TAggregate : class, IAggregate
     {
         private readonly IExtendedGridDomainNode _extendedGridDomainNode;
+        private IAggregateDependencies<TAggregate> _dependencies;
 
-        public AggregateScenarioNodeRunner(IExtendedGridDomainNode node)
+        public AggregateScenarioNodeRunner(IExtendedGridDomainNode node , IAggregateDependencies<TAggregate> dependencies = null)
         {
+            _dependencies = dependencies;
             _extendedGridDomainNode = node;
         }
 
-        public async Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario scenario)
+        public async Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario<TAggregate> scenario)
         {
             var eventsRepository = new ActorSystemEventRepository(_extendedGridDomainNode.System);
             var aggregateRepository = new AggregateRepository(eventsRepository, _extendedGridDomainNode.EventsAdaptersCatalog);

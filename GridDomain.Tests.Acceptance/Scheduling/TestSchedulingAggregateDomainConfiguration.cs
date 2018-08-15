@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Acceptance.Scheduling {
     {
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(DefaultAggregateDependencyFactory.New(new TestAggregateCommandHandler()));
+            builder.RegisterAggregate(AggregateDependencies.New(new TestAggregateCommandHandler()));
         }
     }
 }

@@ -29,7 +29,7 @@ namespace GridDomain.Configuration {
             return RecycleConfiguration;
         }
 
-        public ProcessStateDependencyFactory<TState> StateDependencyFactory { get; } = new ProcessStateDependencyFactory<TState>();
+        public ProcessStateDependencies<TState> StateDependencies { get; } = new ProcessStateDependencies<TState>();
 
         public DefaultProcessDependencyFactory(IProcessDescriptor descriptor, 
                                                Func<IProcess<TState>> processFactory,
@@ -45,7 +45,7 @@ namespace GridDomain.Configuration {
 
         public string ProcessName { get; }
 
-        IAggregateDependencyFactory<ProcessStateAggregate<TState>> IProcessDependencyFactory<TState>.StateDependencyFactory => StateDependencyFactory;
+        IAggregateDependencies<ProcessStateAggregate<TState>> IProcessDependencyFactory<TState>.StateDependencies => StateDependencies;
         public virtual IMessageRouteMap CreateRouteMap()
         {
             return RouteMapCreator();

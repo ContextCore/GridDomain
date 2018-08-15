@@ -5,7 +5,7 @@ using Serilog;
 namespace GridDomain.Scenarios {
     public interface IAggregateScenarioRunner<TAggregate> where TAggregate : IAggregate
     {
-        Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario scenario);
+        Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario<TAggregate> scenario);
         ILogger Log { get; }
     }
 }

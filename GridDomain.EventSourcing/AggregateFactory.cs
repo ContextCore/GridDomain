@@ -12,7 +12,7 @@ namespace GridDomain.EventSourcing
     // to create a valid instance of that object (eg, Person needs a twitter handle to be valid if I were doing twitter stream analysis)
     // Internally, to EventStore, I want it to be able to create my object via a private ctor and I'm going to pass in the
     // objects id.
-    public class AggregateFactory : IConstructAggregates, IConstructSnapshots
+    public class AggregateFactory : IAggregateFactory, IConstructSnapshots
     {
         //default convention: Aggregate is implementing IMemento itself
         protected virtual IAggregate BuildFromSnapshot(Type type, string id, IMemento snapshot)

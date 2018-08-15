@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit
             TimeSpan? maxSaveFrequency = null,
             int saveOnEach = 1)
         {
-            var dependencyFactory = _balloonDomainConfiguration.BalloonDependencyFactory;
+            var dependencyFactory = _balloonDomainConfiguration.BalloonDependencies;
 
             dependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, maxSaveFrequency, keep);
             var balloonAggregateFactory = new BalloonAggregateFactory();
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Unit
             TimeSpan? clearPeriod = null,
             TimeSpan? maxInactiveTime = null)
         {
-            this._balloonDomainConfiguration.BalloonDependencyFactory.RecycleConfigurationCreator = () =>
+            this._balloonDomainConfiguration.BalloonDependencies.RecycleConfigurationCreator = () =>
                                                                                                            new RecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(100),
                                                                                                                                          maxInactiveTime ?? TimeSpan.FromMilliseconds(200));
             return this;

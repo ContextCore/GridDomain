@@ -8,7 +8,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain.ProjectionBuilders {
     {
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(new BalloonDependencyFactory());
+            builder.RegisterAggregate(new BalloonDependencies());
 
             builder.RegisterHandler<BalloonCreated, BalloonCreatedFaultyProjection>
                 (c => new BalloonCreatedFaultyProjection()).AsSync();

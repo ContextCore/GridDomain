@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using GridDomain.Node;
 using GridDomain.Scenarios;
+using GridDomain.Scenarios.Builders;
 using GridDomain.Scenarios.Runners;
 using GridDomain.Tests.Unit.BalloonDomain;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
@@ -32,11 +33,11 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
          {
              var aggregateId = "my_balloon";
 
-             var run = await new AggregateScenarioBuilder()
+             var run = await new AggregateScenarioBuilder<Balloon>()
                              .When(new InflateNewBallonCommand(42, aggregateId))
                              .Then(new BalloonCreated("42", aggregateId))
                              .Run
-                             .Cluster<Balloon>(new BalloonDomainConfiguration(), 
+                             .Cluster(new BalloonDomainConfiguration(), 
                                                () => new XUnitAutoTestLoggerConfiguration(_testOutputHelper,LogEventLevel.Verbose,nameof(AggregateScenarioClusterTests)),
                                                name: "ClusterScenario");
 
@@ -60,11 +61,11 @@ namespace GridDomain.Tests.Unit.Cluster.Scenarios
          {
              var aggregateId = "my_balloon";
 
-             var run = await new AggregateScenarioBuilder()
+             var run = await new AggregateScenarioBuilder<Balloon>()
                              .When(new InflateNewBallonCommand(42, aggregateId))
                              .Then(new BalloonCreated("42", aggregateId))
                              .Run
-                             .Node<Balloon>(new BalloonDomainConfiguration(),_logger);
+                             .Node(new BalloonDomainConfiguration(),_logger);
 
              var producedAggregate = run.Aggregate;
 

@@ -27,7 +27,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers
                                                                       int saveOnEach = 1)
         {
             var processStateDependencyFactory = ProcessConfiguration.SoftwareProgrammingProcessManagerDependenciesFactory
-                                                                    .StateDependencyFactory;
+                                                                    .StateDependencies;
             processStateDependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, maxSaveFrequency, eventsToKeep);
             return this;
         }

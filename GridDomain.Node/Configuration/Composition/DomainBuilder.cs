@@ -50,21 +50,21 @@ namespace GridDomain.Node.Configuration.Composition
             _containerConfigurations.Add(new ProcessManagerConfiguration<TState,ProcessActor<TState>>(processDependenciesfactory,_processManagersStateActorPath(typeof(TState))));
             _maps.Add(processDependenciesfactory.CreateRouteMap());
 
-            var stateConfig = new ProcessStateAggregateConfiguration<TState>(processDependenciesfactory.StateDependencyFactory);
+            var stateConfig = new ProcessStateAggregateConfiguration<TState>(processDependenciesfactory.StateDependencies);
             _containerConfigurations.Add(stateConfig);
-            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<ProcessStateAggregate<TState>>, ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencyFactory));
+            _containerConfigurations.Add(new AggregateConfiguration<AggregateActor<ProcessStateAggregate<TState>>, ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencies));
 
-            _maps.Add(processDependenciesfactory.StateDependencyFactory.CreateRouteMap());
+            _maps.Add(processDependenciesfactory.StateDependencies.CreateRouteMap());
         }
 
-        public void RegisterAggregate<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
+        public void RegisterAggregate<TAggregate>(IAggregateDependencies<TAggregate> factory) where TAggregate : Aggregate
         {
             var aggregateConfiguration = CreateAggregateConfiguration(factory);
             _containerConfigurations.Add(aggregateConfiguration);
             _maps.Add(factory.CreateRouteMap());
         }
 
-        protected virtual IContainerConfiguration CreateAggregateConfiguration<TAggregate>(IAggregateDependencyFactory<TAggregate> factory) where TAggregate : Aggregate
+        protected virtual IContainerConfiguration CreateAggregateConfiguration<TAggregate>(IAggregateDependencies<TAggregate> factory) where TAggregate : Aggregate
         {
             return new AggregateConfiguration<AggregateActor<TAggregate>, TAggregate>(factory);
         }

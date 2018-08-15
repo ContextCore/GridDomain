@@ -8,13 +8,13 @@ using GridDomain.ProcessManagers.State;
 namespace GridDomain.Node.Configuration.Composition {
     class ProcessStateAggregateConfiguration<TState> : AggregateConfiguration<ProcessStateActor<TState>, ProcessStateAggregate<TState>> where TState : IProcessState
     {
-        internal ProcessStateAggregateConfiguration(IAggregateDependencyFactory<ProcessStateAggregate<TState>> factory) : base(factory)
+        internal ProcessStateAggregateConfiguration(IAggregateDependencies<ProcessStateAggregate<TState>> factory) : base(factory)
         {
         }
 
         protected override void RegisterHub(ContainerBuilder container)
         {
-            container.Register<ProcessStateHubActor<TState>>(c => new ProcessStateHubActor<TState>(AggregateDependencyFactory.CreateRecycleConfiguration()));
+            container.Register<ProcessStateHubActor<TState>>(c => new ProcessStateHubActor<TState>(AggregateDependencies.CreateRecycleConfiguration()));
         }
     }
 }

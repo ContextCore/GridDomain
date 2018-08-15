@@ -11,15 +11,17 @@ using GridDomain.Node.Cluster.Configuration;
 using GridDomain.Node.Configuration;
 using GridDomain.Node.Logging;
 using GridDomain.Node.Persistence.Sql;
+using GridDomain.Scenarios.Builders;
 using Serilog;
 using Serilog.Events;
 
 namespace GridDomain.Scenarios.Runners
 {
+
+
     public static class AggregateScenarioRunBuilderNodeRunnerExtensions
     {
-
-        public static async Task<IAggregateScenarioRun<TAggregate>> Node<TAggregate>(this IAggregateScenarioRunBuilder builder,
+        public static async Task<IAggregateScenarioRun<TAggregate>> Node<TAggregate>(this IAggregateScenarioRunBuilder<TAggregate> builder,
                                                                                      IDomainConfiguration domainConfig,
                                                                                      ILogger logger,
                                                                                      string sqlPersistenceConnectionString = null)
@@ -61,7 +63,7 @@ namespace GridDomain.Scenarios.Runners
             }
         }
 
-        public static async Task<IAggregateScenarioRun<TAggregate>> Cluster<TAggregate>(this IAggregateScenarioRunBuilder builder,
+        public static async Task<IAggregateScenarioRun<TAggregate>> Cluster<TAggregate>(this IAggregateScenarioRunBuilder<TAggregate> builder,
                                                                                         IDomainConfiguration domainConfig,
                                                                                         string sqlPersistenceConnectionString,
                                                                                         Func<LoggerConfiguration> logConfigurationFactory = null,
@@ -109,7 +111,7 @@ namespace GridDomain.Scenarios.Runners
             }
         }
 
-        public static async Task<IAggregateScenarioRun<TAggregate>> Cluster<TAggregate>(this IAggregateScenarioRunBuilder builder,
+        public static async Task<IAggregateScenarioRun<TAggregate>> Cluster<TAggregate>(this IAggregateScenarioRunBuilder<TAggregate> builder,
                                                                                         IDomainConfiguration domainConfig,
                                                                                         Func<LoggerConfiguration> logConfigurationFactory = null,
                                                                                         int autoSeeds = 2,

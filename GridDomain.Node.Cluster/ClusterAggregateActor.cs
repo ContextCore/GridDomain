@@ -29,7 +29,7 @@ namespace GridDomain.Node.Cluster
     {
         public ClusterAggregateActor(IAggregateCommandsHandler<T> handler,
                                      ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
-                                     IConstructAggregates aggregateConstructor,
+                                     IAggregateFactory aggregateConstructor,
                                      IConstructSnapshots snapshotsConstructor,
                                      IActorRef customHandlersActor,
                                      IRecycleConfiguration recycle

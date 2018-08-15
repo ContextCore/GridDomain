@@ -17,7 +17,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
     {
         private readonly IRepository<DomainEvent> _eventRepository;
         private readonly EventsAdaptersCatalog _eventsAdaptersCatalog;
-        private static readonly IConstructAggregates DefaultFactory = new AggregateFactory();
+        private static readonly IAggregateFactory DefaultFactory = new AggregateFactory();
         public AggregateRepository(IRepository<DomainEvent> eventRepository,
                                    EventsAdaptersCatalog eventsAdaptersCatalog = null)
         {
@@ -34,7 +34,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             aggr.ClearUncommitedEvents();
         }
 
-        public async Task<T> LoadAggregate<T>(string id, IConstructAggregates factory = null) where T : IAggregate
+        public async Task<T> LoadAggregate<T>(string id, IAggregateFactory factory = null) where T : IAggregate
         {
             var agr = (factory ?? DefaultFactory).BuildEmpty<T>(id);
             var persistId = EntityActorName.New<T>(id).ToString();

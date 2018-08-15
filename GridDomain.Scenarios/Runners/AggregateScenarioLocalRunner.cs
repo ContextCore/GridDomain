@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using Serilog;
 
@@ -9,23 +8,23 @@ namespace GridDomain.Scenarios.Runners
 {
     public class AggregateScenarioLocalRunner<TAggregate> : IAggregateScenarioRunner<TAggregate> where TAggregate : class, IAggregate
     {
-        private TAggregate _aggregate;
         public ILogger Log { get; }
 
-        public AggregateScenarioLocalRunner(TAggregate aggregate, IAggregateCommandsHandler<TAggregate> handler, ILogger log)
+        public AggregateScenarioLocalRunner(ILogger log)
         {
-            CommandsHandler = handler ?? throw new ArgumentNullException(nameof(handler));
-            _aggregate = aggregate ?? throw new ArgumentNullException(nameof(aggregate));
             Log = log;
         }
 
-        private IAggregateCommandsHandler<TAggregate> CommandsHandler { get; }
-
-        public async Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario scenario)
+        public async Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario<TAggregate> scenario)
         {
+            var aggregate = scenario.Dependencies.CreateAggregateFactory()
+                                    .Build<TAggregate>(scenario.AggregateId);
+
+            var commandsHandler = scenario.Dependencies.CreateCommandsHandler();
+
             foreach (var evt in scenario.GivenEvents)
             {
-                _aggregate.Apply(evt);
+                aggregate.Apply(evt);
             }
 
             //When
@@ -33,7 +32,7 @@ namespace GridDomain.Scenarios.Runners
             {
                 try
                 {
-                    _aggregate = await CommandsHandler.ExecuteAsync(_aggregate, cmd);
+                    aggregate = await commandsHandler.ExecuteAsync(aggregate, cmd);
                 }
                 catch (Exception ex)
                 {
@@ -43,10 +42,10 @@ namespace GridDomain.Scenarios.Runners
             }
 
             //Then
-            var producedEvents = _aggregate.GetUncommittedEvents()
-                                           .ToArray();
-            _aggregate.ClearUncommitedEvents();
-            return new AggregateScenarioRun<TAggregate>(scenario, _aggregate, producedEvents, Log);
+            var producedEvents = aggregate.GetUncommittedEvents()
+                                          .ToArray();
+            aggregate.ClearUncommitedEvents();
+            return new AggregateScenarioRun<TAggregate>(scenario, aggregate, producedEvents, Log);
         }
     }
 }

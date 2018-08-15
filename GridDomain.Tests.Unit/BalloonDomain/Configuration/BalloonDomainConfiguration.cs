@@ -9,16 +9,16 @@ namespace GridDomain.Tests.Unit.BalloonDomain.Configuration
     
     public class BalloonDomainConfiguration : IDomainConfiguration
     {
-        public BalloonDependencyFactory BalloonDependencyFactory { get; }
+        public BalloonDependencies BalloonDependencies { get; }
 
         public BalloonDomainConfiguration()
         {
-            BalloonDependencyFactory = new BalloonDependencyFactory();
+            BalloonDependencies = new BalloonDependencies();
         }
 
         public void Register(IDomainBuilder builder)
         {
-            builder.RegisterAggregate(BalloonDependencyFactory);
+            builder.RegisterAggregate(BalloonDependencies);
             builder.RegisterHandler<BalloonCreated, BalloonCreatedNotificator> (c => new BalloonCreatedNotificator(c.Publisher)).AsSync();
             builder.RegisterHandler<BalloonTitleChanged, BalloonTitleChangedNotificator>(c => new BalloonTitleChangedNotificator(c.Publisher)).AsSync();
         }

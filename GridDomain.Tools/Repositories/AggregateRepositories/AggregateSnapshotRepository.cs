@@ -15,7 +15,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
 {
     public class AggregateSnapshotRepository
     {
-        private readonly IConstructAggregates _aggregatesConstructor;
+        private readonly IAggregateFactory _aggregatesConstructor;
         private readonly DbContextOptions option;
         private readonly IConstructSnapshots _snapshotsConstructor;
 
@@ -29,20 +29,20 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
             return new AggregateSnapshotRepository(options, AggregateFactory.Default, AggregateFactory.Default);
         }
         
-        public static AggregateSnapshotRepository New<T>(DbContextOptions options, T factory) where T: class, IConstructAggregates,
+        public static AggregateSnapshotRepository New<T>(DbContextOptions options, T factory) where T: class, IAggregateFactory,
             IConstructSnapshots
         {
             return new AggregateSnapshotRepository(options, factory, factory);
         }
         
-        public static AggregateSnapshotRepository New<T>(string options, T factory) where T: class, IConstructAggregates,
+        public static AggregateSnapshotRepository New<T>(string options, T factory) where T: class, IAggregateFactory,
             IConstructSnapshots
         {
             return new AggregateSnapshotRepository(options, factory, factory);
         }
         
         public AggregateSnapshotRepository(DbContextOptions dbOptions, 
-                                           IConstructAggregates aggregatesConstructor,
+                                           IAggregateFactory aggregatesConstructor,
                                            IConstructSnapshots snapshotsConstructor)
         {
             _snapshotsConstructor = snapshotsConstructor;
@@ -51,7 +51,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
         }
 
         public AggregateSnapshotRepository(string connString,
-                                           IConstructAggregates aggregatesConstructor,
+                                           IAggregateFactory aggregatesConstructor,
                                            IConstructSnapshots snapshotsConstructor,
                                            int serializerId = 21
                                            ) : this(new DbContextOptionsBuilder().UseSqlServer(connString).Options,

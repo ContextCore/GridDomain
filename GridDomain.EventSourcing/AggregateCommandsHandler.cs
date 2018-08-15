@@ -11,7 +11,7 @@ using GridDomain.EventSourcing.CommonDomain;
 namespace GridDomain.EventSourcing
 {
     public class AggregateCommandsHandler<TAggregate> : TypeCatalog<CommandExecutionDelegate<TAggregate>, ICommand>,
-                                                        IAggregateCommandsHandler<TAggregate> where TAggregate : Aggregate
+                                                        IAggregateCommandsHandler<TAggregate> where TAggregate : IAggregate
                                                       
     {
         public IReadOnlyCollection<Type> RegisteredCommands => Catalog.Keys.ToArray();

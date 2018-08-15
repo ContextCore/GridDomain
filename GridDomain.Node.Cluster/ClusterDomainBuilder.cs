@@ -13,7 +13,7 @@ namespace GridDomain.Node.Cluster
     {
         public ClusterDomainBuilder() : base(t => Known.Paths.ShardRegion(typeof(ProcessStateAggregate<>).MakeGenericType(t))) { }
 
-        protected override IContainerConfiguration CreateAggregateConfiguration<TAggregate>(IAggregateDependencyFactory<TAggregate> factory)
+        protected override IContainerConfiguration CreateAggregateConfiguration<TAggregate>(IAggregateDependencies<TAggregate> factory)
         {
             return new ClusterAggregateConfiguration<ClusterAggregateActor<TAggregate>,TAggregate>(factory);
         }
@@ -21,12 +21,12 @@ namespace GridDomain.Node.Cluster
         public override void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory)
         {
             var processManagerConfiguration = new ClusterProcessConfiguration<TState, ClusterProcessActor<TState>>(processDependenciesfactory, _processManagersStateActorPath(typeof(TState)));
-            var processStateConfiguration = new ClusterAggregateConfiguration<ClusterProcessStateActor<TState>, ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencyFactory);
+            var processStateConfiguration = new ClusterAggregateConfiguration<ClusterProcessStateActor<TState>, ProcessStateAggregate<TState>>(processDependenciesfactory.StateDependencies);
 
             _containerConfigurations.Add(processManagerConfiguration);
             _containerConfigurations.Add(processStateConfiguration);
             _maps.Add(processDependenciesfactory.CreateRouteMap());
-            _maps.Add(processDependenciesfactory.StateDependencyFactory.CreateRouteMap());
+            _maps.Add(processDependenciesfactory.StateDependencies.CreateRouteMap());
         }
     }
 }
