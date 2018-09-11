@@ -33,7 +33,7 @@ namespace GridDomain.Node.Configuration.Hocon
              
              serialization-bindings {
                                    """ + typeof(DomainEvent).AssemblyQualifiedShortName() + @""" = domain
-                                   """ + typeof(IMemento).AssemblyQualifiedShortName() + @"""    = domain
+                                   """ + typeof(ISnapshot).AssemblyQualifiedShortName() + @"""    = domain
                                   # for local snapshots storage
                                    """+ typeof(Akka.Persistence.Serialization.Snapshot).AssemblyQualifiedShortName() + @""" = domain
                                    ""System.Object"" = hyperion

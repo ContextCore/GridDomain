@@ -14,7 +14,7 @@ namespace GridDomain.Configuration {
 
             var map = mapProducer ?? MessageRouteMap.New(handler);
 
-            return new AggregateDependencies<TAggregate>(() => handler,() => map);
+            return new AggregateDependencies<TAggregate>(handler,map);
         }
         
         public static AggregateDependencies<TAggregate> New<TAggregate, TAggregateCommandsHandler>()
@@ -26,9 +26,9 @@ namespace GridDomain.Configuration {
 
         public static AggregateDependencies<TCommandAggregate> ForCommandAggregate<TCommandAggregate>(IAggregateFactory factory = null) where TCommandAggregate : CommandAggregate
         {
-            var depFactory = new AggregateDependencies<TCommandAggregate>(() => CommandAggregateHandler.New<TCommandAggregate>(factory));
+            var depFactory = new AggregateDependencies<TCommandAggregate>(CommandAggregateHandler.New<TCommandAggregate>(factory));
             if (factory != null)
-                depFactory.AggregateFactoryCreator = () => factory;
+                depFactory.AggregateFactory = factory;
             return depFactory;
         }
     }
@@ -36,54 +36,27 @@ namespace GridDomain.Configuration {
 
     public class AggregateDependencies<TAggregate> : IAggregateDependencies<TAggregate> where TAggregate : IAggregate
     {
-        public Func<IMessageRouteMap> MapProducer { protected get; set; }
-        public Func<IAggregateCommandsHandler<TAggregate>> HandlerCreator { protected get; set; }
-        public Func<ISnapshotsPersistencePolicy> SnapshotPolicyCreator { protected get; set; }
-        public Func<IAggregateFactory> AggregateFactoryCreator { protected get; set; }
-        public Func<IConstructSnapshots> SnapshotsFactoryCreator { protected get; set; }
-        public Func<IRecycleConfiguration> RecycleConfigurationCreator { protected get; set; }
+        private readonly IMessageRouteMap _routeMap;
 
-        public AggregateDependencies(Func<IAggregateCommandsHandler<TAggregate>> handler, 
-                                                 Func<IMessageRouteMap> mapProducer = null)
+        public AggregateDependencies(IAggregateCommandsHandler<TAggregate> handler, 
+                                     IMessageRouteMap mapProducer = null)
         {
-            MapProducer = mapProducer ?? (() => MessageRouteMap.New(handler()));
-            HandlerCreator = handler ?? throw new ArgumentNullException(nameof(handler));
-            SnapshotPolicyCreator = () => new NoSnapshotsPersistencePolicy();
-            AggregateFactoryCreator = () => AggregateFactory.Default;
-            SnapshotsFactoryCreator = () => AggregateFactory.Default;
-            RecycleConfigurationCreator = () => new DefaultRecycleConfiguration();
+            CommandHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+            _routeMap = mapProducer ?? MessageRouteMap.New(handler);
         }
 
-       
+        public IAggregateCommandsHandler<TAggregate> CommandHandler { get; set; }
 
-        public virtual IAggregateCommandsHandler<TAggregate> CreateCommandsHandler()
-        {
-            return HandlerCreator();
-        }
+        public ISnapshotsPersistencePolicy SnapshotPolicy { get; set; }  = new NoSnapshotsPersistencePolicy();
+        public IAggregateFactory AggregateFactory { get; set; } = EventSourcing.AggregateFactory.Default;
 
-        public virtual ISnapshotsPersistencePolicy CreatePersistencePolicy()
-        {
-            return SnapshotPolicyCreator();
-        }
+        public ISnapshotFactory SnapshotFactory { get; set; }= EventSourcing.AggregateFactory.Default;
 
-        public virtual IAggregateFactory CreateAggregateFactory()
-        {
-            return AggregateFactoryCreator();
-        }
-
-        public IConstructSnapshots CreateSnapshotsFactory()
-        {
-            return SnapshotsFactoryCreator();
-        }
-
-        public virtual IRecycleConfiguration CreateRecycleConfiguration()
-        {
-            return RecycleConfigurationCreator();
-        }
-
+        public IRecycleConfiguration RecycleConfiguration { get; set; }= new DefaultRecycleConfiguration();
+        
         public IMessageRouteMap CreateRouteMap()
         {
-            return MapProducer();
+            return _routeMap;
         }
     }
 }

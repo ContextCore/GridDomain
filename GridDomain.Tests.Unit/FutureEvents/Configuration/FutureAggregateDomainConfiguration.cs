@@ -7,7 +7,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Configuration {
     {
         public void Register(IDomainBuilder builder)
         {
-            var factory = new AggregateDependencies<TestFutureEventsAggregate>(() => new FutureEventsAggregatesCommandHandler());
+            var factory = new AggregateDependencies<TestFutureEventsAggregate>(new FutureEventsAggregatesCommandHandler());
             builder.RegisterAggregate(factory);
         }
     }

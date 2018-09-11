@@ -46,8 +46,8 @@ namespace GridDomain.Node.Actors.Aggregates
         public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IAggregateFactory aggregateConstructor,
-                              IConstructSnapshots snapshotsConstructor,
-                              IActorRef customHandlersActor) : base(aggregateConstructor, snapshotsConstructor, snapshotsPersistencePolicy)
+                              ISnapshotFactory snapshotFactoryConstructor,
+                              IActorRef customHandlersActor) : base(aggregateConstructor, snapshotFactoryConstructor, snapshotsPersistencePolicy)
         {
             _aggregateCommandsHandler = handler;
             _publisher = Context.System.GetTransport();

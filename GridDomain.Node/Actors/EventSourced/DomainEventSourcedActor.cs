@@ -28,14 +28,14 @@ namespace GridDomain.Node.Actors.EventSourced
         protected readonly ActorMonitor Monitor;
 
         protected readonly BehaviorQueue Behavior;
-        private readonly IConstructSnapshots _snapshotsConstructor;
+        private readonly ISnapshotFactory _snapshotFactoryConstructor;
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
 
         protected DomainEventSourcedActor(IAggregateFactory aggregateConstructor, 
-                                          IConstructSnapshots snapshotsConstructor,
+                                          ISnapshotFactory snapshotFactoryConstructor,
                                           ISnapshotsPersistencePolicy policy)
         {
-            _snapshotsConstructor = snapshotsConstructor;
+            _snapshotFactoryConstructor = snapshotFactoryConstructor;
             
             _snapshotsPolicy = policy;
             _snapshotsSaveTracker = (policy as ISnapshotsSavePolicy).Tracking;
@@ -55,7 +55,7 @@ namespace GridDomain.Node.Actors.EventSourced
             Recover<SnapshotOffer>(offer =>
                                    {
                                        _snapshotsPolicy.MarkSnapshotApplied(offer.Metadata.SequenceNr);
-                                       State = (T) aggregateConstructor.Build(typeof(T), Id, (IMemento) offer.Snapshot);
+                                       State = (T) aggregateConstructor.Build(typeof(T), Id, (ISnapshot) offer.Snapshot);
                                        Log.Debug("Built state from snapshot #{snapshotNum}", offer.Metadata.SequenceNr);
                                    });
 
@@ -166,7 +166,7 @@ namespace GridDomain.Node.Actors.EventSourced
         {
             if (!_snapshotsPolicy.ShouldSave(SnapshotSequenceNr)) return;
             Log.Debug("Started snapshot save, cased by persisted event {event}",lastEventPersisted);
-            SaveSnapshot(_snapshotsConstructor.GetSnapshot(aggregate));
+            SaveSnapshot(_snapshotFactoryConstructor.GetSnapshot(aggregate));
             _snapshotsSaveTracker.Start(SnapshotSequenceNr);
         }
 

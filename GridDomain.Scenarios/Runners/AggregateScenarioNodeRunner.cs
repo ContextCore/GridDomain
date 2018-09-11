@@ -36,7 +36,7 @@ namespace GridDomain.Scenarios.Runners
             }
 
             var events = await eventsRepository.Load<TAggregate>(scenario.AggregateId);
-            var aggregate = await aggregateRepository.LoadAggregate<TAggregate>(scenario.AggregateId);
+            var aggregate = await aggregateRepository.LoadAggregate<TAggregate>(scenario.AggregateId,scenario.Dependencies.AggregateFactory);
 
             return new AggregateScenarioRun<TAggregate>(scenario, aggregate, events, Log);
         }

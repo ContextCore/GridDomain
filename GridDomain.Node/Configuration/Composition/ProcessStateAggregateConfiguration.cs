@@ -14,7 +14,7 @@ namespace GridDomain.Node.Configuration.Composition {
 
         protected override void RegisterHub(ContainerBuilder container)
         {
-            container.Register<ProcessStateHubActor<TState>>(c => new ProcessStateHubActor<TState>(AggregateDependencies.CreateRecycleConfiguration()));
+            container.Register<ProcessStateHubActor<TState>>(c => new ProcessStateHubActor<TState>(AggregateDependencies.RecycleConfiguration));
         }
     }
 }

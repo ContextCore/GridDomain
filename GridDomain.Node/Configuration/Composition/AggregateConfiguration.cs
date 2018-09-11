@@ -38,13 +38,13 @@ namespace GridDomain.Node.Configuration.Composition
         protected virtual Parameter[] CreateParametersRegistration()
         {
             return new Parameter[] { 
-                                       new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), AggregateDependencies.CreateCommandsHandler()),
+                                       new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), AggregateDependencies.CommandHandler),
                                        new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IPublisher),
                                                              (pi, ctx) => ctx.Resolve<IPublisher>()),
                                        new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),
-                                                             (pi, ctx) => ((Func<ISnapshotsPersistencePolicy>) AggregateDependencies.CreatePersistencePolicy)()),
-                                       new TypedParameter(typeof(IAggregateFactory), AggregateDependencies.CreateAggregateFactory()),
-                                       new TypedParameter(typeof(IConstructSnapshots), AggregateDependencies.CreateSnapshotsFactory()),
+                                                             (pi, ctx) =>  AggregateDependencies.SnapshotPolicy),
+                                       new TypedParameter(typeof(IAggregateFactory), AggregateDependencies.AggregateFactory),
+                                       new TypedParameter(typeof(ISnapshotFactory), AggregateDependencies.SnapshotFactory),
                                        new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
                                                              (pi, ctx) => ctx.ResolveNamed<IActorRef>(HandlersPipeActor.CustomHandlersProcessActorRegistrationName))
                                    };
@@ -52,7 +52,7 @@ namespace GridDomain.Node.Configuration.Composition
 
         protected virtual void RegisterHub(ContainerBuilder container)
         {
-            container.Register<AggregateHubActor<TAggregate>>(c => new AggregateHubActor<TAggregate>(AggregateDependencies.CreateRecycleConfiguration()));
+            container.Register<AggregateHubActor<TAggregate>>(c => new AggregateHubActor<TAggregate>(AggregateDependencies.RecycleConfiguration));
         }
     }
 }

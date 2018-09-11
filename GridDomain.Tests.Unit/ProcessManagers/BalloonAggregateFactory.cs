@@ -10,20 +10,20 @@ namespace GridDomain.Tests.Unit.ProcessManagers {
         
         public new static BalloonAggregateFactory Default { get; } = new BalloonAggregateFactory();
         
-        protected override IAggregate BuildFromSnapshot(Type type, string id, IMemento memento)
+        protected override IAggregate BuildFromSnapshot(Type type, string id, ISnapshot snapshot)
         {
-                var snapshot = memento as BalloonSnapshot;
-                if (snapshot == null)
+                var snap = snapshot as BalloonSnapshot;
+                if (snap == null)
                     throw new InvalidOperationException("Sample aggregate can be restored only from memento with type "
                                                         + typeof(BalloonSnapshot).Name);
 
-                var aggregate = new Balloon(snapshot.Id, snapshot.Value);
+                var aggregate = new Balloon(snap.Id, snap.Value);
             aggregate.ClearUncommitedEvents();
-            ((IMemento)aggregate).Version = snapshot.Version;
+            ((ISnapshot)aggregate).Version = snap.Version;
                 return aggregate;
         }
 
-        public override IMemento GetSnapshot(IAggregate aggregate)
+        public override ISnapshot GetSnapshot(IAggregate aggregate)
         {
             if (aggregate is Balloon balloon)
             {
@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers {
             return base.GetSnapshot(aggregate);
         }
         
-        internal class BalloonSnapshot : IMemento
+        internal class BalloonSnapshot : ISnapshot
         {
             public BalloonSnapshot(string id, int version, string value)
             {

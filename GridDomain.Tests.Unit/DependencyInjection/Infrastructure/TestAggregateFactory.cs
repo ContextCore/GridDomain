@@ -12,7 +12,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
             _testDependencyImplementation = testDependencyImplementation;
         }
 
-        public override IAggregate Build(Type type, string id, IMemento snapshot = null)
+        public override IAggregate Build(Type type, string id, ISnapshot snapshot = null)
         {
             if (type == typeof(TestAggregate) && snapshot == null)
             {
@@ -21,7 +21,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
             return base.Build(type, id, snapshot);
         }
 
-        public override IMemento GetSnapshot(IAggregate aggregate)
+        public override ISnapshot GetSnapshot(IAggregate aggregate)
         {
             if (aggregate is TestAggregate agr)
             {
@@ -30,14 +30,14 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
             return base.GetSnapshot(aggregate);
         }
 
-        protected override IAggregate BuildFromSnapshot(Type type, string id, IMemento snapshot)
+        protected override IAggregate BuildFromSnapshot(Type type, string id, ISnapshot snapshot)
         {
             if (type == typeof(TestAggregate))
             {
                 var snap = snapshot as TestAggregateSnapshot;
                 if(snap == null) throw new ArgumentException(nameof(snapshot));
                 var agr = TestAggregate.FromSnapshot(snap, _testDependencyImplementation);
-                ((IMemento) agr).Version = snap.Version;
+                ((ISnapshot) agr).Version = snap.Version;
                 agr.ClearUncommitedEvents();
                 return agr;
             }

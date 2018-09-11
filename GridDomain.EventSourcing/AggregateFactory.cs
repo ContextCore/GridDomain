@@ -12,16 +12,16 @@ namespace GridDomain.EventSourcing
     // to create a valid instance of that object (eg, Person needs a twitter handle to be valid if I were doing twitter stream analysis)
     // Internally, to EventStore, I want it to be able to create my object via a private ctor and I'm going to pass in the
     // objects id.
-    public class AggregateFactory : IAggregateFactory, IConstructSnapshots
+    public class AggregateFactory : IAggregateFactory, ISnapshotFactory
     {
         //default convention: Aggregate is implementing IMemento itself
-        protected virtual IAggregate BuildFromSnapshot(Type type, string id, IMemento snapshot)
+        protected virtual IAggregate BuildFromSnapshot(Type type, string id, ISnapshot snapshot)
         {
             var snapshotVersion = snapshot.Version;
             if (!(snapshot is IAggregate aggregate))
                 throw new InvalidDefaultMementoException(type, id, snapshot);
 
-            ((IMemento)aggregate).Version = snapshotVersion;
+            ((ISnapshot)aggregate).Version = snapshotVersion;
             aggregate.ClearUncommitedEvents();
             return aggregate;
         }
@@ -45,7 +45,7 @@ namespace GridDomain.EventSourcing
             return aggregate;
         }
 
-        public virtual IAggregate Build(Type type, string id, IMemento snapshot=null)
+        public virtual IAggregate Build(Type type, string id, ISnapshot snapshot=null)
         {
             return snapshot == null ? BuildByConvention(type, id) : BuildFromSnapshot(type, id, snapshot);
         }
@@ -57,7 +57,7 @@ namespace GridDomain.EventSourcing
             return Default.Build<T>(id ?? Guid.NewGuid().ToString());
         }
 
-        public virtual IMemento GetSnapshot(IAggregate aggregate)
+        public virtual ISnapshot GetSnapshot(IAggregate aggregate)
         {
             return (Aggregate)aggregate;
         }

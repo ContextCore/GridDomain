@@ -15,7 +15,7 @@ namespace GridDomain.Node.Cluster {
                        .Union(new[]
                               {
                                   new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IRecycleConfiguration),
-                                                        (pi, ctx) => AggregateDependencies.CreateRecycleConfiguration())
+                                                        (pi, ctx) => AggregateDependencies.RecycleConfiguration)
                               })
                        .ToArray();
         }

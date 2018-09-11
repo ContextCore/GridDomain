@@ -60,7 +60,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection
             {
                 _dependency = dep;
             }
-            public override IAggregate Build(Type type, string id, IMemento snapshot)
+            public override IAggregate Build(Type type, string id, ISnapshot snapshot)
             {
                 if (type == typeof(AggregateWithDependency))
                 {

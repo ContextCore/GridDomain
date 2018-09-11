@@ -17,7 +17,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
     {
         private readonly IAggregateFactory _aggregatesConstructor;
         private readonly DbContextOptions option;
-        private readonly IConstructSnapshots _snapshotsConstructor;
+        private readonly ISnapshotFactory _snapshotFactoryConstructor;
 
         public static AggregateSnapshotRepository New(string options)
         {
@@ -30,37 +30,37 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
         }
         
         public static AggregateSnapshotRepository New<T>(DbContextOptions options, T factory) where T: class, IAggregateFactory,
-            IConstructSnapshots
+            ISnapshotFactory
         {
             return new AggregateSnapshotRepository(options, factory, factory);
         }
         
         public static AggregateSnapshotRepository New<T>(string options, T factory) where T: class, IAggregateFactory,
-            IConstructSnapshots
+            ISnapshotFactory
         {
             return new AggregateSnapshotRepository(options, factory, factory);
         }
         
         public AggregateSnapshotRepository(DbContextOptions dbOptions, 
                                            IAggregateFactory aggregatesConstructor,
-                                           IConstructSnapshots snapshotsConstructor)
+                                           ISnapshotFactory snapshotFactoryConstructor)
         {
-            _snapshotsConstructor = snapshotsConstructor;
+            _snapshotFactoryConstructor = snapshotFactoryConstructor;
             _aggregatesConstructor = aggregatesConstructor;
             option = dbOptions;
         }
 
         public AggregateSnapshotRepository(string connString,
                                            IAggregateFactory aggregatesConstructor,
-                                           IConstructSnapshots snapshotsConstructor,
+                                           ISnapshotFactory snapshotFactoryConstructor,
                                            int serializerId = 21
                                            ) : this(new DbContextOptionsBuilder().UseSqlServer(connString).Options,
                                                                                               aggregatesConstructor,
-                                                    snapshotsConstructor) { }
+                                                    snapshotFactoryConstructor) { }
 
         public async Task<Version<T>[]> Load<T>(string id) where T : class, IAggregate
         {
-            var snapshotType = _snapshotsConstructor.GetSnapshot(_aggregatesConstructor.BuildEmpty<T>())
+            var snapshotType = _snapshotFactoryConstructor.GetSnapshot(_aggregatesConstructor.BuildEmpty<T>())
                                                     .GetType();
 
             var serializer = new DomainSerializer();
@@ -70,7 +70,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
                 return (await snapshotItemsRepo.Load(EntityActorName.New<T>(id).
                                                            Name)).Select(s =>
                                                                          {
-                                                                             var memento = (IMemento) serializer.FromBinary(s.Snapshot, snapshotType);
+                                                                             var memento = (ISnapshot) serializer.FromBinary(s.Snapshot, snapshotType);
                                                                              var aggregate = (T) _aggregatesConstructor.Build(typeof(T), id, memento);
                                                                              return new Version<T>(aggregate, s.Timestamp);
                                                                          }).
@@ -84,7 +84,7 @@ namespace GridDomain.Tools.Repositories.AggregateRepositories
         {
             using (var repo = new RawSnapshotsRepository(option))
             {
-                var snapshot = _snapshotsConstructor.GetSnapshot(aggregate);
+                var snapshot = _snapshotFactoryConstructor.GetSnapshot(aggregate);
                 var item = new SnapshotItem
                            {
                                Manifest = snapshot.GetType().AssemblyQualifiedShortName(),

@@ -36,7 +36,7 @@ namespace GridDomain.Tests.Unit
         public Types_should_be_deserializable()
         {
 
-           Fixture.Customizations.Add(new TypeRelay(typeof(IMemento), typeof(ProgrammerAggregate)));
+           Fixture.Customizations.Add(new TypeRelay(typeof(ISnapshot), typeof(ProgrammerAggregate)));
            Fixture.Customizations.Add(new TypeRelay(typeof(ICommand), typeof(FakeCommand)));
            Fixture.Customizations.Add(new TypeRelay(typeof(Command), typeof(FakeCommand)));
            Fixture.Customizations.Add(new TypeRelay(typeof(DomainEvent), typeof(BalloonCreated)));
@@ -76,7 +76,7 @@ namespace GridDomain.Tests.Unit
         public void IMemento_from_all_assemblies_should_be_deserializable_by_json()
         {
             var checker = GetChecker(new DomainEventsJsonAkkaSerializer(_system));
-            CheckAllChildrenOf<IMemento>(checker, AllAssemblies);
+            CheckAllChildrenOf<ISnapshot>(checker, AllAssemblies);
         }
 
         [Fact]

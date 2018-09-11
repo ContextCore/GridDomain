@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace GridDomain.EventSourcing.CommonDomain
 {
     //must be serializable
-    public interface IMemento
+    public interface ISnapshot
     {
         string Id { get; set; }
 

@@ -10,13 +10,13 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
 {
     public class BalanceFixture : NodeTestFixture
     {
-        protected readonly BalanceDomainDonfiguration BalanceDomainDonfiguration;
+        protected readonly BalanceDomainDonfiguration BalanceDomainConfiguration;
 
         public BalanceFixture(ITestOutputHelper output,IQuartzConfig config = null) :base(output)
         {
-            BalanceDomainDonfiguration = new BalanceDomainDonfiguration();
+            BalanceDomainConfiguration = new BalanceDomainDonfiguration();
             this.EnableScheduling(config ?? new InMemoryQuartzConfig(new InMemoryRetrySettings(1, null, new NeverRetryExceptionPolicy())));
-            Add(BalanceDomainDonfiguration);
+            Add(BalanceDomainConfiguration);
         }
 
       
@@ -24,7 +24,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade
             TimeSpan? clearPeriod = null,
             TimeSpan? maxInactiveTime = null)
         {
-            this.BalanceDomainDonfiguration.AggregateDependencies.RecycleConfigurationCreator = () =>
+            this.BalanceDomainConfiguration.AggregateDependencies.RecycleConfiguration = 
                                                                                                                 new RecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(200),
                                                                                                                     maxInactiveTime ?? TimeSpan.FromMilliseconds(50));
             return this;

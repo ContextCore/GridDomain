@@ -8,8 +8,8 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
         {
             var commandHandler = new TestAggregatesCommandHandler(new TestDependencyImplementation());
             var aggregateDependencyFactory = AggregateDependencies.New(commandHandler);
-            aggregateDependencyFactory.AggregateFactoryCreator = () => new TestAggregateFactory(new TestDependencyImplementation());
-            aggregateDependencyFactory.SnapshotsFactoryCreator = () => new TestAggregateFactory(new TestDependencyImplementation());
+            aggregateDependencyFactory.AggregateFactory =  new TestAggregateFactory(new TestDependencyImplementation());
+            aggregateDependencyFactory.SnapshotFactory =  new TestAggregateFactory(new TestDependencyImplementation());
             builder.RegisterAggregate(aggregateDependencyFactory);
         }
     }

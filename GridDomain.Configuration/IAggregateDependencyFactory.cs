@@ -7,10 +7,10 @@ namespace GridDomain.Configuration
 {
     public interface IAggregateDependencies<TAggregate> : IRouteMapFactory where TAggregate : IAggregate
     {
-        IAggregateCommandsHandler<TAggregate> CreateCommandsHandler();
-        ISnapshotsPersistencePolicy CreatePersistencePolicy();
-        IAggregateFactory CreateAggregateFactory();
-        IConstructSnapshots  CreateSnapshotsFactory();
-        IRecycleConfiguration CreateRecycleConfiguration();
+        IAggregateCommandsHandler<TAggregate> CommandHandler { get; }
+        ISnapshotsPersistencePolicy SnapshotPolicy { get; }
+        IAggregateFactory AggregateFactory { get; }
+        ISnapshotFactory SnapshotFactory { get; }
+        IRecycleConfiguration RecycleConfiguration { get; }
     }
 }

@@ -30,13 +30,13 @@ namespace GridDomain.Node.Cluster
         public ClusterAggregateActor(IAggregateCommandsHandler<T> handler,
                                      ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                                      IAggregateFactory aggregateConstructor,
-                                     IConstructSnapshots snapshotsConstructor,
+                                     ISnapshotFactory snapshotFactoryConstructor,
                                      IActorRef customHandlersActor,
                                      IRecycleConfiguration recycle
                                      ) : base(handler,
                                                                            snapshotsPersistencePolicy,
                                                                            aggregateConstructor,
-                                                                           snapshotsConstructor,
+                                                                           snapshotFactoryConstructor,
                                                                            customHandlersActor)
         {
             Context.SetReceiveTimeout(recycle.ChildMaxInactiveTime);

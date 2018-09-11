@@ -23,9 +23,9 @@ namespace GridDomain.Scenarios.Builders
         {
             _aggregateFactory = _aggregateFactory ?? new AggregateFactory();
 
-            var aggregateDependencies = new AggregateDependencies<T>(() => _aggregateCommandsHandler ?? CreateCommandsHandler(_aggregateFactory))
+            var aggregateDependencies = new AggregateDependencies<T>(_aggregateCommandsHandler ?? CreateCommandsHandler(_aggregateFactory))
                                         {
-                                            AggregateFactoryCreator = () => _aggregateFactory
+                                            AggregateFactory = _aggregateFactory
                                         };
             return aggregateDependencies;
         }

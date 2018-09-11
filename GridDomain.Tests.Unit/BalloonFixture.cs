@@ -33,11 +33,11 @@ namespace GridDomain.Tests.Unit
         {
             var dependencyFactory = _balloonDomainConfiguration.BalloonDependencies;
 
-            dependencyFactory.SnapshotPolicyCreator = () => new SnapshotsPersistencePolicy(saveOnEach, maxSaveFrequency, keep);
+            dependencyFactory.SnapshotPolicy = new SnapshotsPersistencePolicy(saveOnEach, maxSaveFrequency, keep);
             var balloonAggregateFactory = new BalloonAggregateFactory();
 
-            dependencyFactory.AggregateFactoryCreator = () => balloonAggregateFactory;
-            dependencyFactory.SnapshotsFactoryCreator = () => balloonAggregateFactory;
+            dependencyFactory.AggregateFactory = balloonAggregateFactory;
+            dependencyFactory.SnapshotFactory = balloonAggregateFactory;
 
             return this;
         }
@@ -46,7 +46,7 @@ namespace GridDomain.Tests.Unit
             TimeSpan? clearPeriod = null,
             TimeSpan? maxInactiveTime = null)
         {
-            this._balloonDomainConfiguration.BalloonDependencies.RecycleConfigurationCreator = () =>
+            this._balloonDomainConfiguration.BalloonDependencies.RecycleConfiguration = 
                                                                                                            new RecycleConfiguration(clearPeriod ?? TimeSpan.FromMilliseconds(100),
                                                                                                                                          maxInactiveTime ?? TimeSpan.FromMilliseconds(200));
             return this;

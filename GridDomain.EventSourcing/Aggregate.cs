@@ -8,28 +8,27 @@ using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.EventSourcing
-{   
-    public abstract class  Aggregate : IAggregate,
-                                      IMemento,
+{
+    public abstract class Aggregate : IAggregate,
+                                      ISnapshot,
                                       IEquatable<IAggregate>
     {
-
         private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
-       
+
         protected Aggregate(string id)
         {
             Id = id;
         }
 
-        string IMemento.Id
+        string ISnapshot.Id
         {
             get => Id;
             set => Id = value;
         }
 
-        int IMemento.Version
+        int ISnapshot.Version
         {
             get => Version;
             set => Version = value;
@@ -48,7 +47,7 @@ namespace GridDomain.EventSourcing
 
         public IReadOnlyCollection<DomainEvent> GetUncommittedEvents()
         {
-            return  _uncommittedEvents;
+            return _uncommittedEvents;
         }
 
         public void ClearUncommitedEvents()
@@ -63,10 +62,9 @@ namespace GridDomain.EventSourcing
 
         protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent
         {
-             Emit(await evtTask);
+            Emit(await evtTask);
         }
 
-       
         protected void Emit(params DomainEvent[] events)
         {
             _uncommittedEvents.AddRange(events);

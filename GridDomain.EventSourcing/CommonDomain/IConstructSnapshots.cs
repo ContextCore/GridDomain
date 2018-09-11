@@ -1,6 +1,6 @@
 namespace GridDomain.EventSourcing.CommonDomain {
-    public interface IConstructSnapshots
+    public interface ISnapshotFactory
     {
-        IMemento GetSnapshot(IAggregate aggregate);
+        ISnapshot GetSnapshot(IAggregate aggregate);
     }
 }

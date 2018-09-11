@@ -11,13 +11,13 @@ namespace GridDomain.Tools.Repositories.SnapshotRepositories
 
     public static class DataSnapshotRepository
     {
-        public static DataSnapshotRepository<T> New<T>(string connectionString) where T : class, IMemento
+        public static DataSnapshotRepository<T> New<T>(string connectionString) where T : class, ISnapshot
         {
              return new DataSnapshotRepository<T>(new RawSnapshotsRepository(connectionString));
         }
     }
     
-    public class DataSnapshotRepository<T>  : IRepository<T> where T: class, IMemento
+    public class DataSnapshotRepository<T>  : IRepository<T> where T: class, ISnapshot
     {
         private readonly IRepository<SnapshotItem> _snapItemRepository;
         private readonly DomainSerializer _domainSerializer;

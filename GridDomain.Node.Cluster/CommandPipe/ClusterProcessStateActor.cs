@@ -15,12 +15,12 @@ namespace GridDomain.Node.Cluster.CommandPipe {
         public ClusterProcessStateActor(IAggregateCommandsHandler<ProcessStateAggregate<TState>> handler,
                                         ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                                         IAggregateFactory aggregateConstructor,
-                                        IConstructSnapshots snapshotsConstructor,
+                                        ISnapshotFactory snapshotFactoryConstructor,
                                         IActorRef customHandlersActor,
                                         IRecycleConfiguration recycle) : base(handler,
                                                                               snapshotsPersistencePolicy,
                                                                               aggregateConstructor,
-                                                                              snapshotsConstructor,
+                                                                              snapshotFactoryConstructor,
                                                                               customHandlersActor,recycle)
         {
         }
