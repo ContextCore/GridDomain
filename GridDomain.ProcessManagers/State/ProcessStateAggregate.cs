@@ -8,9 +8,9 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.ProcessManagers.State
 {
-
-    public class ProcessStateAggregate<TState> : CommandAggregate where TState : IProcessState
+    public class ProcessStateAggregate<TState> : ConventionAggregate where TState : IProcessState
     {
+        
         public ProcessStateAggregate(TState state): this(state.Id)
         {
             Condition.NotNull(() => state);
@@ -43,18 +43,22 @@ namespace GridDomain.ProcessManagers.State
         }
 
         private static readonly Type[] KnownCommands = {typeof(SaveStateCommand<TState>), typeof(CreateNewStateCommand<TState>)};
-        public override IReadOnlyCollection<Type> RegisteredCommands => KnownCommands;
-        protected override Task<IAggregate> Execute(ICommand cmd)
+
+        public override Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command)
         {
-            switch (cmd)
+            switch (command)
             {
                 case SaveStateCommand<TState> c:
                     ReceiveMessage(c.State, c.MessageId);
-                    break;
+                    return Task.FromResult<IReadOnlyCollection<DomainEvent>>(_uncommittedEvents);
                 case CreateNewStateCommand<TState> c:
-                    return Task.FromResult<IAggregate>(new ProcessStateAggregate<TState>(c.State));
+                    
+                    Emit(new ProcessManagerCreated<TState>(c.State, c.State.Id));
+                    return Task.FromResult<IReadOnlyCollection<DomainEvent>>(_uncommittedEvents);
+                default:
+                    throw new MissingRegisteredCommandsException();
             }
-            return Task.FromResult<IAggregate>(this);
         }
+
     }
 }

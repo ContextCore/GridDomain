@@ -9,4 +9,15 @@ namespace GridDomain.CQRS
             where T:ICommand;
         ICommandExpectationBuilder Prepare<U>(U cmd, IMessageMetadata metadata = null) where U : ICommand;
     }
+    
+    public interface ICommandHandler<in TCommand, TResult>
+    {
+        Task<TResult> Execute(TCommand command);
+    }
+
+    public interface ICommandHandler<in TCommand>
+    {
+        Task Execute(TCommand command);
+    }
+
 }

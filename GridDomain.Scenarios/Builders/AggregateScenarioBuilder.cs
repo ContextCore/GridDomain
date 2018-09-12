@@ -57,14 +57,7 @@ namespace GridDomain.Scenarios.Builders
         {
             return new AggregateDependenciesBuilder<T>(builder);
         }
-
-        public static IAggregateScenarioBuilder<T> With<T>(this IAggregateScenarioBuilder<T> builder, IAggregateCommandsHandler<T> handler) where T : IAggregate
-        {
-             var dependenciesBuilder = new AggregateDependenciesBuilder<T>(builder);
-            dependenciesBuilder.Handler(handler);
-            return builder.With(dependenciesBuilder.Build());
-        }
-
+        
         public static IAggregateScenarioBuilder<T> With<T>(this IAggregateScenarioBuilder<T> builder, IAggregateFactory factory) where T : IAggregate
         {
             var dependenciesBuilder = new AggregateDependenciesBuilder<T>(builder);

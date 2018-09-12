@@ -1,45 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using GridDomain.CQRS;
-using GridDomain.EventSourcing;
-using GridDomain.EventSourcing.CommonDomain;
+﻿using GridDomain.EventSourcing;
 using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
-    public class BenchmarkBallonCommandAggregate:CommandAggregate
+    
+    
+    
+    public class BenchmarkBallonCommandAggregate:ConventionAggregate
     {
         public string Title { get; private set; }
         protected BenchmarkBallonCommandAggregate(string id) : base(id)
         {
-
+            Execute<InflateNewBallonCommand>(c => Emit(new BalloonCreated(c.Title.ToString(), id)));
+            Execute<WriteTitleCommand>(c => WriteTitle(c.Parameter.ToString()));
         }
         public BenchmarkBallonCommandAggregate(string id, string title):this(id)
         {
-            Emit(new[] {new BalloonCreated(title, id)});
+            Emit(new BalloonCreated(title, id));
         }
 
         public void WriteTitle(string newTitle)
         {
-            Emit(new[] {new BalloonTitleChanged(newTitle, Id)});
+            Emit(new BalloonTitleChanged(newTitle, Id));
         }
         
-        public override IReadOnlyCollection<Type> RegisteredCommands => KnownCommands;
-        private static readonly Type[] KnownCommands = {typeof(InflateNewBallonCommand), typeof(WriteTitleCommand)};
-        protected override Task<IAggregate> Execute(ICommand cmd)
-        {
-            switch (cmd)
-            {
-                case InflateNewBallonCommand c:
-                    return Task.FromResult<IAggregate>(new BenchmarkBallonCommandAggregate(c.AggregateId, c.Title.ToString()));
-                case WriteTitleCommand c:
-                    WriteTitle(c.Parameter.ToString());
-                    break;
-            }
-            return Task.FromResult<IAggregate>(this);
-        }
-
         protected override void OnAppyEvent(DomainEvent evt)
         {
             switch(evt)

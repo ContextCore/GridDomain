@@ -67,7 +67,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             await transport.Subscribe<MessageMetadataEnvelop<Fault<GoSleepCommand>>>(TestActor);
             var handlersActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new HandlersDefaultProcessor(), TestActor)));
 
-            var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<ProgrammerAggregate>(CommandAggregateHandler.New<ProgrammerAggregate>(null),
+            var actor = Sys.ActorOf(Props.Create(() => new AggregateActor<ProgrammerAggregate>(
                                                                                          new SnapshotsPersistencePolicy(1, null,5 , null),
                                                                                          AggregateFactory.Default,
                                                                                          AggregateFactory.Default,

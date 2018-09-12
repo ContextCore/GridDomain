@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Unit.BalloonDomain
@@ -81,6 +84,55 @@ namespace GridDomain.Tests.Unit.BalloonDomain
            }
            Version++;
        }
+
+        public override async Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command)
+        {
+            switch (command)
+            {
+                case WriteTitleCommand c:
+                    this.WriteNewTitle(c.Parameter);
+                    break;
+
+                case IncreaseTitleCommand c:
+                    IncreaseTitle(c.Value);
+                    break;
+
+                case DoubleIncreaseTitleCommand c:
+                    DoubleIncreaseTitle(c.Value);
+                    break;
+
+                case InflateNewBallonCommand c:
+                    Emit(new BalloonCreated(c.Title.ToString(), c.Id));
+                    break;
+
+                case InflateCopyCommand c:
+                    InflateNewBaloon(c.Parameter.ToString());
+                    break;
+
+                case PlanTitleWriteCommand c:
+                    await PlanTitleWrite(c.Parameter);
+                    break;
+
+                case PlanTitleChangeCommand c:
+                    await PlanTitleWrite(c.Parameter, c.SleepTime);
+                    break;
+
+                case BlowBalloonCommand c:
+                    Blow();
+                    break;
+
+                case PlanBallonBlowCommand c:
+                    await BlowAfter(c.SleepTime);
+                    break;
+
+                case PlanTitleWriteAndBlowCommand c:
+                    await PlanWriteTitleToBlow(c.Parameter, c.SleepTime);
+                    break;
+                
+            }
+
+            return _uncommittedEvents;
+        }
 
         public void Blow()
         {

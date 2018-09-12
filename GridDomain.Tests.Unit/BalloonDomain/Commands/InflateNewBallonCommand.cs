@@ -5,7 +5,7 @@ using GridDomain.ProcessManagers;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
-    public class InflateNewBallonCommand : Command<Balloon>, IFor<BalloonCommandHandler>
+    public class InflateNewBallonCommand : Command<Balloon>
     {
         public InflateNewBallonCommand(int title, string aggregateId) : base(aggregateId)
         {

@@ -7,7 +7,7 @@ using GridDomain.ProcessManagers.State;
 namespace GridDomain.Configuration {
     public class ProcessStateDependencies<TState> : AggregateDependencies<ProcessStateAggregate<TState>> where TState : IProcessState
     {
-        public ProcessStateDependencies():base(CommandAggregateHandler.New<ProcessStateAggregate<TState>>(),  EmptyRouteMap.Instance)
+        public ProcessStateDependencies():base(null,  EmptyRouteMap.Instance)
         {
         }
     }

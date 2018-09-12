@@ -15,7 +15,7 @@ namespace GridDomain.Scenarios.Runners
 //            return await Local(builder, CreateCommandsHandler<TAggregate, TAggregateCommandsHandler>(), log);
 //        }
 //
-//        public static async Task<IAggregateScenarioRun<TAggregate>> Local<TAggregate>(this IAggregateScenarioRunBuilder<TAggregate> builder, ILogger log = null) where TAggregate : CommandAggregate
+//        public static async Task<IAggregateScenarioRun<TAggregate>> Local<TAggregate>(this IAggregateScenarioRunBuilder<TAggregate> builder, ILogger log = null) where TAggregate : ConventionAggregate
 //        {
 //            return await Local(builder, CommandAggregateHandler.New<TAggregate>(), log);
 //        }
@@ -30,15 +30,6 @@ namespace GridDomain.Scenarios.Runners
         {
             var runner = new AggregateScenarioLocalRunner<TAggregate>(log ?? Log.Logger);
             return await runner.Run(builder.Scenario);
-        }
-
-        private static IAggregateCommandsHandler<TAggregate> CreateCommandsHandler<TAggregate, THandler>() where THandler : IAggregateCommandsHandler<TAggregate> where TAggregate : IAggregate
-        {
-            var constructorInfo = typeof(THandler).GetConstructor(Type.EmptyTypes);
-            if (constructorInfo == null)
-                throw new CannotCreateCommandHandlerException();
-
-            return (IAggregateCommandsHandler<TAggregate>) constructorInfo.Invoke(null);
         }
     }
 }

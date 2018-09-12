@@ -38,7 +38,6 @@ namespace GridDomain.Node.Configuration.Composition
         protected virtual Parameter[] CreateParametersRegistration()
         {
             return new Parameter[] { 
-                                       new TypedParameter(typeof(IAggregateCommandsHandler<TAggregate>), AggregateDependencies.CommandHandler),
                                        new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IPublisher),
                                                              (pi, ctx) => ctx.Resolve<IPublisher>()),
                                        new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(ISnapshotsPersistencePolicy),

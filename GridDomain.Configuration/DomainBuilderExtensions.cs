@@ -14,7 +14,7 @@ namespace GridDomain.Configuration {
                 m.Register(builder);
         }
 
-        public static void RegisterAggregate<TCommandAggregate>(this IDomainBuilder builder) where TCommandAggregate:CommandAggregate
+        public static void RegisterAggregate<TCommandAggregate>(this IDomainBuilder builder) where TCommandAggregate:ConventionAggregate
         {
             builder.RegisterAggregate(AggregateDependencies.ForCommandAggregate<TCommandAggregate>());
         }

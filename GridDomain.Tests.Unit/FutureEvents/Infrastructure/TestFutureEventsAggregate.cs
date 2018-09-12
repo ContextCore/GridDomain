@@ -13,7 +13,12 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 
         public TestFutureEventsAggregate(string id, string initialValue = "") : this(id)
         {
-            Emit(new[] {new ValueChangedSuccessfullyEvent(initialValue, 1, Id)});
+            Execute<ScheduleEventInFutureCommand>(c => ScheduleInFuture(c.RaiseTime, c.Value));
+            Execute<CancelFutureEventCommand>( c => CancelFutureEvents(c.Value));
+            Execute<BoomNowCommand>(c => Boom());
+            Execute<PlanBoomCommand>(c => PlanBoom(c.BoomTime));
+            
+            Emit(new ValueChangedSuccessfullyEvent(initialValue, 1, Id));
         }
 
         public int? RetriesToSucceed { get; private set; }

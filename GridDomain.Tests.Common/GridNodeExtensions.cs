@@ -78,12 +78,13 @@ namespace GridDomain.Tests.Common
 
         public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, TAggregate aggregate) where TAggregate : Aggregate
         {
-            var domainEvents = ((IAggregate) aggregate).GetUncommittedEvents()
-                                                       .ToArray();
-
-            await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);
-
-            aggregate.ClearUncommitedEvents();
+            throw new NotSupportedException();
+//            var domainEvents = ((IAggregate) aggregate).GetUncommittedEvents()
+//                                                       .ToArray();
+//
+//            await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);
+//
+//            aggregate.ClearUncommitedEvents();
         }
 
         public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, string id, params DomainEvent[] messages)

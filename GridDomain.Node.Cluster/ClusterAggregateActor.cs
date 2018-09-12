@@ -27,13 +27,13 @@ namespace GridDomain.Node.Cluster
 
     public class ClusterAggregateActor<T> : AggregateActor<T> where T : class, IAggregate
     {
-        public ClusterAggregateActor(IAggregateCommandsHandler<T> handler,
+        public ClusterAggregateActor(
                                      ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                                      IAggregateFactory aggregateConstructor,
                                      ISnapshotFactory snapshotFactoryConstructor,
                                      IActorRef customHandlersActor,
                                      IRecycleConfiguration recycle
-                                     ) : base(handler,
+                                     ) : base(
                                                                            snapshotsPersistencePolicy,
                                                                            aggregateConstructor,
                                                                            snapshotFactoryConstructor,

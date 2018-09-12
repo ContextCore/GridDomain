@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using Serilog;
 
@@ -20,19 +22,19 @@ namespace GridDomain.Scenarios.Runners
             var aggregate = scenario.Dependencies.AggregateFactory
                                     .Build<TAggregate>(scenario.AggregateId);
 
-            var commandsHandler = scenario.Dependencies.CommandHandler;
 
             foreach (var evt in scenario.GivenEvents)
             {
                 aggregate.Apply(evt);
             }
 
+            IReadOnlyCollection<DomainEvent> producedEvents = null;
             //When
             foreach (var cmd in scenario.GivenCommands)
             {
                 try
                 {
-                    aggregate = await commandsHandler.ExecuteAsync(aggregate, cmd);
+                    producedEvents = await aggregate.Execute(cmd);
                 }
                 catch (Exception ex)
                 {
@@ -42,9 +44,6 @@ namespace GridDomain.Scenarios.Runners
             }
 
             //Then
-            var producedEvents = aggregate.GetUncommittedEvents()
-                                          .ToArray();
-            aggregate.ClearUncommitedEvents();
             return new AggregateScenarioRun<TAggregate>(scenario, aggregate, producedEvents, Log);
         }
     }

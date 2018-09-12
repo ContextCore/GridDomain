@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Akka.Pattern;
+using GridDomain.CQRS;
 using GridDomain.EventSourcing;
+using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 
 namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
@@ -12,12 +17,12 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
         }
         public BenchmarkBalloonAggregate(string id, string title):this(id)
         {
-            Emit(new[] {new BalloonCreated(title,id)});
+            Emit(new BalloonCreated(title,id));
         }
 
         public void WriteTitle(string newTitle)
         {
-            Emit(new[] {new BalloonTitleChanged(newTitle, Id)});
+            Emit(new BalloonTitleChanged(newTitle, Id));
         }
 
         protected override void OnAppyEvent(DomainEvent evt)
@@ -32,6 +37,21 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
                     Title = e.Value;
                     break;
             }
+        }
+
+        public override async Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command)
+        {
+            switch (command)
+            {
+                    case InflateNewBallonCommand c:
+                        Emit(new BalloonCreated(c.Title.ToString(), Id));
+                        break;
+                    case WriteTitleCommand c:
+                        WriteTitle(c.Parameter.ToString());
+                        break;
+            }
+
+            return await Task.FromResult(_uncommittedEvents);
         }
     }
 }

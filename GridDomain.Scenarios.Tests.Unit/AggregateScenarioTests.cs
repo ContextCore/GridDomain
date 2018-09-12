@@ -37,7 +37,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                   .ToString();
 
             var run = await new AggregateScenarioBuilder<Balloon>()
-                            .With(new BalloonCommandHandler())
+                            .With(new BalloonDependencies())
                             .When(new InflateNewBallonCommand(42, aggregateId))
                             .Then(new BalloonCreated("42", aggregateId))
                             .Run
@@ -65,7 +65,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                   .ToString();
 
             var run = await AggregateScenario.New<Balloon>()
-                                             .With(new BalloonCommandHandler())
+                                             .With(new BalloonDependencies())
                                              .When(new InflateNewBallonCommand(42, aggregateId))
                                              .Then(new BalloonCreated("42", aggregateId))
                                              .Run
@@ -94,7 +94,7 @@ namespace GridDomain.Tests.Unit.Scenario
 
 
             var run = await AggregateScenario.New<Balloon>()
-                                             .With(new BalloonCommandHandler())
+                                             .With(new BalloonDependencies())
                                              .When(new InflateNewBallonCommand(42, aggregateId))
                                              .Then(new BalloonCreated("42", aggregateId))
                                              .Run
@@ -120,7 +120,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                   .ToString();
 
             var run = await AggregateScenario.New<Balloon>()
-                                             .With(new BalloonCommandHandler())
+                                             .With(new BalloonDependencies())
                                              .When(new InflateNewBallonCommand(42, aggregateId))
                                              .Then(new BalloonCreated("42", aggregateId))
                                              .Run
@@ -180,7 +180,7 @@ namespace GridDomain.Tests.Unit.Scenario
             var aggregateId = "personA";
 
             var scenario = await AggregateScenario.New<ProgrammerAggregate>()
-                                                  .With(CommandAggregateHandler.New<ProgrammerAggregate>())
+                                                  .With(new AggregateDependencies<ProgrammerAggregate>(null))
                                                   .Given(new PersonCreated(aggregateId, aggregateId))
                                                   .Run
                                                   .Local(_log);
@@ -198,7 +198,7 @@ namespace GridDomain.Tests.Unit.Scenario
             var aggregateId = "personA";
 
             await AggregateScenario.New<Balloon>()
-                                   .With(new BalloonCommandHandler())
+                                   .With(new BalloonDependencies())
                                    .When(new InflateNewBallonCommand(42, aggregateId))
                                    .Then(new BalloonCreated("420", aggregateId))
                                    .Run
@@ -214,7 +214,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                   .ToString();
 
             await AggregateScenario.New<Balloon>()
-                                   .With(new BalloonCommandHandler())
+                                   .With(new BalloonDependencies())
                                    .When(new InflateNewBallonCommand(42, aggregateId))
                                    .Then(new BalloonCreated("420", aggregateId),
                                          new BalloonTitleChanged("42", aggregateId))
@@ -231,7 +231,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                   .ToString();
 
             await AggregateScenario.New<Balloon>()
-                                   .With(new BalloonCommandHandler())
+                                   .With(new BalloonDependencies())
                                    .When(new CreateBalanceCommand(42, aggregateId))
                                    .Then(new BalloonCreated("420", aggregateId),
                                          new BalloonTitleChanged("42", aggregateId))
@@ -248,7 +248,7 @@ namespace GridDomain.Tests.Unit.Scenario
                                   .ToString();
 
             await AggregateScenario.New<Balloon>()
-                                   .With(new BalloonCommandHandler())
+                                   .With(new BalloonDependencies())
                                    .When(new PlanTitleWriteAndBlowCommand(43, aggregateId, TimeSpan.FromMilliseconds(50)))
                                    .Run
                                    .Local(_log)

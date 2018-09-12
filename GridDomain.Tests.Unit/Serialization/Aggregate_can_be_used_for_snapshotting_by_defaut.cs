@@ -48,8 +48,6 @@ namespace GridDomain.Tests.Unit.Serialization
             Assert.NotNull(_restoredAggregate);
             // Ids_are_equal()
             Assert.Equal(_aggregate.Id, _restoredAggregate.Id);
-            //Restored_aggregate_uncommitted_events_are_empty()
-            Assert.Empty(((IAggregate) _restoredAggregate).GetUncommittedEvents());
             //Restored_aggregate_state_is_equal_to_origin()
             Assert.Equal(_aggregate.Value, _restoredAggregate.Value);
         }

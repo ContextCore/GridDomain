@@ -10,6 +10,13 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
     {
         private ITestDependency _testDependency;
 
+        public TestAggregate(string Id, ITestDependency testDependency):base(Id)
+        {
+            _testDependency = testDependency;
+            Execute<TestCommand>(c => Execute(c.Parameter, testDependency));
+            Execute<TestCommandB>(c => ExecuteWithOwnedDependency(c.Parameter));
+        }
+
         //private setter prevents factory from setting this value, so aggregate have to know its snapshot type 
         //and provide a method to build instance from it
         public string Value { get; private set; }
@@ -19,11 +26,6 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure
             return new TestAggregate(snapshot.Id, dep) {Value = snapshot.Value};
         }
         
-        internal TestAggregate(string id, ITestDependency d) : base(id)
-        {
-            _testDependency = d;
-        }
-
         public void Execute(int number, ITestDependency d)
         {
             var dependencyUseResult = d.Do(number);

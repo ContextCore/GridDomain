@@ -5,7 +5,7 @@ using GridDomain.ProcessManagers;
 
 namespace GridDomain.Tests.Unit.BalloonDomain.Commands
 {
-    public class BlowBalloonCommand : Command<Balloon>,IFor<BalloonCommandHandler>
+    public class BlowBalloonCommand : Command<Balloon>
     {
         public BlowBalloonCommand(string aggregateId) : base(aggregateId) {}
     }

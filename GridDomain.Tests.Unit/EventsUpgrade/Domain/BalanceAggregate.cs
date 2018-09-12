@@ -1,12 +1,20 @@
 using System;
+using System.Collections.Generic;
 using GridDomain.EventSourcing;
 using GridDomain.Node.Configuration.Composition;
 using GridDomain.Scheduling;
+using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Events;
 
 namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 {
- 
+
+    public class BalanceAggregateDescriptor : IAggregateCommandsHandlerDescriptor
+    {
+        public IReadOnlyCollection<Type> RegisteredCommands { get; }
+        public Type AggregateType { get; } = typeof(BalanceAggregate);
+    }
+    
     public class BalanceAggregate : FutureEventsAggregate
     {
         public decimal Amount;
@@ -15,8 +23,13 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
 
         public BalanceAggregate(string id, decimal value) : this(id)
         {
-            Emit(new[] {new AggregateCreatedEvent(value, id)});
+            Execute<ChangeBalanceCommand>(c => ChangeState(c.Parameter));
+
+            Execute<CreateBalanceCommand>(c =>  Emit(new AggregateCreatedEvent(value, id)));
+
+            Execute<ChangeBalanceInFuture>(c => ChangeStateInFuture(c.RaiseTime, c.Parameter, c.UseLegacyEvent));
         }
+        
         public BalanceAggregate(Guid id, decimal value) : this(id.ToString(), value)
         {
         }
@@ -30,11 +43,11 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
         {
             if (oldVersion)
             {
-                Emit(new BalanceChangedEvent_V0(number, Id),when,null);
+                Emit(new BalanceChangedEvent_V0(number, Id),when);
             }
             else
             {
-                Emit(new BalanceChangedEvent_V1(number, Id),when,null);
+                Emit(new BalanceChangedEvent_V1(number, Id),when);
             }
         }
 

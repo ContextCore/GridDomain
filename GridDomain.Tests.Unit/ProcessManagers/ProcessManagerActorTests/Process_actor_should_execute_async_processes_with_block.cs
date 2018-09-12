@@ -43,7 +43,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             var container = new ContainerBuilder();
 
             container.Register<ProcessStateActor<TestState>>(c =>
-                                                             new ProcessStateActor<TestState>(CommandAggregateHandler.New<ProcessStateAggregate<TestState>>(),
+                                                             new ProcessStateActor<TestState>(
                                                                                               new EachMessageSnapshotsPersistencePolicy(),
                                                                                               AggregateFactory.Default,
                                                                                               AggregateFactory.Default,

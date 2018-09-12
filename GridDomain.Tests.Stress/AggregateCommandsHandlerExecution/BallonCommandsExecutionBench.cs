@@ -9,28 +9,29 @@ using NBench;
 using Pro.NBench.xUnit.XunitExtensions;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
+namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution
+{
     public abstract class BallonCommandsExecutionBench<T> where T : Aggregate
     {
         private const string TotalCommandsExecutedCounter = nameof(TotalCommandsExecutedCounter);
         private Counter _counter;
-
-        protected abstract IAggregateCommandsHandler<T> CommandsHandler { get; }
 
         private IEnumerable<ICommand> CreateCommandPlan(int aggregateNum, int changeNum)
         {
             var random = new Random();
             for (int i = 0; i < aggregateNum; i++)
             {
-                var aggregateId = Guid.NewGuid().ToString();
-                yield return new InflateNewBallonCommand(random.Next(),aggregateId);
+                var aggregateId = Guid.NewGuid()
+                                      .ToString();
+                yield return new InflateNewBallonCommand(random.Next(), aggregateId);
                 for (int j = 0; j < changeNum; j++)
-                    yield return new WriteTitleCommand(random.Next(),aggregateId);
+                    yield return new WriteTitleCommand(random.Next(), aggregateId);
             }
         }
 
         private ICommand[] _commndsToExecute;
         private FakeEventStore _fakeEventStore;
+        private T _aggregate;
 
         protected BallonCommandsExecutionBench(ITestOutputHelper output)
         {
@@ -44,28 +45,25 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
 #pragma warning restore xUnit1013 // Public method should be marked as test
         {
             _counter = context.GetCounter(TotalCommandsExecutedCounter);
-            _commndsToExecute = CreateCommandPlan(100, 1000).ToArray();
+            _commndsToExecute = CreateCommandPlan(100, 1000)
+                .ToArray();
             _fakeEventStore = new FakeEventStore();
+            _aggregate = AggregateFactory.BuildEmpty<T>();
         }
 
         [NBenchFact]
         [PerfBenchmark(Description = "Measure aggregate commands handler performance",
-                       NumberOfIterations = 3,
-                       RunMode = RunMode.Iterations,
-                       TestMode = TestMode.Test)]
+            NumberOfIterations = 3,
+            RunMode = RunMode.Iterations,
+            TestMode = TestMode.Test)]
         [MemoryMeasurement(MemoryMetric.TotalBytesAllocated)]
         [CounterThroughputAssertion(TotalCommandsExecutedCounter, MustBe.GreaterThanOrEqualTo, 10000)]
         public void AggregateCommandsHandlerThroughput()
         {
-            T aggregate = AggregateFactory.BuildEmpty<T>();
 
             foreach (var cmd in _commndsToExecute)
             {
-               
-
-                aggregate = CommandsHandler.ExecuteAsync(aggregate,
-                                                         cmd)
-                                           .Result;
+                _aggregate.Execute(cmd).Wait();
                 _counter.Increment();
             }
         }

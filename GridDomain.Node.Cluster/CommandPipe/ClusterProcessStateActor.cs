@@ -12,12 +12,12 @@ using GridDomain.ProcessManagers.State;
 namespace GridDomain.Node.Cluster.CommandPipe {
     public class ClusterProcessStateActor<TState> : ClusterAggregateActor<ProcessStateAggregate<TState>> where TState : IProcessState
     {
-        public ClusterProcessStateActor(IAggregateCommandsHandler<ProcessStateAggregate<TState>> handler,
+        public ClusterProcessStateActor(
                                         ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                                         IAggregateFactory aggregateConstructor,
                                         ISnapshotFactory snapshotFactoryConstructor,
                                         IActorRef customHandlersActor,
-                                        IRecycleConfiguration recycle) : base(handler,
+                                        IRecycleConfiguration recycle) : base(
                                                                               snapshotsPersistencePolicy,
                                                                               aggregateConstructor,
                                                                               snapshotFactoryConstructor,

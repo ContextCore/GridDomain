@@ -11,7 +11,7 @@ namespace GridDomain.Tests.Unit.EventsUpgrade {
 
         public BalanceDomainDonfiguration()
         {
-            AggregateDependencies = Configuration.AggregateDependencies.New(new BalanceAggregatesCommandHandler());
+            AggregateDependencies = Configuration.AggregateDependencies.New<BalanceAggregate>(null);
 
         }
         public void Register(IDomainBuilder builder)

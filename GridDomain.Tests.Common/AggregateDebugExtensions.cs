@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GridDomain.EventSourcing;
@@ -24,7 +25,8 @@ namespace GridDomain.Tests.Common
 
         public static IReadOnlyCollection<TEvent> GetEvents<TEvent>(this IAggregate aggregate) where TEvent : DomainEvent
         {
-            return aggregate.GetUncommittedEvents().OfType<TEvent>().ToArray();
+            throw new NotSupportedException();
+            //return aggregate.GetUncommittedEvents().OfType<TEvent>().ToArray();
         }
 
         public static IReadOnlyCollection<object> GetEvents(this IAggregate aggregate)
@@ -34,10 +36,11 @@ namespace GridDomain.Tests.Common
 
         public static TEvent GetEvent<TEvent>(this IAggregate aggregate) where TEvent : DomainEvent
         {
-            var @event = aggregate.GetUncommittedEvents().OfType<TEvent>().FirstOrDefault();
-            if (@event == null)
-                throw new CannotFindRequestedEventException();
-            return @event;
+            throw new NotSupportedException();
+//            var @event = aggregate.GetUncommittedEvents().OfType<TEvent>().FirstOrDefault();
+//            if (@event == null)
+//                throw new CannotFindRequestedEventException();
+//            return @event;
         }
 
     

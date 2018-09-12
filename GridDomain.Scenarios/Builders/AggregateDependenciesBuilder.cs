@@ -8,7 +8,6 @@ namespace GridDomain.Scenarios.Builders
 {
     class AggregateDependenciesBuilder<T> : IAggregateDependenciesBuilder<T> where T : IAggregate
     {
-        private IAggregateCommandsHandler<T> _aggregateCommandsHandler;
         private IAggregateFactory _aggregateFactory;
         private readonly IAggregateScenarioBuilder<T> _builder;
 
@@ -23,32 +22,15 @@ namespace GridDomain.Scenarios.Builders
         {
             _aggregateFactory = _aggregateFactory ?? new AggregateFactory();
 
-            var aggregateDependencies = new AggregateDependencies<T>(_aggregateCommandsHandler ?? CreateCommandsHandler(_aggregateFactory))
+            var aggregateDependencies = new AggregateDependencies<T>(null)
                                         {
                                             AggregateFactory = _aggregateFactory
                                         };
             return aggregateDependencies;
         }
 
-        private static IAggregateCommandsHandler<T> CreateCommandsHandler(IAggregateFactory factory)
+        public IAggregateDependenciesBuilder<T> Handler(object handler)
         {
-            if (typeof(CommandAggregate).IsAssignableFrom(typeof(T)))
-            {
-                var methodOpenType = typeof(CommandAggregateHandler).GetTypeInfo()
-                                                                    .GetMethod(nameof(CommandAggregateHandler.New));
-
-                var commandAggregateHandler = methodOpenType.MakeGenericMethod(typeof(T))
-                                                            .Invoke(null, new object[]{factory});
-
-                return (IAggregateCommandsHandler<T>) commandAggregateHandler;
-            }
-
-            return new AggregateCommandsHandler<T>();
-        }
-
-        public IAggregateDependenciesBuilder<T> Handler(IAggregateCommandsHandler<T> handler)
-        {
-            _aggregateCommandsHandler = handler;
             return this;
         }
 

@@ -22,7 +22,6 @@ namespace GridDomain.EventSourcing
                 throw new InvalidDefaultMementoException(type, id, snapshot);
 
             ((ISnapshot)aggregate).Version = snapshotVersion;
-            aggregate.ClearUncommitedEvents();
             return aggregate;
         }
 
@@ -41,7 +40,6 @@ namespace GridDomain.EventSourcing
                 throw new ConventionBasedConstructorNotFound();
 
             var aggregate = (IAggregate)constructor.Invoke(new object[] {id});
-            aggregate.ClearUncommitedEvents();
             return aggregate;
         }
 

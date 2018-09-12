@@ -7,7 +7,7 @@ using GridDomain.EventSourcing.CommonDomain;
 namespace GridDomain.Configuration {
     public static class AggregateDependencies
     {
-        public static AggregateDependencies<TAggregate> New<TAggregate>(IAggregateCommandsHandler<TAggregate> handler, IMessageRouteMap mapProducer=null) where TAggregate : IAggregate
+        public static AggregateDependencies<TAggregate> New<TAggregate>(IAggregateCommandsHandlerDescriptor handler, IMessageRouteMap mapProducer=null) where TAggregate : IAggregate
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -17,16 +17,16 @@ namespace GridDomain.Configuration {
             return new AggregateDependencies<TAggregate>(handler,map);
         }
         
-        public static AggregateDependencies<TAggregate> New<TAggregate, TAggregateCommandsHandler>()
-            where TAggregate : IAggregate
-            where TAggregateCommandsHandler : class, IAggregateCommandsHandler<TAggregate>, new()
-        {
-            return New(new TAggregateCommandsHandler());
-        }
+//        public static AggregateDependencies<TAggregate> New<TAggregate, TDescriptor>()
+//            where TAggregate : IAggregate
+//            where TDescriptor : class
+//        {
+//            return New(new TDescriptor());
+//        }
 
-        public static AggregateDependencies<TCommandAggregate> ForCommandAggregate<TCommandAggregate>(IAggregateFactory factory = null) where TCommandAggregate : CommandAggregate
+        public static AggregateDependencies<TCommandAggregate> ForCommandAggregate<TCommandAggregate>(IAggregateFactory factory = null) where TCommandAggregate : ConventionAggregate
         {
-            var depFactory = new AggregateDependencies<TCommandAggregate>(CommandAggregateHandler.New<TCommandAggregate>(factory));
+            var depFactory = new AggregateDependencies<TCommandAggregate>(null);
             if (factory != null)
                 depFactory.AggregateFactory = factory;
             return depFactory;
@@ -38,14 +38,12 @@ namespace GridDomain.Configuration {
     {
         private readonly IMessageRouteMap _routeMap;
 
-        public AggregateDependencies(IAggregateCommandsHandler<TAggregate> handler, 
+        public AggregateDependencies(IAggregateCommandsHandlerDescriptor descriptor,
                                      IMessageRouteMap mapProducer = null)
         {
-            CommandHandler = handler ?? throw new ArgumentNullException(nameof(handler));
-            _routeMap = mapProducer ?? MessageRouteMap.New(handler);
+            _routeMap = mapProducer ?? MessageRouteMap.New(descriptor);
         }
 
-        public IAggregateCommandsHandler<TAggregate> CommandHandler { get; set; }
 
         public ISnapshotsPersistencePolicy SnapshotPolicy { get; set; }  = new NoSnapshotsPersistencePolicy();
         public IAggregateFactory AggregateFactory { get; set; } = EventSourcing.AggregateFactory.Default;

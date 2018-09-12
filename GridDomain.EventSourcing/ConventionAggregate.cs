@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.Common;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing.CommonDomain;
 
-namespace GridDomain.EventSourcing {
-    public class ConventionAggregate : CommandAggregate
+namespace GridDomain.EventSourcing 
+{
+    
+    public class ConventionAggregate : Aggregate
     {
         protected ConventionAggregate(string id) : base(id)
         {
@@ -13,34 +16,38 @@ namespace GridDomain.EventSourcing {
 
         }
 
-        public override IReadOnlyCollection<Type> RegisteredCommands => _commandsRouter.RegisteredCommands;
-
-        protected override async Task<IAggregate> Execute(ICommand cmd)
-        {
-            return await _commandsRouter.ExecuteAsync(this, cmd);
-        }
-        
         protected override void OnAppyEvent(DomainEvent evt)
         {
             _eventsRouter.Dispatch(this, evt);
         }
 
+        public override Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command)
+        {
+            return _commandsRouter.Get(command).Invoke(command);
+        }
+
         private readonly ConventionEventRouter _eventsRouter;
-        private readonly AggregateCommandsHandler<ConventionAggregate> _commandsRouter = new AggregateCommandsHandler<ConventionAggregate>();
+        private readonly TypeCatalog<Func<ICommand,Task<IReadOnlyCollection<DomainEvent>>>,ICommand> _commandsRouter = 
+            new TypeCatalog<Func<ICommand,Task<IReadOnlyCollection<DomainEvent>>>,ICommand>();
 
         protected void Execute<T>(Action<T> syncCommandAction) where T : ICommand
         {
-            _commandsRouter.Map<T>(((c, a) => syncCommandAction(c)));
+            _commandsRouter.Add<T>(async c =>
+                                   {
+                                       syncCommandAction((T)c);
+                                       return await Task.FromResult(_uncommittedEvents);
+                                   });
         }
+        
         protected void Execute<T>(Func<T, Task> asyncCommandAction) where T : ICommand
         {
-            _commandsRouter.Map<T>(((c, a) => asyncCommandAction(c)));
+            _commandsRouter.Add<T>( async c  =>
+                                    {
+                                        await asyncCommandAction((T) c);
+                                        return await Task.FromResult(_uncommittedEvents);
+                                    });
         }
-        protected void Execute<T>(Func<T, ConventionAggregate> aggregateCreator) where T : ICommand
-        {
-            _commandsRouter.Map<T>(aggregateCreator);
-        }
-
+        
         protected void Apply<T>(Action<T> act) where T : DomainEvent
         {
             _eventsRouter.Add<T>((a, e) => act((T)e));

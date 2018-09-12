@@ -13,7 +13,7 @@ namespace GridDomain.EventSourcing
                                       ISnapshot,
                                       IEquatable<IAggregate>
     {
-        private readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
+        protected readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
 
         public bool HasUncommitedEvents => _uncommittedEvents.Any();
 
@@ -37,7 +37,7 @@ namespace GridDomain.EventSourcing
         public string Id { get; protected set; }
         public int Version { get; protected set; }
 
-        void IAggregate.Apply(DomainEvent @event)
+        void IEventSourced.Apply(DomainEvent @event)
         {
             OnAppyEvent(@event);
             Version++;
@@ -75,6 +75,8 @@ namespace GridDomain.EventSourcing
         {
             return Id.GetHashCode();
         }
+
+        public abstract Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command);
 
         public override bool Equals(object obj)
         {

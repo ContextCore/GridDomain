@@ -91,8 +91,7 @@ namespace GridDomain.Tests.Stress.AggregateActor {
             var dummy = _actorSystem.ActorOf<CustomHandlersActorDummy>();
             
             _aggregateActor = _actorSystem.ActorOf(Props.Create(
-                                                       () => new AggregateActor<Balloon>(new BalloonCommandHandler(), 
-                                                                                         new EachMessageSnapshotsPersistencePolicy(), 
+                                                       () => new AggregateActor<Balloon>(new EachMessageSnapshotsPersistencePolicy(), 
                                                                                          AggregateFactory.Default,
                                                                                          AggregateFactory.Default,
                                                                                          dummy)),

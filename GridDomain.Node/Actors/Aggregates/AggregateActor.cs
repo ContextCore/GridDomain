@@ -37,19 +37,17 @@ namespace GridDomain.Node.Actors.Aggregates
         private readonly ProcessEntry _commandCompletedProcessEntry;
         private readonly IPublisher _publisher;
 
-        private readonly IAggregateCommandsHandler<TAggregate> _aggregateCommandsHandler;
         private ActorMonitor.ITimer _commandTotalExecutionTimer;
         private ActorMonitor.ITimer _totalProjectionTimer;
         private ActorMonitor.ITimer _aggregateExecutionTimer;
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
 
-        public AggregateActor(IAggregateCommandsHandler<TAggregate> handler,
+        public AggregateActor(
                               ISnapshotsPersistencePolicy snapshotsPersistencePolicy,
                               IAggregateFactory aggregateConstructor,
                               ISnapshotFactory snapshotFactoryConstructor,
                               IActorRef customHandlersActor) : base(aggregateConstructor, snapshotFactoryConstructor, snapshotsPersistencePolicy)
         {
-            _aggregateCommandsHandler = handler;
             _publisher = Context.System.GetTransport();
             _customHandlersActor = customHandlersActor;
             _domainEventProcessEntry = new ProcessEntry(Self.Path.Name, AggregateActorConstants.PublishingEvent, AggregateActorConstants.CommandExecutionCreatedAnEvent);
@@ -77,13 +75,11 @@ namespace GridDomain.Node.Actors.Aggregates
                                                  _aggregateExecutionTimer = Monitor.StartMeasureTime("AggregateLogic");
                                                  _commandTotalExecutionTimer = Monitor.StartMeasureTime("CommandTotalExecution");
 
-                                                 _aggregateCommandsHandler.ExecuteAsync(State, ExecutionContext.Command)
+                                                 State.Execute(ExecutionContext.Command)
                                                                           .ContinueWith(t =>
                                                                                         {
                                                                                             _aggregateExecutionTimer.Stop();
-                                                                                            ExecutionContext.ProducedState = t.Result;
-                                                                                            var domainEvents = ExecutionContext.ProducedState.GetUncommittedEvents();
-                                                                                            return domainEvents;
+                                                                                            return t.Result;
                                                                                         })
                                                                           .PipeTo(Self);
 
@@ -122,6 +118,7 @@ namespace GridDomain.Node.Actors.Aggregates
                                     PersistAll(domainEvents,
                                                persistedEvent =>
                                                {
+                                                   State.Apply(persistedEvent);
                                                    NotifyPersistenceWatchers(persistedEvent);
                                                    _totalProjectionTimer = _totalProjectionTimer ?? Monitor.StartMeasureTime("ProjectionTotal");
                                                    Project(producedEventsMetadata, new[] {persistedEvent});
@@ -130,6 +127,8 @@ namespace GridDomain.Node.Actors.Aggregates
                                                    if (--messagesToPersistCount != 0) return;
                                                    totalPersistenceTimer.Stop();
                                                    CompleteExecution();
+                                                   ExecutionContext.ProducedState = State;
+
                                                });
                                 });
 
@@ -173,8 +172,6 @@ namespace GridDomain.Node.Actors.Aggregates
             State = ExecutionContext.ProducedState as TAggregate;
             if (State == null)
                 throw new InvalidOperationException("Aggregate state was null after command execution");
-
-            State.ClearUncommitedEvents();
 
             var completedMetadata = ExecutionContext.CommandMetadata
                                                     .CreateChild(ExecutionContext.Command.Id, _commandCompletedProcessEntry);

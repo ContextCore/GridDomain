@@ -1,15 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GridDomain.CQRS;
 
 namespace GridDomain.EventSourcing.CommonDomain
 {
-    public interface IAggregate
+  
+    public interface IAggregate : IEventSourced,IAggregateCommandHandler
     {
-        string Id { get; }
-        void Apply(DomainEvent @event);
-        bool HasUncommitedEvents { get; }
-        IReadOnlyCollection<DomainEvent> GetUncommittedEvents();
-        void ClearUncommitedEvents();
     }
+
+    public interface IAggregateCommandHandler : ICommandHandler<ICommand, IReadOnlyCollection<DomainEvent>>
+    {
+        
+    }
+   
+  public interface IEventSourced
+  {
+    string Id { get; }
+    void Apply(DomainEvent @event); 
+  }
+
 }
