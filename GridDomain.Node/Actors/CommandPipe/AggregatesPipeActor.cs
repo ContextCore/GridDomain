@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
@@ -13,11 +15,12 @@ namespace GridDomain.Node.Actors.CommandPipe
     public class AggregatesPipeActor : ReceiveActor
     {
         private ILoggingAdapter Log { get; } = Context.GetSeriLogger();
-        public AggregatesPipeActor(ICatalog<IActorRef,object> aggregateCatalog)
+        
+        public AggregatesPipeActor(IDictionary<string,IActorRef> aggregateCatalog)
         {
             Receive<IMessageMetadataEnvelop>(c =>
                                             {
-                                                var aggregateProcessor = aggregateCatalog.Get(c.Message);
+                                                var aggregateProcessor = aggregateCatalog[(c.Message as ICommand).AggregateName];
                                                 if (aggregateProcessor == null)
                                                     throw new CannotFindAggregateForCommandException(c.Message,
                                                                                                      c.Message.GetType());

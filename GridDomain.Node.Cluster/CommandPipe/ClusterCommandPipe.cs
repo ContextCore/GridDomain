@@ -195,7 +195,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
                              {
                                  if (m is IShardedMessageMetadataEnvelop env && env.Message is ICommand cmd)
                                  {
-                                     return cmd.AggregateType;
+                                     return cmd.AggregateName;
                                  }
 
                                  throw new InvalidMessageException(m.ToString());

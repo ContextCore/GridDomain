@@ -102,7 +102,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                     break;
 
                 case InflateNewBallonCommand c:
-                    Emit(new BalloonCreated(c.Title.ToString(), c.Id));
+                    Emit(new BalloonCreated(c.Title.ToString(), c.AggregateId));
                     break;
 
                 case InflateCopyCommand c:

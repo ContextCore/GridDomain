@@ -5,7 +5,7 @@ namespace GridDomain.EventSourcing
 {
     public interface IAggregateCommandsHandlerDescriptor
     {
-        IReadOnlyCollection<Type> RegisteredCommands { get; }
+       // IReadOnlyCollection<Type> RegisteredCommands { get; }
         Type AggregateType { get; }
     }
 }

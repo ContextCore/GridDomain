@@ -11,7 +11,8 @@ namespace GridDomain.EventSourcing
 {
     public abstract class Aggregate : IAggregate,
                                       ISnapshot,
-                                      IEquatable<IAggregate>
+                                      IEquatable<IAggregate>,
+                                      IEventList
     {
         protected readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
 
@@ -45,12 +46,9 @@ namespace GridDomain.EventSourcing
 
         protected abstract void OnAppyEvent(DomainEvent evt);
 
-        public IReadOnlyCollection<DomainEvent> GetUncommittedEvents()
-        {
-            return _uncommittedEvents;
-        }
+        public IReadOnlyCollection<DomainEvent> Events => _uncommittedEvents;
 
-        public void ClearUncommitedEvents()
+        public void Clear()
         {
             _uncommittedEvents.Clear();
         }

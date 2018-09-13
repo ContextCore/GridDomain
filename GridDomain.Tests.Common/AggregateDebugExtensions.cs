@@ -23,24 +23,22 @@ namespace GridDomain.Tests.Common
             return evt;
         }
 
-        public static IReadOnlyCollection<TEvent> GetEvents<TEvent>(this IAggregate aggregate) where TEvent : DomainEvent
+        public static IReadOnlyCollection<TEvent> GetEvents<TEvent>(this IEventList aggregate) where TEvent : DomainEvent
         {
-            throw new NotSupportedException();
-            //return aggregate.GetUncommittedEvents().OfType<TEvent>().ToArray();
+            return aggregate.Events.OfType<TEvent>().ToArray();
         }
 
-        public static IReadOnlyCollection<object> GetEvents(this IAggregate aggregate)
+        public static IReadOnlyCollection<object> GetEvents(this IEventList aggregate)
         {
             return GetEvents<DomainEvent>(aggregate);
         }
 
-        public static TEvent GetEvent<TEvent>(this IAggregate aggregate) where TEvent : DomainEvent
+        public static TEvent GetEvent<TEvent>(this IEventList aggregate) where TEvent : DomainEvent
         {
-            throw new NotSupportedException();
-//            var @event = aggregate.GetUncommittedEvents().OfType<TEvent>().FirstOrDefault();
-//            if (@event == null)
-//                throw new CannotFindRequestedEventException();
-//            return @event;
+            var @event = aggregate.Events.OfType<TEvent>().FirstOrDefault();
+            if (@event == null)
+                throw new CannotFindRequestedEventException();
+            return @event;
         }
 
     

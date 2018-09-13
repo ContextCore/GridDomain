@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GridDomain.Configuration;
 using GridDomain.CQRS;
 using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
-using GridDomain.ProcessManagers;
-using GridDomain.Tests.Unit.BalloonDomain.Configuration;
-using GridDomain.Tests.Unit.CommandsExecution;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -89,12 +83,12 @@ namespace GridDomain.Tests.Unit.DependencyInjection
             internal AggregateWithDependency(string id, IDependency dep):base(id)
             {
                 Apply<Created>(c => { });
-                Execute<CreateCommand>(c => new AggregateWithDependency(c.AggregateId, c.Value,dep));
+                Execute<CreateCommand>(c =>  Emit(new Created(c.AggregateId,c.Value,dep.GetValue())));
             }
 
             public AggregateWithDependency(string id, int value, IDependency dep):this(id,dep)
             {
-                Emit(new[] {new Created(id,value,dep.GetValue())});
+                Emit(new Created(id,value,dep.GetValue()));
             }
         }
 

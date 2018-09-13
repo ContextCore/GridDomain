@@ -10,6 +10,7 @@ namespace GridDomain.Scheduling
         protected FutureEventsAggregate(string id):base(id)
         {
             _schedulingSourceName = GetType().Name;
+            Execute<RaiseScheduledDomainEventCommand>(c => RaiseScheduledEvent(c.FutureEventId,c.AggregateId));
         }
 
         public IEnumerable<FutureEventScheduledEvent> FutureEvents  =>_futureEvents;
@@ -26,7 +27,6 @@ namespace GridDomain.Scheduling
             var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
 
             Emit(ev.Event);
-            //wait for event apply in case of errors; 
             Emit(futureEventOccuredEvent);
         }
 

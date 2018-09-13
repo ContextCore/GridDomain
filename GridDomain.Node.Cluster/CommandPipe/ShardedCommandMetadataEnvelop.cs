@@ -18,7 +18,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             Metadata = metadata ?? MessageMetadata.Empty;
             generator = generator ?? DefaultShardIdGenerator.Instance;
             ShardId = generator.GetShardId(message.AggregateId);
-            EntityId = EntityActorName.GetFullName(message.AggregateType, message.AggregateId);
+            EntityId = EntityActorName.GetFullName(message.AggregateName, message.AggregateId);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace GridDomain.Node.Cluster.CommandPipe.CommandGrouping
                 case IMessageMetadataEnvelop env:
                     return DefaultMap(env.Message);
                 case ICommand cmd:
-                    return cmd.AggregateType;
+                    return cmd.AggregateName;
                 default:
                     throw new InvalidMessageException(msg.ToString());
             }

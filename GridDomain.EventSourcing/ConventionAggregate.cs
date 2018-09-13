@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.CQRS;
@@ -23,7 +24,11 @@ namespace GridDomain.EventSourcing
 
         public override Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command)
         {
-            return _commandsRouter.Get(command).Invoke(command);
+            var func = _commandsRouter.Get(command);
+            if(func == null)
+                throw new CannotFindAggregateCommandHandlerExeption();
+            _uncommittedEvents.Clear();
+            return func.Invoke(command);
         }
 
         private readonly ConventionEventRouter _eventsRouter;

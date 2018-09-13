@@ -18,7 +18,7 @@ namespace GridDomain.Tests.Unit.ProcessManagers {
                                                         + typeof(BalloonSnapshot).Name);
 
                 var aggregate = new Balloon(snap.Id, snap.Value);
-            aggregate.ClearUncommitedEvents();
+            aggregate.Clear();
             ((ISnapshot)aggregate).Version = snap.Version;
                 return aggregate;
         }

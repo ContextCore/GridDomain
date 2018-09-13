@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Unit.DependencyInjection.Infrastructure {
                 if(snap == null) throw new ArgumentException(nameof(snapshot));
                 var agr = TestAggregate.FromSnapshot(snap, _testDependencyImplementation);
                 ((ISnapshot) agr).Version = snap.Version;
-                agr.ClearUncommitedEvents();
+                agr.Clear();
                 return agr;
             }
             else return base.Build(type, id, snapshot);

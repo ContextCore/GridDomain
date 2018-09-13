@@ -33,7 +33,7 @@ namespace GridDomain.Tests.Acceptance.Snapshots
 
             var processStateAggregate = new ProcessStateAggregate<SoftwareProgrammingState>(state);
             processStateAggregate.ReceiveMessage(state, null);
-            processStateAggregate.ClearUncommitedEvents();
+            processStateAggregate.Clear();
 
             var repo = new AggregateSnapshotRepository(AutoTestNodeDbConfiguration.Default.JournalConnectionString,
                                                        AggregateFactory.Default,

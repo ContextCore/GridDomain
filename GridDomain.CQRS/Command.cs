@@ -11,10 +11,10 @@ namespace GridDomain.CQRS
             Time = time;
             ProcessId = processId;
             AggregateId = aggregateId;
-            AggregateType = aggregateType;
+            AggregateName = aggregateType;
         }
 
-        public string AggregateType { get; private set; }
+        public string AggregateName { get; private set; }
 
         protected Command(string id, string aggregateId, string processId, string aggregateType) : this(id, aggregateId, processId, BusinessDateTime.UtcNow, aggregateType) {}
 

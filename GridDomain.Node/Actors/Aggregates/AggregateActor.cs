@@ -118,17 +118,17 @@ namespace GridDomain.Node.Actors.Aggregates
                                     PersistAll(domainEvents,
                                                persistedEvent =>
                                                {
-                                                   State.Apply(persistedEvent);
+                                                   if(State is IEventPersistentObserver p)
+                                                       p.OnPersist(persistedEvent);
+                                                   
                                                    NotifyPersistenceWatchers(persistedEvent);
                                                    _totalProjectionTimer = _totalProjectionTimer ?? Monitor.StartMeasureTime("ProjectionTotal");
                                                    Project(producedEventsMetadata, new[] {persistedEvent});
-                                                   SaveSnapshot(ExecutionContext.ProducedState, persistedEvent);
+                                                   SaveSnapshot(State, persistedEvent);
 
                                                    if (--messagesToPersistCount != 0) return;
                                                    totalPersistenceTimer.Stop();
                                                    CompleteExecution();
-                                                   ExecutionContext.ProducedState = State;
-
                                                });
                                 });
 
@@ -169,7 +169,6 @@ namespace GridDomain.Node.Actors.Aggregates
         {
             Log.Info("Command executed. {@context}", ExecutionContext.CommandMetadata);
 
-            State = ExecutionContext.ProducedState as TAggregate;
             if (State == null)
                 throw new InvalidOperationException("Aggregate state was null after command execution");
 

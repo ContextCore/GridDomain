@@ -16,7 +16,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
         {
             var aggregate = new TestFutureEventsAggregate(Guid.NewGuid().ToString());
             aggregate.ScheduleInFuture(DateTime.Now.AddSeconds(400), "value D");
-            aggregate.ClearUncommitedEvents();
+            aggregate.Clear();
 
             //Then_raising_event_with_wrong_id_throws_an_error()
             Assert.Throws<ScheduledEventNotFoundException>(() => aggregate.RaiseScheduledEvent(Guid.NewGuid()

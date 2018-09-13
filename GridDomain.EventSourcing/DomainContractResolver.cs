@@ -14,23 +14,23 @@ namespace GridDomain.EventSourcing {
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
 
-            if(AggregateDescriptor.IsAssignableFrom(member.DeclaringType))
-            {
-                if (property.PropertyName == nameof(IAggregateCommandsHandlerDescriptor.AggregateType)
-                    || property.PropertyName == nameof(IAggregateCommandsHandlerDescriptor.RegisteredCommands))
-                {
-                    property.ShouldSerialize = o => false;
-                }
-
-                return property;
-            }
+//            if(AggregateDescriptor.IsAssignableFrom(member.DeclaringType))
+//            {
+//                if (property.PropertyName == nameof(IAggregateCommandsHandlerDescriptor.AggregateType)
+//                    || property.PropertyName == nameof(IAggregateCommandsHandlerDescriptor.RegisteredCommands))
+//                {
+//                    property.ShouldSerialize = o => false;
+//                }
+//
+//                return property;
+//            }
             if (AggregateType.IsAssignableFrom(member.DeclaringType))
             {
-                if (property.PropertyName == nameof(Aggregate.HasUncommitedEvents))
+                if (property.PropertyName == nameof(Aggregate.HasUncommittedEvents))
                     property.ShouldSerialize = o => false;
            
-               // if (property.PropertyName == nameof(Aggregate.Id))
-                 //   property.ShouldSerialize = o => false;
+                if (property.PropertyName == nameof(Aggregate.Id))
+                    property.ShouldSerialize = o => false;
             }
             return property;
         }

@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
-using Quartz.Util;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
@@ -25,12 +24,12 @@ namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
                                         await Task.Delay(TimeSpan.FromMilliseconds(5));
                                         Emit(new Slept(sofaId));
                                     });
-            Execute<CreatePersonCommand>(c => new ProgrammerAggregate(c.AggregateId, c.AggregateId));
+            Execute<CreatePersonCommand>(c => Emit(new PersonCreated(c.AggregateId, c.AggregateId)));
         }
 
         public ProgrammerAggregate(string id, string personId) : this(id)
         {
-            Emit(new[]{new PersonCreated(id, personId)});
+            Emit(new PersonCreated(id, personId));
         }
 
         public string PersonId { get; private set; }

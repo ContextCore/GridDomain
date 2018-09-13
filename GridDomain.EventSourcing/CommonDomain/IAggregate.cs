@@ -6,7 +6,7 @@ using GridDomain.CQRS;
 namespace GridDomain.EventSourcing.CommonDomain
 {
   
-    public interface IAggregate : IEventSourced,IAggregateCommandHandler
+    public interface IAggregate : IEventSourced, IAggregateCommandHandler
     {
     }
 
@@ -15,10 +15,20 @@ namespace GridDomain.EventSourcing.CommonDomain
         
     }
    
-  public interface IEventSourced
-  {
-    string Id { get; }
-    void Apply(DomainEvent @event); 
-  }
+    public interface IEventSourced
+    {
+      string Id { get; }
+      void Apply(DomainEvent @event); 
+    }
 
+    public interface IEventList
+    {
+        void Clear();
+        IReadOnlyCollection<DomainEvent> Events { get; }
+    }
+
+    public interface IEventPersistentObserver
+    {
+        void OnPersist(DomainEvent ev);
+    }
 }

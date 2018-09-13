@@ -42,8 +42,6 @@ namespace GridDomain.ProcessManagers.State
             }
         }
 
-        private static readonly Type[] KnownCommands = {typeof(SaveStateCommand<TState>), typeof(CreateNewStateCommand<TState>)};
-
         public override Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command)
         {
             switch (command)

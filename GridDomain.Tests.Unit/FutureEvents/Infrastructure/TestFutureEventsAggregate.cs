@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.EventSourcing;
+using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Scheduling;
 
 namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
@@ -9,15 +10,16 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
     {
         public string Value;
 
-        private TestFutureEventsAggregate(string id) : base(id) {}
-
-        public TestFutureEventsAggregate(string id, string initialValue = "") : this(id)
+        private TestFutureEventsAggregate(string id) : base(id)
         {
             Execute<ScheduleEventInFutureCommand>(c => ScheduleInFuture(c.RaiseTime, c.Value));
             Execute<CancelFutureEventCommand>( c => CancelFutureEvents(c.Value));
             Execute<BoomNowCommand>(c => Boom());
             Execute<PlanBoomCommand>(c => PlanBoom(c.BoomTime));
-            
+        }
+
+        public TestFutureEventsAggregate(string id, string initialValue = "") : this(id)
+        {
             Emit(new ValueChangedSuccessfullyEvent(initialValue, 1, Id));
         }
 

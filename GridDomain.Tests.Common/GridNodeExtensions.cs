@@ -76,15 +76,22 @@ namespace GridDomain.Tests.Common
             }
         }
 
-        public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, TAggregate aggregate) where TAggregate : Aggregate
+        public static async Task SaveToJournal(this IExtendedGridDomainNode node, params DomainEvent[] messages)
         {
-            throw new NotSupportedException();
-//            var domainEvents = ((IAggregate) aggregate).GetUncommittedEvents()
-//                                                       .ToArray();
-//
-//            await node.SaveToJournal<TAggregate>(aggregate.Id, domainEvents);
-//
-//            aggregate.ClearUncommitedEvents();
+            using (var repo = new ActorSystemJournalRepository(node.System, false))
+            {
+               foreach(var evt in messages)
+                   await repo.Save(evt.SourceId, evt);
+            }
+        }
+        
+        public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, TAggregate aggregate) where TAggregate : IEventList
+        {
+            var domainEvents = aggregate.Events.ToArray();
+
+            await node.SaveToJournal(domainEvents);
+
+            aggregate.Clear();
         }
 
         public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, string id, params DomainEvent[] messages)

@@ -24,7 +24,7 @@ namespace GridDomain.Node
 {
     public class LocalCommandPipe: IActorCommandPipe
     {
-        private readonly TypeCatalog<IActorRef, object> _aggregatesCatalog = new TypeCatalog<IActorRef, object>();
+        private readonly IDictionary<string, IActorRef> _aggregatesCatalog = new Dictionary<string, IActorRef>();
         private readonly ICompositeMessageProcessor _handlersCatalog;
 
         private readonly ILoggingAdapter _log;
@@ -68,8 +68,7 @@ namespace GridDomain.Node
             var aggregateHubType = typeof(AggregateHubActor<>).MakeGenericType(descriptor.AggregateType);
             var aggregateActor = CreateDIActor(aggregateHubType, descriptor.AggregateType.BeautyName() + "_Hub");
 
-            foreach (var aggregateCommandInfo in descriptor.RegisteredCommands)
-                _aggregatesCatalog.Add(aggregateCommandInfo, aggregateActor);
+                _aggregatesCatalog.Add(descriptor.AggregateType.Name, aggregateActor);
         }
 
         public Task RegisterProcess(IProcessDescriptor processDescriptor, string name = null)

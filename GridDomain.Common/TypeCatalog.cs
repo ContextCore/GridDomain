@@ -11,6 +11,8 @@ namespace GridDomain.Common
         public virtual TData Get(TMessage message)
         {
             Catalog.TryGetValue(message.GetType(), out var processor);
+           // if (processor == null)
+           //     throw new CannotGetValueException();
             return processor;
         }
 
@@ -24,4 +26,6 @@ namespace GridDomain.Common
             Add(typeof(U), processor);
         }
     }
+
+    public class CannotGetValueException : Exception { }
 }

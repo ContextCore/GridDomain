@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Akka.Actor;
 using Akka.DI.AutoFac;
 using Akka.DI.Core;
@@ -31,8 +32,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void CommandExecutor_does_not_support_command_inheritance()
         {
-            var catalog = new TypeCatalog<IActorRef, object>();
-            catalog.Add<InflateNewBallonCommand>(TestActor);
+            var catalog = new Dictionary<string,IActorRef>();
+            catalog.Add(typeof(InflateNewBallonCommand).Name,TestActor);
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregatesPipeActor(catalog)));
 
@@ -47,8 +48,8 @@ namespace GridDomain.Tests.Unit.CommandPipe
         [Fact]
         public void CommandExecutor_routes_command_by_its_type()
         {
-            var catalog = new TypeCatalog<IActorRef, object>();
-            catalog.Add<InflateNewBallonCommand>(TestActor);
+            var catalog = new Dictionary<string, IActorRef>();
+            catalog.Add(typeof(Balloon).Name,TestActor);
 
             var actor = Sys.ActorOf(Props.Create(() => new AggregatesPipeActor(catalog)));
 
