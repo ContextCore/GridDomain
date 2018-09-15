@@ -122,6 +122,8 @@ namespace GridDomain.Node.Actors.ProcessManagers
             Receive<IActorRef>(r =>
                                {
                                    _stateAggregateActor = r;
+                                   
+                                   //TODO: replace with Tell as more efficient
                                    _stateAggregateActor.Ask<ProcesStateMessage<TState>>(CreateGetStateMessage(), TimeSpan.FromSeconds(3))
                                                        .PipeTo(Self);
                                });

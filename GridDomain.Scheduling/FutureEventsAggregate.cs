@@ -10,7 +10,7 @@ namespace GridDomain.Scheduling
         protected FutureEventsAggregate(string id):base(id)
         {
             _schedulingSourceName = GetType().Name;
-            Execute<RaiseScheduledDomainEventCommand>(c => RaiseScheduledEvent(c.FutureEventId,c.AggregateId));
+            Execute<RaiseScheduledDomainEventCommand>(c => RaiseScheduledEvent(c.FutureEventId));
         }
 
         public IEnumerable<FutureEventScheduledEvent> FutureEvents  =>_futureEvents;
@@ -18,13 +18,13 @@ namespace GridDomain.Scheduling
         private readonly string _schedulingSourceName;
 
       
-        public void RaiseScheduledEvent(string futureEventId, string futureEventOccuredEventId)
+        public void RaiseScheduledEvent(string futureEventId, string futureEventOccuredEventId=null)
         {
             FutureEventScheduledEvent ev = FutureEvents.FirstOrDefault(e => e.Id == futureEventId);
             if (ev == null)
                 throw new ScheduledEventNotFoundException(futureEventId);
 
-            var futureEventOccuredEvent = new FutureEventOccuredEvent(futureEventOccuredEventId, futureEventId, Id);
+            var futureEventOccuredEvent = new FutureEventOccuredEvent(Id, futureEventId, futureEventOccuredEventId);
 
             Emit(ev.Event);
             Emit(futureEventOccuredEvent);

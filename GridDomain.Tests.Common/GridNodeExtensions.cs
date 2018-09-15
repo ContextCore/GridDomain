@@ -85,11 +85,11 @@ namespace GridDomain.Tests.Common
             }
         }
         
-        public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, TAggregate aggregate) where TAggregate : IEventList
+        public static async Task SaveToJournal<TAggregate>(this IExtendedGridDomainNode node, TAggregate aggregate) where TAggregate : IEventList,IAggregate
         {
             var domainEvents = aggregate.Events.ToArray();
-
-            await node.SaveToJournal(domainEvents);
+            var id = EntityActorName.New<TAggregate>(aggregate.Id);
+            await node.SaveToJournal(id,domainEvents);
 
             aggregate.Clear();
         }

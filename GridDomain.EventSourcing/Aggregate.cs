@@ -13,10 +13,10 @@ namespace GridDomain.EventSourcing
                                       ISnapshot,
                                       IEquatable<IAggregate>,
                                       IEventList
+                                    //  IEventPersistentObserver
+                                      
     {
         protected readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);
-
-        public bool HasUncommitedEvents => _uncommittedEvents.Any();
 
         protected Aggregate(string id)
         {
@@ -40,11 +40,11 @@ namespace GridDomain.EventSourcing
 
         void IEventSourced.Apply(DomainEvent @event)
         {
-            OnAppyEvent(@event);
+            OnApplyEvent(@event);
             Version++;
         }
 
-        protected abstract void OnAppyEvent(DomainEvent evt);
+        protected abstract void OnApplyEvent(DomainEvent evt);
 
         public IReadOnlyCollection<DomainEvent> Events => _uncommittedEvents;
 
@@ -66,12 +66,18 @@ namespace GridDomain.EventSourcing
         protected void Emit(params DomainEvent[] events)
         {
             _uncommittedEvents.AddRange(events);
-            foreach (var e in events) ((IAggregate) this).Apply(e);
+            foreach (var e in events) 
+                ((IAggregate) this).Apply(e);
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public void OnPersist(DomainEvent ev)
+        {
+         //   ((IAggregate) this).Apply(ev);
         }
 
         public abstract Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command);

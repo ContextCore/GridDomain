@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using GridDomain.Common;
 using GridDomain.EventSourcing;
+using GridDomain.Node.AkkaMessaging;
 using GridDomain.ProcessManagers.State;
 using GridDomain.Tests.Common;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
@@ -19,31 +20,29 @@ namespace GridDomain.Tests.Unit.ProcessManagers
             this(new SoftwareProgrammingProcessManagerFixture(output)) {}
 
         [Fact]
-        public async Task When_process_produce_command_and_waiting_for_it_fault()
+        public async Task When_process_persisted_it_maintains_state_on_first_load()
         {
 
-            var aggregate = 
-                
-                
-                new ProcessStateAggregate<SoftwareProgrammingState>(new SoftwareProgrammingState(Guid.NewGuid().ToString(), 
+            var processState = 
+                new ProcessStateAggregate<SoftwareProgrammingState>(new SoftwareProgrammingState("testProcess", 
                                                                                             nameof(SoftwareProgrammingProcess.MakingCoffee))
                                                                                           {
                                                                                               PersonId = Guid.NewGuid().ToString()
                                                                                           });
 
             
-            await Node.SaveToJournal(aggregate);
+            await Node.SaveToJournal(processState);
 
             var coffeMakeFailedEvent = new CoffeMakeFailedEvent(Guid.NewGuid().ToString(),
-                                                                aggregate.State.PersonId,
+                                                                processState.State.PersonId,
                                                                 BusinessDateTime.UtcNow,
-                                                                aggregate.Id);
+                                                                processState.Id);
 
             await Node.PrepareForProcessManager(coffeMakeFailedEvent)
                       .Expect<ProcessReceivedMessage<SoftwareProgrammingState>>(m => m.State.CurrentStateName == nameof(SoftwareProgrammingProcess.Coding))
                       .Send();
 
-            var processStateAggregate = await Node.LoadProcess<SoftwareProgrammingState>(aggregate.Id);
+            var processStateAggregate = await Node.LoadProcess<SoftwareProgrammingState>(processState.Id);
             //Process_should_be_in_correct_state_after_fault_handling()
             Assert.Equal(nameof(SoftwareProgrammingProcess.Coding), processStateAggregate.CurrentStateName);
             //Process_state_should_contain_data_from_fault_message()

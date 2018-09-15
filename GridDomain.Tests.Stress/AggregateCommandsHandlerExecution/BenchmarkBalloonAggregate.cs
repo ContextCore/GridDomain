@@ -25,7 +25,7 @@ namespace GridDomain.Tests.Stress.AggregateCommandsHandlerExecution {
             Emit(new BalloonTitleChanged(newTitle, Id));
         }
 
-        protected override void OnAppyEvent(DomainEvent evt)
+        protected override void OnApplyEvent(DomainEvent evt)
         {
             switch(evt)
             {

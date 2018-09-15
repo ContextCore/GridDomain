@@ -17,7 +17,7 @@ namespace GridDomain.EventSourcing
 
         }
 
-        protected override void OnAppyEvent(DomainEvent evt)
+        protected override void OnApplyEvent(DomainEvent evt)
         {
             _eventsRouter.Dispatch(this, evt);
         }

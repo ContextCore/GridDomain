@@ -23,7 +23,7 @@ namespace GridDomain.Node.Actors.Aggregates
 
         internal override string GetChildActorName(string childId)
         {
-            return EntityActorName.New<TAggregate>(childId).ToString();
+            return EntityActorName.New<TAggregate>(childId);
         }
 
         protected override string GetChildActorId(IMessageMetadataEnvelop message)

@@ -8,7 +8,7 @@ using GridDomain.EventSourcing.CommonDomain;
 
 namespace GridDomain.ProcessManagers.State
 {
-    public class ProcessStateAggregate<TState> : ConventionAggregate where TState : IProcessState
+    public class ProcessStateAggregate<TState> : Aggregate where TState : IProcessState
     {
         
         public ProcessStateAggregate(TState state): this(state.Id)
@@ -28,7 +28,7 @@ namespace GridDomain.ProcessManagers.State
             Emit(new ProcessReceivedMessage<TState>(Id, state, messageId));
         }
 
-        protected override void OnAppyEvent(DomainEvent evt)
+        protected override void OnApplyEvent(DomainEvent evt)
         {
             switch(evt)
             {
@@ -44,6 +44,7 @@ namespace GridDomain.ProcessManagers.State
 
         public override Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command)
         {
+            _uncommittedEvents.Clear();
             switch (command)
             {
                 case SaveStateCommand<TState> c:

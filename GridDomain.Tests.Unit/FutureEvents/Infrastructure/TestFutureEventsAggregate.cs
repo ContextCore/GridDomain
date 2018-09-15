@@ -28,7 +28,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 
         public void ScheduleInFuture(DateTime raiseTime, string testValue)
         {
-            Emit(new ValueChangedSuccessfullyEvent(testValue, 1, Id),raiseTime,null);
+            Emit(new ValueChangedSuccessfullyEvent(testValue, 1, Id),raiseTime);
         }
 
         public void Boom()
@@ -38,7 +38,7 @@ namespace GridDomain.Tests.Unit.FutureEvents.Infrastructure
 
         public void PlanBoom(DateTime raiseTime)
         {
-            Emit(new BoomDomainEvent(Id),raiseTime,null);
+            Emit(new BoomDomainEvent(Id),raiseTime);
         }
 
         public void CancelFutureEvents(string likeValue)

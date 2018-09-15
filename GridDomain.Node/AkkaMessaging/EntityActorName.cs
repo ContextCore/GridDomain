@@ -45,6 +45,11 @@ namespace GridDomain.Node.AkkaMessaging
             return New(entityType, id);
         }
 
+        public static implicit operator string(EntityActorName name)
+        {
+            return name.Name;
+        }
+        
         public static bool TryParseId(string value, out string id)
         {
             var parts = value.Split(new[] {Separator}, StringSplitOptions.RemoveEmptyEntries);

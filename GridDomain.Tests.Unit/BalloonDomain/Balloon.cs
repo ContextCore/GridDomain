@@ -19,8 +19,6 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
         public string Title { get; private set; }
 
-       
-
         public void WriteNewTitle(int number)
         {
             Emit(new BalloonTitleChanged(number.ToString(), Id));
@@ -67,7 +65,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                                          }));
         }
 
-        protected override void OnAppyEvent(DomainEvent evt)
+        protected override void OnApplyEvent(DomainEvent evt)
         {
            switch (evt){
                case BalloonCreated c:
@@ -87,6 +85,7 @@ namespace GridDomain.Tests.Unit.BalloonDomain
 
         public override async Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command)
         {
+            _uncommittedEvents.Clear();
             switch (command)
             {
                 case WriteTitleCommand c:

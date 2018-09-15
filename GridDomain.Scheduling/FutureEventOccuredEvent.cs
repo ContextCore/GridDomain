@@ -5,7 +5,7 @@ namespace GridDomain.Scheduling
 {
     public class FutureEventOccuredEvent : DomainEvent
     {
-        public FutureEventOccuredEvent(string id, string futureEventId, string sourceId) : base(sourceId,null,id)
+        public FutureEventOccuredEvent(string sourceId, string futureEventId, string id=null) : base(sourceId,null,id)
         {
             FutureEventId = futureEventId;
         }
