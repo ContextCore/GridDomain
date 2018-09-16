@@ -23,7 +23,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
             : base(new BalloonFixture(helper)) { }
 
         [Fact]
-        public async Task Given_aggregate_method_When_execute_prepared_Then_exception_is_caught()
+        public async Task Given_aggregate_method_And_generic_expect_When_execute_prepared_Then_exception_is_caught()
         {
             await Node.Prepare(new PlanBallonBlowCommand("asd", TimeSpan.FromMilliseconds(500)))
                       .Expect<JobFailed>()
@@ -32,7 +32,7 @@ namespace GridDomain.Tests.Unit.CommandsExecution.ExecutionWithErrors
         }
 
         [Fact]
-        public async Task Given_aggregate_method_When_execute_prepared_Then_exception_is_caught_2()
+        public async Task Given_aggregate_method_And_non_generic_expect_When_execute_prepared_Then_exception_is_caught()
         {
             await Node.Prepare(new PlanBallonBlowCommand("asd", TimeSpan.FromMilliseconds(500)))
                       .Expect(typeof(JobFailed))

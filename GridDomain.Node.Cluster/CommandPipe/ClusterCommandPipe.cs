@@ -97,7 +97,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
                                           await RegisterAggregateByType(aggregateType, actorType);
 
-                                          var processActorType = typeof(ClusterProcessActor<>).MakeGenericType(processDescriptor.StateType);
+                                          var processActorType = typeof(ClusterProcessActorCell<>).MakeGenericType(processDescriptor.StateType);
 
                                           var region = await ClusterSharding.Get(System)
                                                                             .StartAsync(Known.Names.Region(processDescriptor.ProcessType),
@@ -160,7 +160,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
                                  });
 
             var processesProps = System.DI()
-                                       .Props(typeof(ClusterProcesPipeActor));
+                                       .Props(typeof(ClusterProcessPipeActor));
 
             ProcessesPipeActor = System.ActorOf(processesProps.WithRouter(routingGroup), "Processes");
         }
@@ -181,11 +181,10 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
             var clusterRouterPool = new ClusterRouterPool(routingPool, new ClusterRouterPoolSettings(10, 1, true));
 
-            var handlerActorProps = System.DI()
-                                          .Props(typeof(ClusterHandlersPipeActor))
+            var handlerActorProps = Props.Create<ClusterHandlersPipeActorCell>()
                                           .WithRouter(clusterRouterPool);
 
-            HandlersPipeActor = System.ActorOf(handlerActorProps, nameof(ClusterHandlersPipeActor));
+            HandlersPipeActor = System.ActorOf(handlerActorProps, nameof(ClusterHandlersPipeActorCell));
         }
 
         protected virtual void BuildAggregateCommandingRoutes()
@@ -211,7 +210,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
 
         public void Register(ContainerBuilder container)
         {
-            container.RegisterType<ClusterProcesPipeActor>()
+            container.RegisterType<ClusterProcessPipeActor>()
                      .WithParameters(new Parameter[]
                                      {
                                          new TypedParameter(typeof(IReadOnlyCollection<IProcessDescriptor>), _processDescriptors),

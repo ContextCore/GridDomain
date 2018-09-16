@@ -31,7 +31,7 @@ namespace GridDomain.Tests.Unit.FutureEvents
             var aggregate = await Node.LoadAggregateByActor<TestFutureEventsAggregate>(testCommand.AggregateId);
 
             //Future_event_fires_in_time()
-            Assert.True(scheduledTime.Second - aggregate.ProcessedTime.Second <= 1);
+            Assert.True(scheduledTime.Second - aggregate.ProcessedTime.Second <= 10);
             //Future_event_applies_to_aggregate()
             Assert.Equal(producedEvent.Value, aggregate.Value);
             //Future_event_envelop_has_id_different_from_aggregate()

@@ -11,15 +11,21 @@ using GridDomain.EventSourcing;
 using GridDomain.Node.Actors.CommandPipe;
 using GridDomain.Node.Actors.CommandPipe.MessageProcessors;
 using GridDomain.Node.Actors.CommandPipe.Messages;
+using GridDomain.ProcessManagers;
 using GridDomain.ProcessManagers.DomainBind;
 using Serilog;
 
 namespace GridDomain.Node.Cluster.CommandPipe
 {
-    public class ClusterProcesPipeActor : ProcessesPipeActor, IWithUnboundedStash
+
+    public class ClusterProcessActorCell<T> : DICellActor<ClusterProcessActor<T>> where T : class, IProcessState {
+        
+    }
+    
+    public class ClusterProcessPipeActor : ProcessesPipeActor, IWithUnboundedStash
     {
 
-        public ClusterProcesPipeActor( IReadOnlyCollection<IProcessDescriptor> processDescriptors,string commandActorPath) : base(CreateRoutes(Context, processDescriptors))
+        public ClusterProcessPipeActor( IReadOnlyCollection<IProcessDescriptor> processDescriptors,string commandActorPath) : base(CreateRoutes(Context, processDescriptors))
         {
             //initialize command actor on first message, 
             //switch to default behavior after

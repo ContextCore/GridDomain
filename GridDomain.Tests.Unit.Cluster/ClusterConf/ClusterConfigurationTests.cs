@@ -135,7 +135,7 @@ namespace GridDomain.Tests.Unit.Cluster.ClusterConf
             var  logger = CreateLogger(_output, nameof(Cluster_can_host_an_actor_with_shard_region_with_auto_seeds));
 
             using (var akkaCluster = await new ActorSystemConfigBuilder()
-                                           .EmitLogLevel(LogEventLevel.Verbose)
+                                           .EmitLogLevel(LogEventLevel.Warning)
                                            .Cluster()
                                            .AutoSeeds(2)
                                            .Workers(2)

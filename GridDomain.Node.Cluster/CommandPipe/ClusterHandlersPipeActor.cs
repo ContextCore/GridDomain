@@ -14,16 +14,21 @@ namespace GridDomain.Node.Cluster.CommandPipe {
 
 
 
-    public class ClusterHandlersPipeActorCell : UntypedActor
+    public class ClusterHandlersPipeActorCell : DICellActor<ClusterHandlersPipeActor> 
     {
-        private IActorRef _handler;
+       
+    }
+    
+    public class DICellActor<TResident> : UntypedActor where TResident : ActorBase
+    {
+        private readonly IActorRef _handler;                       
 
-        public ClusterHandlersPipeActorCell()
+        public DICellActor(string residentName=null)
         {
             var props = Context.System.DI()
-                               .Props<ClusterHandlersPipeActor>();
+                               .Props<TResident>();
 
-            _handler = Context.ActorOf(props,Self.Path.Name);
+            _handler = Context.ActorOf(props,residentName ?? "Resident");
         }
 
         protected override void OnReceive(object message)
@@ -31,6 +36,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
             _handler.Forward(message);
         }
     }
+    
 
     public class ClusterHandlersPipeActor : HandlersPipeActor
     {

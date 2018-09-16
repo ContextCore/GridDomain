@@ -7,21 +7,14 @@ using GridDomain.EventSourcing;
 using GridDomain.EventSourcing.CommonDomain;
 using GridDomain.Node.Actors.Aggregates;
 using GridDomain.Node.Actors.EventSourced.Messages;
+using GridDomain.Node.Cluster.CommandPipe;
 
 namespace GridDomain.Node.Cluster
 {
 
-    public class ClusterAggregateActorCell<T>:ReceiveActor where T : class, IAggregate
+    public class ClusterAggregateActorCell<T>:DICellActor<ClusterAggregateActor<T>> where T : class, IAggregate
     {
-        public ClusterAggregateActorCell()
-        {
-            var props = Context.DI()
-                               .Props<ClusterAggregateActor<T>>();
-            var aggregate = Context.ActorOf(props,Self.Path.Name);
-
-            ReceiveAny(o => aggregate.Forward(o));
-        }
-      
+    
     }
 
 
