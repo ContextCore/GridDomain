@@ -19,15 +19,18 @@ namespace GridDomain.Tests.Unit.EventsUpgrade.Domain
     {
         public decimal Amount;
 
-        private BalanceAggregate(string id) : base(id) {}
-
-        public BalanceAggregate(string id, decimal value) : this(id)
+        private BalanceAggregate(string id) : base(id)
         {
             Execute<ChangeBalanceCommand>(c => ChangeState(c.Parameter));
 
-            Execute<CreateBalanceCommand>(c =>  Emit(new AggregateCreatedEvent(value, id)));
+            Execute<CreateBalanceCommand>(c =>  Emit(new AggregateCreatedEvent(c.Parameter, id)));
 
             Execute<ChangeBalanceInFuture>(c => ChangeStateInFuture(c.RaiseTime, c.Parameter, c.UseLegacyEvent));
+        }
+
+        public BalanceAggregate(string id, decimal value) : this(id)
+        {
+            Emit(new AggregateCreatedEvent(value, id));
         }
         
         public BalanceAggregate(Guid id, decimal value) : this(id.ToString(), value)
