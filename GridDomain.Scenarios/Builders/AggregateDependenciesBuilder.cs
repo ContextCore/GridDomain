@@ -22,7 +22,7 @@ namespace GridDomain.Scenarios.Builders
         {
             _aggregateFactory = _aggregateFactory ?? new AggregateFactory();
 
-            var aggregateDependencies = new AggregateDependencies<T>(null)
+            var aggregateDependencies = new AggregateDependencies<T>()
                                         {
                                             AggregateFactory = _aggregateFactory
                                         };

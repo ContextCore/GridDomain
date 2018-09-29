@@ -14,6 +14,7 @@ using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
+using Remotion.Linq.Clauses.ResultOperators;
 using Serilog;
 using Serilog.Core;
 using Xunit;
@@ -21,27 +22,24 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit.Scenario
 {
-    public class AggregateScenarioTests
+    public abstract class AggregateScenarioTests : ScenarioRunnerTest
     {
-        private readonly Logger _log;
 
-        public AggregateScenarioTests(ITestOutputHelper output)
-        {
-            _log = new XUnitAutoTestLoggerConfiguration(output).CreateLogger();
-        }
+        public AggregateScenarioTests(ITestOutputHelper output) : base(output) { }
 
+      
         [Fact]
         public async Task When_defined_aggregate_handler_then_it_can_execute_commands_and_produce_events_with_builder()
         {
             var aggregateId = Guid.NewGuid()
                                   .ToString();
 
-            var run = await new AggregateScenarioBuilder<Balloon>()
-                            .With(new BalloonDependencies())
-                            .When(new InflateNewBallonCommand(42, aggregateId))
-                            .Then(new BalloonCreated("42", aggregateId))
-                            .Run
-                            .Local(_log);
+            var scenario = new AggregateScenarioBuilder<Balloon>()
+                           .With(new BalloonDependencies())
+                           .When(new InflateNewBallonCommand(42, aggregateId))
+                           .Then(new BalloonCreated("42", aggregateId));
+
+            var run = await Run(scenario);
 
             var producedAggregate = run.Aggregate;
 
@@ -64,13 +62,12 @@ namespace GridDomain.Tests.Unit.Scenario
             var aggregateId = Guid.NewGuid()
                                   .ToString();
 
-            var run = await AggregateScenario.New<Balloon>()
-                                             .With(new BalloonDependencies())
-                                             .When(new InflateNewBallonCommand(42, aggregateId))
-                                             .Then(new BalloonCreated("42", aggregateId))
-                                             .Run
-                                             .Local();
+            var scenario = AggregateScenario.New<Balloon>()
+                                            .With(new BalloonDependencies())
+                                            .When(new InflateNewBallonCommand(42, aggregateId))
+                                            .Then(new BalloonCreated("42", aggregateId));
 
+            var run = await Run(scenario);
             var producedAggregate = run.Aggregate;
 
             //aggregate is changed 
@@ -93,12 +90,12 @@ namespace GridDomain.Tests.Unit.Scenario
                                   .ToString();
 
 
-            var run = await AggregateScenario.New<Balloon>()
-                                             .With(new BalloonDependencies())
-                                             .When(new InflateNewBallonCommand(42, aggregateId))
-                                             .Then(new BalloonCreated("42", aggregateId))
-                                             .Run
-                                             .Local(_log);
+            var scenario = AggregateScenario.New<Balloon>()
+                                            .With(new BalloonDependencies())
+                                            .When(new InflateNewBallonCommand(42, aggregateId))
+                                            .Then(new BalloonCreated("42", aggregateId));
+
+            var run = await Run(scenario);
 
             //aggregate is changed 
             Assert.Equal("42", run.Aggregate.Title);
@@ -119,12 +116,11 @@ namespace GridDomain.Tests.Unit.Scenario
             var aggregateId = Guid.NewGuid()
                                   .ToString();
 
-            var run = await AggregateScenario.New<Balloon>()
-                                             .With(new BalloonDependencies())
-                                             .When(new InflateNewBallonCommand(42, aggregateId))
-                                             .Then(new BalloonCreated("42", aggregateId))
-                                             .Run
-                                             .Local(_log);
+            var scenario = AggregateScenario.New<Balloon>()
+                                            .With(new BalloonDependencies())
+                                            .When(new InflateNewBallonCommand(42, aggregateId))
+                                            .Then(new BalloonCreated("42", aggregateId));
+            var run = await Run(scenario);
 
             //aggregate is changed 
             Assert.Equal("42", run.Aggregate.Title);
@@ -144,10 +140,11 @@ namespace GridDomain.Tests.Unit.Scenario
         {
             var aggregateId = "personA";
 
-            var scenario = await AggregateScenario.New<ProgrammerAggregate>()
-                                                  .Given(new PersonCreated(aggregateId, aggregateId))
-                                                  .Run
-                                                  .Local(_log);
+            var scenarioBuilder = AggregateScenario.New<ProgrammerAggregate>()
+                                                   .Given(new PersonCreated(aggregateId, aggregateId));
+
+            var scenario = await Run(scenarioBuilder);
+
             //aggregate is changed 
             Assert.Equal(aggregateId, scenario.Aggregate.PersonId);
             Assert.Equal(aggregateId, scenario.Aggregate.Id);
@@ -161,11 +158,11 @@ namespace GridDomain.Tests.Unit.Scenario
         {
             var aggregateId = "personA";
             var factory = AggregateDependencies.ForCommandAggregate<ProgrammerAggregate>();
-            var scenario = await AggregateScenario.New<ProgrammerAggregate>()
-                                                  .With(factory )
-                                                  .Given(new PersonCreated(aggregateId, aggregateId))
-                                                  .Run
-                                                  .Local(_log);
+            var scenarioBuilder = AggregateScenario.New<ProgrammerAggregate>()
+                                                   .With(factory)
+                                                   .Given(new PersonCreated(aggregateId, aggregateId));
+
+            var scenario = await Run(scenarioBuilder);
             //aggregate is changed 
             Assert.Equal(aggregateId, scenario.Aggregate.PersonId);
             Assert.Equal(aggregateId, scenario.Aggregate.Id);
@@ -179,17 +176,17 @@ namespace GridDomain.Tests.Unit.Scenario
         {
             var aggregateId = "personA";
 
-            var scenario = await AggregateScenario.New<ProgrammerAggregate>()
-                                                  .With(new AggregateDependencies<ProgrammerAggregate>(null))
-                                                  .Given(new PersonCreated(aggregateId, aggregateId))
-                                                  .Run
-                                                  .Local(_log);
+            var scenario = AggregateScenario.New<ProgrammerAggregate>()
+                                            .With(new AggregateDependencies<ProgrammerAggregate>())
+                                            .Given(new PersonCreated(aggregateId, aggregateId));
+
+            var run = await Run(scenario);
             //aggregate is changed 
-            Assert.Equal(aggregateId, scenario.Aggregate.PersonId);
-            Assert.Equal(aggregateId, scenario.Aggregate.Id);
+            Assert.Equal(aggregateId, run.Aggregate.PersonId);
+            Assert.Equal(aggregateId, run.Aggregate.Id);
 
             //no events was produced
-            Assert.Empty(scenario.ProducedEvents);
+            Assert.Empty(run.ProducedEvents);
         }
 
         [Fact]
@@ -197,14 +194,17 @@ namespace GridDomain.Tests.Unit.Scenario
         {
             var aggregateId = "personA";
 
-            await AggregateScenario.New<Balloon>()
-                                   .With(new BalloonDependencies())
-                                   .When(new InflateNewBallonCommand(42, aggregateId))
-                                   .Then(new BalloonCreated("420", aggregateId))
-                                   .Run
-                                   .Local(_log)
-                                   .Check()
-                                   .ShouldThrow<ProducedEventsDifferException>();
+            var builder = AggregateScenario.New<Balloon>()
+                                           .With(new BalloonDependencies())
+                                           .When(new InflateNewBallonCommand(42, aggregateId))
+                                           .Then(new BalloonCreated("420", aggregateId));
+
+
+            var local = Run(builder);
+
+            await local
+                  .Check()
+                  .ShouldThrow<ProducedEventsDifferException>();
         }
 
         [Fact]
@@ -213,15 +213,16 @@ namespace GridDomain.Tests.Unit.Scenario
             var aggregateId = Guid.NewGuid()
                                   .ToString();
 
-            await AggregateScenario.New<Balloon>()
-                                   .With(new BalloonDependencies())
-                                   .When(new InflateNewBallonCommand(42, aggregateId))
-                                   .Then(new BalloonCreated("420", aggregateId),
-                                         new BalloonTitleChanged("42", aggregateId))
-                                   .Run
-                                   .Local(_log)
-                                   .Check()
-                                   .ShouldThrow<ProducedEventsCountMismatchException>();
+            var aggregateScenarioBuilder = AggregateScenario.New<Balloon>()
+                                                            .With(new BalloonDependencies())
+                                                            .When(new InflateNewBallonCommand(42, aggregateId))
+                                                            .Then(new BalloonCreated("420", aggregateId),
+                                                                  new BalloonTitleChanged("42", aggregateId));
+
+            var local = Run(aggregateScenarioBuilder);
+            await local
+                  .Check()
+                  .ShouldThrow<ProducedEventsCountMismatchException>();
         }
 
         [Fact]
@@ -230,15 +231,16 @@ namespace GridDomain.Tests.Unit.Scenario
             var aggregateId = Guid.NewGuid()
                                   .ToString();
 
-            await AggregateScenario.New<Balloon>()
-                                   .With(new BalloonDependencies())
-                                   .When(new CreateBalanceCommand(42, aggregateId))
-                                   .Then(new BalloonCreated("420", aggregateId),
-                                         new BalloonTitleChanged("42", aggregateId))
-                                   .Run
-                                   .Local(_log)
-                                   .Check()
-                                   .ShouldThrow((Predicate<CannotFindAggregateCommandHandlerExeption>) null);
+            var aggregateScenarioBuilder = AggregateScenario.New<Balloon>()
+                                                            .With(new BalloonDependencies())
+                                                            .When(new CreateBalanceCommand(42, aggregateId))
+                                                            .Then(new BalloonCreated("420", aggregateId),
+                                                                  new BalloonTitleChanged("42", aggregateId));
+            var local = Run(aggregateScenarioBuilder);
+
+            await local
+                  .Check()
+                  .ShouldThrow<UnknownCommandExeption>();
         }
 
         [Fact]
@@ -247,13 +249,14 @@ namespace GridDomain.Tests.Unit.Scenario
             var aggregateId = Guid.NewGuid()
                                   .ToString();
 
-            await AggregateScenario.New<Balloon>()
-                                   .With(new BalloonDependencies())
-                                   .When(new PlanTitleWriteAndBlowCommand(43, aggregateId, TimeSpan.FromMilliseconds(50)))
-                                   .Run
-                                   .Local(_log)
-                                   .Check()
-                                   .ShouldThrow((Predicate<BalloonException>) null);
+            var aggregateScenarioBuilder = AggregateScenario.New<Balloon>()
+                                                            .With(new BalloonDependencies())
+                                                            .When(new PlanTitleWriteAndBlowCommand(43, aggregateId, TimeSpan.FromMilliseconds(50)));
+
+            var local = Run(aggregateScenarioBuilder);
+            await local
+                  .Check()
+                  .ShouldThrow((Predicate<BalloonException>) null);
         }
     }
 }

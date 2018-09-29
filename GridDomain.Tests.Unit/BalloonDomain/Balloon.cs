@@ -127,6 +127,8 @@ namespace GridDomain.Tests.Unit.BalloonDomain
                 case PlanTitleWriteAndBlowCommand c:
                     await PlanWriteTitleToBlow(c.Parameter, c.SleepTime);
                     break;
+                default:
+                    throw new UnknownCommandExeption(typeof(Balloon),command.GetType());
                 
             }
 

@@ -13,7 +13,6 @@ namespace GridDomain.EventSourcing
                                       ISnapshot,
                                       IEquatable<IAggregate>,
                                       IEventList
-                                    //  IEventPersistentObserver
                                       
     {
         protected readonly List<DomainEvent> _uncommittedEvents = new List<DomainEvent>(7);

@@ -9,7 +9,7 @@ namespace GridDomain.Scenarios {
         public AggregateScenarioRun(IAggregateScenario scenario, TAggregate aggregate, IReadOnlyCollection<DomainEvent> producedEvents, ILogger log)
         {
             Aggregate = aggregate;
-            ProducedEvents = producedEvents;
+            ProducedEvents = producedEvents ?? new DomainEvent[]{};
             Log = log;
             Scenario = scenario;
         }

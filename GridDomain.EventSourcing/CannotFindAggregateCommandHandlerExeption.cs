@@ -2,13 +2,13 @@ using System;
 
 namespace GridDomain.EventSourcing
 {
-    public class CannotFindAggregateCommandHandlerExeption : Exception
+    public class UnknownCommandExeption : Exception
     {
-        public CannotFindAggregateCommandHandlerExeption()
+        public UnknownCommandExeption()
         {
             
         }
-        public CannotFindAggregateCommandHandlerExeption(Type type, Type commandType)
+        public UnknownCommandExeption(Type type, Type commandType)
         {
             Type = type;
             CommandType = commandType;

@@ -1,10 +1,20 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Configuration;
 using GridDomain.EventSourcing;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 
 namespace GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain
 {
+
+    public class ProgrammerAggregateDomainConfiguration : IDomainConfiguration
+    {
+        public void Register(IDomainBuilder builder)
+        {
+            builder.RegisterAggregate(new AggregateDependencies<ProgrammerAggregate>());
+        }
+    }
+    
     public class ProgrammerAggregate : ConventionAggregate
     {
         private ProgrammerAggregate(string id) : base(id)

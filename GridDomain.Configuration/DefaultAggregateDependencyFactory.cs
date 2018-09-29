@@ -9,12 +9,12 @@ namespace GridDomain.Configuration {
     {
         public static AggregateDependencies<TAggregate> New<TAggregate>(IAggregateCommandsHandlerDescriptor handler, IMessageRouteMap mapProducer=null) where TAggregate : IAggregate
         {
-            return new AggregateDependencies<TAggregate>(handler,mapProducer);
+            return new AggregateDependencies<TAggregate>(mapProducer);
         }
         
         public static AggregateDependencies<TCommandAggregate> ForCommandAggregate<TCommandAggregate>(IAggregateFactory factory = null) where TCommandAggregate : ConventionAggregate
         {
-            var depFactory = new AggregateDependencies<TCommandAggregate>(null);
+            var depFactory = new AggregateDependencies<TCommandAggregate>();
             if (factory != null)
                 depFactory.AggregateFactory = factory;
             return depFactory;
@@ -26,8 +26,7 @@ namespace GridDomain.Configuration {
     {
         private readonly IMessageRouteMap _routeMap;
 
-        public AggregateDependencies(IAggregateCommandsHandlerDescriptor descriptor=null,
-                                     IMessageRouteMap mapProducer = null)
+        public AggregateDependencies(IMessageRouteMap mapProducer = null)
         {
             _routeMap = mapProducer ?? new CustomRouteMap(r => r.RegisterAggregate(new AggregateCommandsHandlerDescriptor<TAggregate>()));
         }

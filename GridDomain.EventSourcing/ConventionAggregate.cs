@@ -26,11 +26,12 @@ namespace GridDomain.EventSourcing
         {
             var func = _commandsRouter.Get(command);
             if(func == null)
-                throw new CannotFindAggregateCommandHandlerExeption();
+                throw new UnknownCommandExeption();
             _uncommittedEvents.Clear();
-            return func.Invoke(command);
+            return func.Invoke(command) ?? NoEvents;
         }
 
+        private Task<IReadOnlyCollection<DomainEvent>> NoEvents { get; } = Task.FromResult<IReadOnlyCollection<DomainEvent>>(new DomainEvent[] { });
         private readonly ConventionEventRouter _eventsRouter;
         private readonly TypeCatalog<Func<ICommand,Task<IReadOnlyCollection<DomainEvent>>>,ICommand> _commandsRouter = 
             new TypeCatalog<Func<ICommand,Task<IReadOnlyCollection<DomainEvent>>>,ICommand>();
