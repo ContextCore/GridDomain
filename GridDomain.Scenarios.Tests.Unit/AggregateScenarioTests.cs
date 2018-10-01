@@ -228,17 +228,16 @@ namespace GridDomain.Tests.Unit.Scenario
         [Fact]
         public async Task When_defined_scenario_try_execute_missing_command_on_default_handler_it_throws_exception()
         {
-            var aggregateId = Guid.NewGuid()
-                                  .ToString();
+            var aggregateId = "test_aggregate";
 
             var aggregateScenarioBuilder = AggregateScenario.New<Balloon>()
                                                             .With(new BalloonDependencies())
                                                             .When(new CreateBalanceCommand(42, aggregateId))
                                                             .Then(new BalloonCreated("420", aggregateId),
                                                                   new BalloonTitleChanged("42", aggregateId));
-            var local = Run(aggregateScenarioBuilder);
+            var run = Run(aggregateScenarioBuilder);
 
-            await local
+            await run
                   .Check()
                   .ShouldThrow<UnknownCommandExeption>();
         }

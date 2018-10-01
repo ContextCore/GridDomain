@@ -194,7 +194,9 @@ namespace GridDomain.Node.Cluster.CommandPipe
                              {
                                  if (m is IShardedMessageMetadataEnvelop env && env.Message is ICommand cmd)
                                  {
-                                     return cmd.AggregateName;
+                                     if(_aggregatesRegions.ContainsKey(cmd.AggregateName))
+                                          return cmd.AggregateName;
+                                     throw new UnknownCommandExeption();
                                  }
 
                                  throw new InvalidMessageException(m.ToString());

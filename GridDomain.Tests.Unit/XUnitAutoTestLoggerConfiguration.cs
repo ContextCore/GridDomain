@@ -10,6 +10,7 @@ using GridDomain.Node.Actors.CommandPipe.Messages;
 using GridDomain.Node.Actors.ProcessManagers;
 using GridDomain.Node.Actors.ProcessManagers.Messages;
 using Serilog.Events;
+using Serilog.Filters;
 using Xunit.Abstractions;
 
 namespace GridDomain.Tests.Unit
@@ -19,8 +20,15 @@ namespace GridDomain.Tests.Unit
         public XUnitAutoTestLoggerConfiguration(ITestOutputHelper output, LogEventLevel level = LogEventLevel.Verbose, string logFileName = null):base(level, logFileName)
         {
             this.XUnit(level,output);
+            this.Filter.ByExcluding(Matching.WithProperty<string>("Source", s => s.Contains("Akka.Cluster")));
+            this.Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("ClusterSingletonManager")));
+            this.Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("ClusterCoreDaemon")));
+            this.Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("CoordinatedShutdown")));
         }
 
         
     }
+    
+     
+    
 }
