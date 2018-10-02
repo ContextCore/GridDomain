@@ -8,6 +8,7 @@
       <ProjectReference Include="..\GridDomain.Configuration\GridDomain.Configuration.csproj" />
       <ProjectReference Include="..\GridDomain.EventSourcing\GridDomain.EventSourcing.csproj" />
       <ProjectReference Include="..\GridDomain.Scenarios\GridDomain.Scenarios.csproj" />
+      <ProjectReference Include="..\GridDomain.Tests.Acceptance\GridDomain.Tests.Acceptance.csproj" />
       <ProjectReference Include="..\GridDomain.Tests.Common\GridDomain.Tests.Common.csproj" />
       <ProjectReference Include="..\GridDomain.Tests.Unit\GridDomain.Tests.Unit.csproj" />
     </ItemGroup>

@@ -27,6 +27,11 @@ namespace GridDomain.Scenarios
         {
             return new AggregateScenarioBuilder<T>();
         }
+        public static IAggregateScenarioBuilder<T> New<T>(IAggregateDependencies<T> dependencies) where T : IAggregate
+        {
+            return new AggregateScenarioBuilder<T>().With(dependencies);
+        }
+       
 
         public AggregateScenario(IReadOnlyCollection<DomainEvent> givenEvents,
                                  IReadOnlyCollection<ICommand> givenCommands,

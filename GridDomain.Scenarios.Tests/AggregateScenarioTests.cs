@@ -171,8 +171,7 @@ namespace GridDomain.Scenarios.Tests
         {
             var aggregateId = "personA";
 
-            var scenario = AggregateScenario.New<ProgrammerAggregate>()
-                                            .With(new AggregateDependencies<ProgrammerAggregate>())
+            var scenario = AggregateScenario.New(new AggregateDependencies<ProgrammerAggregate>())
                                             .Given(new PersonCreated(aggregateId, aggregateId));
 
             var run = await Run(scenario);
