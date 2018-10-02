@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Configuration;
 using GridDomain.EventSourcing;
-using GridDomain.Scenarios;
 using GridDomain.Scenarios.Builders;
 using GridDomain.Scenarios.Runners;
 using GridDomain.Tests.Common;
@@ -12,20 +11,16 @@ using GridDomain.Tests.Unit.BalloonDomain.Commands;
 using GridDomain.Tests.Unit.BalloonDomain.Configuration;
 using GridDomain.Tests.Unit.BalloonDomain.Events;
 using GridDomain.Tests.Unit.EventsUpgrade.Domain.Commands;
-using GridDomain.Tests.Unit.ProcessManagers;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
-using Remotion.Linq.Clauses.ResultOperators;
-using Serilog;
-using Serilog.Core;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.Scenario
+namespace GridDomain.Scenarios.Tests
 {
-    public abstract class AggregateScenarioTests : ScenarioRunnerTest
+    public class AggregateScenarioTests : ScenarioRunnerTest
     {
 
-        public AggregateScenarioTests(ITestOutputHelper output) : base(output) { }
+        protected AggregateScenarioTests(ITestOutputHelper output) : base(output) { }
 
       
         [Fact]

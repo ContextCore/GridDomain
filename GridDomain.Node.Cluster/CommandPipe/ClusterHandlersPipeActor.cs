@@ -40,9 +40,9 @@ namespace GridDomain.Node.Cluster.CommandPipe {
 
     public class ClusterHandlersPipeActor : HandlersPipeActor
     {
-        public ClusterHandlersPipeActor(MessageMap map, IActorRef processActor) : base(CreateRoutess(Context, map), processActor) { }
+        public ClusterHandlersPipeActor(MessageMap map, IActorRef processActor) : base(CreateRoutes(Context, map), processActor) { }
 
-        private static IMessageProcessor CreateRoutess(IUntypedActorContext system, MessageMap messageRouteMap)
+        private static IMessageProcessor CreateRoutes(IUntypedActorContext system, MessageMap messageRouteMap)
         {
             var catalog = new HandlersDefaultProcessor();
             foreach (var reg in messageRouteMap.Registratios)

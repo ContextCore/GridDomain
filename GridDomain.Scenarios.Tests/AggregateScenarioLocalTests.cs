@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
-using GridDomain.Scenarios;
 using GridDomain.Scenarios.Runners;
 using Xunit.Abstractions;
 
-namespace GridDomain.Tests.Unit.Scenario {
+namespace GridDomain.Scenarios.Tests {
     public class AggregateScenarioLocalTests : AggregateScenarioTests
     {
         protected override Task<IAggregateScenarioRun<T>> Run<T>(IAggregateScenario<T> scenario)

@@ -4,13 +4,10 @@ using System.Threading.Tasks;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Commands;
 using GridDomain.Tests.Unit.ProcessManagers.SoftwareProgrammingDomain.Events;
-using Serilog;
 using Xunit;
 using Xunit.Abstractions;
-using AutoFixture;
-using GridDomain.Scenarios;
 
-namespace GridDomain.Tests.Unit.Scenario
+namespace GridDomain.Scenarios.Tests
 {
     public class ProcessScenarioTests
     {

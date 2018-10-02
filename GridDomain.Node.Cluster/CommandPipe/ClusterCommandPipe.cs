@@ -185,7 +185,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
                                           .WithRouter(clusterRouterPool);
 
             HandlersPipeActor = System.ActorOf(handlerActorProps, nameof(ClusterHandlersPipeActorCell));
-        }
+        }                                                          
 
         protected virtual void BuildAggregateCommandingRoutes()
         {
