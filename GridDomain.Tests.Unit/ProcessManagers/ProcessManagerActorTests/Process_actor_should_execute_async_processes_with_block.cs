@@ -35,9 +35,9 @@ namespace GridDomain.Tests.Unit.ProcessManagers.ProcessManagerActorTests
             var creator = new AsyncLongRunningProcessManagerFactory();
 
             _localAkkaEventBusTransport = Sys.InitLocalTransportExtension().Transport;
-            var blackHole = Sys.ActorOf(BlackHoleActor.Props);
+            var blackHole = Sys.ActorOf(BlackHoleActor.Props, "BlackHole");
 
-            var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new HandlersDefaultProcessor(), blackHole)));
+            var messageProcessActor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(new HandlersDefaultProcessor(), blackHole.Path.ToString())));
             _processId = Guid.NewGuid().ToString();
 
             var container = new ContainerBuilder();

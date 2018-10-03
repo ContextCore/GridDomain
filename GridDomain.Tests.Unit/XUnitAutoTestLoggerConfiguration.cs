@@ -23,7 +23,14 @@ namespace GridDomain.Tests.Unit
                 .Filter.ByExcluding(Matching.WithProperty<string>("Source", s => s.Contains("Akka.Cluster")))
                 .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("ClusterSingletonManager")))
                 .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("ClusterCoreDaemon")))
-                .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("CoordinatedShutdown")));
+                .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("CoordinatedShutdown")))
+                .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("ClusterRemoteWatcher")))
+                .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("EndpointWriter")))
+                .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("LocalActorRef")))
+                .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("DummyClassForStringSources")))
+                .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("ShardRegion")))
+                .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("PersistentShardCoordinator")));
+               // .Filter.ByExcluding(Matching.WithProperty<string>("Class", s => s.Contains("CoordinatedShutdown")));
         }
 
         

@@ -25,7 +25,9 @@ namespace GridDomain.Node.Cluster.CommandPipe {
 
         public DICellActor(string residentName=null)
         {
-            var props = Context.System.DI()
+            var diActorSystemAdapter = Context.System.DI();
+            
+            var props = diActorSystemAdapter
                                .Props<TResident>();
 
             _handler = Context.ActorOf(props,residentName ?? "Resident");
@@ -40,7 +42,7 @@ namespace GridDomain.Node.Cluster.CommandPipe {
 
     public class ClusterHandlersPipeActor : HandlersPipeActor
     {
-        public ClusterHandlersPipeActor(MessageMap map, IActorRef processActor) : base(CreateRoutes(Context, map), processActor) { }
+        public ClusterHandlersPipeActor(MessageMap map, string processActorPath) : base(CreateRoutes(Context, map), processActorPath) { }
 
         private static IMessageProcessor CreateRoutes(IUntypedActorContext system, MessageMap messageRouteMap)
         {

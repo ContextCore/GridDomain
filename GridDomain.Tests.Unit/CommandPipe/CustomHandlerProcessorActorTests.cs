@@ -26,7 +26,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             catalog.Add<BalloonCreated>(new FireAndForgetActorMessageProcessor(delayActor));
             catalog.Add<BalloonTitleChanged>(new FireAndForgetActorMessageProcessor(delayActor));
 
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor.Path.ToString())));
 
             var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid().ToString());
             var sampleAggregateChangedEvent = new BalloonTitleChanged("1", Guid.NewGuid().ToString());
@@ -52,7 +52,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
         {
             var catalog = new HandlersDefaultProcessor();
             Sys.InitLocalTransportExtension();
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog,  TestActor.Path.ToString())));
 
             var sampleAggregateCreatedEvent = new BalloonCreated("1", Guid.NewGuid().ToString());
 
@@ -76,7 +76,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(delayActor));
             catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(delayActor));
 
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor.Path.ToString())));
 
 
             var messageMetadataEnvelop = MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString()));
@@ -115,7 +115,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var catalog = new HandlersDefaultProcessor();
             catalog.Add<BalloonCreated>(new SyncProjectionProcessor(TestActor));
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor.Path.ToString())));
 
             var msg = MessageMetadataEnvelop.New(new Inherited());
 
@@ -133,7 +133,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
 
             var catalog = new HandlersDefaultProcessor();
             catalog.Add<BalloonCreated>(new FireAndForgetActorMessageProcessor(TestActor));
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor.Path.ToString())));
 
             var messageMetadataEnvelop = MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString()));
             actor.Tell(new HandlersPipeActor.Project(TestActor,messageMetadataEnvelop));
@@ -164,7 +164,7 @@ namespace GridDomain.Tests.Unit.CommandPipe
             catalog.Add<BalloonTitleChanged>(new FireAndForgetActorMessageProcessor(slowHandler));
             catalog.Add<BalloonTitleChanged>(new SyncProjectionProcessor(fastHandler));
 
-            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor)));
+            var actor = Sys.ActorOf(Props.Create(() => new HandlersPipeActor(catalog, TestActor.Path.ToString())));
 
             actor.Tell(new HandlersPipeActor.Project(TestActor, MessageMetadataEnvelop.New(new BalloonCreated("1", Guid.NewGuid().ToString()))));
             actor.Tell(new HandlersPipeActor.Project(TestActor, MessageMetadataEnvelop.New(new BalloonTitleChanged("1", Guid.NewGuid().ToString()))));

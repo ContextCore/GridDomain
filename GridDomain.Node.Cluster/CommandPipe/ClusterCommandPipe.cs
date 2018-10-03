@@ -224,8 +224,7 @@ namespace GridDomain.Node.Cluster.CommandPipe
                      .WithParameters(new Parameter[]
                                      {
                                          new TypedParameter(typeof(MessageMap), _messageMap),
-                                         new ResolvedParameter((pi, ctx) => pi.ParameterType == typeof(IActorRef),
-                                                               (pi, ctx) => ctx.ResolveNamed<IActorRef>(Actors.CommandPipe.ProcessesPipeActor.ProcessManagersPipeActorRegistrationName))
+                                         new TypedParameter(typeof(string), "/user/Processes")
                                      });
 
             container.Register((c, p) => ProcessesPipeActor)

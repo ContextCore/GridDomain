@@ -42,7 +42,7 @@ namespace GridDomain.Node
             
             ProcessesPipeActor = System.ActorOf(Props.Create(() => new LocalProcessesPipeActor(_processCatalog)), nameof(LocalProcessesPipeActor));
 
-            HandlersPipeActor = System.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, ProcessesPipeActor)),
+            HandlersPipeActor = System.ActorOf(Props.Create(() => new HandlersPipeActor(_handlersCatalog, "/user/"+nameof(LocalProcessesPipeActor))),
                                                nameof(Actors.CommandPipe.HandlersPipeActor));
 
             CommandExecutor = System.ActorOf(Props.Create(() => new AggregatesPipeActor(_aggregatesCatalog)),
