@@ -66,10 +66,6 @@ namespace GridDomain.Scenarios.Runners {
             return new AggregateScenarioRun<TAggregate>(scenario, aggregate,new DomainEvent[]{}, Log);
         }
 
-        public class CannotFindAggregateException : Exception { }
-        public class CannotSaveEventsInClusterWithoutPersistenceException : Exception { }
-
-
         public ILogger Log => _nodes.First().Log;
     }
 }

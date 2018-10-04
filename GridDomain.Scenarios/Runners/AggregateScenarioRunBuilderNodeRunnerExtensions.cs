@@ -87,18 +87,30 @@ namespace GridDomain.Scenarios.Runners
                                                        + s.GetAddress()
                                                           .Port)
                                           .CreateLogger())
-                                .OnClusterUp(async s =>
-                                             {
-                                                 var ext = s.GetExtension<LoggingExtension>();
-                                                 var node = new ClusterNodeBuilder()
-                                                            .ActorSystem(() => s)
-                                                            .DomainConfigurations(domainConfig)
-                                                            .Log(ext.Logger)
-                                                            .Build();
+                                .AdditionalInit(async s =>
+                                                {
+                                                    var ext = s.GetExtension<LoggingExtension>();
+                                                    var node = new ClusterNodeBuilder()
+                                                               .ActorSystem(() => s)
+                                                               .DomainConfigurations(domainConfig)
+                                                               .Log(ext.Logger)
+                                                               .Build();
 
-                                                 nodes.Add(node);
-                                                 await node.Start();
-                                             });
+                                                    nodes.Add(node);
+                                                    await node.Start();
+                                                });
+//                                .OnClusterUp(async s =>
+//                                             {
+//                                                 var ext = s.GetExtension<LoggingExtension>();
+//                                                 var node = new ClusterNodeBuilder()
+//                                                            .ActorSystem(() => s)
+//                                                            .DomainConfigurations(domainConfig)
+//                                                            .Log(ext.Logger)
+//                                                            .Build();
+//
+//                                                 nodes.Add(node);
+//                                                 await node.Start();
+//                                             });
 
 
             using (await clusterConfig.CreateCluster())
