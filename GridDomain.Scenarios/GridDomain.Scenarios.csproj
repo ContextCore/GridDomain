@@ -19,6 +19,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.4.0" />
+    <PackageReference Include="CompareNETObjects" Version="4.57.0" />
+    <PackageReference Include="Serilog" Version="2.8.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="UnitTest1.cs" />

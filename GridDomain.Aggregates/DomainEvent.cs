@@ -5,23 +5,25 @@ namespace GridDomain.Aggregates
 {
     public class DomainEvent<T> : DomainEvent, IFor<T>
     {
-        protected DomainEvent(string sourceId, string processId = null, string id = null, DateTime? createdTime = null, int sequence = 0) : base(sourceId, processId, id, createdTime) { }
+        protected DomainEvent(string sourceId, long version = 0, string id = null, DateTime? createdTime = null) : base(sourceId, version, id, createdTime) { }
     }
 
-    public class DomainEvent : ISourcedEvent, IHaveId, IHaveProcessId
+    public class DomainEvent : ISourcedEvent, IHaveId
     {
-        protected DomainEvent(string sourceId, string processId = null, string id = null, DateTime? createdTime = null)
+        protected DomainEvent(string sourceId, long version = 0, string id = null, DateTime? createdTime = null)
         {
             SourceId = sourceId;
             CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
-            ProcessId = processId;
             Id = id ?? Guid.NewGuid().ToString();
         }
 
         //Source of the event - aggregate that created it
         //private setter for serializers
         public string SourceId { get; private set; }
-        public string ProcessId { get; internal set; }
+        /// <summary>
+        /// Version of the Aggregate to witch this event should be applied
+        /// </summary>
+        public long Version { get; set; }
         public DateTime CreatedTime { get; private set; }
         public string Id { get; private set; }
 
@@ -39,12 +41,12 @@ namespace GridDomain.Aggregates
             return Id.GetHashCode();
         }
 
-        public DomainEvent CloneForProcess(string processId)
-        {
-            var evt = (DomainEvent) MemberwiseClone();
-            evt.ProcessId = processId;
-            return evt;
-        }
+//        public DomainEvent CloneForProcess(string processId)
+//        {
+//            var evt = (DomainEvent) MemberwiseClone();
+//            evt.ProcessId = processId;
+//            return evt;
+//        }
 
     }
 }

@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Aggregates.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Scenarios", "GridDomain.Scenarios\GridDomain.Scenarios.csproj", "{74580880-4B29-4193-8208-FACD8B53AB57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Scenarios.Tests", "GridDomain.Scenarios.Tests\GridDomain.Scenarios.Tests.csproj", "{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{74580880-4B29-4193-8208-FACD8B53AB57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74580880-4B29-4193-8208-FACD8B53AB57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74580880-4B29-4193-8208-FACD8B53AB57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
