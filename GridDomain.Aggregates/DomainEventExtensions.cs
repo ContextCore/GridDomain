@@ -5,9 +5,9 @@ namespace GridDomain.Aggregates
 {
     public static class DomainEventExtensions
     {
-        public static Task<IReadOnlyCollection<DomainEvent>> AsCommandResult(this DomainEvent e)
+        public static Task<IReadOnlyCollection<IDomainEvent>> AsCommandResult(this IDomainEvent e)
         {
-            return Task.FromResult((IReadOnlyCollection<DomainEvent>)new [] {e});
+            return Task.FromResult((IReadOnlyCollection<IDomainEvent>)new [] {e});
         }
     }
 }

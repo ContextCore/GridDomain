@@ -6,7 +6,7 @@ namespace GridDomain.Scenarios {
     public interface IAggregateScenarioRun<out TAggregate> where TAggregate : IAggregate
     {
         TAggregate Aggregate { get; }
-        IReadOnlyCollection<DomainEvent> ProducedEvents { get; }
+        IReadOnlyCollection<IDomainEvent> ProducedEvents { get; }
         IAggregateScenario Scenario { get; }
         ILogger Log { get; }
     }

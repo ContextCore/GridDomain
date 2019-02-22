@@ -25,7 +25,7 @@ namespace GridDomain.Scenarios.Runners
                 aggregate.Apply(evt);
             }
 
-            IReadOnlyCollection<DomainEvent> producedEvents = null;
+            IReadOnlyCollection<IDomainEvent> producedEvents = null;
             //When
             foreach (var cmd in scenario.GivenCommands)
             {

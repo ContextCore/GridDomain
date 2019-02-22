@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Scenarios", "Gri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Scenarios.Tests", "GridDomain.Scenarios.Tests\GridDomain.Scenarios.Tests.csproj", "{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Node", "GridDomain.Node\GridDomain.Node.csproj", "{0D0AF261-0206-4B41-8748-A4DE10ECBFF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Node.Tests", "GridDomain.Node.Tests\GridDomain.Node.Tests.csproj", "{723268F2-33D4-4913-9BCF-8C8146C99A2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,13 @@ Global
 		{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2766E519-EE7C-4C5C-BC43-F49AAA1627F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D0AF261-0206-4B41-8748-A4DE10ECBFF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D0AF261-0206-4B41-8748-A4DE10ECBFF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D0AF261-0206-4B41-8748-A4DE10ECBFF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D0AF261-0206-4B41-8748-A4DE10ECBFF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{723268F2-33D4-4913-9BCF-8C8146C99A2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{723268F2-33D4-4913-9BCF-8C8146C99A2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{723268F2-33D4-4913-9BCF-8C8146C99A2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{723268F2-33D4-4913-9BCF-8C8146C99A2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

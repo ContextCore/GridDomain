@@ -1,14 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.Aggregates;
 
-namespace GridDomain.Aggregates.Tests
-{
+namespace GridDomain.Node.Tests
+{  
+    
+    public enum Mood
+    {
+        Good,
+        Neutral,
+        Bad
+    }
+    
     public class Cat : IAggregate
     {
+     
         public string Id { get; private set; }
         public string Name => Id;
-        
+      
         public Mood Mood { get; private set; }
         public void Apply(IDomainEvent @event)
         {
@@ -18,7 +28,7 @@ namespace GridDomain.Aggregates.Tests
                     Id = b.Name;
                     Mood = Mood.Bad;
                     break;
-                
+                case Tired t:
                 case GotHungry h:
                     switch (Mood)
                     {
@@ -49,9 +59,23 @@ namespace GridDomain.Aggregates.Tests
                     return new Born(c.AggregateId){Version = Version}.AsCommandResult();
                 case FeelHungryCommand c:
                     return new GotHungry(c.AggregateId){Version = Version}.AsCommandResult();
+                case PetCommand c:
+                    switch (Mood)
+                    {
+                        case Mood.Good: return new Tired(Name){Version = Version}.AsCommandResult();
+                        case Mood.Neutral: return new GotHungry(Name){Version = Version}.AsCommandResult();
+                        case Mood.Bad: throw new IsUnhappyException();
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    break;
                 default:
                     throw new UnknownCommandException();
             }
+        }
+
+        public class IsUnhappyException : Exception
+        {
         }
 
 
@@ -74,6 +98,14 @@ namespace GridDomain.Aggregates.Tests
             {
             }
         }
+        
+        public class PetCommand : Command<Cat>
+        {
+            public PetCommand(string catName):base(catName)
+            {
+            }
+        }
+
 
         
         public class Born: DomainEvent<Cat>
@@ -93,6 +125,13 @@ namespace GridDomain.Aggregates.Tests
             }
         }
         
+        public class Tired:DomainEvent<Cat>
+        {
+            public Tired(string name) : base(name)
+            {
+            }
+        }
+        
         public class Feeded:DomainEvent<Cat>
         {
             public Feeded(string name) : base(name)
@@ -100,8 +139,6 @@ namespace GridDomain.Aggregates.Tests
             }
         }
         
-        public class UnknownCommandException : Exception
-        {
-        }
+       
     }
 }

@@ -48,7 +48,7 @@ namespace GridDomain.Aggregates
             //   ((IAggregate) this).Apply(ev);
         }
 
-        public abstract Task<IReadOnlyCollection<DomainEvent>> Execute(ICommand command);
+        public abstract Task<IReadOnlyCollection<IDomainEvent>> Execute(ICommand command);
 
         public override bool Equals(object obj)
         {
