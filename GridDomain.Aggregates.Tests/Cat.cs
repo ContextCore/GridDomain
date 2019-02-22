@@ -18,7 +18,7 @@ namespace GridDomain.Aggregates.Tests
         public string Name => Id;
         
         public Mood Mood { get; private set; }
-        public void Apply(DomainEvent @event)
+        public void Apply(IDomainEvent @event)
         {
             switch (@event)
             {

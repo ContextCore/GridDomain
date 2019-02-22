@@ -5,7 +5,7 @@ namespace GridDomain.Aggregates
 {
     public interface ICommand : IHaveId
     {
-        string ProcessId { get; set; }
+       // string ProcessId { get; set; }
         string AggregateId { get; }
         string AggregateName { get; }
     }
@@ -17,7 +17,7 @@ namespace GridDomain.Aggregates
     }
     
     
-      public class Command : ICommand
+    public class Command : ICommand
     {
         protected Command(string id, string aggregateId, string processId, DateTime time, string aggregateName)
         {

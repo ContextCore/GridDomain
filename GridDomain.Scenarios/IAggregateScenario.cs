@@ -5,8 +5,8 @@ namespace GridDomain.Scenarios
 {
     public interface IAggregateScenario
     {
-        IReadOnlyCollection<DomainEvent> ExpectedEvents { get; }
-        IReadOnlyCollection<DomainEvent> GivenEvents { get; }
+        IReadOnlyCollection<IDomainEvent> ExpectedEvents { get; }
+        IReadOnlyCollection<IDomainEvent> GivenEvents { get; }
         IReadOnlyCollection<ICommand> GivenCommands { get; }
         string AggregateId { get; }
         string Name { get;}

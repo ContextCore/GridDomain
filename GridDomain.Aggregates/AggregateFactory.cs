@@ -20,7 +20,7 @@ namespace GridDomain.Aggregates
             if (constructor == null)
                 throw new ConventionBasedConstructorNotFound();
 
-            var aggregate = (IAggregate) constructor.Invoke(new object[] {id});
+            var aggregate = (IAggregate) constructor.Invoke(new object[] {});
             return aggregate;
         }
 

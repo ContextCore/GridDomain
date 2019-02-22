@@ -7,9 +7,9 @@ namespace GridDomain.Scenarios
 {
     public class AggregateScenario<T> : AggregateScenario, IAggregateScenario<T> where T : IAggregate
     {
-        public AggregateScenario(IReadOnlyCollection<DomainEvent> givenEvents,
+        public AggregateScenario(IReadOnlyCollection<IDomainEvent> givenEvents,
                                  IReadOnlyCollection<ICommand> givenCommands,
-                                 IReadOnlyCollection<DomainEvent> expectedEvents,
+                                 IReadOnlyCollection<IDomainEvent> expectedEvents,
                                  IAggregateDependencies<T> factory,
                                  string name) : base(givenEvents, givenCommands, expectedEvents, name)
         {
@@ -33,9 +33,9 @@ namespace GridDomain.Scenarios
         }
        
 
-        public AggregateScenario(IReadOnlyCollection<DomainEvent> givenEvents,
+        public AggregateScenario(IReadOnlyCollection<IDomainEvent> givenEvents,
                                  IReadOnlyCollection<ICommand> givenCommands,
-                                 IReadOnlyCollection<DomainEvent> expectedEvents,
+                                 IReadOnlyCollection<IDomainEvent> expectedEvents,
                                  string name)
         {
             GivenEvents = givenEvents;
@@ -74,15 +74,15 @@ namespace GridDomain.Scenarios
 
             AggregateId = eventsAggregateId ?? commandAggregateId;
 
-            if (AggregateId == null)
-                throw new CannotDetermineAggregateIdException();
+//            if (AggregateId == null)
+//                throw new CannotDetermineAggregateIdException();
 
-            if (ExpectedEvents != null && ExpectedEvents.Any(e => e.SourceId != AggregateId))
-                throw new ExpectedEventsBelongToDifferentAggregateTypesException();
+//            if (ExpectedEvents != null && ExpectedEvents.Any(e => e.SourceId != AggregateId))
+ //               throw new ExpectedEventsBelongToDifferentAggregateTypesException();
         }
 
-        public IReadOnlyCollection<DomainEvent> ExpectedEvents { get; }
-        public IReadOnlyCollection<DomainEvent> GivenEvents { get; }
+        public IReadOnlyCollection<IDomainEvent> ExpectedEvents { get; }
+        public IReadOnlyCollection<IDomainEvent> GivenEvents { get; }
         public IReadOnlyCollection<ICommand> GivenCommands { get; }
         public string AggregateId { get; }
 

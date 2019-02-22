@@ -62,8 +62,8 @@ namespace GridDomain.Scenarios
         /// </summary>
         /// <param name="expected"></param>
         /// <param name="published"></param>
-        public static void CompareEvents(IEnumerable<DomainEvent> expected,
-                                         IEnumerable<DomainEvent> published,
+        public static void CompareEvents(IEnumerable<IDomainEvent> expected,
+                                         IEnumerable<IDomainEvent> published,
                                          CompareLogic logic = null)
         {
             CompareByLogic(expected, published, logic ?? new CompareLogic(Ignore_Id_DateCreated_History));

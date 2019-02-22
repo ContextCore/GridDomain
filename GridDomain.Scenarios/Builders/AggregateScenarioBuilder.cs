@@ -6,9 +6,9 @@ namespace GridDomain.Scenarios.Builders
 
     public class AggregateScenarioBuilder<T> : IAggregateScenarioBuilder<T> where T : IAggregate
     {
-        private DomainEvent[] _domainEvents = { };
-        private Command[] _commands = { };
-        private DomainEvent[] _expectedEvents = { };
+        private IDomainEvent[] _domainEvents = { };
+        private ICommand[] _commands = { };
+        private IDomainEvent[] _expectedEvents = { };
         private IAggregateDependencies<T> _aggregateDependencies;
         private string _name = "AggregateScenario_"+typeof(T).Name;
 
@@ -28,19 +28,19 @@ namespace GridDomain.Scenarios.Builders
 
         public class InvalidScenarioNameException : Exception { }
 
-        public IAggregateScenarioBuilder<T> Given(params DomainEvent[] events)
+        public IAggregateScenarioBuilder<T> Given(params IDomainEvent[] events)
         {
             _domainEvents = events;
             return this;
         }
 
-        public IAggregateScenarioBuilder<T> When(params Command[] commands)
+        public IAggregateScenarioBuilder<T> When(params ICommand[] commands)
         {
             _commands = commands;
             return this;
         }
 
-        public IAggregateScenarioBuilder<T> Then(params DomainEvent[] exprectedEvents)
+        public IAggregateScenarioBuilder<T> Then(params IDomainEvent[] exprectedEvents)
         {
             _expectedEvents = exprectedEvents;
             return this;

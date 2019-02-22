@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace GridDomain.Scenarios.Tests 
 {
-    public  class ScenarioRunnerTest
+    public abstract class ScenarioRunnerTest
     {
         protected readonly Logger Logger;
 
@@ -16,11 +16,8 @@ namespace GridDomain.Scenarios.Tests
             Logger = new LoggerConfiguration().WriteTo.XunitTestOutput(output).CreateLogger();
         }
 
-        protected virtual Task<IAggregateScenarioRun<T>> Run<T>(
-            IAggregateScenario<T> scenario) where T : class, IAggregate
-        {
-            return null;
-        }
+        protected abstract Task<IAggregateScenarioRun<T>> Run<T>(
+            IAggregateScenario<T> scenario) where T : class, IAggregate;
 
         protected Task<IAggregateScenarioRun<T>> Run<T>(
             IAggregateScenarioBuilder<T> scenarioBuilder) where T : class, IAggregate

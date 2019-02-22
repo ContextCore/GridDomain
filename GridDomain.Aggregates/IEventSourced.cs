@@ -3,7 +3,7 @@ namespace GridDomain.Aggregates
     public interface IEventSourced
     {
         string Id { get; }
-        void Apply(DomainEvent @event);
+        void Apply(IDomainEvent @event);
         int Version { get; }
     }
 

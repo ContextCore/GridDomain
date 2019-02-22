@@ -32,6 +32,14 @@ namespace GridDomain.Scenarios.Runners
                 try
                 {
                     producedEvents = await aggregate.Execute(cmd);
+
+                    foreach (var e in producedEvents)
+                    {
+                        if(e.Version == aggregate.Version)
+                            aggregate.Apply(e);
+                        else if (e.Version > aggregate.Version)
+                            throw new AggregateVersionMismatchException(); 
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -43,5 +51,9 @@ namespace GridDomain.Scenarios.Runners
             //Then
             return new AggregateScenarioRun<TAggregate>(scenario, aggregate, producedEvents, Log);
         }
+    }
+    
+    public class AggregateVersionMismatchException : Exception
+    {
     }
 }

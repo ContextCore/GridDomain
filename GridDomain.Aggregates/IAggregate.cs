@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,6 +9,9 @@ namespace GridDomain.Aggregates
     }
     
     
+    public class UnknownCommandException : Exception
+    {
+    }
     
     public abstract class Aggregate : IAggregate
     {
@@ -19,13 +23,13 @@ namespace GridDomain.Aggregates
         public string Id { get; protected set; }
         public int Version { get; protected set; }
 
-        void IEventSourced.Apply(DomainEvent @event)
+        void IEventSourced.Apply(IDomainEvent @event)
         {
             OnApplyEvent(@event);
             Version++;
         }
 
-        protected abstract void OnApplyEvent(DomainEvent evt);
+        protected abstract void OnApplyEvent(IDomainEvent evt);
 
 
         public virtual bool Equals(IAggregate other)
