@@ -52,8 +52,4 @@ namespace GridDomain.Scenarios.Runners
             return new AggregateScenarioRun<TAggregate>(scenario, aggregate, producedEvents, Log);
         }
     }
-    
-    public class AggregateVersionMismatchException : Exception
-    {
-    }
 }

@@ -4,14 +4,6 @@ using System.Threading.Tasks;
 
 namespace GridDomain.Aggregates.Tests
 {
-    
-    public enum Mood
-    {
-        Good,
-        Neutral,
-        Bad
-    }
-    
     public class Cat : IAggregate
     {
         public string Id { get; private set; }

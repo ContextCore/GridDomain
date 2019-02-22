@@ -8,11 +8,6 @@ namespace GridDomain.Aggregates
         protected DomainEvent(string sourceId, long version = 0, string id = null, DateTime? createdTime = null) : base(sourceId, version, id, createdTime) { }
     }
 
-    public interface IDomainEvent : ISourcedEvent, IHaveId
-    {
-        long Version { get; }
-    }
-    
     public class DomainEvent : IDomainEvent
     {
         protected DomainEvent(string sourceId, long version = 0, string id = null, DateTime? createdTime = null)
