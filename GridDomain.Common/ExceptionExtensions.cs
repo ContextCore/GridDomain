@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace GridDomain.Scenarios.Tests
+namespace GridDomain.Common
 {
     public static class ExceptionExtensions
     {

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace GridDomain.Node.Actors {
+namespace GridDomain.Node.Akka.Actors {
     public class ActorBehavior<T>: IActorBehavior where T:IActorState
     {
         public T State { get; private set; }

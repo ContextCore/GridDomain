@@ -1,7 +1,7 @@
 using System;
 using GridDomain.Common;
 
-namespace GridDomain.Node.AkkaMessaging
+namespace GridDomain.Node.Akka.Actors
 {
     public class EntityActorName
     {

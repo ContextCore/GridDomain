@@ -1,6 +1,4 @@
-using GridDomain.Node;
-
-namespace GridDomain.Common
+namespace GridDomain.Node
 {
     public class MessageMetadata : IMessageMetadata
     {

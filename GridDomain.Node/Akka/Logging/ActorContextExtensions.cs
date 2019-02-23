@@ -2,7 +2,7 @@ using Akka.Actor;
 using Akka.Event;
 using Akka.Logger.Serilog;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka.Logging
 {
 
     public static class ActorContextExtensions

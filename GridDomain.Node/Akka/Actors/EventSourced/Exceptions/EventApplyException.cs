@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.Actors.EventSourced.Exceptions
+namespace GridDomain.Node.Akka.Actors.EventSourced.Exceptions
 {
     internal class EventApplyException : Exception
     {

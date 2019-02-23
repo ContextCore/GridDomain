@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GridDomain.Aggregates
@@ -21,31 +22,30 @@ namespace GridDomain.Aggregates
 
         protected abstract void OnApplyEvent(IDomainEvent evt);
 
-
         public virtual bool Equals(IAggregate other)
         {
             return null != other && other.Id == Id;
         }
 
-        protected async Task Emit<T>(Task<T> evtTask) where T : DomainEvent
+        protected async Task<IReadOnlyCollection<IDomainEvent>> Emit<T>(Task<T> evtTask) where T : DomainEvent
         {
-            Emit(await evtTask);
+           return await Emit(await evtTask);
         }
 
-        protected void Emit(params DomainEvent[] events)
+        protected Task<IReadOnlyCollection<IDomainEvent>> Emit(params IDomainEvent[] events)
         {
-            foreach (var e in events) 
-                ((IAggregate) this).Apply(e);
+            foreach (var e in events)
+            {
+                e.Version = Version;
+                ((IEventSourced)this).Apply(e);
+            }
+                
+            return events.AsCommandResult();
         }
 
         public override int GetHashCode()
         {
             return Id.GetHashCode();
-        }
-
-        public void OnPersist(DomainEvent ev)
-        {
-            //   ((IAggregate) this).Apply(ev);
         }
 
         public abstract Task<IReadOnlyCollection<IDomainEvent>> Execute(ICommand command);

@@ -15,7 +15,7 @@ namespace GridDomain.Node.Akka {
             return builder;
         }
         
-        public static IActorSystemConfigBuilder Remote(this IActorSystemConfigBuilder builder, INodeNetworkAddress network)
+        public static IActorSystemConfigBuilder Remote(this IActorSystemConfigBuilder builder, NodeNetworkAddress network)
         {
             builder.Add(new RemoteConfig(network));
             return builder;

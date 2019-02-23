@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Common;
 
 namespace GridDomain.Scenarios.Tests
 {

@@ -1,5 +1,5 @@
 using System;
 
-namespace GridDomain.Node.Actors.Aggregates {
+namespace GridDomain.Node.Akka.Actors.Aggregates {
     public class CommandAlreadyExecutedException : Exception { }
 }

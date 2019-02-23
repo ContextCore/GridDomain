@@ -1,7 +1,7 @@
 using Akka.Actor;
 using Autofac;
 
-namespace GridDomain.Scheduling.Akka {
+namespace GridDomain.Node.Akka.AggregatesExtension {
     public class AggregatesExtensionProvider : ExtensionIdProvider<AggregatesExtension>
     {
         private readonly IContainer _container;

@@ -2,7 +2,7 @@ using Akka.Actor;
 using Autofac;
 using GridDomain.Aggregates;
 
-namespace GridDomain.Scheduling.Akka {
+namespace GridDomain.Node.Akka.AggregatesExtension {
 
     
     public class AggregatesExtension : IExtension

@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Actors {
+namespace GridDomain.Node.Akka.Actors {
     public interface IActorState
     {
         string Name { get; }

@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Actors.Aggregates.Messages {
+namespace GridDomain.Node.Akka.Actors.Aggregates.Messages {
     public class CommandProducedEventsPersisted
     {
         private CommandProducedEventsPersisted()

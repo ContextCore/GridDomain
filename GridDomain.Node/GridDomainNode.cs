@@ -1,27 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Cluster;
+using Autofac;
 using GridDomain.Aggregates;
+using GridDomain.Node.Akka;
+using GridDomain.Node.Akka.Cluster;
 using Serilog;
+using IContainer = System.ComponentModel.IContainer;
 
 namespace GridDomain.Node {
 
 
 
-      public interface INode : ICommandHandler<ICommand>, IDisposable
+      public interface INode : IDisposable
       {
-          Task Start();
+          Task<IDomain> Start();
       }
     
     
     public class GridDomainNode : INode
     {
         private bool _stopping;
+        
+        public ActorSystem System;
+        private IContainer Container { get; set; }
+        private readonly IActorSystemFactory _actorSystemFactory;
+        public ILogger Log { get; set; }
+        private readonly List<IDomainConfiguration> _domainConfigurations;
+        public TimeSpan DefaultTimeout { get; }
+        public string Name;
 
-        protected GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, 
+
+        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, 
                                  IActorSystemFactory actorSystemFactory,
                                  ILogger log, 
                                  TimeSpan defaultTimeout)
@@ -37,27 +50,30 @@ namespace GridDomain.Node {
             _actorSystemFactory = actorSystemFactory;
         }
 
-        public ActorSystem System;
-
-        private IContainer Container { get; set; }
-        private readonly IActorSystemFactory _actorSystemFactory;
-        public ILogger Log { get; set; }
-        
-        private readonly List<IDomainConfiguration> _domainConfigurations;
-        public TimeSpan DefaultTimeout { get; }
-        
-        public string Name;
-
    
         public void Dispose()
         {
             Stop().Wait();
         }
 
-        public async Task Start()
+        public async Task<IDomain> Start()
         {
+            System = _actorSystemFactory.CreateSystem();
+            Name = System.Name;
+
             Log.Information("Starting GridDomain node {Id}", Name);
-            await Task.CompletedTask;
+
+            var cluster = Cluster.Get(System);
+            
+            var containerBuilder = new ContainerBuilder();
+            var domainBuilder = new ClusterDomainBuilder(System, containerBuilder);
+            foreach (var configuration in _domainConfigurations)
+            {
+               await configuration.Register(domainBuilder);
+            }
+
+            var domain = await domainBuilder.Build();
+            return domain;
         }
 
         private async Task Stop()
@@ -81,9 +97,5 @@ namespace GridDomain.Node {
         internal class NoDomainConfigurationException : Exception { }
         public class InvalidDomainConfigurationException : Exception { }
 
-        public Task Execute(ICommand command)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

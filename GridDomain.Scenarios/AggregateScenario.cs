@@ -50,13 +50,13 @@ namespace GridDomain.Scenarios
             {
                 var command = GivenCommands.First();
 
-                var aggregateName = command.AggregateName;
+                var aggregateName = command.AggregateType;
                 commandAggregateId = command.AggregateId;
 
                 if (GivenCommands.Any(c => c.AggregateId != commandAggregateId))
                     throw new CommandsBelongToDifferentAggregateIdsException();
 
-                if (GivenCommands.Any(c => c.AggregateName != aggregateName))
+                if (GivenCommands.Any(c => c.AggregateType != aggregateName))
                     throw new CommandsBelongToDifferentAggregateTypesException(GivenCommands);
             }
 

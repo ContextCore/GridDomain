@@ -12,6 +12,14 @@ namespace GridDomain.Node.Tests
         Neutral,
         Bad
     }
+
+    public class CatDomainConfiguration : IDomainConfiguration
+    {
+        public async Task Register(IDomainBuilder builder)
+        {
+            await builder.RegisterAggregate(new AggregateDependencies<Cat>());
+        }
+    }
     
     public class Cat : IAggregate
     {
