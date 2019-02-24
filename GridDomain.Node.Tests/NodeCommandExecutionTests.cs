@@ -16,7 +16,6 @@ using GridDomain.Node.Akka.Actors;
 using GridDomain.Node.Akka.Actors.Aggregates;
 using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Akka.Configuration.Hocon;
-using GridDomain.Node.Cluster;
 using GridDomain.Node.Tests.TestJournals;
 using GridDomain.Node.Tests.TestJournals.Hocon;
 using Serilog;

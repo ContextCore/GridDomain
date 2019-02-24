@@ -83,8 +83,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
                                     PersistAll(domainEvents,
                                                persistedEvent =>
                                                {
-                                                   if(Aggregate.Version == persistedEvent.Version)
-                                                       Aggregate.Apply(persistedEvent);
+                                                   Aggregate.ApplyByVersion(persistedEvent);
                                                    
                                                    if (--messagesToPersistCount != 0) return;
                                                    CompleteExecution();

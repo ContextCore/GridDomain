@@ -24,10 +24,5 @@ namespace GridDomain.Scenarios.Tests
         {
             return Run(scenarioBuilder.Build());
         }
-
-//        protected async Task Check(IAggregateScenario<BinaryOptionGame> scenario)
-//        {
-//            await Run(scenario).Check();
-//        }
     }
 }

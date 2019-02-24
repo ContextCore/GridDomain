@@ -4,6 +4,17 @@ using System.Threading.Tasks;
 
 namespace GridDomain.Aggregates
 {
+    public static class AggregateExtensions
+    {
+        public static void ApplyByVersion(this IAggregate aggregate, params IDomainEvent[] evt)
+        {
+            foreach (var ev in evt)
+                if (aggregate.Version == ev.Version)
+                    aggregate.Apply(ev);
+        }
+    }
+
+
     public abstract class Aggregate : IAggregate
     {
         protected Aggregate(string id)
@@ -29,7 +40,7 @@ namespace GridDomain.Aggregates
 
         protected async Task<IReadOnlyCollection<IDomainEvent>> Emit<T>(Task<T> evtTask) where T : DomainEvent
         {
-           return await Emit(await evtTask);
+            return await Emit(await evtTask);
         }
 
         protected Task<IReadOnlyCollection<IDomainEvent>> Emit(params IDomainEvent[] events)
@@ -37,9 +48,9 @@ namespace GridDomain.Aggregates
             foreach (var e in events)
             {
                 e.Version = Version;
-                ((IEventSourced)this).Apply(e);
+                ((IEventSourced) this).Apply(e);
             }
-                
+
             return events.AsCommandResult();
         }
 

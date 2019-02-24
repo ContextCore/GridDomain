@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Akka.Persistence;
 using Akka.Persistence.Journal;
 using Akka.Util.Internal;
-using GridDomain.Node.Cluster;
 
 namespace GridDomain.Node.Tests.TestJournals
 {

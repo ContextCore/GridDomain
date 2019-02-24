@@ -1,8 +1,6 @@
-using System.Threading;
 using Akka.Actor;
-using Akka.Util.Internal;
 
-namespace GridDomain.Node.Cluster {
+namespace GridDomain.Node.Tests {
     public static class ActorSystemExtensions
     {
         public static Address GetAddress(this ActorSystem sys)

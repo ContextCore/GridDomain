@@ -1,7 +1,6 @@
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.Persistence.Query;
-using GridDomain.Node.Cluster;
 
 namespace GridDomain.Node.Tests.TestJournals
 {
