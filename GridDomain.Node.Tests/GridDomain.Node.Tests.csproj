@@ -7,10 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Akka.Streams" Version="1.3.11" />
         <PackageReference Include="Akka.TestKit.Xunit2" Version="1.3.11" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0-preview-20181205-02" />
         <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00788" />
         <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+        <PackageReference Include="Serilog.Sinks.XunitTestOutput" Version="1.0.14" />
         <PackageReference Include="xunit" Version="2.4.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     </ItemGroup>
@@ -19,6 +21,7 @@
       <ProjectReference Include="..\GridDomain.Aggregates\GridDomain.Aggregates.csproj" />
       <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
       <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
+      <ProjectReference Include="..\GridDomain.Query\GridDomain.Query.csproj" />
     </ItemGroup>
 
 </Project>

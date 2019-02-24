@@ -16,11 +16,9 @@ namespace GridDomain.Node.Akka.Configuration.Hocon
             var akkaPersistenceConfig = @"akka.persistence.publish-plugin-commands = on
 "
                                         + _journalConfig.Build()
-                                                        .ToString()
                                         + @"
 "
-                                        + _snapshotsConfig.Build()
-                                                          .ToString();
+                                        + _snapshotsConfig.Build();
             return akkaPersistenceConfig;
         }
     }
