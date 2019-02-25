@@ -27,6 +27,7 @@ using Xunit.Sdk;
 
 namespace GridDomain.Node.Tests
 {
+  
     
     public class NodeCommandExecutionTests : TestKit
     {
@@ -44,6 +45,7 @@ namespace GridDomain.Node.Tests
             .Build();
 
         private readonly IDomain _domain;
+        private readonly CatDomainConfiguration _catDomainConfiguration;
 
 
         public NodeCommandExecutionTests(ITestOutputHelper helper) : base(_config, nodeName, helper)
@@ -51,8 +53,11 @@ namespace GridDomain.Node.Tests
             Serilog.Log.Logger = new LoggerConfiguration().WriteTo.XunitTestOutput(helper)
                                                           //.WriteTo.File(Path.Combine("Logs", nameof(NodeCommandExecutionTests)+".log"),LogEventLevel.Verbose)
                                                           .CreateLogger();
-            
-            var node = new GridDomainNode(new[] {new CatDomainConfiguration()},
+
+
+            _catDomainConfiguration = new CatDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
+
+            var node = new GridDomainNode(new[] {_catDomainConfiguration},
                 new DelegateActorSystemFactory(() => Sys), Serilog.Log.Logger, TimeSpan.FromSeconds(5));
             _domain = node.Start().Result;
         }
@@ -82,6 +87,42 @@ namespace GridDomain.Node.Tests
                 var persistedId = await runnable.Run(materializer);
                 Assert.Equal("myCat",persistedId);
             }
+        }
+        
+        [Fact]
+        public async Task Node_can_restore_aggregate_from_persistence()
+        {
+            var catName = "myCat";
+            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
+            await _domain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
+          
+            var report = await _domain.AggregatesLifetime.GetHealth(typeof(Cat), catName);
+            var actor = await Sys.ActorSelection(report.Location).ResolveOne(TimeSpan.FromSeconds(2));
+            Watch(actor);
+            ExpectTerminated(actor);
+            
+            //no exception - means we've pet the cat already fed
+            await _domain.CommandExecutor.Execute(new Cat.PetCommand(catName));
+        }
+
+        [Fact]
+        public async Task Node_will_shutdown_an_aggregate_on_inactivity()
+        {
+            var catName = "myCat";
+            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
+            var report = await _domain.AggregatesLifetime.GetHealth(typeof(Cat), catName);
+            var actor = await Sys.ActorSelection(report.Location).ResolveOne(TimeSpan.FromSeconds(2));
+            Watch(actor);
+            ExpectTerminated(actor);
+                
+        }
+        
+        [Fact]
+        public async Task AggregateLifetime_can_locate_aggregates()
+        {
+            var catName = "myCat";
+            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
+            Assert.NotNull(await _domain.AggregatesLifetime.GetHealth(typeof(Cat),catName));
         }
         
         [Fact]

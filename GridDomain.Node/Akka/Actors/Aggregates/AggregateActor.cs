@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using Akka.Cluster.Sharding;
 using Akka.Event;
 using Akka.Persistence;
 using DotNetty.Common.Utilities;
@@ -12,6 +13,19 @@ using GridDomain.Node.Akka.Logging;
 
 namespace GridDomain.Node.Akka.Actors.Aggregates
 {
+    
+    public class AggregateHealthReport
+    {
+        public string Location { get; }
+            
+        public TimeSpan Uptime { get; }
+
+        public AggregateHealthReport(string location, TimeSpan uptime)
+        {
+            Location = location;
+            Uptime = uptime;
+        }
+    }
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
@@ -24,6 +38,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
         public TAggregate Aggregate { get; private set; }
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
         protected readonly BehaviorQueue Behavior;
+        private readonly DateTime _startedTime;
 
         public AggregateActor() 
         {
@@ -36,12 +51,20 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             var dependencies = aggregateExtensions.GetDependencies<TAggregate>();
             Aggregate = dependencies.AggregateFactory.Build();
             
-            
+            Context.SetReceiveTimeout(dependencies.Configuration.MaxInactivityPeriod);
             Recover<DomainEvent>(e => Aggregate.Apply(e));
+
+            _startedTime = BusinessDateTime.UtcNow;
         }
 
         protected virtual void AwaitingCommandBehavior()
         {
+            Command<ReceiveTimeout>(t =>
+            {
+                Context.Parent.Tell(new Passivate(AggregateActor.ShutdownGratefully.Instance));
+            });
+            Command<AggregateActor.ShutdownGratefully>(s => { Context.Stop(Self); });
+            Command<AggregateActor.CheckHealth>(c => Sender.Tell(new AggregateHealthReport(Self.Path.ToString(), BusinessDateTime.UtcNow - _startedTime)));
             Command<AggregateActor.ExecuteCommand>(m =>
                                              {
                                                  var cmd = m.Command;
@@ -158,5 +181,19 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
         public class CommandExecutionException : Exception
         {
         }
+
+        public class ShutdownGratefully
+        {
+            private ShutdownGratefully(){}
+            public static ShutdownGratefully Instance { get; } = new ShutdownGratefully();
+        }
+        
+        public class CheckHealth
+        {
+            private CheckHealth(){}
+            public static CheckHealth Instance { get; } = new CheckHealth();
+        }
+
+      
     }
 }

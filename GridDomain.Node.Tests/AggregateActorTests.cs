@@ -18,12 +18,13 @@ namespace GridDomain.Node.Tests
 {
     public class AggregateActorTests : TestKit
     {
-        private static Config _config = new ActorSystemConfigBuilder().Add(LogConfig.All).Build();
+        private static readonly Config _config = new ActorSystemConfigBuilder().Add(LogConfig.All).Build();
+        private readonly AggregateDependencies<Cat> _aggregateDependencies = new AggregateDependencies<Cat>();
 
         public AggregateActorTests(ITestOutputHelper helper) : base(_config, "aggregateTests",helper)
         {
             var container = new ContainerBuilder();
-            container.RegisterInstance<IAggregateDependencies<Cat>>(new AggregateDependencies<Cat>());
+            container.RegisterInstance<IAggregateDependencies<Cat>>(_aggregateDependencies);
             var c = container.Build();
             Sys.InitAggregatesExtension(c);
         }
@@ -61,5 +62,34 @@ namespace GridDomain.Node.Tests
             actor.Tell(new AggregateActor.ExecuteCommand(new Cat.PetCommand("myCat"), MessageMetadata.Empty));
             var error = ExpectMsg<AggregateActor.CommandFailed>();
         }
+ 
+        
+        [Fact]
+        public void AA_can_shutdown_on_request()
+        {
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), "myCat");
+            Watch(actor);
+            actor.Tell(AggregateActor.ShutdownGratefully.Instance);
+            ExpectTerminated(actor);
+        }
+        
+        [Fact]
+        public void AA_will_send_healthReport_on_request()
+        {
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), "myCat");
+            actor.Tell(AggregateActor.CheckHealth.Instance);
+            var report = ExpectMsg<AggregateHealthReport>();
+            Assert.Equal(actor.Path.ToString(), report.Location);
+        }
+        
+       
+        
+//        [Fact] //TODO: add a test case 
+//        public void AA_will_persist_pending_events_before_shutdown()
+//        {
+//             throw new NotImplementedException();
+//        }
+       
+
     }
 }

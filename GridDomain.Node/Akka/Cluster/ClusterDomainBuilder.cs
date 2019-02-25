@@ -5,31 +5,70 @@ using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Autofac;
 using GridDomain.Aggregates;
+using GridDomain.Node.Akka.Actors;
 using GridDomain.Node.Akka.Actors.Aggregates;
 using GridDomain.Node.Akka.AggregatesExtension;
 using GridDomain.Node.Akka.Cluster.CommandGrouping;
 
 namespace GridDomain.Node.Akka.Cluster
 {
-    
-    public class ClusterDomainBuilder: IDomainBuilder
+    public class ClusterAggregatesLifetime : IAggregatesLifetime
+    {
+        private readonly IActorRef _aggregatesRouter;
+        private readonly ActorSystem _system;
+
+        public ClusterAggregatesLifetime(ActorSystem system, IActorRef aggregatesRouter)
+        {
+            _system = system;
+            _aggregatesRouter = aggregatesRouter;
+        }
+
+        public async Task<bool> IsActive(Type type, string id, TimeSpan? timespan = null)
+        {
+            try
+            {
+                await GetHealth(type, id, timespan);
+                return true;
+            }
+            catch (TimeoutException ex)
+            {
+                return false;
+            }
+        }
+
+        public async Task<AggregateHealthReport> GetHealth(Type type, string id, TimeSpan? timeout = null)
+        {
+            var shardId = DefaultShardIdGenerator.Instance.GetShardId(id);
+            var region = Known.Names.Region(type);
+            var message = new ShardEnvelop(AggregateActor.CheckHealth.Instance, shardId,
+                EntityActorName.GetFullName(type, id), region);
+
+            var report =
+                await _aggregatesRouter.Ask<AggregateHealthReport>(message, timeout ?? TimeSpan.FromSeconds(5));
+            return report;
+        }
+    }
+
+
+    public class ClusterDomainBuilder : IDomainBuilder
     {
         private readonly ActorSystem _system;
         readonly Dictionary<string, IActorRef> _aggregatesRegions = new Dictionary<string, IActorRef>();
         private readonly ContainerBuilder _containerBuilder;
+
         private static readonly OneForOneStrategy _supervisorStrategy
-        = new OneForOneStrategy(ex =>
-        {
-            switch (ex)
+            = new OneForOneStrategy(ex =>
             {
-                case AggregateActor.CommandExecutionException cf:
-                    return Directive.Restart;
-                case CommandAlreadyExecutedException cae:
-                    return Directive.Restart;
-                default:
-                    return Directive.Stop;
-            }
-        });
+                switch (ex)
+                {
+                    case AggregateActor.CommandExecutionException cf:
+                        return Directive.Restart;
+                    case CommandAlreadyExecutedException cae:
+                        return Directive.Restart;
+                    default:
+                        return Directive.Stop;
+                }
+            });
 
         public ClusterDomainBuilder(ActorSystem system, ContainerBuilder containerBuilder)
         {
@@ -38,20 +77,20 @@ namespace GridDomain.Node.Akka.Cluster
         }
 
         public async Task RegisterAggregate<TAggregate>(IAggregateDependencies<TAggregate> factory)
-            where TAggregate:class, IAggregate
+            where TAggregate : class, IAggregate
         {
             _containerBuilder.RegisterInstance(factory);
 
 
             var clusterSharding = ClusterSharding.Get(_system);
             var regionName = Known.Names.Region(typeof(TAggregate));
-            
+
             if (_aggregatesRegions.ContainsKey(regionName))
                 throw new InvalidOperationException("Cannot add duplicate region with name: " + regionName);
 
             var aggregateProps = Props.Create<AggregateActor<TAggregate>>()
                 .WithSupervisorStrategy(_supervisorStrategy);
-    
+
             var region = await clusterSharding.StartAsync(regionName,
                 aggregateProps,
                 ClusterShardingSettings.Create(_system),
@@ -81,14 +120,15 @@ namespace GridDomain.Node.Akka.Cluster
 
             var commandActor = _system.ActorOf(Props.Empty.WithRouter(routingGroup), "Aggregates");
 
-            return Task.FromResult<IDomain>(new Domain(new ActorCommandExecutor(commandActor)));
+            return Task.FromResult<IDomain>(new Domain(new ActorCommandExecutor(commandActor),
+                new ClusterAggregatesLifetime(_system, commandActor)));
         }
 
         public class UnknownShardMessageException : Exception
-    {
-    }
+        {
+        }
 
-    public class CannotFindRequestedRegion : Exception
+        public class CannotFindRequestedRegion : Exception
         {
         }
     }
