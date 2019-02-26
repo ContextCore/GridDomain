@@ -32,7 +32,8 @@ namespace GridDomain.Node.Tests
         [Fact]
         public void AA_can_execute_commands()
         {
-            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), "myCat");
+            var catAddress = "myCat".AsAddressFor<Cat>();
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), catAddress.ToString());
             actor.Tell(new AggregateActor.ExecuteCommand(new Cat.GetNewCatCommand("myCat"), MessageMetadata.Empty));
             var executed = ExpectMsg<AggregateActor.CommandExecuted>();
         }
@@ -40,15 +41,16 @@ namespace GridDomain.Node.Tests
         [Fact]
         public async Task AA_can_execute_commands_and_persist_events()
         {
-            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), "myCat");
+            var catAddress = "myCat".AsAddressFor<Cat>();
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), catAddress.ToString());
             actor.Tell(new AggregateActor.ExecuteCommand(new Cat.GetNewCatCommand("myCat"), MessageMetadata.Empty));
-            var executed = ExpectMsg<AggregateActor.CommandExecuted>();
+            var executed = ExpectMsg<AggregateActor.CommandExecuted>(TimeSpan.FromHours(1));
 
             Watch(actor);
-            Sys.Stop(actor);
-            this.ExpectTerminated(actor);
+            actor.Tell(AggregateActor.ShutdownGratefully.Instance);
+            ExpectTerminated(actor);
             
-            var testCat = ActorOfAsTestActorRef<AggregateActor<Cat>>("myCat");
+            var testCat = ActorOfAsTestActorRef<AggregateActor<Cat>>(catAddress.ToString());
             await Task.Delay(1000);
             Assert.Equal("myCat", testCat.UnderlyingActor.Aggregate.Name);
         }
@@ -56,7 +58,8 @@ namespace GridDomain.Node.Tests
         [Fact]
         public void AA_can_propagate_commands_exceptions_back()
         {
-            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), "myCat");
+            var catAddress = "myCat".AsAddressFor<Cat>();
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), catAddress.ToString());
             actor.Tell(new AggregateActor.ExecuteCommand(new Cat.GetNewCatCommand("myCat"), MessageMetadata.Empty));
             var executed = ExpectMsg<AggregateActor.CommandExecuted>();
             actor.Tell(new AggregateActor.ExecuteCommand(new Cat.PetCommand("myCat"), MessageMetadata.Empty));
@@ -67,7 +70,9 @@ namespace GridDomain.Node.Tests
         [Fact]
         public void AA_can_shutdown_on_request()
         {
-            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), "myCat");
+            var catAddress = "myCat".AsAddressFor<Cat>();
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), catAddress.ToString());
+
             Watch(actor);
             actor.Tell(AggregateActor.ShutdownGratefully.Instance);
             ExpectTerminated(actor);
@@ -76,7 +81,9 @@ namespace GridDomain.Node.Tests
         [Fact]
         public void AA_will_send_healthReport_on_request()
         {
-            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), "myCat");
+            var catAddress = "myCat".AsAddressFor<Cat>();
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), catAddress.ToString());
+
             actor.Tell(AggregateActor.CheckHealth.Instance);
             var report = ExpectMsg<AggregateHealthReport>();
             Assert.Equal(actor.Path.ToString(), report.Location);

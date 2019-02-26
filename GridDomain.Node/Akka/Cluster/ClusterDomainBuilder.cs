@@ -23,25 +23,12 @@ namespace GridDomain.Node.Akka.Cluster
             _aggregatesRouter = aggregatesRouter;
         }
 
-        public async Task<bool> IsActive(Type type, string id, TimeSpan? timespan = null)
+        public async Task<AggregateHealthReport> GetHealth(IAggregateAddress aggregate, TimeSpan? timeout = null)
         {
-            try
-            {
-                await GetHealth(type, id, timespan);
-                return true;
-            }
-            catch (TimeoutException ex)
-            {
-                return false;
-            }
-        }
-
-        public async Task<AggregateHealthReport> GetHealth(Type type, string id, TimeSpan? timeout = null)
-        {
-            var shardId = DefaultShardIdGenerator.Instance.GetShardId(id);
-            var region = Known.Names.Region(type);
+            var shardId = DefaultShardIdGenerator.Instance.GetShardId(aggregate.Id);
+            var region = aggregate.Name;
             var message = new ShardEnvelop(AggregateActor.CheckHealth.Instance, shardId,
-                EntityActorName.GetFullName(type, id), region);
+                aggregate.ToString(), region);
 
             var report =
                 await _aggregatesRouter.Ask<AggregateHealthReport>(message, timeout ?? TimeSpan.FromSeconds(5));
@@ -83,7 +70,7 @@ namespace GridDomain.Node.Akka.Cluster
 
 
             var clusterSharding = ClusterSharding.Get(_system);
-            var regionName = Known.Names.Region(typeof(TAggregate));
+            var regionName = AggregateAddress.New<TAggregate>("regionOnly").Name;
 
             if (_aggregatesRegions.ContainsKey(regionName))
                 throw new InvalidOperationException("Cannot add duplicate region with name: " + regionName);

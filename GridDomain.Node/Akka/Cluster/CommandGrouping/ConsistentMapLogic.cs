@@ -29,7 +29,7 @@ namespace GridDomain.Node.Akka.Cluster.CommandGrouping
 //                case IMessageMetadataEnvelop env:
 //                    return DefaultMap(env.Message);
                 case ICommand cmd:
-                    return Known.Names.Region(cmd.AggregateType);
+                    return cmd.Recipient.Name;
                 default:
                     throw new InvalidMessageException(msg.ToString());
             }

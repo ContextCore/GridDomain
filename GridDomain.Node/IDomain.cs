@@ -28,7 +28,7 @@ namespace GridDomain.Node
        // Task WakeUp(string aggregateId);
       //  Task Shutdown(Type aggregateType, string aggregateId);
       //  Task<bool> IsActive(Type type, string catName, TimeSpan? timeout =null);
-        Task<AggregateHealthReport> GetHealth(Type type, string id, TimeSpan? timeout = null);
+        Task<AggregateHealthReport> GetHealth(IAggregateAddress address, TimeSpan? timeout = null);
     }
 
 

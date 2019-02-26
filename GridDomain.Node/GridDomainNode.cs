@@ -33,7 +33,10 @@ namespace GridDomain.Node {
         public TimeSpan DefaultTimeout { get; }
         public string Name;
 
-
+        public static GridDomainNode New(ActorSystem system, params IDomainConfiguration[] domains)
+        {
+            return new GridDomainNode(domains, new DelegateActorSystemFactory(()=>system),Serilog.Log.Logger, TimeSpan.FromSeconds(5));
+        }
         public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations, 
                                  IActorSystemFactory actorSystemFactory,
                                  ILogger log, 

@@ -34,11 +34,11 @@ namespace GridDomain.Node
 
     public class ShardedPassivate : IShardEnvelop
     {
-        public ShardedPassivate(Type aggregateType, string aggregateId)
+        public ShardedPassivate(AggregateAddress aggregate)
         {
-            ShardId = DefaultShardIdGenerator.Instance.GetShardId(aggregateId);
-            Region = Known.Names.Region(aggregateType);
-            EntityId = aggregateId;
+            ShardId = DefaultShardIdGenerator.Instance.GetShardId(aggregate.Id);
+            Region = aggregate.Name;
+            EntityId = aggregate.ToString();
         }
         public string EntityId { get; }
         public string ShardId { get; }
@@ -52,9 +52,9 @@ namespace GridDomain.Node
         {
             Metadata = metadata ?? MessageMetadata.Empty;
             generator = generator ?? DefaultShardIdGenerator.Instance;
-            ShardId = generator.GetShardId(command.AggregateId);
-            EntityId = EntityActorName.GetFullName(command.AggregateType, command.AggregateId);
-            Region = Known.Names.Region(command.AggregateType);
+            ShardId = generator.GetShardId(command.Recipient.Id);
+            EntityId = command.Recipient.ToString();
+            Region = command.Recipient.Name;
             Message = new AggregateActor.ExecuteCommand(command,Metadata);
         }
 

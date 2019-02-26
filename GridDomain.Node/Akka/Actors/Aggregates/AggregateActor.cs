@@ -45,7 +45,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             Behavior = new BehaviorQueue(Become);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
             PersistenceId = Self.Path.Name;
-            Id = EntityActorName.Parse<TAggregate>(Self.Path.Name).Id;
+            Id = AggregateAddress.Parse<TAggregate>(Self.Path.Name).Id;
             
             var aggregateExtensions = Context.System.GetAggregatesExtension();
             var dependencies = aggregateExtensions.GetDependencies<TAggregate>();

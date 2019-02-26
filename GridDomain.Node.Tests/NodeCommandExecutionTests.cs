@@ -77,7 +77,7 @@ namespace GridDomain.Node.Tests
             var journal = query.ReadJournalFor<TestReadJournal>(TestReadJournal.Identifier);
             
             
-            var source = journal.CurrentPersistenceIds().Select(id => EntityActorName.Parse<Cat>(id).Id);
+            var source = journal.CurrentPersistenceIds().Select(id=>AggregateAddress.Parse<Cat>(id).Id);
             var sink = Sink.First<string>();
             // connect the Source to the Sink, obtaining a RunnableGraph
             var runnable = source.ToMaterialized(sink, Keep.Right);
@@ -96,7 +96,7 @@ namespace GridDomain.Node.Tests
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
             await _domain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
           
-            var report = await _domain.AggregatesLifetime.GetHealth(typeof(Cat), catName);
+            var report = await _domain.AggregatesLifetime.GetHealth(AggregateAddress.New<Cat>(catName));
             var actor = await Sys.ActorSelection(report.Location).ResolveOne(TimeSpan.FromSeconds(2));
             Watch(actor);
             ExpectTerminated(actor);
@@ -110,7 +110,7 @@ namespace GridDomain.Node.Tests
         {
             var catName = "myCat";
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            var report = await _domain.AggregatesLifetime.GetHealth(typeof(Cat), catName);
+            var report = await _domain.AggregatesLifetime.GetHealth(catName.AsAddressFor<Cat>());
             var actor = await Sys.ActorSelection(report.Location).ResolveOne(TimeSpan.FromSeconds(2));
             Watch(actor);
             ExpectTerminated(actor);
@@ -122,7 +122,7 @@ namespace GridDomain.Node.Tests
         {
             var catName = "myCat";
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            Assert.NotNull(await _domain.AggregatesLifetime.GetHealth(typeof(Cat),catName));
+            Assert.NotNull(await _domain.AggregatesLifetime.GetHealth(typeof(Cat).AsAddress(catName)));
         }
         
         [Fact]

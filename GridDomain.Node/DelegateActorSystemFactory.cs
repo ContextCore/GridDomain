@@ -1,7 +1,7 @@
 using System;
 using Akka.Actor;
 
-namespace GridDomain.Node.Tests
+namespace GridDomain.Node
 {
     public class DelegateActorSystemFactory : IActorSystemFactory
     {

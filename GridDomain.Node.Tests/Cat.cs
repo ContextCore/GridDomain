@@ -71,11 +71,11 @@ namespace GridDomain.Node.Tests
             switch (command)
             {
                 case FeedCommand f:
-                    return new Feeded(f.AggregateId){Version = Version}.AsCommandResult();
+                    return new Feeded(Id){Version = Version}.AsCommandResult();
                 case GetNewCatCommand c:
-                    return new Born(c.AggregateId){Version = Version}.AsCommandResult();
+                    return new Born(c.Recipient.Id){Version = Version}.AsCommandResult();
                 case FeelHungryCommand c:
-                    return new GotHungry(c.AggregateId){Version = Version}.AsCommandResult();
+                    return new GotHungry(Id){Version = Version}.AsCommandResult();
                 case PetCommand c:
                     switch (Mood)
                     {
@@ -127,11 +127,10 @@ namespace GridDomain.Node.Tests
         
         public class Born: DomainEvent<Cat>
         {
-            public string Name { get; }
+            public string Name => SourceId;
 
             public Born(string name) : base(name)
             {
-                Name = name;
             }
         }
         

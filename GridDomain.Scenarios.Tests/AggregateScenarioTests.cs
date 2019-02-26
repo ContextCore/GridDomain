@@ -34,12 +34,12 @@ namespace GridDomain.Scenarios.Tests
         {
             var catName = "Bonifacii";
 
-            var scenario = new AggregateScenarioBuilder<Cat>()
+            var scenario = new AggregateScenarioBuilder<Dog>()
                 .Name(nameof(When_defined_aggregate_handler_then_it_can_execute_commands_and_produce_events_with_builder
                 ))
-                .With(new AggregateDependencies<Cat>())
-                .When(new Cat.GetNewCatCommand(catName))
-                .Then(new Cat.Born(catName));
+                .With(new AggregateDependencies<Dog>())
+                .When(new Dog.GetNewDogCommand(catName))
+                .Then(new Dog.Born(catName));
 
             var run = await Run(scenario);
 
@@ -50,7 +50,7 @@ namespace GridDomain.Scenarios.Tests
             Assert.Equal(catName, producedAggregate.Id);
 
             //event is produced and stored
-            var producedEvent = run.ProducedEvents.OfType<Cat.Born>().First();
+            var producedEvent = run.ProducedEvents.OfType<Dog.Born>().First();
             Assert.Equal(catName, producedEvent.Name);
 
             //scenario check is OK
@@ -63,9 +63,9 @@ namespace GridDomain.Scenarios.Tests
         {
             var aggregateId = "personA";
 
-            var scenarioBuilder = AggregateScenario.New<Cat>()
+            var scenarioBuilder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_has_given_it_is_applied_even_without_command))
-                .Given(new Cat.Born(aggregateId));
+                .Given(new Dog.Born(aggregateId));
 
             var scenario = await Run(scenarioBuilder);
 
@@ -78,7 +78,7 @@ namespace GridDomain.Scenarios.Tests
         }
 
 
-        class FedCatFactory : IAggregateFactory<Cat>
+        class FedCatFactory : IAggregateFactory<Dog>
         {
             private string _predifinedId;
 
@@ -87,11 +87,11 @@ namespace GridDomain.Scenarios.Tests
                 _predifinedId = predifinedId;
             }
 
-            public Cat Build(string id = null)
+            public Dog Build(string id = null)
             {
-                var cat = new Cat();
-                cat.Apply(new Cat.Born(_predifinedId));
-                cat.Apply(new Cat.Feeded(_predifinedId));
+                var cat = new Dog();
+                cat.Apply(new Dog.Born(_predifinedId));
+                cat.Apply(new Dog.Feeded(_predifinedId));
                 return cat;
             }
         }
@@ -101,7 +101,7 @@ namespace GridDomain.Scenarios.Tests
         {
             var aggregateId = "Bonifacii";
 
-            var scenario = AggregateScenario.New(new AggregateDependencies<Cat>(new FedCatFactory(aggregateId)))
+            var scenario = AggregateScenario.New(new AggregateDependencies<Dog>(new FedCatFactory(aggregateId)))
                 .Name(nameof(Given_factory_When_defined_scenario_has_given_it_is_applied_even_without_command));
 
             var run = await Run(scenario);
@@ -119,10 +119,10 @@ namespace GridDomain.Scenarios.Tests
         {
             var aggregateId = "Mailk";
 
-            var builder = AggregateScenario.New<Cat>()
+            var builder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_it_checks_for_produced_events_properties))
-                .When(new Cat.GetNewCatCommand(aggregateId))
-                .Then(new Cat.Born(aggregateId));
+                .When(new Dog.GetNewDogCommand(aggregateId))
+                .Then(new Dog.Born(aggregateId));
 
 
             var local = Run(builder);
@@ -137,11 +137,11 @@ namespace GridDomain.Scenarios.Tests
         {
             var aggregateId = "Radja";
 
-            var aggregateScenarioBuilder = AggregateScenario.New<Cat>()
+            var aggregateScenarioBuilder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_it_checks_for_produced_events_count))
-                .When(new Cat.GetNewCatCommand(aggregateId))
-                .Then(new Cat.Born(aggregateId),
-                    new Cat.Feeded(aggregateId));
+                .When(new Dog.GetNewDogCommand(aggregateId))
+                .Then(new Dog.Born(aggregateId),
+                    new Dog.Feeded(aggregateId));
 
             var local = Run(aggregateScenarioBuilder);
             await local
@@ -150,7 +150,7 @@ namespace GridDomain.Scenarios.Tests
         }
 
 
-        class WrongCommand : Command<Cat>
+        class WrongCommand : Command<Dog>
         {
             public WrongCommand(string aggregateId) : base(aggregateId)
             {
@@ -162,7 +162,7 @@ namespace GridDomain.Scenarios.Tests
         {
             var aggregateId = "test_aggregate";
 
-            var aggregateScenarioBuilder = AggregateScenario.New<Cat>()
+            var aggregateScenarioBuilder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_try_execute_missing_command_it_throws_exception))
                 .When(new WrongCommand(aggregateId));
             var run = Run(aggregateScenarioBuilder);
@@ -176,15 +176,15 @@ namespace GridDomain.Scenarios.Tests
         public async Task When_defined_scenario_executes_command_with_exception_it_throws_command_exception()
         {
             var name = "Circle";
-            var aggregateScenarioBuilder = AggregateScenario.New<Cat>()
+            var aggregateScenarioBuilder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_executes_command_with_exception_it_throws_command_exception))
-                .When(new Cat.GetNewCatCommand(name),
-                    new Cat.PetCommand(name));
+                .When(new Dog.GetNewDogCommand(name),
+                    new Dog.PetCommand(name));
 
             var local = Run(aggregateScenarioBuilder);
             await local
                 .Check()
-                .ShouldThrow<Cat.IsUnhappyException>();
+                .ShouldThrow<Dog.IsUnhappyException>();
         }
     }
 }

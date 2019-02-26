@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GridDomain.Aggregates;
@@ -50,13 +51,12 @@ namespace GridDomain.Scenarios
             {
                 var command = GivenCommands.First();
 
-                var aggregateName = command.AggregateType;
-                commandAggregateId = command.AggregateId;
+                commandAggregateId = command.Recipient.Id;
 
-                if (GivenCommands.Any(c => c.AggregateId != commandAggregateId))
+                if (GivenCommands.Any(c => c.Recipient.Id != commandAggregateId))
                     throw new CommandsBelongToDifferentAggregateIdsException();
 
-                if (GivenCommands.Any(c => c.AggregateType != aggregateName))
+                if (GivenCommands.Any(c => c.Recipient.Name != command.Recipient.Name))
                     throw new CommandsBelongToDifferentAggregateTypesException(GivenCommands);
             }
 

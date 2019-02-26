@@ -1,14 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.Aggregates;
 
-namespace GridDomain.Aggregates.Tests
-{
-    public class Cat : IAggregate
+namespace GridDomain.Scenarios.Tests
+{  
+    
+    public enum Mood
+    {
+        Good,
+        Neutral,
+        Bad
+    }
+    
+    public class Dog : IAggregate
     {
         public string Id { get; private set; }
         public string Name => Id;
-        
+      
         public Mood Mood { get; private set; }
         public void Apply(IDomainEvent @event)
         {
@@ -18,7 +27,7 @@ namespace GridDomain.Aggregates.Tests
                     Id = b.Name;
                     Mood = Mood.Bad;
                     break;
-                
+                case Tired t:
                 case GotHungry h:
                     switch (Mood)
                     {
@@ -44,39 +53,61 @@ namespace GridDomain.Aggregates.Tests
             switch (command)
             {
                 case FeedCommand f:
-                    return new Feeded(f.AggregateId){Version = Version}.AsCommandResult();
-                case GetNewCatCommand c:
-                    return new Born(c.AggregateId){Version = Version}.AsCommandResult();
+                    return new Feeded(Id){Version = Version}.AsCommandResult();
+                case GetNewDogCommand c:
+                    return new Born(c.Recipient.Id){Version = Version}.AsCommandResult();
                 case FeelHungryCommand c:
-                    return new GotHungry(c.AggregateId){Version = Version}.AsCommandResult();
+                    return new GotHungry(Id){Version = Version}.AsCommandResult();
+                case PetCommand c:
+                    switch (Mood)
+                    {
+                        case Mood.Good: return new Tired(Name){Version = Version}.AsCommandResult();
+                        case Mood.Neutral: return new GotHungry(Name){Version = Version}.AsCommandResult();
+                        case Mood.Bad: throw new IsUnhappyException();
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    break;
                 default:
                     throw new UnknownCommandException();
             }
         }
 
-
-        public class GetNewCatCommand : Command<Cat>
+        public class IsUnhappyException : Exception
         {
-            public GetNewCatCommand(string catName):base(catName)
+        }
+
+
+        public class GetNewDogCommand : Command<Dog>
+        {
+            public GetNewDogCommand(string catName):base(catName)
             {
             }
         }
         
-        public class FeelHungryCommand : Command<Cat>
+        public class FeelHungryCommand : Command<Dog>
         {
             public FeelHungryCommand(string catName):base(catName)
             {
             }
         }
-        public class FeedCommand : Command<Cat>
+        public class FeedCommand : Command<Dog>
         {
             public FeedCommand(string catName):base(catName)
             {
             }
         }
+        
+        public class PetCommand : Command<Dog>
+        {
+            public PetCommand(string catName):base(catName)
+            {
+            }
+        }
+
 
         
-        public class Born: DomainEvent<Cat>
+        public class Born: DomainEvent<Dog>
         {
             public string Name { get; }
 
@@ -86,22 +117,27 @@ namespace GridDomain.Aggregates.Tests
             }
         }
         
-        public class GotHungry:DomainEvent<Cat>
+        public class GotHungry:DomainEvent<Dog>
         {
             public GotHungry(string name) : base(name)
             {
             }
         }
         
-        public class Feeded:DomainEvent<Cat>
+        public class Tired:DomainEvent<Dog>
+        {
+            public Tired(string name) : base(name)
+            {
+            }
+        }
+        
+        public class Feeded:DomainEvent<Dog>
         {
             public Feeded(string name) : base(name)
             {
             }
         }
         
-        public class UnknownCommandException : Exception
-        {
-        }
+       
     }
 }
