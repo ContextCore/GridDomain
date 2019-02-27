@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 using Akka.Cluster.Sharding;
 using GridDomain.Aggregates;
 using GridDomain.Node.Akka.Actors;
@@ -7,8 +8,7 @@ using GridDomain.Node.Akka.Cluster;
 
 namespace GridDomain.Node
 {
-    
-    public class ShardEnvelop:IShardEnvelop
+    public class ShardEnvelop : IShardEnvelop
     {
         public string EntityId { get; protected set; }
         public string ShardId { get; protected set; }
@@ -23,13 +23,13 @@ namespace GridDomain.Node
             Region = region;
         }
     }
-    
+
     public interface IShardEnvelop
     {
-         string EntityId { get;}
-         string ShardId { get;}
-         string Region { get; }
-         object Message { get; }
+        string EntityId { get; }
+        string ShardId { get; }
+        string Region { get; }
+        object Message { get; }
     }
 
     public class ShardedPassivate : IShardEnvelop
@@ -40,28 +40,37 @@ namespace GridDomain.Node
             Region = aggregate.Name;
             EntityId = aggregate.ToString();
         }
+
         public string EntityId { get; }
         public string ShardId { get; }
         public string Region { get; }
         public object Message { get; } = new Passivate(AggregateActor.ShutdownGratefully.Instance);
     }
-    
-    public class ShardedAggregateCommand: IShardEnvelop, IHaveMetadata
+
+    public class ShardedAggregateCommand : IShardEnvelop, IHaveMetadata
     {
-        public ShardedAggregateCommand(ICommand command, IMessageMetadata metadata = null, IShardIdGenerator generator=null)
+        public ShardedAggregateCommand(object message, string entityId, string shardId, string region,
+            IMessageMetadata metadata)
         {
-            Metadata = metadata ?? MessageMetadata.Empty;
-            generator = generator ?? DefaultShardIdGenerator.Instance;
-            ShardId = generator.GetShardId(command.Recipient.Id);
-            EntityId = command.Recipient.ToString();
-            Region = command.Recipient.Name;
-            Message = new AggregateActor.ExecuteCommand(command,Metadata);
+            Message = message;
+            EntityId = entityId;
+            ShardId = shardId;
+            Region = region;
+            Metadata = metadata;
         }
 
-        public IMessageMetadata Metadata { get; }
-        public string EntityId { get; }
-        public string ShardId { get; }
-        public string Region { get; }
-        public object Message { get; }
+        public static ShardedAggregateCommand New(ICommand message, IMessageMetadata metadata = null)
+        {
+            return new ShardedAggregateCommand(new AggregateActor.ExecuteCommand(message, metadata), message.Recipient.ToString(),
+                DefaultShardIdGenerator.Instance.GetShardId(message.Recipient.Id),
+                message.Recipient.Name,
+                metadata ?? MessageMetadata.Empty);
+        }
+
+        public IMessageMetadata Metadata { get; private set; }
+        public string EntityId { get; private set; }
+        public string ShardId { get; private set; }
+        public string Region { get; private set; }
+        public object Message { get; private set; }
     }
 }

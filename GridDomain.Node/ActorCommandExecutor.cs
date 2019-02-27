@@ -21,7 +21,7 @@ namespace GridDomain.Node
 
         public async Task Execute(ICommand command)
         {
-            var envelopedCommand = new ShardedAggregateCommand(command, MessageMetadata.New(command.Id, Guid.NewGuid().ToString()));
+            var envelopedCommand = ShardedAggregateCommand.New(command, MessageMetadata.New(command.Id, Guid.NewGuid().ToString()));
 
             var result = await _commandExecutorActor.Ask<AggregateActor.CommandExecuted>(envelopedCommand,_timeout);
             if (result is AggregateActor.CommandFailed fail)

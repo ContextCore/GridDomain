@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster;
 using Autofac;
+using DotNetty.Common.Concurrency;
 using GridDomain.Aggregates;
 using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Cluster;
+using GridDomain.Node.Tests;
 using Serilog;
 using IContainer = System.ComponentModel.IContainer;
 
@@ -18,9 +20,11 @@ namespace GridDomain.Node {
       public interface INode : IDisposable
       {
           Task<IDomain> Start();
+          string Address { get; }
       }
     
     
+      
     public class GridDomainNode : INode
     {
         private bool _stopping;
@@ -62,11 +66,16 @@ namespace GridDomain.Node {
         public async Task<IDomain> Start()
         {
             System = _actorSystemFactory.CreateSystem();
+            Address = System.GetAddress().ToString();
             Name = System.Name;
 
             Log.Information("Starting GridDomain node {Id}", Name);
 
-            var cluster = Cluster.Get(System);
+            //var cluster = Cluster.Get(System);
+            //var source = new TaskCompletionSource<int>();
+            //cluster.RegisterOnMemberUp(() => source.SetResult(0));
+            //await source.Task;
+            
             
             var containerBuilder = new ContainerBuilder();
             var domainBuilder = new ClusterDomainBuilder(System, containerBuilder);
@@ -78,6 +87,8 @@ namespace GridDomain.Node {
             var domain = await domainBuilder.Build();
             return domain;
         }
+
+        public string Address { get; private set; }
 
         private async Task Stop()
         {

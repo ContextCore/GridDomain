@@ -11,7 +11,7 @@ namespace GridDomain.Aggregates
 
         public static AggregateAddress AsAddress(this Type type, string aggregateId)
         {
-            return new AggregateAddress(type, aggregateId);
+            return AggregateAddress.New(type, aggregateId);
         }
     }
 }

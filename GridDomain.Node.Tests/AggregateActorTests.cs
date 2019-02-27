@@ -86,7 +86,7 @@ namespace GridDomain.Node.Tests
 
             actor.Tell(AggregateActor.CheckHealth.Instance);
             var report = ExpectMsg<AggregateHealthReport>();
-            Assert.Equal(actor.Path.ToString(), report.Location);
+            Assert.Equal(actor.Path.ToString(), report.Path);
         }
         
        

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using GridDomain.Common;
 
 namespace GridDomain.Aggregates
@@ -7,37 +8,40 @@ namespace GridDomain.Aggregates
     {
         private readonly string _stringValue;
 
-        public AggregateAddress(string typeName, string id)
+        public AggregateAddress(string name, string id)
         {
-            Name = typeName;
+            this.Name = name;
             Id = id;
-            _stringValue = Name + Separator + id;
+            _stringValue = this.Name + Separator + id;
         }
 
-        public AggregateAddress(Type t, string id) : this(t.BeautyName(), id)
-        {
-            
-        }
+        
 
         public string Name { get; }
         public string Id { get; }
 
-        private const char Separator = '_';
+        private const string Separator = "_";
+        private static readonly string[] SeparatorArray = new []{Separator};
+
         public override string ToString() => _stringValue;
 
+        public static AggregateAddress New(Type type, string id)
+        {
+            return new AggregateAddress(type.BeautyName(), id);
+        }
         public static AggregateAddress Parse(string fullName)
         {
-            var parts = fullName.Split(Separator);
-            if (parts.Length != 2)
+            var parts = fullName.Split(SeparatorArray, StringSplitOptions.None);
+            if (parts.Length < 2)
                 throw new BadAggregateAddressFormatException();
-            var name = parts[0];
-            var id = parts[1];
+            var name = parts.First();
+            var id = fullName.Substring(name.Length);
             return new AggregateAddress(name, id);
         }
 
         public static AggregateAddress New<T>(string id)
         {
-            return new AggregateAddress(typeof(T), id);
+            return New(typeof(T), id);
         }
         public static AggregateAddress Parse<T>(string fullName)
         {

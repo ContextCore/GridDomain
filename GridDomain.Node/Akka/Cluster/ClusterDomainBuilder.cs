@@ -78,10 +78,21 @@ namespace GridDomain.Node.Akka.Cluster
             var aggregateProps = Props.Create<AggregateActor<TAggregate>>()
                 .WithSupervisorStrategy(_supervisorStrategy);
 
-            var region = await clusterSharding.StartAsync(regionName,
-                aggregateProps,
-                ClusterShardingSettings.Create(_system),
-                new ShardedMessageMetadataExtractor());
+            IActorRef region;
+//            if (clusterSharding.ShardTypeNames.Contains(regionName))
+//            {
+//                region = clusterSharding.ShardRegion(regionName);
+//                _system.Log.Info("Found existing aggregates shard region {region}", regionName);
+//            }
+//            else
+//            {
+                _system.Log.Info("Starting new shard region {regionName}", regionName);
+
+                region = await clusterSharding.StartAsync(regionName,
+                    aggregateProps,
+                    ClusterShardingSettings.Create(_system),
+                    new ShardedMessageMetadataExtractor());
+            //}
 
             _aggregatesRegions.Add(regionName, region);
         }

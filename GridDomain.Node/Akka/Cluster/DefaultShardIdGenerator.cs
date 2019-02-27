@@ -12,6 +12,7 @@ namespace GridDomain.Node.Akka.Cluster {
             _maxShards = maxShards;
             _shardGroupName = shardGroupName;
         }
+        
         public static IShardIdGenerator Instance = new DefaultShardIdGenerator("");
         public string GetShardId(string seed, int? maxShards=null)
         {

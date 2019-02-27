@@ -18,6 +18,7 @@ using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Akka.Configuration.Hocon;
 using GridDomain.Node.Tests.TestJournals;
 using GridDomain.Node.Tests.TestJournals.Hocon;
+using Newtonsoft.Json;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -27,7 +28,25 @@ using Xunit.Sdk;
 
 namespace GridDomain.Node.Tests
 {
-  
+
+    public class CatAggregateSerializationTests
+    {
+        [Fact]
+        public void Commands_are_serializable()
+        {
+            var cmd = new Cat.GetNewCatCommand("mau");
+            var jsonString = JsonConvert.SerializeObject(cmd);
+            var restoredCmd = JsonConvert.DeserializeObject(jsonString);
+        }
+        
+        [Fact]
+        public void ShardedCommands_are_serializable()
+        {
+            var cmd = ShardedAggregateCommand.New(new Cat.GetNewCatCommand("mau"));
+            var jsonString = JsonConvert.SerializeObject(cmd);
+            var restoredCmd = JsonConvert.DeserializeObject(jsonString);
+        }
+    }
     
     public class NodeCommandExecutionTests : TestKit
     {
@@ -97,7 +116,7 @@ namespace GridDomain.Node.Tests
             await _domain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
           
             var report = await _domain.AggregatesLifetime.GetHealth(AggregateAddress.New<Cat>(catName));
-            var actor = await Sys.ActorSelection(report.Location).ResolveOne(TimeSpan.FromSeconds(2));
+            var actor = await Sys.ActorSelection(report.Path).ResolveOne(TimeSpan.FromSeconds(2));
             Watch(actor);
             ExpectTerminated(actor);
             
@@ -111,7 +130,7 @@ namespace GridDomain.Node.Tests
             var catName = "myCat";
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
             var report = await _domain.AggregatesLifetime.GetHealth(catName.AsAddressFor<Cat>());
-            var actor = await Sys.ActorSelection(report.Location).ResolveOne(TimeSpan.FromSeconds(2));
+            var actor = await Sys.ActorSelection(report.Path).ResolveOne(TimeSpan.FromSeconds(2));
             Watch(actor);
             ExpectTerminated(actor);
                 

@@ -10,8 +10,8 @@ namespace GridDomain.Node.Tests
         public void ShardId_should_be_the_same_for_commands_for_the_same_aggregate_and_same_shards()
         {
             var extractor = new ShardedMessageMetadataExtractor();
-            var msgA = new ShardedAggregateCommand(new Cat.GetNewCatCommand("myCat") );
-            var msgB = new ShardedAggregateCommand(new Cat.PetCommand("myCat"));
+            var msgA = ShardedAggregateCommand.New(new Cat.GetNewCatCommand("myCat") );
+            var msgB = ShardedAggregateCommand.New(new Cat.PetCommand("myCat"));
             
             Assert.Equal(extractor.ShardId(msgA), extractor.ShardId(msgB));
         }
