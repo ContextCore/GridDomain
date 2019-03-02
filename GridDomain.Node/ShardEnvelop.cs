@@ -36,7 +36,7 @@ namespace GridDomain.Node
     {
         public ShardedPassivate(AggregateAddress aggregate)
         {
-            ShardId = DefaultShardIdGenerator.Instance.GetShardId(aggregate.Id);
+            ShardId = ShardIdGenerator.Instance.GetShardId(aggregate.Id);
             Region = aggregate.Name;
             EntityId = aggregate.ToString();
         }
@@ -62,7 +62,7 @@ namespace GridDomain.Node
         public static ShardedAggregateCommand New(ICommand message, IMessageMetadata metadata = null)
         {
             return new ShardedAggregateCommand(new AggregateActor.ExecuteCommand(message, metadata), message.Recipient.ToString(),
-                DefaultShardIdGenerator.Instance.GetShardId(message.Recipient.Id),
+                ShardIdGenerator.Instance.GetShardId(message.Recipient.Id),
                 message.Recipient.Name,
                 metadata ?? MessageMetadata.Empty);
         }

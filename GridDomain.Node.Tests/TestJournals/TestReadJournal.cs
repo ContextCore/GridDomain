@@ -15,10 +15,10 @@ using Xunit;
 
 namespace GridDomain.Node.Tests.TestJournals
 {
-    public class TestReadJournal : ICurrentPersistenceIdsQuery,ICurrentEventsByPersistenceIdQuery
+    public class TestReadJournal : ICurrentPersistenceIdsQuery, ICurrentEventsByPersistenceIdQuery, IEventsByTagQuery
     {
         public static string Identifier = "akka.persistence.query.journal.test";
-        private ConcurrentDictionary<string, LinkedList<IPersistentRepresentation>> _memory;
+        private readonly ConcurrentDictionary<string, LinkedList<IPersistentRepresentation>> _memory;
 
         public TestReadJournal(TestJournal journal)
         {
@@ -27,19 +27,36 @@ namespace GridDomain.Node.Tests.TestJournals
 
         public Source<string, NotUsed> CurrentPersistenceIds()
         {
-            return   Source.FromEnumerator(() => _memory.Keys.GetEnumerator())
+            return Source.FromEnumerator(() => _memory.Keys.GetEnumerator())
                 .MapMaterializedValue(_ => NotUsed.Instance)
-                .Named("AllPersistenceIds");;
+                .Named("AllPersistenceIds");
         }
 
-        Source<EventEnvelope, NotUsed> ICurrentEventsByPersistenceIdQuery.CurrentEventsByPersistenceId(string persistenceId, long fromSequenceNr, long toSequenceNr)
+        Source<EventEnvelope, NotUsed> ICurrentEventsByPersistenceIdQuery.CurrentEventsByPersistenceId(
+            string persistenceId, long fromSequenceNr, long toSequenceNr)
         {
-            return   Source.FromEnumerator(() => _memory[persistenceId].SkipWhile(e => e.SequenceNr < fromSequenceNr)
+            return Source.FromEnumerator(() => _memory[persistenceId].SkipWhile(e => e.SequenceNr < fromSequenceNr)
                     .TakeWhile(e => e.SequenceNr <= toSequenceNr)
                     .Select(e => e.Payload as EventEnvelope)
                     .GetEnumerator())
                 .MapMaterializedValue(_ => NotUsed.Instance)
                 .Named("CurrentEventsByPersistenceId-" + persistenceId);
+        }
+
+        public Source<EventEnvelope, NotUsed> EventsByTag(string tag, Offset offset)
+        {
+            return Source.FromEnumerator(() => _memory.Values.SelectMany(v => v)
+                    .Where(v =>
+                    {
+                        if (!(v.Payload is IDomainEvent d)) return false;
+                        return d.Source.Name == tag;
+                    }).Select(d =>
+                    {
+                        var evt = d.Payload as IDomainEvent; 
+                        return new EventEnvelope(Offset.NoOffset(), evt.Source.Id,evt.Version,evt);
+                    }).GetEnumerator())
+                .MapMaterializedValue(_ => NotUsed.Instance)
+                .Named("EventsByTag");
         }
     }
 }

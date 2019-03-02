@@ -2,18 +2,18 @@ using System;
 using System.Linq;
 
 namespace GridDomain.Node.Akka.Cluster {
-    public class DefaultShardIdGenerator : IShardIdGenerator
+    public class ShardIdGenerator : IShardIdGenerator
     {
         private readonly string _shardGroupName;
         private readonly int _maxShards;
 
-        public DefaultShardIdGenerator(string shardGroupName,int maxShards = 5)
+        public ShardIdGenerator(string shardGroupName,int maxShards)
         {
             _maxShards = maxShards;
             _shardGroupName = shardGroupName;
         }
         
-        public static IShardIdGenerator Instance = new DefaultShardIdGenerator("");
+        public static IShardIdGenerator Instance = new ShardIdGenerator("shard", 25);
         public string GetShardId(string seed, int? maxShards=null)
         {
             var seedNumber = seed.Aggregate(0,

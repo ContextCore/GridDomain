@@ -127,7 +127,7 @@ namespace GridDomain.Node.Tests
         
         public class Born: DomainEvent<Cat>
         {
-            public string Name => SourceId;
+            public string Name => Source.Id;
 
             public Born(string name) : base(name)
             {

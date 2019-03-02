@@ -63,8 +63,8 @@ namespace GridDomain.Scenarios
             if (GivenEvents != null && GivenEvents.Any())
             {
                 eventsAggregateId = GivenEvents.First()
-                                               .SourceId;
-                if (GivenEvents.Any(c => c.SourceId != eventsAggregateId))
+                                               .Source.Id;
+                if (GivenEvents.Any(c => c.Source.Id != eventsAggregateId))
                     throw new GivenEventsBelongToDifferentAggregateTypesException();
             }
 

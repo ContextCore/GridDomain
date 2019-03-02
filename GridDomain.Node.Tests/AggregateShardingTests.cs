@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster;
@@ -16,25 +18,40 @@ using Xunit.Sdk;
 
 namespace GridDomain.Node.Tests
 {
-    public class AggregateShardingTests
+
+    public static class Network
+    {
+        public static int FreeTcpPort()
+        {
+            TcpListener l = new TcpListener(IPAddress.Loopback, 0);
+            l.Start();
+            int port = ((IPEndPoint)l.LocalEndpoint).Port;
+            l.Stop();
+            return port;
+        }
+    }
+    
+    public class AggregateShardingTests:IDisposable
     {
         private IDomain _seedCatDomain;
         private IDomain _workerCatDomain;
         private GridDomainNode _seedNode;
         private GridDomainNode _workerNode;
-
+     
+        
         public AggregateShardingTests(ITestOutputHelper output)
         {
             Log.Logger = new LoggerConfiguration().WriteTo.XunitTestOutput(output).CreateLogger();
             
             var nodeName = "CatWorld";
-            var seedAddress = new NodeNetworkAddress("127.0.0.1",9001,"127.0.0.1",nodeName);
+            var seedAddress = new NodeNetworkAddress("127.0.0.1",Network.FreeTcpPort(),"127.0.0.1",nodeName);
             var seed = new ActorSystemConfigBuilder().Add(new ClusterActorProviderConfig())
                 .Add(LogConfig.All)
                 .Add(new ClusterSeedNodes(seedAddress))
                 .Add(new RemoteConfig(seedAddress))
                 .Add(new ClusterActorProviderConfig())
                 .Add(new TestJournalConfig())
+                .Add(new ClusterBehaviorConfig(TimeSpan.FromSeconds(1),TimeSpan.FromSeconds(1)))
                 .Build();
 
             var seedSystem = ActorSystem.Create(nodeName,seed);
@@ -44,6 +61,7 @@ namespace GridDomain.Node.Tests
                 .Add(new RemoteConfig(new NodeNetworkAddress("127.0.0.1",0,"127.0.0.1",nodeName)))
                 .Add(new ClusterActorProviderConfig())
                 .Add(new TestJournalConfig())
+                .Add(new ClusterBehaviorConfig(TimeSpan.FromSeconds(1),TimeSpan.FromSeconds(1)))
                 .Build();
             
             var workerSystem = ActorSystem.Create(nodeName, worker);
@@ -80,7 +98,7 @@ namespace GridDomain.Node.Tests
         {
             _seedCatDomain = await _seedNode.Start();
             _workerCatDomain = await _workerNode.Start();
-
+            await Task.Delay(2000); 
             for (int i = 0; i < 4; i++)
             {
                 var catName = "Bonifaciy-" + i;
@@ -90,19 +108,6 @@ namespace GridDomain.Node.Tests
                 Assert.NotNull(report.Path);
             }  
         }
-        
-        [Fact]
-        public async Task Given_two_nodes_cluster_When_new_nodes_join_shard_id_generator_adjusts_to_it()
-        {
-            throw new NotImplementedException();
-        }
-        
-        [Fact]
-        public async Task Given_two_nodes_cluster_When_node_leaves_shard_id_generator_adjusts_to_it()
-        {
-            throw new NotImplementedException();
-        }
-
 
         [Fact]
         public async Task Given_cluster_When_new_nodes_joins_Then_it_participates_in_new_aggregates_creation()
@@ -112,7 +117,7 @@ namespace GridDomain.Node.Tests
 
             await _workerNode.Start();
 
-            await Task.Delay(2000); // to form the cluster
+            await Task.Delay(5000); // to form the cluster
             var addresses = new List<string>();
             for (int i = 0; i < 4; i++)
             {
@@ -124,7 +129,6 @@ namespace GridDomain.Node.Tests
             Assert.Contains(addresses,s => s == _workerNode.Address);
         }
 
-        
         [Fact]
         public async Task Given_cluster_When_node_with_aggregate_leaves_Then_it_can_be_recreated_on_another_node()
         {
@@ -137,36 +141,44 @@ namespace GridDomain.Node.Tests
 
             IDomain aliveDomain;
             INode aliveNode;
-           // TaskCompletionSource<int> nodeLeft = new TaskCompletionSource<int>();
             if (report.NodeAddress == _seedNode.Address)
             {
                 _seedNode.Dispose();
                 aliveDomain = _workerCatDomain;
                 aliveNode = _workerNode;
-               // var cluster = Cluster.Get(_workerNode.System);
-               // cluster.(() => nodeLeft.SetResult(0));
             }
             else 
             {
                 _workerNode.Dispose();
                 aliveDomain = _seedCatDomain;
                 aliveNode = _seedNode;
-              ///  var cluster = Cluster.Get(_seedNode.System);
-               // cluster.RegisterOnMemberRemoved(() => nodeLeft.SetResult(0));
             }
 
-            await Task.Delay(10000);//nodeLeft.Task);
+            await Task.Delay(5000);
             Log.Logger.Information("sending new command");
-            await aliveDomain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
-            Log.Logger.Information("trying take aggregate report");
-            report = await aliveDomain.AggregatesLifetime.GetHealth<Cat>(catName);
+            for (int i = 0; i < 4; i++)
+            {
+                try
+                {
+                    await aliveDomain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
+                    Log.Logger.Information("trying take aggregate report");
+                    report = await aliveDomain.AggregatesLifetime.GetHealth<Cat>(catName);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger.Information($"Error: {ex}");
+                }
+            }
+
+         
             Assert.Equal(aliveNode.Address, report.NodeAddress);
         }
-        
-        [Fact]
-        public async Task Given_loaded_cluster_When_new_node_joins_Then_some_aggregates_are_rebalanced()
+
+        public void Dispose()
         {
-            throw new NotImplementedException();
+            _seedNode?.Dispose();
+            _workerNode?.Dispose();
         }
     }
 }

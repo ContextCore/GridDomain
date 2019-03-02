@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Akka.Event;
@@ -29,6 +30,69 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
         }
     }
 
+
+    public class CommandIdempotentActor : ReceiveActor
+    {
+        public CommandIdempotentActor()
+        {
+            var writerGuid = Guid.NewGuid().ToString();
+            var journal = Persistence.Instance.Apply(Context.System).JournalFor(null);
+            IActorRef commandSender = null;
+            Receive<CheckCommand>(c =>
+            {
+                var cmd = c.Command;
+                commandSender = Sender;
+                var commandPersistentId = AggregateAddress.New(cmd.GetType(), cmd.Id).ToString();
+
+                //protect from repeating commands
+                //will try to save event with command Id
+                //if persist will fail, need to restart actor and reject the command
+                journal.Tell(new WriteMessages(
+                    new[]
+                    {
+                        new AtomicWrite(new Persistent(c.Command,
+                            sender: Self,
+                            persistenceId: commandPersistentId,
+                            sequenceNr: 0,
+                            writerGuid: writerGuid))
+                    }, Self, 1));
+            });
+            Receive<WriteMessageSuccess>(s => { });
+            Receive<WriteMessagesSuccessful>(s => commandSender.Tell(CommandAccepted.Instance));
+            Receive<WriteMessagesFailed>(f => commandSender.Tell(new CommandRejected(f.Cause)));
+            Receive<WriteMessageFailure>(f => { });
+        }
+
+        public class CheckCommand
+        {
+            public CheckCommand(ICommand command)
+            {
+                Command = command;
+            }
+
+            public ICommand Command { get; }
+        }
+
+        public class CommandAccepted
+        {
+            private CommandAccepted()
+            {
+            }
+
+            public static CommandAccepted Instance = new CommandAccepted();
+        }
+
+        public class CommandRejected
+        {
+            public Exception Reason { get; }
+
+            public CommandRejected(Exception reason)
+            {
+                Reason = reason;
+            }
+        }
+    }
+
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
@@ -36,18 +100,24 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
     public class AggregateActor<TAggregate> : ReceivePersistentActor where TAggregate : class, IAggregate
     {
         protected override ILoggingAdapter Log { get; } = Context.GetSeriLogger();
-        public override string PersistenceId { get; }
+        public override string PersistenceId => _persistentId;
+        private string _persistentId;
         protected string Id { get; }
         public TAggregate Aggregate { get; private set; }
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
         protected readonly BehaviorQueue Behavior;
         private readonly DateTime _startedTime;
+        private readonly IActorRef _journal;
+        private bool? _isCommandAlreadyExecuted;
+        private Guid guid = Guid.NewGuid();
+        private readonly IActorRef _commandChecker;
+
 
         public AggregateActor()
         {
             Behavior = new BehaviorQueue(Become);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
-            PersistenceId = Self.Path.Name;
+            _persistentId = Self.Path.Name;
             Id = AggregateAddress.Parse<TAggregate>(Self.Path.Name).Id;
 
             var aggregateExtensions = Context.System.GetAggregatesExtension();
@@ -57,6 +127,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             Context.SetReceiveTimeout(dependencies.Configuration.MaxInactivityPeriod);
             Recover<DomainEvent>(e => Aggregate.Apply(e));
 
+            _commandChecker = Context.ActorOf(Props.Create<CommandIdempotentActor>(), "CommandIdempotenceWatcher");
             _startedTime = BusinessDateTime.UtcNow;
         }
 
@@ -66,6 +137,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             {
                 Context.Parent.Tell(new Passivate(AggregateActor.ShutdownGratefully.Instance));
             });
+
             Command<AggregateActor.ShutdownGratefully>(s => { Context.Stop(Self); });
             Command<AggregateActor.CheckHealth>(c => Sender.Tell(new AggregateHealthReport(Self.Path.ToString(),
                 BusinessDateTime.UtcNow - _startedTime,
@@ -73,25 +145,33 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             Command<AggregateActor.ExecuteCommand>(m =>
             {
                 var cmd = m.Command;
+                if (cmd.Recipient.Id != Id)
+                    throw new AggregateIdMismatchException();
+
                 Log.Debug("Received command {cmdId}", cmd.Id);
 
                 ExecutionContext.Command = cmd;
                 ExecutionContext.CommandMetadata = m.Metadata;
                 ExecutionContext.CommandSender = Sender;
 
+              
                 try
                 {
-                    Aggregate.Execute(ExecutionContext.Command)
-                        .PipeTo(Self);
+                    Aggregate.Execute(cmd).PipeTo(Self);
                 }
                 catch (Exception ex)
                 {
-                    StopOnException(ex);
+                    StopOnException("Aggregate could not produce domain events", ex);
                 }
-
 
                 Behavior.Become(ProcessingCommandBehavior, nameof(ProcessingCommandBehavior));
             });
+        }
+
+        protected override void OnPersistFailure(Exception cause, object @event, long sequenceNr)
+        {
+            ExecutionContext.CommandSender.Tell(new AggregateActor.CommandFailed(cause));
+            base.OnPersistFailure(cause, @event, sequenceNr);
         }
 
         private void ProcessingCommandBehavior()
@@ -106,30 +186,56 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
                     return;
                 }
 
-                int messagesToPersistCount = domainEvents.Count;
+                ExecutionContext.ProducedEvents = domainEvents;
+                ExecutionContext.EventsPersisted = false;
+                
+                //check if we already executed this command
+                _isCommandAlreadyExecuted = null;
+                _commandChecker.Tell(new CommandIdempotentActor.CheckCommand(ExecutionContext.Command));
 
-                PersistAll(domainEvents,
-                    persistedEvent =>
-                    {
-                        Aggregate.ApplyByVersion(persistedEvent);
-
-                        if (--messagesToPersistCount != 0) return;
-                        CompleteExecution();
-                    });
             });
 
-
+            Command<CommandIdempotentActor.CommandAccepted>(s =>
+            {
+                _isCommandAlreadyExecuted = false;
+                if (ExecutionContext.ProducedEvents != null && !ExecutionContext.EventsPersisted)
+                {
+                    PersistProducedEvents(ExecutionContext.ProducedEvents);
+                }
+            });
+            Command<CommandIdempotentActor.CommandRejected>(f =>
+            {
+                _isCommandAlreadyExecuted = true;
+                StopOnException("Command was rejected as already executed", new CommandAlreadyExecutedException());
+            });
+           
             //aggregate raised an error during command execution
-            Command<Status.Failure>(f => { StopOnException(f.Cause); });
+            Command<Status.Failure>(f => { StopOnException("Aggregate command execution timeout or could not produce domain events", f.Cause); });
 
             CommandAny(StashMessage);
         }
 
-        private void StopOnException(Exception reason)
+        private void PersistProducedEvents(IReadOnlyCollection<IDomainEvent> domainEvents)
         {
-            ExecutionContext.CommandSender.Tell(new AggregateActor.CommandFailed(reason));
+            ExecutionContext.EventsPersisted = true;
+            
+            int messagesToPersistCount = domainEvents.Count;
+            PersistAll(domainEvents,
+                persistedEvent =>
+                {
+                    Aggregate.ApplyByVersion(persistedEvent);
+
+                    if (--messagesToPersistCount != 0) return;
+                    CompleteExecution();
+                });
+        }
+
+        private void StopOnException(string message,Exception reason)
+        {
             //restart myself to get new state
-            throw new AggregateActor.CommandExecutionException();
+            var commandExecutionException = new AggregateActor.CommandExecutionException(message, reason);
+            ExecutionContext.CommandSender.Tell(new AggregateActor.CommandFailed(commandExecutionException));
+            throw commandExecutionException;
         }
 
 
@@ -138,6 +244,22 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             Log.Debug("Stashing message {@message} current behavior is {behavior}", message, Behavior.Current);
 
             Stash.Stash();
+        }
+
+        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
+        {
+            base.OnPersistRejected(cause, @event, sequenceNr);
+        }
+
+
+        protected override void Unhandled(object message)
+        {
+            base.Unhandled(message);
+        }
+
+        protected override bool AroundReceive(Receive receive, object message)
+        {
+            return base.AroundReceive(receive, message);
         }
 
         private void CompleteExecution()
@@ -155,8 +277,24 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
         }
     }
 
+    public class AggregateIdMismatchException : Exception
+    {
+    }
+
     public static class AggregateActor
     {
+        public class PersistEvents
+        {
+            public string CommandId { get; }
+            public IReadOnlyCollection<IDomainEvent> Events { get; }
+
+            public PersistEvents(string commandId, params IDomainEvent[] events)
+            {
+                CommandId = commandId;
+                Events = events;
+            }
+        }
+
         public class ExecuteCommand : IHaveMetadata
         {
             public IMessageMetadata Metadata { get; }
@@ -190,6 +328,9 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
 
         public class CommandExecutionException : Exception
         {
+            public CommandExecutionException(string msg,Exception reason):base(msg, reason)
+            {
+            }
         }
 
         public class ShutdownGratefully

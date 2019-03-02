@@ -25,15 +25,26 @@ namespace GridDomain.Node.Akka.Cluster
 
         public async Task<AggregateHealthReport> GetHealth(IAggregateAddress aggregate, TimeSpan? timeout = null)
         {
-            var shardId = DefaultShardIdGenerator.Instance.GetShardId(aggregate.Id);
+            var shardId = ShardIdGenerator.Instance.GetShardId(aggregate.Id);
             var region = aggregate.Name;
             var message = new ShardEnvelop(AggregateActor.CheckHealth.Instance, shardId,
                 aggregate.ToString(), region);
 
-            var report =
-                await _aggregatesRouter.Ask<AggregateHealthReport>(message, timeout ?? TimeSpan.FromSeconds(5));
-            return report;
-        }
+            for (int i = 0; i < 5; i++)
+            {
+                try
+                {
+                    var report =
+                        await _aggregatesRouter.Ask<AggregateHealthReport>(message, timeout ?? TimeSpan.FromSeconds(2));
+                    return report;
+                }
+                catch(AskTimeoutException ex)
+                {
+                    continue;
+                }
+            }
+            throw new TimeoutException();
+         }
     }
 
 

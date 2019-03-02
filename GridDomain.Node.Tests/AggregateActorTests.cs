@@ -10,6 +10,7 @@ using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Actors.Aggregates;
 using GridDomain.Node.Akka.AggregatesExtension;
 using GridDomain.Node.Akka.Configuration.Hocon;
+using GridDomain.Node.Tests.TestJournals.Hocon;
 using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,7 +19,7 @@ namespace GridDomain.Node.Tests
 {
     public class AggregateActorTests : TestKit
     {
-        private static readonly Config _config = new ActorSystemConfigBuilder().Add(LogConfig.All).Build();
+        private static readonly Config _config = new ActorSystemConfigBuilder().Add(LogConfig.All).Add(new TestJournalConfig()).Build();
         private readonly AggregateDependencies<Cat> _aggregateDependencies = new AggregateDependencies<Cat>();
 
         public AggregateActorTests(ITestOutputHelper helper) : base(_config, "aggregateTests",helper)
@@ -52,7 +53,7 @@ namespace GridDomain.Node.Tests
             
             var testCat = ActorOfAsTestActorRef<AggregateActor<Cat>>(catAddress.ToString());
             await Task.Delay(1000);
-            Assert.Equal("myCat", testCat.UnderlyingActor.Aggregate.Name);
+            Assert.Equal("myCat", testCat.UnderlyingActor.Aggregate.Id);
         }
 
         [Fact]
@@ -64,8 +65,28 @@ namespace GridDomain.Node.Tests
             var executed = ExpectMsg<AggregateActor.CommandExecuted>();
             actor.Tell(new AggregateActor.ExecuteCommand(new Cat.PetCommand("myCat"), MessageMetadata.Empty));
             var error = ExpectMsg<AggregateActor.CommandFailed>();
+            Assert.IsType<AggregateActor.CommandExecutionException>(error.Reason);
+            Assert.IsType<Cat.IsUnhappyException>(error.Reason.InnerException);
         }
  
+        [Fact]
+        public void AA_will_not_execute_same_command_twice()
+        {
+            var catAddress = "myCat".AsAddressFor<Cat>();
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), catAddress.ToString());
+            actor.Tell(new AggregateActor.ExecuteCommand(new Cat.GetNewCatCommand("myCat"), MessageMetadata.Empty));
+            ExpectMsg<AggregateActor.CommandExecuted>(TimeSpan.FromMinutes(10));
+            
+            var petCommand = new Cat.FeedCommand("myCat");
+            actor.Tell(new AggregateActor.ExecuteCommand(petCommand, MessageMetadata.Empty));
+            ExpectMsg<AggregateActor.CommandExecuted>(TimeSpan.FromMinutes(10));
+
+            actor.Tell(new AggregateActor.ExecuteCommand(petCommand, MessageMetadata.Empty));
+            var failed =  ExpectMsg<AggregateActor.CommandFailed>(TimeSpan.FromMinutes(10));
+            
+            Assert.IsType<AggregateActor.CommandExecutionException>(failed.Reason);
+            Assert.IsType<CommandAlreadyExecutedException>(failed.Reason.InnerException);
+        }
         
         [Fact]
         public void AA_can_shutdown_on_request()
@@ -77,6 +98,10 @@ namespace GridDomain.Node.Tests
             actor.Tell(AggregateActor.ShutdownGratefully.Instance);
             ExpectTerminated(actor);
         }
+        
+         
+   
+
         
         [Fact]
         public void AA_will_send_healthReport_on_request()

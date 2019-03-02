@@ -25,7 +25,10 @@ namespace GridDomain.Node
 
             var result = await _commandExecutorActor.Ask<AggregateActor.CommandExecuted>(envelopedCommand,_timeout);
             if (result is AggregateActor.CommandFailed fail)
+            {
+                if (fail.Reason is AggregateActor.CommandExecutionException e && e.InnerException != null) throw e.InnerException;
                 throw fail.Reason;
+            }
         }
     }
 }

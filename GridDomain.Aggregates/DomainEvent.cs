@@ -5,21 +5,21 @@ namespace GridDomain.Aggregates
 {
     public class DomainEvent<T> : DomainEvent, IFor<T>
     {
-        protected DomainEvent(string sourceId, long version = 0, string id = null, DateTime? createdTime = null) : base(sourceId, version, id, createdTime) { }
+        protected DomainEvent(string source, long version = 0, string id = null, DateTime? createdTime = null) : base(AggregateAddress.New<T>(source), version, id, createdTime) { }
     }
 
     public class DomainEvent : IDomainEvent
     {
-        protected DomainEvent(string sourceId, long version = 0, string id = null, DateTime? createdTime = null)
+        protected DomainEvent(AggregateAddress source, long version = 0, string id = null, DateTime? createdTime = null)
         {
-            SourceId = sourceId;
+            Source = source;
             CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
             Id = id ?? Guid.NewGuid().ToString();
         }
 
         //Source of the event - aggregate that created it
         //private setter for serializers
-        public string SourceId { get; private set; }
+        public AggregateAddress Source { get; private set; }
         /// <summary>
         /// Version of the Aggregate to witch this event should be applied
         /// </summary>
@@ -40,13 +40,5 @@ namespace GridDomain.Aggregates
         {
             return Id.GetHashCode();
         }
-
-//        public DomainEvent CloneForProcess(string processId)
-//        {
-//            var evt = (DomainEvent) MemberwiseClone();
-//            evt.ProcessId = processId;
-//            return evt;
-//        }
-
     }
 }

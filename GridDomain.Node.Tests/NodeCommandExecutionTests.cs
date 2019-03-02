@@ -18,7 +18,6 @@ using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Akka.Configuration.Hocon;
 using GridDomain.Node.Tests.TestJournals;
 using GridDomain.Node.Tests.TestJournals.Hocon;
-using Newtonsoft.Json;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -28,32 +27,12 @@ using Xunit.Sdk;
 
 namespace GridDomain.Node.Tests
 {
-
-    public class CatAggregateSerializationTests
-    {
-        [Fact]
-        public void Commands_are_serializable()
-        {
-            var cmd = new Cat.GetNewCatCommand("mau");
-            var jsonString = JsonConvert.SerializeObject(cmd);
-            var restoredCmd = JsonConvert.DeserializeObject(jsonString);
-        }
-        
-        [Fact]
-        public void ShardedCommands_are_serializable()
-        {
-            var cmd = ShardedAggregateCommand.New(new Cat.GetNewCatCommand("mau"));
-            var jsonString = JsonConvert.SerializeObject(cmd);
-            var restoredCmd = JsonConvert.DeserializeObject(jsonString);
-        }
-    }
-    
     public class NodeCommandExecutionTests : TestKit
     {
         private const string nodeName = "Node";
 
         private static readonly NodeNetworkAddress NodeNetworkAddress =
-            new NodeNetworkAddress("127.0.0.1", 9001, "127.0.0.1", nodeName);
+            new NodeNetworkAddress("127.0.0.1", Network.FreeTcpPort(), "127.0.0.1", nodeName);
 
         private static readonly Config _config = new ActorSystemConfigBuilder()
             .Add(LogConfig.All)
@@ -61,22 +40,21 @@ namespace GridDomain.Node.Tests
             .Add(new RemoteConfig(NodeNetworkAddress))
             .Add(new ClusterActorProviderConfig())
             .Add(new TestJournalConfig())
+            .Add(new AggregateTaggingConfig(TestJournalConfig.JournalId))
             .Build();
 
         private readonly IDomain _domain;
-        private readonly CatDomainConfiguration _catDomainConfiguration;
 
 
         public NodeCommandExecutionTests(ITestOutputHelper helper) : base(_config, nodeName, helper)
         {
             Serilog.Log.Logger = new LoggerConfiguration().WriteTo.XunitTestOutput(helper)
-                                                          //.WriteTo.File(Path.Combine("Logs", nameof(NodeCommandExecutionTests)+".log"),LogEventLevel.Verbose)
                                                           .CreateLogger();
 
 
-            _catDomainConfiguration = new CatDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
+            var catDomainConfiguration = new CatDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
 
-            var node = new GridDomainNode(new[] {_catDomainConfiguration},
+            var node = new GridDomainNode(new[] {catDomainConfiguration},
                 new DelegateActorSystemFactory(() => Sys), Serilog.Log.Logger, TimeSpan.FromSeconds(5));
             _domain = node.Start().Result;
         }
@@ -96,15 +74,19 @@ namespace GridDomain.Node.Tests
             var journal = query.ReadJournalFor<TestReadJournal>(TestReadJournal.Identifier);
             
             
-            var source = journal.CurrentPersistenceIds().Select(id=>AggregateAddress.Parse<Cat>(id).Id);
-            var sink = Sink.First<string>();
+            var source = journal.EventsByTag("Cat",NoOffset.Instance).Select(evt=>
+            {
+                return evt.Event as IDomainEvent;
+            });
+            var sink = Sink.First<IDomainEvent>();
             // connect the Source to the Sink, obtaining a RunnableGraph
             var runnable = source.ToMaterialized(sink, Keep.Right);
             
             using (var materializer = Sys.Materializer())
             {
-                var persistedId = await runnable.Run(materializer);
-                Assert.Equal("myCat",persistedId);
+                var domainEvent = await runnable.Run(materializer);
+                Assert.Equal("Cat",domainEvent.Source.Name);
+                Assert.Equal("myCat",domainEvent.Source.Id);
             }
         }
         

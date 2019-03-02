@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Akka.Actor;
 using GridDomain.Aggregates;
 
@@ -7,12 +8,16 @@ namespace GridDomain.Node.Akka.Actors.Aggregates {
         public ICommand Command;
         public IMessageMetadata CommandMetadata;
         public IActorRef CommandSender;
+        public IReadOnlyCollection<IDomainEvent> ProducedEvents;
+        public bool EventsPersisted;
 
         public void Clear()
         {
             Command = null;
             CommandMetadata = null;
             CommandSender = null;
+            ProducedEvents = null;
+            EventsPersisted = false;
         }
     }
 }
