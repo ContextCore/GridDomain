@@ -14,17 +14,6 @@ using Serilog;
 using IContainer = System.ComponentModel.IContainer;
 
 namespace GridDomain.Node {
-
-
-
-      public interface INode : IDisposable
-      {
-          Task<IDomain> Start();
-          string Address { get; }
-      }
-    
-    
-      
     public class GridDomainNode : INode
     {
         private bool _stopping;

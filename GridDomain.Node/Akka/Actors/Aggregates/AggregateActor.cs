@@ -15,84 +15,6 @@ using GridDomain.Node.Tests;
 
 namespace GridDomain.Node.Akka.Actors.Aggregates
 {
-    public class AggregateHealthReport
-    {
-        public string Path { get; }
-        public string NodeAddress { get; }
-
-        public TimeSpan Uptime { get; }
-
-        public AggregateHealthReport(string path, TimeSpan uptime, string nodeAddress)
-        {
-            Path = path;
-            Uptime = uptime;
-            NodeAddress = nodeAddress;
-        }
-    }
-
-
-    public class CommandIdempotentActor : ReceiveActor
-    {
-        public CommandIdempotentActor()
-        {
-            var writerGuid = Guid.NewGuid().ToString();
-            var journal = Persistence.Instance.Apply(Context.System).JournalFor(null);
-            IActorRef commandSender = null;
-            Receive<CheckCommand>(c =>
-            {
-                var cmd = c.Command;
-                commandSender = Sender;
-                var commandPersistentId = AggregateAddress.New(cmd.GetType(), cmd.Id).ToString();
-
-                //protect from repeating commands
-                //will try to save event with command Id
-                //if persist will fail, need to restart actor and reject the command
-                journal.Tell(new WriteMessages(
-                    new[]
-                    {
-                        new AtomicWrite(new Persistent(c.Command,
-                            sender: Self,
-                            persistenceId: commandPersistentId,
-                            sequenceNr: 0,
-                            writerGuid: writerGuid))
-                    }, Self, 1));
-            });
-            Receive<WriteMessageSuccess>(s => { });
-            Receive<WriteMessagesSuccessful>(s => commandSender.Tell(CommandAccepted.Instance));
-            Receive<WriteMessagesFailed>(f => commandSender.Tell(new CommandRejected(f.Cause)));
-            Receive<WriteMessageFailure>(f => { });
-        }
-
-        public class CheckCommand
-        {
-            public CheckCommand(ICommand command)
-            {
-                Command = command;
-            }
-
-            public ICommand Command { get; }
-        }
-
-        public class CommandAccepted
-        {
-            private CommandAccepted()
-            {
-            }
-
-            public static CommandAccepted Instance = new CommandAccepted();
-        }
-
-        public class CommandRejected
-        {
-            public Exception Reason { get; }
-
-            public CommandRejected(Exception reason)
-            {
-                Reason = reason;
-            }
-        }
-    }
-
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
@@ -246,22 +168,6 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             Stash.Stash();
         }
 
-        protected override void OnPersistRejected(Exception cause, object @event, long sequenceNr)
-        {
-            base.OnPersistRejected(cause, @event, sequenceNr);
-        }
-
-
-        protected override void Unhandled(object message)
-        {
-            base.Unhandled(message);
-        }
-
-        protected override bool AroundReceive(Receive receive, object message)
-        {
-            return base.AroundReceive(receive, message);
-        }
-
         private void CompleteExecution()
         {
             Log.Info("Command executed. {@context}", ExecutionContext.CommandMetadata);
@@ -277,33 +183,21 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
         }
     }
 
-    public class AggregateIdMismatchException : Exception
-    {
-    }
-
     public static class AggregateActor
     {
-        public class PersistEvents
-        {
-            public string CommandId { get; }
-            public IReadOnlyCollection<IDomainEvent> Events { get; }
-
-            public PersistEvents(string commandId, params IDomainEvent[] events)
-            {
-                CommandId = commandId;
-                Events = events;
-            }
-        }
 
         public class ExecuteCommand : IHaveMetadata
         {
             public IMessageMetadata Metadata { get; }
             public ICommand Command { get; }
+            
+            public bool IsWaitingAcknowledgement { get; }
 
-            public ExecuteCommand(ICommand command, IMessageMetadata metadata)
+            public ExecuteCommand(ICommand command, IMessageMetadata metadata, bool ack=false)
             {
                 Command = command;
                 Metadata = metadata;
+                IsWaitingAcknowledgement = true;
             }
         }
 

@@ -6,9 +6,4 @@ namespace GridDomain.Node
         string CorrelationId { get; }
         string MessageId { get; }
     }
-
-    public interface IHaveMetadata
-    {
-        IMessageMetadata Metadata { get; }
-    }
 }

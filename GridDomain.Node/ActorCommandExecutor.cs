@@ -28,7 +28,7 @@ namespace GridDomain.Node
             {
                 if (fail.Reason is AggregateActor.CommandExecutionException e && e.InnerException != null) throw e.InnerException;
                 throw fail.Reason;
-            }
+            } 
         }
     }
 }

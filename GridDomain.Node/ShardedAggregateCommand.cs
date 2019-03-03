@@ -1,0 +1,33 @@
+using GridDomain.Aggregates;
+using GridDomain.Node.Akka.Actors.Aggregates;
+using GridDomain.Node.Akka.Cluster;
+
+namespace GridDomain.Node
+{
+    public class ShardedAggregateCommand : IShardEnvelop, IHaveMetadata
+    {
+        public ShardedAggregateCommand(object message, string entityId, string shardId, string region,
+            IMessageMetadata metadata)
+        {
+            Message = message;
+            EntityId = entityId;
+            ShardId = shardId;
+            Region = region;
+            Metadata = metadata;
+        }
+
+        public static ShardedAggregateCommand New(ICommand message, IMessageMetadata metadata = null)
+        {
+            return new ShardedAggregateCommand(new AggregateActor.ExecuteCommand(message, metadata), message.Recipient.ToString(),
+                ShardIdGenerator.Instance.GetShardId(message.Recipient.Id),
+                message.Recipient.Name,
+                metadata ?? MessageMetadata.Empty);
+        }
+
+        public IMessageMetadata Metadata { get; private set; }
+        public string EntityId { get; private set; }
+        public string ShardId { get; private set; }
+        public string Region { get; private set; }
+        public object Message { get; private set; }
+    }
+}
