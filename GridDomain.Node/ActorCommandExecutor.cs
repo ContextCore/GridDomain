@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Cluster.Sharding;
 using GridDomain.Aggregates;
 using GridDomain.Node.Akka.Actors.Aggregates;
+using Serilog;
 using Serilog.Debugging;
 
 namespace GridDomain.Node
@@ -21,7 +22,8 @@ namespace GridDomain.Node
 
         public async Task Execute(ICommand command)
         {
-            var envelopedCommand = ShardedAggregateCommand.New(command, MessageMetadata.New(command.Id, Guid.NewGuid().ToString()));
+            Log.Logger.Debug("Executing {@command}",command);
+            var envelopedCommand = ShardedAggregateCommand.New(command, true, MessageMetadata.New(command.Id, Guid.NewGuid().ToString()));
 
             var result = await _commandExecutorActor.Ask<AggregateActor.CommandExecuted>(envelopedCommand,_timeout);
             if (result is AggregateActor.CommandFailed fail)

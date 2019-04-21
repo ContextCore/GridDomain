@@ -4,9 +4,9 @@ using GridDomain.Aggregates;
 
 namespace GridDomain.Node
 {
-    public class HoconAggregateConfiguration:IAggregateConfiguration
+    public class HoconAggregateSettings:IAggregateSettings
     {
-        public HoconAggregateConfiguration(Config cfg)
+        public HoconAggregateSettings(Config cfg)
         {
             MaxInactivityPeriod = TimeSpan.FromSeconds(cfg.GetInt("aggregate.maxinactivity"));       
             SnapshotsKeepAmount = cfg.GetInt("aggregate.snapshotstokeep");       

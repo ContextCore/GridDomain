@@ -38,7 +38,7 @@ namespace GridDomain.Node.Akka.Cluster
             _system = system;
         }
 
-        public async Task RegisterAggregate<TAggregate>(IAggregateDependencies<TAggregate> factory)
+        public async Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> factory)
             where TAggregate : class, IAggregate
         {
             _containerBuilder.RegisterInstance(factory);

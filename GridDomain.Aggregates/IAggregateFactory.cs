@@ -7,7 +7,7 @@ namespace GridDomain.Aggregates
         IAggregate Build(Type type, string id);
     }
     
-    public interface IAggregateFactory<T> where T:IAggregate
+    public interface IAggregateFactory<out T> where T:IAggregate
     {
         T Build(string id=null);
     }

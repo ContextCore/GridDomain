@@ -13,7 +13,7 @@ namespace GridDomain.Scenarios.Tests
 
         protected ScenarioRunnerTest(ITestOutputHelper output)
         {
-            Logger = new LoggerConfiguration().WriteTo.XunitTestOutput(output).CreateLogger();
+            Logger = new LoggerConfiguration().WriteTo.TestOutput(output).CreateLogger();
         }
 
         protected abstract Task<IAggregateScenarioRun<T>> Run<T>(

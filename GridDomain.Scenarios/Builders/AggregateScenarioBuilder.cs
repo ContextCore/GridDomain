@@ -9,12 +9,12 @@ namespace GridDomain.Scenarios.Builders
         private IDomainEvent[] _domainEvents = { };
         private ICommand[] _commands = { };
         private IDomainEvent[] _expectedEvents = { };
-        private IAggregateDependencies<T> _aggregateDependencies;
+        private IAggregateConfiguration<T> _aggregateConfiguration;
         private string _name = "AggregateScenario_"+typeof(T).Name;
 
         public IAggregateScenario<T> Build()
         {
-            return new AggregateScenario<T>(_domainEvents, _commands, _expectedEvents, _aggregateDependencies ?? new AggregateDependenciesBuilder<T>(this).Build(),_name);
+            return new AggregateScenario<T>(_domainEvents, _commands, _expectedEvents, _aggregateConfiguration ?? new AggregateDependenciesBuilder<T>(this).Build(),_name);
         }
 
         public IAggregateScenarioBuilder<T> Name(string name)
@@ -46,9 +46,9 @@ namespace GridDomain.Scenarios.Builders
             return this;
         }
 
-        public IAggregateScenarioBuilder<T> With(IAggregateDependencies<T> factory)
+        public IAggregateScenarioBuilder<T> With(IAggregateConfiguration<T> factory)
         {
-            _aggregateDependencies = factory;
+            _aggregateConfiguration = factory;
             return this;
         }
 

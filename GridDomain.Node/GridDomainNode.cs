@@ -11,7 +11,6 @@ using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Cluster;
 using GridDomain.Node.Tests;
 using Serilog;
-using IContainer = System.ComponentModel.IContainer;
 
 namespace GridDomain.Node {
     public class GridDomainNode : INode

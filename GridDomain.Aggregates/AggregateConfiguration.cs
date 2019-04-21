@@ -1,15 +1,13 @@
-using System;
-
 namespace GridDomain.Aggregates
 {
-    public class AggregateConfiguration : IAggregateConfiguration
+    public class AggregateConfiguration<TAggregate>:IAggregateConfiguration<TAggregate> where TAggregate : IAggregate
     {
-        public AggregateConfiguration(TimeSpan? maxInactivityPeriod=null, int? snapshotsKeepAmount=null)
+        public AggregateConfiguration(IAggregateFactory<TAggregate> factory=null,IAggregateSettings settings = null)
         {
-            MaxInactivityPeriod = maxInactivityPeriod ?? TimeSpan.FromMinutes(30);
-            SnapshotsKeepAmount = snapshotsKeepAmount ?? 5;
+              AggregateFactory = factory ?? AggregateFactory;
+              Settings = settings ?? Settings;
         }
-        public TimeSpan MaxInactivityPeriod { get; }
-        public int SnapshotsKeepAmount { get; }
+        public IAggregateFactory<TAggregate> AggregateFactory { get; set; } = GridDomain.Aggregates.AggregateFactory.For<TAggregate>();
+        public IAggregateSettings Settings { get; set; } = new AggregateSettings();
     }
 }

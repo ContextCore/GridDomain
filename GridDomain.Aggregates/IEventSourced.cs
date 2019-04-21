@@ -6,8 +6,4 @@ namespace GridDomain.Aggregates
         void Apply(IDomainEvent @event);
         int Version { get; }
     }
-
-    //must be serializable
-
-
 }

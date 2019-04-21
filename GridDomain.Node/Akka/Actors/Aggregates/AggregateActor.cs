@@ -46,7 +46,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             var dependencies = aggregateExtensions.GetDependencies<TAggregate>();
             Aggregate = dependencies.AggregateFactory.Build();
 
-            Context.SetReceiveTimeout(dependencies.Configuration.MaxInactivityPeriod);
+            Context.SetReceiveTimeout(dependencies.Settings.MaxInactivityPeriod);
             Recover<DomainEvent>(e => Aggregate.Apply(e));
 
             _commandChecker = Context.ActorOf(Props.Create<CommandIdempotentActor>(), "CommandIdempotenceWatcher");
@@ -75,7 +75,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
                 ExecutionContext.Command = cmd;
                 ExecutionContext.CommandMetadata = m.Metadata;
                 ExecutionContext.CommandSender = Sender;
-
+                ExecutionContext.IsWaitingForConfirmation = m.IsWaitingAcknowledgement;
               
                 try
                 {
@@ -175,7 +175,8 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             if (Aggregate == null)
                 throw new InvalidOperationException("Aggregate state was null after command execution");
 
-            ExecutionContext.CommandSender.Tell(AggregateActor.CommandExecuted.Instance);
+            if(ExecutionContext.IsWaitingForConfirmation)
+                ExecutionContext.CommandSender.Tell(AggregateActor.CommandExecuted.Instance);
 
             ExecutionContext.Clear();
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));

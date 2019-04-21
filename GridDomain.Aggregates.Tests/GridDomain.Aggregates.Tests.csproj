@@ -9,7 +9,7 @@
     <ItemGroup>
         <PackageReference Include="Autofac" Version="4.9.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0-preview-20181205-02" />
-        <PackageReference Include="Serilog.Sinks.XunitTestOutput" Version="1.0.14" />
+        <PackageReference Include="Serilog.Sinks.XUnit" Version="1.0.8" />
         <PackageReference Include="xunit" Version="2.4.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     </ItemGroup>

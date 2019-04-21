@@ -11,12 +11,12 @@ namespace GridDomain.Scenarios
         public AggregateScenario(IReadOnlyCollection<IDomainEvent> givenEvents,
                                  IReadOnlyCollection<ICommand> givenCommands,
                                  IReadOnlyCollection<IDomainEvent> expectedEvents,
-                                 IAggregateDependencies<T> factory,
+                                 IAggregateConfiguration<T> factory,
                                  string name) : base(givenEvents, givenCommands, expectedEvents, name)
         {
-            Dependencies = factory;
+            Configuration = factory;
         }
-        public IAggregateDependencies<T> Dependencies { get; }
+        public IAggregateConfiguration<T> Configuration { get; }
     }
 
 
@@ -28,9 +28,9 @@ namespace GridDomain.Scenarios
         {
             return new AggregateScenarioBuilder<T>();
         }
-        public static IAggregateScenarioBuilder<T> New<T>(IAggregateDependencies<T> dependencies) where T : IAggregate
+        public static IAggregateScenarioBuilder<T> New<T>(IAggregateConfiguration<T> configuration) where T : IAggregate
         {
-            return new AggregateScenarioBuilder<T>().With(dependencies);
+            return new AggregateScenarioBuilder<T>().With(configuration);
         }
        
 

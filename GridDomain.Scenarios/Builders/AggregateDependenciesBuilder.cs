@@ -15,9 +15,9 @@ namespace GridDomain.Scenarios.Builders
 
         public IAggregateScenarioBuilder<T> Scenario => _builder.With(Build());
 
-        public IAggregateDependencies<T> Build()
+        public IAggregateConfiguration<T> Build()
         {
-           return new AggregateDependencies<T>(_aggregateFactory);
+           return new AggregateConfiguration<T>(_aggregateFactory);
         }
 
         public IAggregateDependenciesBuilder<T> Handler(object handler)

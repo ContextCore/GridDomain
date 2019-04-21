@@ -22,7 +22,6 @@ namespace GridDomain.Node.Akka.Actors {
         {
             Current = name;
             Remember(name);
-
             _become(act);
         }
 

@@ -18,7 +18,7 @@ namespace GridDomain.Scenarios.Runners
 
         public async Task<IAggregateScenarioRun<TAggregate>> Run(IAggregateScenario<TAggregate> scenario)
         {
-            var aggregate = scenario.Dependencies.AggregateFactory.Build(scenario.AggregateId);
+            var aggregate = scenario.Configuration.AggregateFactory.Build(scenario.AggregateId);
 
             foreach (var evt in scenario.GivenEvents)
             {

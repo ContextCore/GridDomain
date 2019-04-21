@@ -13,9 +13,9 @@ namespace GridDomain.Node.Tests
         Bad
     }
 
-    public class CatDomainConfiguration : IDomainConfiguration, IAggregateDependencies<Cat>, IAggregateConfiguration
+    public class CatDomainSettings : IDomainConfiguration, IAggregateConfiguration<Cat>, IAggregateSettings
     {
-        public CatDomainConfiguration()
+        public CatDomainSettings()
         {
           
         }
@@ -25,7 +25,7 @@ namespace GridDomain.Node.Tests
         }
 
         public IAggregateFactory<Cat> AggregateFactory { get; } = new AggregateFactory<Cat>();
-        public IAggregateConfiguration Configuration  => this;
+        public IAggregateSettings Settings  => this;
         public TimeSpan MaxInactivityPeriod { get; set; } = TimeSpan.FromSeconds(1);
         public int SnapshotsKeepAmount { get; set; } = 5;
     }

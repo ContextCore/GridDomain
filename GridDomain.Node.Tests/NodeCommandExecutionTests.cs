@@ -48,11 +48,11 @@ namespace GridDomain.Node.Tests
 
         public NodeCommandExecutionTests(ITestOutputHelper helper) : base(_config, nodeName, helper)
         {
-            Serilog.Log.Logger = new LoggerConfiguration().WriteTo.XunitTestOutput(helper)
+            Serilog.Log.Logger = new LoggerConfiguration().WriteTo.TestOutput(helper)
                                                           .CreateLogger();
 
 
-            var catDomainConfiguration = new CatDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
+            var catDomainConfiguration = new CatDomainSettings {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
 
             var node = new GridDomainNode(new[] {catDomainConfiguration},
                 new DelegateActorSystemFactory(() => Sys), Serilog.Log.Logger, TimeSpan.FromSeconds(5));

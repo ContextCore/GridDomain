@@ -1,10 +1,8 @@
-using System;
-
 namespace GridDomain.Aggregates
 {
-    public interface IAggregateConfiguration
+    public interface IAggregateConfiguration<TAggregate> where TAggregate : IAggregate
     {
-        TimeSpan MaxInactivityPeriod { get; }
-        int SnapshotsKeepAmount { get; }
+        IAggregateFactory<TAggregate> AggregateFactory { get; }
+        IAggregateSettings Settings { get; }
     }
 }

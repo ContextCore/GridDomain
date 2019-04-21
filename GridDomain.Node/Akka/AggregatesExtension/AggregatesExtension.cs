@@ -14,9 +14,9 @@ namespace GridDomain.Node.Akka.AggregatesExtension {
             _container = container;
         }
 
-        public IAggregateDependencies<T> GetDependencies<T>() where T : IAggregate
+        public IAggregateConfiguration<T> GetDependencies<T>() where T : IAggregate
         {
-            return _container.Resolve<IAggregateDependencies<T>>();
+            return _container.Resolve<IAggregateConfiguration<T>>();
         }
     }
 }

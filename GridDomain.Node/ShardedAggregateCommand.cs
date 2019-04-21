@@ -16,9 +16,9 @@ namespace GridDomain.Node
             Metadata = metadata;
         }
 
-        public static ShardedAggregateCommand New(ICommand message, IMessageMetadata metadata = null)
+        public static ShardedAggregateCommand New(ICommand message, bool waitForConfirmation = false, IMessageMetadata metadata = null)
         {
-            return new ShardedAggregateCommand(new AggregateActor.ExecuteCommand(message, metadata), message.Recipient.ToString(),
+            return new ShardedAggregateCommand(new AggregateActor.ExecuteCommand(message, metadata, waitForConfirmation), message.Recipient.ToString(),
                 ShardIdGenerator.Instance.GetShardId(message.Recipient.Id),
                 message.Recipient.Name,
                 metadata ?? MessageMetadata.Empty);

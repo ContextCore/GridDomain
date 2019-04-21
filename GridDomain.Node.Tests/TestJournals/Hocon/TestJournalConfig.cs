@@ -2,7 +2,7 @@ using GridDomain.Node.Akka.Configuration.Hocon;
 
 namespace GridDomain.Node.Tests.TestJournals.Hocon
 {
-    internal class TestJournalConfig : IHoconConfig
+    public class TestJournalConfig : IHoconConfig
     {
         public const string JournalId = "akka.persistence.journal.inmem";
         public string Build()

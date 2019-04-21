@@ -12,6 +12,7 @@ using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Akka.Configuration.Hocon;
 using GridDomain.Node.Tests.TestJournals.Hocon;
 using Serilog;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -38,10 +39,13 @@ namespace GridDomain.Node.Tests
         private GridDomainNode _seedNode;
         private GridDomainNode _workerNode;
      
-        
+        public const string DetailedTemplate = "{Timestamp:yy-MM-dd HH:mm:ss.fff} [{Level:u3} TH{Thread}] Src:{SourceContext}{NewLine}"
+                                               + "{Message}{NewLine}"
+                                               + "{Exception}";
+
         public AggregateShardingTests(ITestOutputHelper output)
         {
-            Log.Logger = new LoggerConfiguration().WriteTo.XunitTestOutput(output).CreateLogger();
+            Log.Logger = new LoggerConfiguration().WriteTo.TestOutput(output,restrictedToMinimumLevel:LogEventLevel.Verbose, outputTemplate:DetailedTemplate).CreateLogger();
             
             var nodeName = "CatWorld";
             var seedAddress = new NodeNetworkAddress("127.0.0.1",Network.FreeTcpPort(),"127.0.0.1",nodeName);
@@ -66,32 +70,14 @@ namespace GridDomain.Node.Tests
             
             var workerSystem = ActorSystem.Create(nodeName, worker);
             
-            var catDomain = new CatDomainConfiguration();
+            var catDomain = new CatDomainSettings();
             
             _seedNode = GridDomainNode.New(seedSystem,catDomain);
             _workerNode = GridDomainNode.New(workerSystem, catDomain);
 
           
         }
-        
-        [Fact]
-        public async Task Given_two_nodes_cluster_When_creating_aggregates_from_seed_Then_they_are_distributed_across_nodes()
-        {
-            _seedCatDomain = await _seedNode.Start();
-            _workerCatDomain = await _workerNode.Start();
 
-            var knownAddresses = new List<string>();
-            for (int i = 0; i < 4; i++)
-            {
-                var catName = "cat-" + i;
-                await _seedCatDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-                var report = await _workerCatDomain.AggregatesLifetime.GetHealth<Cat>(catName);
-                Log.Logger.Information(report.NodeAddress);
-                knownAddresses.Add(report.NodeAddress);
-            }  
-
-            Assert.Equal(2, knownAddresses.Distinct().Count());
-        }
 
         [Fact]
         public async Task Given_two_nodes_cluster_with_aggregates_When_getting_info_about_aggregates_Then_nodes_can_provide_it_regardless_aggregate_location()

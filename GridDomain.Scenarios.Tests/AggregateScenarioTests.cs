@@ -17,7 +17,7 @@ namespace GridDomain.Scenarios.Tests
 
         public AggregateScenarioTests(ITestOutputHelper output)
         {
-            Logger = new LoggerConfiguration().WriteTo.XunitTestOutput(output).CreateLogger();
+            Logger = new LoggerConfiguration().WriteTo.TestOutput(output).CreateLogger();
         }
 
         protected abstract Task<IAggregateScenarioRun<T>> Run<T>(
@@ -37,7 +37,7 @@ namespace GridDomain.Scenarios.Tests
             var scenario = new AggregateScenarioBuilder<Dog>()
                 .Name(nameof(When_defined_aggregate_handler_then_it_can_execute_commands_and_produce_events_with_builder
                 ))
-                .With(new AggregateDependencies<Dog>())
+                .With(new AggregateConfiguration<Dog>())
                 .When(new Dog.GetNewDogCommand(catName))
                 .Then(new Dog.Born(catName));
 
@@ -101,7 +101,7 @@ namespace GridDomain.Scenarios.Tests
         {
             var aggregateId = "Bonifacii";
 
-            var scenario = AggregateScenario.New(new AggregateDependencies<Dog>(new FedCatFactory(aggregateId)))
+            var scenario = AggregateScenario.New(new AggregateConfiguration<Dog>(new FedCatFactory(aggregateId)))
                 .Name(nameof(Given_factory_When_defined_scenario_has_given_it_is_applied_even_without_command));
 
             var run = await Run(scenario);

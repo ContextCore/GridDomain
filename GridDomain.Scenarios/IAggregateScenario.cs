@@ -15,6 +15,6 @@ namespace GridDomain.Scenarios
 
     public interface IAggregateScenario<T> : IAggregateScenario where T:IAggregate
     {
-        IAggregateDependencies<T> Dependencies { get; }
+        IAggregateConfiguration<T> Configuration { get; }
     }
 }

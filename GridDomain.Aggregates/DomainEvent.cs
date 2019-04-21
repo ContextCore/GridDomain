@@ -13,7 +13,7 @@ namespace GridDomain.Aggregates
         protected DomainEvent(AggregateAddress source, long version = 0, string id = null, DateTime? createdTime = null)
         {
             Source = source;
-            CreatedTime = createdTime ?? BusinessDateTime.UtcNow;
+            Occured = createdTime ?? DateTimeOffset.Now;
             Id = id ?? Guid.NewGuid().ToString();
         }
 
@@ -24,7 +24,7 @@ namespace GridDomain.Aggregates
         /// Version of the Aggregate to witch this event should be applied
         /// </summary>
         public long Version { get; set; }
-        public DateTime CreatedTime { get; private set; }
+        public DateTimeOffset Occured { get; private set; }
         public string Id { get; private set; }
 
         public override bool Equals(object obj)

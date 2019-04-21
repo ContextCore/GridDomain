@@ -16,7 +16,7 @@ namespace GridDomain.Scenarios
               {
                   MembersToIgnore = new[]
                                     {
-                                        nameof(DomainEvent.CreatedTime),
+                                        nameof(DomainEvent.Occured),
                                         nameof(DomainEvent.Id),
                                         "History"
                                     }.ToList(),

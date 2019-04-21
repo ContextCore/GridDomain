@@ -10,6 +10,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates {
         public IActorRef CommandSender;
         public IReadOnlyCollection<IDomainEvent> ProducedEvents;
         public bool EventsPersisted;
+        public bool IsWaitingForConfirmation { get; set; }
 
         public void Clear()
         {
@@ -18,6 +19,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates {
             CommandSender = null;
             ProducedEvents = null;
             EventsPersisted = false;
+            IsWaitingForConfirmation = false;
         }
     }
 }
