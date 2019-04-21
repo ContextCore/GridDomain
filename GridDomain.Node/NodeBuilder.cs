@@ -1,5 +1,6 @@
 ﻿using System;
 using Akka.Actor;
+using GridDomain.Domains;
 using Serilog;
 
 namespace GridDomain.Node
@@ -44,7 +45,7 @@ namespace GridDomain.Node
             Configurations = domainConfigurations;
             return this;
         }
-
+  
         public INodeBuilder Timeout(TimeSpan timeout)
         {
             DefaultTimeout = timeout;

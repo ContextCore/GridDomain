@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\GridDomain.Aggregates\GridDomain.Aggregates.csproj" />
       <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
+      <ProjectReference Include="..\GridDomain.Domains\GridDomain.Domains.csproj" />
     </ItemGroup>
 
 </Project>

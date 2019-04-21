@@ -9,6 +9,7 @@ using Akka.Persistence;
 using DotNetty.Common.Utilities;
 using GridDomain.Aggregates;
 using GridDomain.Common;
+using GridDomain.Domains;
 using GridDomain.Node.Akka.AggregatesExtension;
 using GridDomain.Node.Akka.Logging;
 using GridDomain.Node.Tests;

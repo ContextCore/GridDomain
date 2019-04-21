@@ -117,12 +117,10 @@ namespace GridDomain.Scenarios.Tests
         [Fact]
         public async Task When_defined_scenario_it_checks_for_produced_events_properties()
         {
-            var aggregateId = "Mailk";
-
             var builder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_it_checks_for_produced_events_properties))
-                .When(new Dog.GetNewDogCommand(aggregateId))
-                .Then(new Dog.Born(aggregateId));
+                .When(new Dog.GetNewDogCommand("Mailk"))
+                .Then(new Dog.Born("wrongName"));
 
 
             var local = Run(builder);

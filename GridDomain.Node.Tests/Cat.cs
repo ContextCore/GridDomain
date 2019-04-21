@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GridDomain.Aggregates;
+using GridDomain.Domains;
 
 namespace GridDomain.Node.Tests
 {  
@@ -13,9 +14,9 @@ namespace GridDomain.Node.Tests
         Bad
     }
 
-    public class CatDomainSettings : IDomainConfiguration, IAggregateConfiguration<Cat>, IAggregateSettings
+    public class CatDomainConfiguration : IDomainConfiguration, IAggregateConfiguration<Cat>, IAggregateSettings
     {
-        public CatDomainSettings()
+        public CatDomainConfiguration()
         {
           
         }

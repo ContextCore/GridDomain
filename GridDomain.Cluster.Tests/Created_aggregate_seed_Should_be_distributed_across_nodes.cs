@@ -10,6 +10,7 @@ using Akka.Configuration;
 using Akka.Remote;
 using Akka.Remote.TestKit;
 using Akka.TestKit;
+using GridDomain.Domains;
 using GridDomain.Node;
 using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Tests;
@@ -49,7 +50,7 @@ namespace GridDomain.Cluster.Tests
                 {
                     Log.Info("from log: Starting seed grid node");
                     
-                    var seedNode = GridDomainNode.New(Cluster.System,new CatDomainSettings());
+                    var seedNode = GridDomainNode.New(Cluster.System,new CatDomainConfiguration());
                     seedDomain = seedNode.Start().Result;
                     
                     Log.Info("from log: Started seed");
@@ -58,7 +59,7 @@ namespace GridDomain.Cluster.Tests
                 RunOn(() =>
                 {
                     Log.Info("Starting worker");
-                    var workerNode = GridDomainNode.New(Cluster.System,new CatDomainSettings());
+                    var workerNode = GridDomainNode.New(Cluster.System,new CatDomainConfiguration());
                     workerDomain = workerNode.Start().Result;
                     Log.Info("Started worker");
                 }, _config.Worker);
@@ -81,7 +82,7 @@ namespace GridDomain.Cluster.Tests
                     for (int i = 0; i < 4; i++)
                     {
                         var catName = "cat-" + i;
-                        var report = seedDomain.AggregatesLifetime.GetHealth<Cat>(catName).Result;
+                        var report = seedDomain.AggregatesController.GetHealth<Cat>(catName).Result;
                         Assert.NotNull(report.Path);
                     }  
                 }, _config.Seed);
@@ -120,7 +121,7 @@ namespace GridDomain.Cluster.Tests
                 {
                     Log.Info("Starting seed grid node");
                     
-                    var seedNode = GridDomainNode.New(Cluster.System,new CatDomainSettings());
+                    var seedNode = GridDomainNode.New(Cluster.System,new CatDomainConfiguration());
                     seedDomain = seedNode.Start().Result;
                     Log.Info("Started seed");
                 }, _config.Seed);
@@ -129,7 +130,7 @@ namespace GridDomain.Cluster.Tests
                 {
                     Log.Info("Starting worker");
             
-                    var workerNode = GridDomainNode.New(Cluster.System,new CatDomainSettings());
+                    var workerNode = GridDomainNode.New(Cluster.System,new CatDomainConfiguration());
                     workerDomain = workerNode.Start().Result;
                     
                     Log.Info("Started worker");
@@ -145,7 +146,7 @@ namespace GridDomain.Cluster.Tests
                     {
                         var catName = "cat-" + i;
                         workerDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName)).Wait();
-                        var report = workerDomain.AggregatesLifetime.GetHealth<Cat>(catName).Result;
+                        var report = workerDomain.AggregatesController.GetHealth<Cat>(catName).Result;
                         Log.Info("Got report from " + report.NodeAddress);
                         knownAddresses.Add(report.NodeAddress);
                     }  
@@ -161,7 +162,7 @@ namespace GridDomain.Cluster.Tests
                     {
                         var catName = "cat-" + i;
                         workerDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName)).Wait();
-                        var report = seedDomain.AggregatesLifetime.GetHealth<Cat>(catName).Result;
+                        var report = seedDomain.AggregatesController.GetHealth<Cat>(catName).Result;
                         Log.Info("Got report from " + report.NodeAddress);
                         knownAddresses.Add(report.NodeAddress);
                     }  

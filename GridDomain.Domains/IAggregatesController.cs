@@ -1,13 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using GridDomain.Aggregates;
-using GridDomain.Node.Akka.Actors.Aggregates;
 
-namespace GridDomain.Node
+namespace GridDomain.Domains
 {
-    public interface IAggregatesLifetime
+    public interface IAggregatesController
     {
-        // Task WakeUp(string aggregateId);
+        //  Task WakeUp(string aggregateId);
         //  Task Shutdown(Type aggregateType, string aggregateId);
         //  Task<bool> IsActive(Type type, string catName, TimeSpan? timeout =null);
         Task<AggregateHealthReport> GetHealth(IAggregateAddress address, TimeSpan? timeout = null);

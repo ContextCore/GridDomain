@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Node.Akka.Actors.Aggregates
+namespace GridDomain.Domains
 {
     public class AggregateHealthReport
     {

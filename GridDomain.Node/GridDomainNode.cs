@@ -7,6 +7,7 @@ using Akka.Cluster;
 using Autofac;
 using DotNetty.Common.Concurrency;
 using GridDomain.Aggregates;
+using GridDomain.Domains;
 using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Cluster;
 using GridDomain.Node.Tests;

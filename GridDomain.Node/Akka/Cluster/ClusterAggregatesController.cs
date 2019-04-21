@@ -2,16 +2,17 @@ using System;
 using System.Threading.Tasks;
 using Akka.Actor;
 using GridDomain.Aggregates;
+using GridDomain.Domains;
 using GridDomain.Node.Akka.Actors.Aggregates;
 
 namespace GridDomain.Node.Akka.Cluster
 {
-    public class ClusterAggregatesLifetime : IAggregatesLifetime
+    public class ClusterAggregatesController : IAggregatesController
     {
         private readonly IActorRef _aggregatesRouter;
         private readonly ActorSystem _system;
 
-        public ClusterAggregatesLifetime(ActorSystem system, IActorRef aggregatesRouter)
+        public ClusterAggregatesController(ActorSystem system, IActorRef aggregatesRouter)
         {
             _system = system;
             _aggregatesRouter = aggregatesRouter;

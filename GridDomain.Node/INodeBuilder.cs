@@ -1,5 +1,6 @@
 ﻿using System;
 using Akka.Actor;
+using GridDomain.Domains;
 using Serilog;
 
 namespace GridDomain.Node {

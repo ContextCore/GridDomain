@@ -11,6 +11,7 @@ using Akka.TestKit.Xunit2;
 using Autofac;
 using GridDomain.Aggregates;
 using GridDomain.Common;
+using GridDomain.Domains;
 using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Actors;
 using GridDomain.Node.Akka.Actors.Aggregates;
@@ -52,7 +53,7 @@ namespace GridDomain.Node.Tests
                                                           .CreateLogger();
 
 
-            var catDomainConfiguration = new CatDomainSettings {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
+            var catDomainConfiguration = new CatDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
 
             var node = new GridDomainNode(new[] {catDomainConfiguration},
                 new DelegateActorSystemFactory(() => Sys), Serilog.Log.Logger, TimeSpan.FromSeconds(5));
@@ -97,7 +98,7 @@ namespace GridDomain.Node.Tests
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
             await _domain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
           
-            var report = await _domain.AggregatesLifetime.GetHealth(AggregateAddress.New<Cat>(catName));
+            var report = await _domain.AggregatesController.GetHealth(AggregateAddress.New<Cat>(catName));
             var actor = await Sys.ActorSelection(report.Path).ResolveOne(TimeSpan.FromSeconds(2));
             Watch(actor);
             ExpectTerminated(actor);
@@ -111,7 +112,7 @@ namespace GridDomain.Node.Tests
         {
             var catName = "myCat";
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            var report = await _domain.AggregatesLifetime.GetHealth(catName.AsAddressFor<Cat>());
+            var report = await _domain.AggregatesController.GetHealth(catName.AsAddressFor<Cat>());
             var actor = await Sys.ActorSelection(report.Path).ResolveOne(TimeSpan.FromSeconds(2));
             Watch(actor);
             ExpectTerminated(actor);
@@ -123,7 +124,7 @@ namespace GridDomain.Node.Tests
         {
             var catName = "myCat";
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            Assert.NotNull(await _domain.AggregatesLifetime.GetHealth(typeof(Cat).AsAddress(catName)));
+            Assert.NotNull(await _domain.AggregatesController.GetHealth(typeof(Cat).AsAddress(catName)));
         }
         
         [Fact]

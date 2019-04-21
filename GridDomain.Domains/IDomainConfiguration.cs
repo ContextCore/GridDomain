@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
-using GridDomain.Common;
 
-namespace GridDomain.Node {
+namespace GridDomain.Domains {
     public interface IDomainConfiguration
     {
         Task Register(IDomainBuilder builder);

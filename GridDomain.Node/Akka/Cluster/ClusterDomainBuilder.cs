@@ -5,6 +5,7 @@ using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Autofac;
 using GridDomain.Aggregates;
+using GridDomain.Domains;
 using GridDomain.Node.Akka.Actors;
 using GridDomain.Node.Akka.Actors.Aggregates;
 using GridDomain.Node.Akka.AggregatesExtension;
@@ -38,10 +39,10 @@ namespace GridDomain.Node.Akka.Cluster
             _system = system;
         }
 
-        public async Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> factory)
+        public async Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> configuration)
             where TAggregate : class, IAggregate
         {
-            _containerBuilder.RegisterInstance(factory);
+            _containerBuilder.RegisterInstance(configuration);
 
 
             var clusterSharding = ClusterSharding.Get(_system);
@@ -85,7 +86,7 @@ namespace GridDomain.Node.Akka.Cluster
             var commandActor = _system.ActorOf(Props.Empty.WithRouter(routingGroup), "Aggregates");
 
             return Task.FromResult<IDomain>(new Domain(new ActorCommandExecutor(commandActor),
-                new ClusterAggregatesLifetime(_system, commandActor)));
+                new ClusterAggregatesController(_system, commandActor)));
         }
 
         public class UnknownShardMessageException : Exception

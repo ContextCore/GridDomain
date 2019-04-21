@@ -9,14 +9,14 @@ namespace GridDomain.Aggregates
         protected Command(string id, IAggregateAddress recipient, DateTime? time=null)
         {
             Id = id;
-            Time = time ?? BusinessDateTime.UtcNow;
+            Time = time ?? DateTimeOffset.Now;
             Recipient = recipient;
         }
 
       
         protected Command(IAggregateAddress aggregate, DateTime? time=null) : this(Guid.NewGuid().ToString(), aggregate, time) {}
 
-        public DateTime Time { get; private set; }
+        public DateTimeOffset Time { get; private set; }
         public string Id { get; private set; }
        
         public IAggregateAddress Recipient { get; private set; }

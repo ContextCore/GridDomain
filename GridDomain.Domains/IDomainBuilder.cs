@@ -1,8 +1,7 @@
-using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Aggregates;
 
-namespace GridDomain.Node
+namespace GridDomain.Domains
 {
     /// <summary>
     /// Interface used to build all participaties parties
@@ -10,7 +9,7 @@ namespace GridDomain.Node
     public interface IDomainBuilder
     {
         // void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory)where TState : class, IProcessState;
-        Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> factory) where TAggregate : class,IAggregate;
+        Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> configuration) where TAggregate : class,IAggregate;
         // void RegisterHandler<TContext,TMessage, THandler>(IMessageHandlerFactory<TContext,TMessage, THandler> factory) where THandler : IHandler<TMessage>
         //                                                                                              where TMessage : class, IHaveProcessId, IHaveId;
         //  Task Register(ActorSystem system, ContainerBuilder container);

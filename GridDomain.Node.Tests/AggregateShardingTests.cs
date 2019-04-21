@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster;
 using Akka.TestKit;
+using GridDomain.Domains;
 using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Akka.Configuration.Hocon;
@@ -70,7 +71,7 @@ namespace GridDomain.Node.Tests
             
             var workerSystem = ActorSystem.Create(nodeName, worker);
             
-            var catDomain = new CatDomainSettings();
+            var catDomain = new CatDomainConfiguration();
             
             _seedNode = GridDomainNode.New(seedSystem,catDomain);
             _workerNode = GridDomainNode.New(workerSystem, catDomain);
@@ -89,7 +90,7 @@ namespace GridDomain.Node.Tests
             {
                 var catName = "Bonifaciy-" + i;
                 await _workerCatDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-                var report = await _seedCatDomain.AggregatesLifetime.GetHealth<Cat>(catName);
+                var report = await _seedCatDomain.AggregatesController.GetHealth<Cat>(catName);
                 Log.Logger.Information(report.NodeAddress);
                 Assert.NotNull(report.Path);
             }  
@@ -109,7 +110,7 @@ namespace GridDomain.Node.Tests
             {
                 var catName = "Bonifaciy-the-"+i;
                 await seedCatDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-                var report = await seedCatDomain.AggregatesLifetime.GetHealth<Cat>(catName);
+                var report = await seedCatDomain.AggregatesController.GetHealth<Cat>(catName);
                 addresses.Add(report.NodeAddress);
             }
             Assert.Contains(addresses,s => s == _workerNode.Address);
@@ -123,7 +124,7 @@ namespace GridDomain.Node.Tests
                 
             var catName = "Bonifaciy-the-first";
             await _workerCatDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            var report = await _workerCatDomain.AggregatesLifetime.GetHealth<Cat>(catName);
+            var report = await _workerCatDomain.AggregatesController.GetHealth<Cat>(catName);
 
             IDomain aliveDomain;
             INode aliveNode;
@@ -148,7 +149,7 @@ namespace GridDomain.Node.Tests
                 {
                     await aliveDomain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
                     Log.Logger.Information("trying take aggregate report");
-                    report = await aliveDomain.AggregatesLifetime.GetHealth<Cat>(catName);
+                    report = await aliveDomain.AggregatesController.GetHealth<Cat>(catName);
                     break;
                 }
                 catch (Exception ex)

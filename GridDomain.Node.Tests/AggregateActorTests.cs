@@ -6,6 +6,7 @@ using Akka.TestKit.Xunit2;
 using Autofac;
 using GridDomain.Aggregates;
 using GridDomain.Common;
+using GridDomain.Domains;
 using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Actors.Aggregates;
 using GridDomain.Node.Akka.AggregatesExtension;
