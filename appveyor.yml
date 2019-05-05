@@ -38,8 +38,8 @@ build_script:
 test_script:
 - sh: |
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
-    ls
-    ./test/test.sh
+    cd ./test
+    ./test.sh
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
