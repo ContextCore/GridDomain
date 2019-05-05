@@ -35,26 +35,24 @@ build_script:
 
     cd ./src 
 
-    dotnet build GridDomain.sln /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Minimal /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
-    dotnet pack GridDomain.sln  /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Minimal --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
+    dotnet build GridDomain.sln /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
+    dotnet pack GridDomain.sln  /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
 test_script:
 - sh: |
 
-
+     
     #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
 
-    . ./build/test.sh
-
-    runTests UnitTests GridDomain.Node.Tests Release
-    runTests AcceptanceTests GridDomain.Aggregates.Tests Release
-    runTests ScenarioTests GridDomain.Scenarios.Tests Release
-    runTests ClusterUnitTests GridDomain.Cluster.Tests Release
+   ./test/test.sh
    
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
-- path: '**\*.zip'
+- path: '**\*logs.zip'
   name: TestResults
 deploy:
   - provider: Environment
     name: MyGet development feed
+on_finish:
+  - sh: |
+      find "$APPVEYOR_BUILD_FOLDER" -type f -name '*.trx' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/mstest/$APPVEYOR_JOB_ID" 
