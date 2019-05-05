@@ -39,8 +39,8 @@ build_script:
     dotnet pack GridDomain.sln  /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
 test_script:
 - sh: |
-  #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
-  ./test/test.sh
+    #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
+    ./test/test.sh
 artifacts:
 - path: '**\GridDomain.*.nupkg'
   name: Packages
