@@ -4,7 +4,7 @@ using GridDomain.Aggregates;
 
 namespace GridDomain.Node.Tests
 {
-    class CatCommandsResultResultAdapter : ICommandsResultAdapter
+    class CatCommandsResultAdapter : ICommandsResultAdapter
     {
         public object Adapt(object command, IReadOnlyCollection<IDomainEvent> result)
         {

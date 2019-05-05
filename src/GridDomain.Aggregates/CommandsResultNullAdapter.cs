@@ -8,5 +8,7 @@ namespace GridDomain.Aggregates
         {
             return null;
         }
+        
+        public static CommandsResultNullAdapter Instance { get; } = new CommandsResultNullAdapter();
     }
 }

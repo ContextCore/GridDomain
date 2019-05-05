@@ -45,10 +45,10 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             Id = AggregateAddress.Parse<TAggregate>(Self.Path.Name).Id;
 
             var aggregateExtensions = Context.System.GetAggregatesExtension();
-            var dependencies = aggregateExtensions.GetDependencies<TAggregate>();
+            var dependencies = aggregateExtensions.GetConfiguration<TAggregate>();
             Aggregate = dependencies.AggregateFactory.Build();
 
-            _commandsResultAdapter = dependencies.CommandsResultAdapter;
+            _commandsResultAdapter = aggregateExtensions.GetAdapter<TAggregate>();
             Context.SetReceiveTimeout(dependencies.Settings.MaxInactivityPeriod);
             Recover<DomainEvent>(e => Aggregate.Apply(e));
 

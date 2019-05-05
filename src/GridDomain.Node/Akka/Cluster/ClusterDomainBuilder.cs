@@ -5,6 +5,7 @@ using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Autofac;
 using GridDomain.Aggregates;
+using GridDomain.Common;
 using GridDomain.Domains;
 using GridDomain.Node.Akka.Actors;
 using GridDomain.Node.Akka.Actors.Aggregates;
@@ -81,7 +82,7 @@ namespace GridDomain.Node.Akka.Cluster
 
         public void RegisterCommandsResultAdapter<TAggregate>(ICommandsResultAdapter adapter) where TAggregate : IAggregate
         {
-            throw new NotImplementedException();
+            _containerBuilder.RegisterInstance(adapter).Named<ICommandsResultAdapter>(typeof(TAggregate).BeautyName());
         }
 
         private Task<IDomain> BuildCommandExecutor()

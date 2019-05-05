@@ -28,13 +28,14 @@ namespace GridDomain.Node.Tests
         public AggregateActorTests(ITestOutputHelper helper) : base(_config, "aggregateTests",helper)
         {
             var container = new ContainerBuilder();
-            _aggregateConfiguration.CommandsResultAdapter = new CatCommandsResultResultAdapter();
+            container.RegisterInstance<ICommandsResultAdapter>(new CatCommandsResultAdapter())
+                     .Named<ICommandsResultAdapter>(typeof(Cat).BeautyName());
+            
             container.RegisterInstance<IAggregateConfiguration<Cat>>(_aggregateConfiguration);
             var c = container.Build();
             Sys.InitAggregatesExtension(c);
         }
 
-     
         
         [Fact]
         public void AA_can_execute_commands()

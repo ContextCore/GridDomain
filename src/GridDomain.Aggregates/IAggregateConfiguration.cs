@@ -6,6 +6,5 @@ namespace GridDomain.Aggregates
     {
         IAggregateFactory<TAggregate> AggregateFactory { get; }
         IAggregateSettings Settings { get; }
-        ICommandsResultAdapter CommandsResultAdapter { get; }
     }
 }
