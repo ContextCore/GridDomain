@@ -18,7 +18,7 @@ namespace GridDomain.Node
             _timeout = timeout ?? TimeSpan.FromSeconds(5);
         }
 
-        public async Task Execute(ICommand command)
+        public async Task<object> Execute(ICommand command)
         {
            // Log.Logger.Debug("Executing {@command}",command);
             var envelopedCommand = ShardedAggregateCommand.New(command, true, MessageMetadata.New(command.Id, Guid.NewGuid().ToString()));
@@ -28,7 +28,9 @@ namespace GridDomain.Node
             {
                 if (fail.Reason is AggregateActor.CommandExecutionException e && e.InnerException != null) throw e.InnerException;
                 throw fail.Reason;
-            } 
+            }
+
+            return result.Value;
         }
     }
 }

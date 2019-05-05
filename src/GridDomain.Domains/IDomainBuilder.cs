@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using GridDomain.Aggregates;
 
@@ -8,7 +9,6 @@ namespace GridDomain.Domains
     /// </summary>
     public interface IDomainBuilder
     {
-        // void RegisterProcessManager<TState>(IProcessDependencyFactory<TState> processDependenciesfactory)where TState : class, IProcessState;
         Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> configuration) where TAggregate : class,IAggregate;
         // void RegisterHandler<TContext,TMessage, THandler>(IMessageHandlerFactory<TContext,TMessage, THandler> factory) where THandler : IHandler<TMessage>
         //                                                                                              where TMessage : class, IHaveProcessId, IHaveId;
@@ -16,8 +16,8 @@ namespace GridDomain.Domains
 
         Task<IDomain> Build();
 
-        //  ActorSystem System { get; }
-        //  ContainerBuilder Container { get; }
+        void RegisterCommandHandler<T>(Func<ICommandHandler<ICommand>, T> proxyBuilder);
+        void RegisterCommandsResultAdapter<TAggregate>(ICommandsResultAdapter adapter) where TAggregate:IAggregate;
     }
 }
 

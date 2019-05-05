@@ -67,6 +67,20 @@ namespace GridDomain.Node.Tests
         }
         
         [Fact]
+        public async Task Node_can_provide_custom_command_executor()
+        {
+            Assert.NotNull(_domain.CommandHandler<CatCommandsHandler>());
+        }
+        
+        [Fact]
+        public async Task Node_custom_command_executor_works()
+        {
+            var handler = _domain.CommandHandler<CatCommandsHandler>();
+            var name = await handler.Execute(new Cat.GetNewCatCommand("myCat"));
+            Assert.Equal("myCat",name);
+        }
+        
+        [Fact]
         public async Task Node_can_execute_commands_and_persist_events()
         {
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));

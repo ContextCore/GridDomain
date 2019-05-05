@@ -13,10 +13,12 @@ using GridDomain.Node.Akka.Cluster.CommandGrouping;
 
 namespace GridDomain.Node.Akka.Cluster
 {
+    
     public class ClusterDomainBuilder : IDomainBuilder
     {
         private readonly ActorSystem _system;
         readonly Dictionary<string, IActorRef> _aggregatesRegions = new Dictionary<string, IActorRef>();
+        private Dictionary<Type, object> _commandHandlerProxies = new Dictionary<Type,object>();
         private readonly ContainerBuilder _containerBuilder;
 
         private static readonly OneForOneStrategy _supervisorStrategy
@@ -72,6 +74,16 @@ namespace GridDomain.Node.Akka.Cluster
             return BuildCommandExecutor();
         }
 
+        public void RegisterCommandHandler<T>(Func<ICommandHandler<ICommand>, T> proxyBuilder)
+        {
+            _commandHandlerProxies[typeof(T)] = proxyBuilder;
+        }
+
+        public void RegisterCommandsResultAdapter<TAggregate>(ICommandsResultAdapter adapter) where TAggregate : IAggregate
+        {
+            throw new NotImplementedException();
+        }
+
         private Task<IDomain> BuildCommandExecutor()
         {
             var routingGroup = new ConsistentMapGroup(_aggregatesRegions)
@@ -86,7 +98,7 @@ namespace GridDomain.Node.Akka.Cluster
             var commandActor = _system.ActorOf(Props.Empty.WithRouter(routingGroup), "Aggregates");
 
             return Task.FromResult<IDomain>(new Domain(new ActorCommandExecutor(commandActor),
-                new ClusterAggregatesController(_system, commandActor)));
+                new ClusterAggregatesController(_system, commandActor),_commandHandlerProxies));
         }
 
         public class UnknownShardMessageException : Exception

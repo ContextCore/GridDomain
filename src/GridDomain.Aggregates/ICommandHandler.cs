@@ -7,8 +7,9 @@ namespace GridDomain.Aggregates
         Task<TResult> Execute(TCommand command);
     }
     
+    
     public interface ICommandHandler<in TCommand>
     {
-        Task Execute(TCommand command);
+        Task<object> Execute(TCommand command);
     }
 }

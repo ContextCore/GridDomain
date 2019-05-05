@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Configuration;
@@ -26,11 +28,14 @@ namespace GridDomain.Node.Tests
         public AggregateActorTests(ITestOutputHelper helper) : base(_config, "aggregateTests",helper)
         {
             var container = new ContainerBuilder();
+            _aggregateConfiguration.CommandsResultAdapter = new CatCommandsResultResultAdapter();
             container.RegisterInstance<IAggregateConfiguration<Cat>>(_aggregateConfiguration);
             var c = container.Build();
             Sys.InitAggregatesExtension(c);
         }
 
+     
+        
         [Fact]
         public void AA_can_execute_commands()
         {
@@ -38,6 +43,17 @@ namespace GridDomain.Node.Tests
             var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), catAddress.ToString());
             actor.Tell(new AggregateActor.ExecuteCommand(new Cat.GetNewCatCommand("myCat"), MessageMetadata.Empty));
             var executed = ExpectMsg<AggregateActor.CommandExecuted>();
+        }
+        
+        [Fact]
+        public void AA_use_command_adapter()
+        {
+            var catAddress = "myCat".AsAddressFor<Cat>();
+            var actor = Sys.ActorOf(Props.Create<AggregateActor<Cat>>(), catAddress.ToString());
+            actor.Tell(new AggregateActor.ExecuteCommand(new Cat.GetNewCatCommand("myCat"), MessageMetadata.Empty));
+            var executed = ExpectMsg<AggregateActor.CommandExecuted>();
+            
+            Assert.Equal("myCat",executed.Value);
         }
 
         [Fact]

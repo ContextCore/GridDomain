@@ -16,6 +16,7 @@ using GridDomain.Node.Tests;
 
 namespace GridDomain.Node.Akka.Actors.Aggregates
 {
+    
     /// <summary>
     ///     Name should be parse by AggregateActorName
     /// </summary>
@@ -34,7 +35,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
         private bool? _isCommandAlreadyExecuted;
         private Guid guid = Guid.NewGuid();
         private readonly IActorRef _commandChecker;
-
+        private readonly ICommandsResultAdapter _commandsResultAdapter; 
 
         public AggregateActor()
         {
@@ -47,6 +48,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             var dependencies = aggregateExtensions.GetDependencies<TAggregate>();
             Aggregate = dependencies.AggregateFactory.Build();
 
+            _commandsResultAdapter = dependencies.CommandsResultAdapter;
             Context.SetReceiveTimeout(dependencies.Settings.MaxInactivityPeriod);
             Recover<DomainEvent>(e => Aggregate.Apply(e));
 
@@ -176,8 +178,14 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             if (Aggregate == null)
                 throw new InvalidOperationException("Aggregate state was null after command execution");
 
-            if(ExecutionContext.IsWaitingForConfirmation)
-                ExecutionContext.CommandSender.Tell(AggregateActor.CommandExecuted.Instance);
+            if (ExecutionContext.IsWaitingForConfirmation)
+            {
+                var commandResult = _commandsResultAdapter.Adapt(ExecutionContext.Command, ExecutionContext.ProducedEvents);
+                var confirmation = commandResult == null
+                    ? AggregateActor.CommandExecuted.Instance
+                    : new AggregateActor.CommandExecuted(commandResult);
+                ExecutionContext.CommandSender.Tell(confirmation);
+            }
 
             ExecutionContext.Clear();
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
@@ -205,20 +213,21 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
 
         public class CommandExecuted
         {
-            protected CommandExecuted()
+            public object Value { get; }
+            public CommandExecuted(object value)
             {
+                Value = value;
             }
 
-            public static CommandExecuted Instance { get; } = new CommandExecuted();
+            public static CommandExecuted Instance { get; } = new CommandExecuted(new object());
         }
 
         public class CommandFailed : CommandExecuted
         {
-            public Exception Reason { get; }
+            public Exception Reason => (Exception) Value;
 
-            public CommandFailed(Exception reason)
+            public CommandFailed(Exception reason):base(reason)
             {
-                Reason = reason;
             }
         }
 
