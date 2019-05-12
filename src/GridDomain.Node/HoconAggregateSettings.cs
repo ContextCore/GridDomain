@@ -4,15 +4,13 @@ using GridDomain.Aggregates;
 
 namespace GridDomain.Node
 {
-    public class HoconAggregateSettings:IAggregateSettings
+    public class HoconAggregateSettings:AggregateSettings
     {
-        public HoconAggregateSettings(Config cfg)
+        public HoconAggregateSettings(Config cfg):base(
+            TimeSpan.FromSeconds(cfg.GetInt("aggregate.maxinactivity")),
+            cfg.GetInt("aggregate.snapshotstokeep"),
+            cfg.GetString("aggregate.hostrole"))
         {
-            MaxInactivityPeriod = TimeSpan.FromSeconds(cfg.GetInt("aggregate.maxinactivity"));       
-            SnapshotsKeepAmount = cfg.GetInt("aggregate.snapshotstokeep");       
         }
-
-        public TimeSpan MaxInactivityPeriod { get; }
-        public int SnapshotsKeepAmount { get; }
     }
 }

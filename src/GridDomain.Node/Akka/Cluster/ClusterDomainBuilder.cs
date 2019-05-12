@@ -59,9 +59,12 @@ namespace GridDomain.Node.Akka.Cluster
 
             _system.Log.Info("Starting new shard region {regionName}", regionName);
 
+            var setting = ClusterShardingSettings.Create(_system);
+            if (!string.IsNullOrEmpty(configuration.Settings.HostRole))
+                setting = setting.WithRole(configuration.Settings.HostRole);
+            
             var region = await clusterSharding.StartAsync(regionName,
-                aggregateProps,
-                ClusterShardingSettings.Create(_system),
+                aggregateProps,setting,
                 new ShardedMessageMetadataExtractor()); 
 
             _aggregatesRegions.Add(regionName, region);

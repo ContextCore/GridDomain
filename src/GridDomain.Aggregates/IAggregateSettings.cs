@@ -6,5 +6,6 @@ namespace GridDomain.Aggregates
     {
         TimeSpan MaxInactivityPeriod { get; }
         int SnapshotsKeepAmount { get; }
+        string HostRole { get; }
     }
 }

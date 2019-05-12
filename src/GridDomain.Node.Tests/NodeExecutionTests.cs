@@ -1,63 +1,60 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
-using Akka.Configuration;
+using Akka.Actor;
+using Akka.Cluster;
 using Akka.Logger.Serilog;
-using Akka.Persistence;
 using Akka.Persistence.Query;
 using Akka.Streams;
 using Akka.Streams.Dsl;
-using Akka.TestKit.Xunit2;
-using Autofac;
+using Akka.TestKit;
 using GridDomain.Aggregates;
-using GridDomain.Common;
 using GridDomain.Domains;
 using GridDomain.Node.Akka;
-using GridDomain.Node.Akka.Actors;
-using GridDomain.Node.Akka.Actors.Aggregates;
-using GridDomain.Node.Akka.AggregatesExtension;
 using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Akka.Configuration.Hocon;
 using GridDomain.Node.Akka.GridDomainNodeExtension;
 using GridDomain.Node.Tests.TestJournals;
 using GridDomain.Node.Tests.TestJournals.Hocon;
 using Serilog;
-using Serilog.Core;
-using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace GridDomain.Node.Tests
 {
-    public class NodeCommandExecutionTests : TestKit
+    public class NodeExecutionTests
     {
         private const string nodeName = "Node";
 
-        private static readonly NodeNetworkAddress NodeNetworkAddress =
+        private readonly NodeNetworkAddress NodeNetworkAddress =
             new NodeNetworkAddress("127.0.0.1", Network.FreeTcpPort(), "127.0.0.1", nodeName);
 
-        private static readonly Config _config = new ActorSystemConfigBuilder()
-            .Add(LogConfig.All())
-            .Add(new ClusterSeedNodes(NodeNetworkAddress))
-            .Add(new RemoteConfig(NodeNetworkAddress))
-            .Add(new ClusterActorProviderConfig())
-            .Add(new TestJournalConfig())
-            .Add(new AggregateTaggingConfig(TestJournalConfig.JournalId))
-            .Build();
-
         private readonly IDomain _domain;
+        private readonly ActorSystem _actorSystem;
 
 
-        public NodeCommandExecutionTests(ITestOutputHelper helper) : base(_config, nodeName, helper)
+        public NodeExecutionTests(ITestOutputHelper helper)// : base(_config, nodeName, helper)
         {
             Serilog.Log.Logger = new LoggerConfiguration().WriteTo.TestOutput(helper)
-                                                          .CreateLogger();
-
+                .CreateLogger();
+         
             var catDomainConfiguration = new CatDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
 
-            var node = Sys.InitGridDomainExtension(catDomainConfiguration);
+            var config = new ActorSystemConfigBuilder()
+                .Add(LogConfig.All(typeof(SerilogLogger)))
+                .Add(new ClusterSeedNodes(NodeNetworkAddress))
+                .Add(new RemoteConfig(NodeNetworkAddress))
+                .Add(new ClusterActorProviderConfig())
+                .Add(new TestJournalConfig())
+                .Add(new AggregateTaggingConfig(TestJournalConfig.JournalId))
+                .Build().WithFallback(TestKitBase.FullDebugConfig);
+            
+            _actorSystem = ActorSystem.Create(nodeName,config);
+            var node = _actorSystem.InitGridDomainExtension(catDomainConfiguration);
+            var clusterReady = new TaskCompletionSource<bool>();
             _domain = node.Start().Result;
+
+            Cluster.Get(_actorSystem).RegisterOnMemberUp(() => clusterReady.SetResult(true));
+            clusterReady.Task.Wait(TimeSpan.FromSeconds(5));
         }
 
         [Fact]
@@ -85,7 +82,7 @@ namespace GridDomain.Node.Tests
         {
             await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
 
-            var query = PersistenceQuery.Get(Sys);
+            var query = PersistenceQuery.Get(_actorSystem);
             var journal = query.ReadJournalFor<TestReadJournal>(TestReadJournal.Identifier);
             
             
@@ -97,7 +94,7 @@ namespace GridDomain.Node.Tests
             // connect the Source to the Sink, obtaining a RunnableGraph
             var runnable = source.ToMaterialized(sink, Keep.Right);
             
-            using (var materializer = Sys.Materializer())
+            using (var materializer = _actorSystem.Materializer())
             {
                 var domainEvent = await runnable.Run(materializer);
                 Assert.Equal("Cat",domainEvent.Source.Name);
@@ -105,42 +102,7 @@ namespace GridDomain.Node.Tests
             }
         }
         
-        [Fact]
-        public async Task Node_can_restore_aggregate_from_persistence()
-        {
-            var catName = "myCat";
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            await _domain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
-          
-            var report = await _domain.AggregatesController.GetHealth(AggregateAddress.New<Cat>(catName));
-            var actor = await Sys.ActorSelection(report.Path).ResolveOne(TimeSpan.FromSeconds(2));
-            Watch(actor);
-            ExpectTerminated(actor);
-            
-            //no exception - means we've pet the cat already fed
-            await _domain.CommandExecutor.Execute(new Cat.PetCommand(catName));
-        }
-
-        [Fact]
-        public async Task Node_will_shutdown_an_aggregate_on_inactivity()
-        {
-            var catName = "myCat";
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            var report = await _domain.AggregatesController.GetHealth(catName.AsAddressFor<Cat>());
-            var actor = await Sys.ActorSelection(report.Path).ResolveOne(TimeSpan.FromSeconds(2));
-            Watch(actor);
-            ExpectTerminated(actor);
-                
-        }
-        
-        [Fact]
-        public async Task AggregateLifetime_can_locate_aggregates()
-        {
-            var catName = "myCat";
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            Assert.NotNull(await _domain.AggregatesController.GetHealth(typeof(Cat).AsAddress(catName)));
-        }
-        
+ 
         [Fact]
         public async Task Node_can_propagate_commands_exceptions_back()
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Akka.Event;
+using Akka.Logger.Serilog;
 
 namespace GridDomain.Node.Akka.Configuration.Hocon
 {
@@ -25,8 +26,10 @@ namespace GridDomain.Node.Akka.Configuration.Hocon
         private readonly string _config;
         public readonly LogLevel LogEventLevel;
 
-        public static LogConfig All { get; } = 
-            new LogConfig(LogLevel.DebugLevel,true,true,true,true,true,true,true);
+        public static LogConfig All(Type logger = null)
+        {
+            return new LogConfig(LogLevel.DebugLevel, true, true, true, true, true, true, true, logger);
+        }
 
         public LogConfig(LogLevel verbosity = LogLevel.DebugLevel,
                          bool autoreceive = false,
@@ -49,7 +52,7 @@ namespace GridDomain.Node.Akka.Configuration.Hocon
             builder.AppendLine($"akka.log-config-on-start  = {GetFlag(configOnStart)}");
             builder.AppendLine($"akka.loglevel  = {GetVerbosity(verbosity)}");
             if(logActorType != null)
-             builder.AppendLine($"akka.loggers  = [\"{logActorType}\"]");
+             builder.AppendLine($"akka.loggers  = [\"{logActorType.AssemblyQualifiedShortName()}\"]");
 
             _config = builder.ToString();
         }

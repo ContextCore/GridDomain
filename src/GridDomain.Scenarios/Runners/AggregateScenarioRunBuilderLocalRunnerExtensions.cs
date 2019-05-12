@@ -12,5 +12,14 @@ namespace GridDomain.Scenarios.Runners
             var runner = new AggregateScenarioLocalRunner<TAggregate>(log.CreateLogger(nameof(AggregateScenarioLocalRunner<TAggregate>)));
             return await runner.Run(builder.Scenario);
         }
+
+        public static async Task<IAggregateScenarioRun<TAggregate>> Local<TAggregate>(
+            this IAggregateScenarioRunBuilder<TAggregate> builder, ILogger log) where TAggregate : class, IAggregate
+        {
+            var runner = new AggregateScenarioLocalRunner<TAggregate>(log);
+            return await runner.Run(builder.Scenario);
+        }
+        
+
     }
 }

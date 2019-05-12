@@ -18,5 +18,6 @@ namespace GridDomain.Node.Tests
         public IAggregateSettings Settings  => this;
         public TimeSpan MaxInactivityPeriod { get; set; } = TimeSpan.FromSeconds(1);
         public int SnapshotsKeepAmount { get; set; } = 5;
+        public string HostRole { get; } = null;
     }
 }

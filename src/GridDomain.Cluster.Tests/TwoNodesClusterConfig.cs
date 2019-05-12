@@ -19,14 +19,14 @@ namespace GridDomain.Cluster.Tests
 
             Serilog.Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
             var seed = new ActorSystemConfigBuilder()
-                .Add(LogConfig.All)
+                .Add(LogConfig.All())
                 .Add(new ClusterActorProviderConfig())
                 .Build();
 
             seed = seed.WithFallback(MultiNodeClusterSpec.ClusterConfig());
                
             var worker = new ActorSystemConfigBuilder()
-                .Add(LogConfig.All)
+                .Add(LogConfig.All())
                 .Add(new ClusterActorProviderConfig())
                 .Build();
                 
@@ -36,4 +36,7 @@ namespace GridDomain.Cluster.Tests
             NodeConfig(new[] { Worker }, new []{worker});
         }
     }
+    
+    
+    
 }

@@ -52,7 +52,7 @@ namespace GridDomain.Node.Tests
             var nodeName = "CatWorld";
             var seedAddress = new NodeNetworkAddress("127.0.0.1",Network.FreeTcpPort(),"127.0.0.1",nodeName);
             var seed = new ActorSystemConfigBuilder().Add(new ClusterActorProviderConfig())
-                .Add(LogConfig.All)
+                .Add(LogConfig.All())
                 .Add(new ClusterSeedNodes(seedAddress))
                 .Add(new RemoteConfig(seedAddress))
                 .Add(new ClusterActorProviderConfig())
@@ -62,7 +62,7 @@ namespace GridDomain.Node.Tests
 
             var seedSystem = ActorSystem.Create(nodeName,seed);
             var worker = new ActorSystemConfigBuilder().Add(new ClusterActorProviderConfig())
-                .Add(LogConfig.All)
+                .Add(LogConfig.All())
                 .Add(new ClusterSeedNodes(seedAddress))
                 .Add(new RemoteConfig(new NodeNetworkAddress("127.0.0.1",0,"127.0.0.1",nodeName)))
                 .Add(new ClusterActorProviderConfig())
