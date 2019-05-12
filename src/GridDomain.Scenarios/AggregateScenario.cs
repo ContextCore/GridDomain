@@ -12,10 +12,22 @@ namespace GridDomain.Scenarios
                                  IReadOnlyCollection<ICommand> givenCommands,
                                  IReadOnlyCollection<IDomainEvent> expectedEvents,
                                  IAggregateConfiguration<T> factory,
-                                 string name) : base(givenEvents, givenCommands, expectedEvents, name)
+                                 string name) : base(givenEvents, 
+            
+            givenCommands.Any() || expectedEvents.Any() ?
+            new []{new Plan(givenCommands, expectedEvents,1)} : new Plan[]{}, name)
         {
             Configuration = factory;
         }
+        
+        public AggregateScenario(IReadOnlyCollection<IDomainEvent> givenEvents,
+            IReadOnlyCollection<Plan> plans,
+            IAggregateConfiguration<T> factory,
+            string name) : base(givenEvents,plans, name)
+        {
+            Configuration = factory;
+        }
+        
         public IAggregateConfiguration<T> Configuration { get; }
     }
 
@@ -35,29 +47,29 @@ namespace GridDomain.Scenarios
        
 
         public AggregateScenario(IReadOnlyCollection<IDomainEvent> givenEvents,
-                                 IReadOnlyCollection<ICommand> givenCommands,
-                                 IReadOnlyCollection<IDomainEvent> expectedEvents,
+                                 IReadOnlyCollection<Plan> plans,
                                  string name)
         {
             GivenEvents = givenEvents;
-            GivenCommands = givenCommands;
-            ExpectedEvents = expectedEvents;
             Name = name;
-
+            Plans = plans;
+            
             string commandAggregateId = null;
             string eventsAggregateId = null;
 
-            if (GivenCommands != null && GivenCommands.Any())
+            var givenCommands = plans.FirstOrDefault()?.GivenCommands;
+                
+            if (givenCommands != null && givenCommands.Any())
             {
-                var command = GivenCommands.First();
+                var command = givenCommands.First();
 
                 commandAggregateId = command.Recipient.Id;
 
-                if (GivenCommands.Any(c => c.Recipient.Id != commandAggregateId))
+                if (givenCommands.Any(c => c.Recipient.Id != commandAggregateId))
                     throw new CommandsBelongToDifferentAggregateIdsException();
 
-                if (GivenCommands.Any(c => c.Recipient.Name != command.Recipient.Name))
-                    throw new CommandsBelongToDifferentAggregateTypesException(GivenCommands);
+                if (givenCommands.Any(c => c.Recipient.Name != command.Recipient.Name))
+                    throw new CommandsBelongToDifferentAggregateTypesException(givenCommands);
             }
 
             if (GivenEvents != null && GivenEvents.Any())
@@ -74,16 +86,10 @@ namespace GridDomain.Scenarios
 
             AggregateId = eventsAggregateId ?? commandAggregateId;
 
-//            if (AggregateId == null)
-//                throw new CannotDetermineAggregateIdException();
-
-//            if (ExpectedEvents != null && ExpectedEvents.Any(e => e.SourceId != AggregateId))
- //               throw new ExpectedEventsBelongToDifferentAggregateTypesException();
         }
 
-        public IReadOnlyCollection<IDomainEvent> ExpectedEvents { get; }
         public IReadOnlyCollection<IDomainEvent> GivenEvents { get; }
-        public IReadOnlyCollection<ICommand> GivenCommands { get; }
+        public IReadOnlyCollection<Plan> Plans { get; }
         public string AggregateId { get; }
 
         public string Name { get; }

@@ -53,21 +53,20 @@ namespace GridDomain.Scenarios.Tests
             switch (command)
             {
                 case FeedCommand f:
-                    return new Feeded(Id){Version = Version}.AsCommandResult();
+                    return new Feeded(Id, Version).AsCommandResult();
                 case GetNewDogCommand c:
-                    return new Born(c.Recipient.Id){Version = Version}.AsCommandResult();
+                    return new Born(c.Recipient.Id,Version).AsCommandResult();
                 case FeelHungryCommand c:
-                    return new GotHungry(Id){Version = Version}.AsCommandResult();
+                    return new GotHungry(Id,Version).AsCommandResult();
                 case PetCommand c:
                     switch (Mood)
                     {
-                        case Mood.Good: return new Tired(Name){Version = Version}.AsCommandResult();
-                        case Mood.Neutral: return new GotHungry(Name){Version = Version}.AsCommandResult();
+                        case Mood.Good: return new Tired(Name, Version).AsCommandResult();
+                        case Mood.Neutral: return new GotHungry(Name, Version).AsCommandResult();
                         case Mood.Bad: throw new IsUnhappyException();
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    break;
                 default:
                     throw new UnknownCommandException();
             }
@@ -80,27 +79,27 @@ namespace GridDomain.Scenarios.Tests
 
         public class GetNewDogCommand : Command<Dog>
         {
-            public GetNewDogCommand(string catName):base(catName)
+            public GetNewDogCommand(string name):base(name)
             {
             }
         }
         
         public class FeelHungryCommand : Command<Dog>
         {
-            public FeelHungryCommand(string catName):base(catName)
+            public FeelHungryCommand(string name):base(name)
             {
             }
         }
         public class FeedCommand : Command<Dog>
         {
-            public FeedCommand(string catName):base(catName)
+            public FeedCommand(string name):base(name)
             {
             }
         }
         
         public class PetCommand : Command<Dog>
         {
-            public PetCommand(string catName):base(catName)
+            public PetCommand(string name):base(name)
             {
             }
         }
@@ -111,7 +110,7 @@ namespace GridDomain.Scenarios.Tests
         {
             public string Name { get; }
 
-            public Born(string name) : base(name)
+            public Born(string name, long version) : base(name, version)
             {
                 Name = name;
             }
@@ -119,21 +118,21 @@ namespace GridDomain.Scenarios.Tests
         
         public class GotHungry:DomainEvent<Dog>
         {
-            public GotHungry(string name) : base(name)
+            public GotHungry(string name, long version) : base(name, version)
             {
             }
         }
         
         public class Tired:DomainEvent<Dog>
         {
-            public Tired(string name) : base(name)
+            public Tired(string name, long version) : base(name, version)
             {
             }
         }
         
         public class Feeded:DomainEvent<Dog>
         {
-            public Feeded(string name) : base(name)
+            public Feeded(string name, long version) : base(name, version)
             {
             }
         }

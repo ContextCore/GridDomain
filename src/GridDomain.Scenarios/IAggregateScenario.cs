@@ -5,11 +5,24 @@ namespace GridDomain.Scenarios
 {
     public interface IAggregateScenario
     {
-        IReadOnlyCollection<IDomainEvent> ExpectedEvents { get; }
         IReadOnlyCollection<IDomainEvent> GivenEvents { get; }
-        IReadOnlyCollection<ICommand> GivenCommands { get; }
+        IReadOnlyCollection<Plan> Plans { get; }
         string AggregateId { get; }
         string Name { get;}
+    }
+
+    public class Plan
+    {
+        public Plan(IReadOnlyCollection<ICommand> givenCommands, IReadOnlyCollection<IDomainEvent> expectedEvents, int step)
+        {
+            GivenCommands = givenCommands;
+            ExpectedEvents = expectedEvents;
+            Step = step;
+        }
+
+        public IReadOnlyCollection<ICommand> GivenCommands { get; }
+        public IReadOnlyCollection<IDomainEvent> ExpectedEvents { get; }
+        public int Step { get;}
     }
 
 

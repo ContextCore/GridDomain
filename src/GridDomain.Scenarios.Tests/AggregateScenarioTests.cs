@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using GridDomain.Aggregates;
 using GridDomain.Scenarios;
@@ -39,7 +40,7 @@ namespace GridDomain.Scenarios.Tests
                 ))
                 .With(new AggregateConfiguration<Dog>())
                 .When(new Dog.GetNewDogCommand(catName))
-                .Then(new Dog.Born(catName));
+                .Then(new Dog.Born(catName, 0));
 
             var run = await Run(scenario);
 
@@ -50,7 +51,7 @@ namespace GridDomain.Scenarios.Tests
             Assert.Equal(catName, producedAggregate.Id);
 
             //event is produced and stored
-            var producedEvent = run.ProducedEvents.OfType<Dog.Born>().First();
+            var producedEvent = run.Produced.First().ProducedEvents.OfType<Dog.Born>().First();
             Assert.Equal(catName, producedEvent.Name);
 
             //scenario check is OK
@@ -65,7 +66,7 @@ namespace GridDomain.Scenarios.Tests
 
             var scenarioBuilder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_has_given_it_is_applied_even_without_command))
-                .Given(new Dog.Born(aggregateId));
+                .Given(new Dog.Born(aggregateId, 0));
 
             var scenario = await Run(scenarioBuilder);
 
@@ -74,7 +75,7 @@ namespace GridDomain.Scenarios.Tests
             Assert.Equal(aggregateId, scenario.Aggregate.Id);
 
             //no events was produced
-            Assert.Empty(scenario.ProducedEvents);
+            Assert.Empty(scenario.Produced);
         }
 
 
@@ -90,8 +91,8 @@ namespace GridDomain.Scenarios.Tests
             public Dog Build(string id = null)
             {
                 var cat = new Dog();
-                cat.Apply(new Dog.Born(_predifinedId));
-                cat.Apply(new Dog.Feeded(_predifinedId));
+                cat.Apply(new Dog.Born(_predifinedId, 0));
+                cat.Apply(new Dog.Feeded(_predifinedId, 1));
                 return cat;
             }
         }
@@ -111,7 +112,7 @@ namespace GridDomain.Scenarios.Tests
             Assert.Equal(Mood.Good, run.Aggregate.Mood);
 
             //no events was produced
-            Assert.Empty(run.ProducedEvents);
+            Assert.Empty(run.Produced);
         }
 
         [Fact]
@@ -120,7 +121,7 @@ namespace GridDomain.Scenarios.Tests
             var builder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_it_checks_for_produced_events_properties))
                 .When(new Dog.GetNewDogCommand("Mailk"))
-                .Then(new Dog.Born("wrongName"));
+                .Then(new Dog.Born("wrongName", 0));
 
 
             var local = Run(builder);
@@ -138,8 +139,8 @@ namespace GridDomain.Scenarios.Tests
             var aggregateScenarioBuilder = AggregateScenario.New<Dog>()
                 .Name(nameof(When_defined_scenario_it_checks_for_produced_events_count))
                 .When(new Dog.GetNewDogCommand(aggregateId))
-                .Then(new Dog.Born(aggregateId),
-                    new Dog.Feeded(aggregateId));
+                .Then(new Dog.Born(aggregateId, 0),
+                    new Dog.Feeded(aggregateId, 1));
 
             var local = Run(aggregateScenarioBuilder);
             await local
@@ -154,7 +155,7 @@ namespace GridDomain.Scenarios.Tests
             {
             }
         }
-    
+
         [Fact]
         public async Task When_defined_scenario_try_execute_missing_command_it_throws_exception()
         {
@@ -168,6 +169,58 @@ namespace GridDomain.Scenarios.Tests
             await run
                 .Check()
                 .ShouldThrow<UnknownCommandException>();
+        }
+
+        [Fact]
+        public async Task Given_two_commands_When_executing_both_Then_produced_events_accumulated()
+        {
+            var name = "Circle";
+            var aggregateScenarioBuilder = AggregateScenario.New<Dog>()
+                .Name(nameof(Given_two_commands_When_executing_both_Then_produced_events_accumulated))
+                .When(new Dog.GetNewDogCommand(name),
+                      new Dog.PetCommand(name))
+                .Then(new Dog.Born(name, 0),
+                      new Dog.Tired(name, 1));
+
+            var local = Run(aggregateScenarioBuilder);
+            await local
+                .Check()
+                .ShouldThrow<Dog.IsUnhappyException>();
+        }
+        
+        [Fact]
+        public async Task Given_several_when_then_When_executing_Then_produced_events_accumulated()
+        {
+            var name = "Circle";
+            var aggregateScenarioBuilder = AggregateScenario.New<Dog>()
+                .Name(nameof(Given_two_commands_When_executing_both_Then_produced_events_accumulated))
+                .When(new Dog.GetNewDogCommand(name),
+                      new Dog.FeedCommand(name),
+                      new Dog.PetCommand(name))
+                .Then(new Dog.Born(name, 0),
+                      new Dog.Feeded(name, 1),
+                      new Dog.Tired(name, 2));
+
+            var local = Run(aggregateScenarioBuilder);
+            await local.Check();
+        }
+        
+        [Fact]
+        public async Task Given_mixed_when_then_When_executing_Then_pairs_checked_together()
+        {
+            var name = "Circle";
+            var aggregateScenarioBuilder = AggregateScenario.New<Dog>()
+                .Name(nameof(Given_two_commands_When_executing_both_Then_produced_events_accumulated))
+                .When(new Dog.GetNewDogCommand(name))
+                .Then(new Dog.Born(name, 0)) 
+                .When(new Dog.FeedCommand(name))
+                .Then(new Dog.Feeded(name, 1))
+                .And()
+                .When(new Dog.PetCommand(name))
+                .Then(new Dog.Tired(name, 2));
+
+            var local = Run(aggregateScenarioBuilder);
+            await local.Check();
         }
 
         [Fact]

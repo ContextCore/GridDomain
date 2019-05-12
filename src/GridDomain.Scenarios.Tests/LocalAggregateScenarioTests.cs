@@ -8,7 +8,7 @@ namespace GridDomain.Scenarios.Tests
 {
     public class LocalAggregateScenarioTests : AggregateScenarioTests
     {
-        private SerilogLoggerProvider _provider;
+        private readonly SerilogLoggerProvider _provider;
 
         public LocalAggregateScenarioTests(ITestOutputHelper output) : base(output)
         {

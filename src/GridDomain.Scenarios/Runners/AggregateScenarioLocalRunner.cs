@@ -25,31 +25,45 @@ namespace GridDomain.Scenarios.Runners
                 aggregate.Apply(evt);
             }
 
-            IReadOnlyCollection<IDomainEvent> producedEvents = null;
-            //When
-            foreach (var cmd in scenario.GivenCommands)
+            var planRuns = new List<PlanRun>();
+            foreach (var plan in scenario.Plans)
             {
-                try
+                var producedEvents = new List<IDomainEvent>();
+                Log.LogInformation("running step {step}", plan.Step);
+                //When
+                foreach (var cmd in plan.GivenCommands)
                 {
-                    producedEvents = await aggregate.Execute(cmd);
-
-                    foreach (var e in producedEvents)
+                    IReadOnlyCollection<IDomainEvent> events;
+                    try
                     {
-                        if(e.Version == aggregate.Version)
+                        events = await aggregate.Execute(cmd);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.LogError("failed to execute an aggregate command {cmd}");
+                        throw;
+                    }
+
+                    producedEvents.AddRange(events);
+
+                    foreach (var e in events)
+                    {
+                        if (e.Version == aggregate.Version)
                             aggregate.Apply(e);
-                        else if (e.Version > aggregate.Version)
-                            throw new AggregateVersionMismatchException(); 
+                        else
+                        {
+                            Log.LogError("Expected version is {version}. Fact version is {fact} on event {evt}",
+                                aggregate.Version, e.Version, e);
+                            throw new AggregateVersionMismatchException();
+                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    Log.LogError(new EventId(), "failed to execute an aggregate command");
-                    throw;
-                }
+                planRuns.Add(new PlanRun(plan, producedEvents));
             }
 
             //Then
-            return new AggregateScenarioRun<TAggregate>(scenario, aggregate, producedEvents, Log);
+            return new AggregateScenarioRun<TAggregate>(scenario, aggregate, planRuns, Log);
         }
     }
 }

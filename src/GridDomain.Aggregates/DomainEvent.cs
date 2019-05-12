@@ -15,13 +15,14 @@ namespace GridDomain.Aggregates
             Source = source;
             Occured = createdTime ?? DateTimeOffset.Now;
             Id = id ?? Guid.NewGuid().ToString();
+            Version = version;
         }
 
         //Source of the event - aggregate that created it
         //private setter for serializers
         public AggregateAddress Source { get; private set; }
         /// <summary>
-        /// Version of the Aggregate to witch this event should be applied
+        /// Version of the Aggregate by the moment of event occurrence
         /// </summary>
         public long Version { get; set; }
         public DateTimeOffset Occured { get; private set; }
