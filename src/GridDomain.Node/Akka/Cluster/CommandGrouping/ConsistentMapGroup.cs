@@ -32,7 +32,7 @@ namespace GridDomain.Node.Akka.Cluster.CommandGrouping {
         {
             if(_routees == null)
                 _routees = _keyedPaths.ToDictionary(p => p.Key, p => (Routee) new ActorSelectionRoutee(system.ActorSelection(p.Value)));
-           
+                
             return new Router(new ConsistentMapLogic(system, _routees, _mapping));
         }
       
