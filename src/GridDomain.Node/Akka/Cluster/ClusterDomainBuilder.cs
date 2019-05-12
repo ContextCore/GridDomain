@@ -101,7 +101,7 @@ namespace GridDomain.Node.Akka.Cluster
 
             var commandActor = _system.ActorOf(Props.Empty.WithRouter(routingGroup), "Aggregates");
 
-            return Task.FromResult<IDomain>(new Domain(new ActorCommandExecutor(commandActor),
+            return Task.FromResult<IDomain>(new Domain(new ActorCommandExecutor(commandActor, _system.Log),
                 new ClusterAggregatesController(_system, commandActor),_commandHandlerProxies));
         }
 

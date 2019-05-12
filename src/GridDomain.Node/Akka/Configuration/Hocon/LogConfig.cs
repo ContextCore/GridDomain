@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using Akka.Event;
-using Akka.Logger.Serilog;
 
 namespace GridDomain.Node.Akka.Configuration.Hocon
 {
