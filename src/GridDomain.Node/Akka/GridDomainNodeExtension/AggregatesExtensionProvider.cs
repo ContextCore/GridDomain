@@ -14,7 +14,7 @@ namespace GridDomain.Node.Akka.GridDomainNodeExtension {
 
         public override GridDomainNode CreateExtension(ExtendedActorSystem system)
         {
-            return GridDomainNode.New(system,_domainConfigurations);
+            return new GridDomainNode(system, _domainConfigurations);
         }
     }
 }

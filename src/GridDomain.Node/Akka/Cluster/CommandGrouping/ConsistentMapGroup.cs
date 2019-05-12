@@ -10,12 +10,10 @@ namespace GridDomain.Node.Akka.Cluster.CommandGrouping {
         private readonly IDictionary<string, string> _keyedPaths;
         private Dictionary<string, Routee> _routees;
         private ConsistentMapping _mapping;
-        private readonly string[] _paths;
 
         public ConsistentMapGroup(IDictionary<string,string> keyedPaths):base(new string[]{},null)
         {
             _keyedPaths = keyedPaths;
-            _paths = _keyedPaths.Values.ToArray();
         }
         public ConsistentMapGroup(IDictionary<string,IActorRef> keyedActors):this(keyedActors.ToDictionary(p => p.Key, p=>p.Value.Path.ToString()))
         {
@@ -57,7 +55,7 @@ namespace GridDomain.Node.Akka.Cluster.CommandGrouping {
 
         public override IEnumerable<string> GetPaths(ActorSystem system)
         {
-            return _paths;
+            return _keyedPaths.Values;
         }
     }
 }

@@ -16,47 +16,41 @@ using Microsoft.Extensions.Logging;
 
 namespace GridDomain.Node
 {
-
     public class GridDomainNode : INode, IExtension
     {
-        private bool _stopping;
-
         public ActorSystem System;
         private IContainer Container { get; set; }
-        private readonly IActorSystemFactory _actorSystemFactory;
-        private readonly List<IDomainConfiguration> _domainConfigurations;
+        private readonly IDomainConfiguration[] _domainConfigurations;
         public TimeSpan DefaultTimeout { get; }
         public string Name;
 
-        public static GridDomainNode New(ActorSystem system, params IDomainConfiguration[] domains)
+        public GridDomainNode(ActorSystem system, params IDomainConfiguration[] domains) : this(system,
+            TimeSpan.FromSeconds(5), domains)
         {
-            return new GridDomainNode(domains, new DelegateActorSystemFactory(() => system), 
-                TimeSpan.FromSeconds(5));
         }
 
-        public GridDomainNode(IEnumerable<IDomainConfiguration> domainConfigurations,
-            IActorSystemFactory actorSystemFactory,
-            TimeSpan defaultTimeout)
+        public GridDomainNode(ActorSystem actorSystem,
+                              TimeSpan defaultTimeout,
+                              params IDomainConfiguration[] domains)
         {
-            _domainConfigurations = domainConfigurations.ToList();
+            _domainConfigurations = domains;
             if (!_domainConfigurations.Any())
                 throw new NoDomainConfigurationException();
             if (_domainConfigurations.Any(d => d == null))
                 throw new InvalidDomainConfigurationException();
 
             DefaultTimeout = defaultTimeout;
-            _actorSystemFactory = actorSystemFactory;
+            System = actorSystem;
         }
 
 
         public void Dispose()
         {
-            Stop().Wait();
+            Container?.Dispose();
         }
 
         public async Task<IDomain> Start()
         {
-            System = _actorSystemFactory.CreateSystem();
             Address = System.GetAddress().ToString();
             Name = System.Name;
 
@@ -75,24 +69,6 @@ namespace GridDomain.Node
 
         public string Address { get; private set; }
 
-        private async Task Stop()
-        {
-            if (_stopping)
-                return;
-
-            System.Log.Info("GridDomain node {Id} is stopping", Name);
-            _stopping = true;
-
-            if (System != null)
-            {
-                await System.Terminate();
-                System.Dispose();
-            }
-            
-            System.Log.Info("GridDomain node {Id} stopped", Name);
-            System = null;
-            Container?.Dispose();
-        }
 
         internal class NoDomainConfigurationException : Exception
         {
