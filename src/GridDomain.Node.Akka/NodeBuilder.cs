@@ -3,7 +3,7 @@ using Akka.Actor;
 using GridDomain.Domains;
 using Microsoft.Extensions.Logging;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka
 {
     public class NodeBuilder : INodeBuilder
     {

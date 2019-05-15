@@ -1,18 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Akka.Event;
 using Akka.Persistence;
-using DotNetty.Common.Utilities;
 using GridDomain.Aggregates;
 using GridDomain.Common;
 using GridDomain.Domains;
 using GridDomain.Node.Akka.AggregatesExtension;
-using GridDomain.Node.Akka.Logging;
-using GridDomain.Node.Tests;
 
 namespace GridDomain.Node.Akka.Actors.Aggregates
 {

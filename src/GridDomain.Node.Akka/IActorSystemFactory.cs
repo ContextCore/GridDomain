@@ -1,7 +1,6 @@
-﻿using System.Threading.Tasks;
-using Akka.Actor;
+﻿using Akka.Actor;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka
 {
     public interface IActorSystemFactory
     {

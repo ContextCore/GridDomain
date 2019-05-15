@@ -2,7 +2,7 @@ using System;
 using Akka.Configuration;
 using GridDomain.Aggregates;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka
 {
     public class HoconAggregateSettings:AggregateSettings
     {

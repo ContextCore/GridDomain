@@ -1,6 +1,6 @@
 using Akka.Cluster.Sharding;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka
 {
     public sealed class ShardedMessageMetadataExtractor : IMessageExtractor
     {
