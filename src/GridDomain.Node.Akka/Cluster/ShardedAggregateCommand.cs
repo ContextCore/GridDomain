@@ -1,8 +1,7 @@
 using GridDomain.Aggregates;
 using GridDomain.Node.Akka.Actors.Aggregates;
-using GridDomain.Node.Akka.Cluster;
 
-namespace GridDomain.Node.Akka
+namespace GridDomain.Node.Akka.Cluster
 {
     public class ShardedAggregateCommand : IShardEnvelop, IHaveMetadata
     {
