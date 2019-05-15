@@ -1,8 +1,7 @@
 using Akka.Actor;
-using Autofac;
 using GridDomain.Domains;
 
-namespace GridDomain.Node.Akka.GridDomainNodeExtension {
+namespace GridDomain.Node.Akka.Extensions.GridDomain {
     public class GridDomainExtensionProvider : ExtensionIdProvider<GridDomainNode>
     {
         private readonly IDomainConfiguration[] _domainConfigurations;

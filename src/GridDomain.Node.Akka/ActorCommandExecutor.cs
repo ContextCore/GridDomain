@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Event;
 using GridDomain.Aggregates;
 using GridDomain.Node.Akka.Actors.Aggregates;
+using GridDomain.Node.Akka.Cluster;
 
 namespace GridDomain.Node.Akka
 {

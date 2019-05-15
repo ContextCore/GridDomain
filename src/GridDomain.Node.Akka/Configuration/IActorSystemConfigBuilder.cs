@@ -7,6 +7,5 @@ namespace GridDomain.Node.Akka.Configuration {
         IActorSystemConfigBuilder Add(IHoconConfig cfg);
         Config Build();
         ActorSystemConfigBuilder Clone();
-        IActorSystemFactory BuildActorSystemFactory(string systemName);
     }
 }

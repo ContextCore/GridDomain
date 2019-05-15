@@ -8,7 +8,7 @@ using Akka.Persistence;
 using GridDomain.Aggregates;
 using GridDomain.Common;
 using GridDomain.Domains;
-using GridDomain.Node.Akka.AggregatesExtension;
+using GridDomain.Node.Akka.Extensions.Aggregates;
 
 namespace GridDomain.Node.Akka.Actors.Aggregates
 {
@@ -19,17 +19,14 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
     /// <typeparam name="TAggregate"></typeparam>
     public class AggregateActor<TAggregate> : ReceivePersistentActor where TAggregate : class, IAggregate
     {
-        protected override ILoggingAdapter Log { get; } = Context.GetLogger();//GetSeriLogger();
-        public override string PersistenceId => _persistentId;
-        private string _persistentId;
+        protected override ILoggingAdapter Log { get; } = Context.GetLogger();
+        public override string PersistenceId { get; }
+
         protected string Id { get; }
-        public TAggregate Aggregate { get; private set; }
+        public TAggregate Aggregate { get; }
         private AggregateCommandExecutionContext ExecutionContext { get; } = new AggregateCommandExecutionContext();
         protected readonly BehaviorQueue Behavior;
         private readonly DateTime _startedTime;
-        private readonly IActorRef _journal;
-        private bool? _isCommandAlreadyExecuted;
-        private Guid guid = Guid.NewGuid();
         private readonly IActorRef _commandChecker;
         private readonly ICommandsResultAdapter _commandsResultAdapter; 
 
@@ -37,7 +34,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
         {
             Behavior = new BehaviorQueue(Become);
             Behavior.Become(AwaitingCommandBehavior, nameof(AwaitingCommandBehavior));
-            _persistentId = Self.Path.Name;
+            PersistenceId = Self.Path.Name;
             Id = AggregateAddress.Parse<TAggregate>(Self.Path.Name).Id;
 
             var aggregateExtensions = Context.System.GetAggregatesExtension();
@@ -48,7 +45,7 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
             Context.SetReceiveTimeout(dependencies.Settings.MaxInactivityPeriod);
             Recover<DomainEvent>(e => Aggregate.Apply(e));
 
-            _commandChecker = Context.ActorOf(Props.Create<CommandIdempotentActor>(), "CommandIdempotenceWatcher");
+            _commandChecker = Context.ActorOf(Props.Create<CommandIdempotencyActor>(), "CommandIdempotencyWatcher");
             _startedTime = BusinessDateTime.UtcNow;
         }
 
@@ -111,22 +108,19 @@ namespace GridDomain.Node.Akka.Actors.Aggregates
                 ExecutionContext.EventsPersisted = false;
                 
                 //check if we already executed this command
-                _isCommandAlreadyExecuted = null;
-                _commandChecker.Tell(new CommandIdempotentActor.CheckCommand(ExecutionContext.Command));
+                _commandChecker.Tell(new CommandIdempotencyActor.CheckCommand(ExecutionContext.Command));
 
             });
 
-            Command<CommandIdempotentActor.CommandAccepted>(s =>
+            Command<CommandIdempotencyActor.CommandAccepted>(s =>
             {
-                _isCommandAlreadyExecuted = false;
                 if (ExecutionContext.ProducedEvents != null && !ExecutionContext.EventsPersisted)
                 {
                     PersistProducedEvents(ExecutionContext.ProducedEvents);
                 }
             });
-            Command<CommandIdempotentActor.CommandRejected>(f =>
+            Command<CommandIdempotencyActor.CommandRejected>(f =>
             {
-                _isCommandAlreadyExecuted = true;
                 StopOnException("Command was rejected as already executed", new CommandAlreadyExecutedException());
             });
            

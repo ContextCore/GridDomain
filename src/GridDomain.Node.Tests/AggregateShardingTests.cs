@@ -11,7 +11,7 @@ using GridDomain.Domains;
 using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Akka.Configuration.Hocon;
-using GridDomain.Node.Akka.GridDomainNodeExtension;
+using GridDomain.Node.Akka.Extensions.GridDomain;
 using GridDomain.Node.Tests.TestJournals.Hocon;
 using Serilog;
 using Serilog.Events;

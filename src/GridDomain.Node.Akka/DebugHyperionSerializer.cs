@@ -16,7 +16,7 @@ namespace GridDomain.Node.Akka {
             }
             catch 
             {
-                system.Log.Error($"Cant deserialize {type} with hyperion");
+                system.Log.Error($"Can't deserialize {type} with hyperion");
                 throw;
             }
         } 
@@ -30,7 +30,7 @@ namespace GridDomain.Node.Akka {
             }
             catch(Exception ex)
             {
-                system.Log.Error(ex,$"Cant serialize {obj.GetType()} with hyperion");
+                system.Log.Error(ex,$"Can't serialize {obj.GetType()} with hyperion");
                 throw;
             }
         }

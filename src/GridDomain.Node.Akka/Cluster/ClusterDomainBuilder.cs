@@ -9,8 +9,8 @@ using GridDomain.Common;
 using GridDomain.Domains;
 using GridDomain.Node.Akka.Actors;
 using GridDomain.Node.Akka.Actors.Aggregates;
-using GridDomain.Node.Akka.AggregatesExtension;
 using GridDomain.Node.Akka.Cluster.CommandGrouping;
+using GridDomain.Node.Akka.Extensions.Aggregates;
 
 namespace GridDomain.Node.Akka.Cluster
 {
@@ -19,7 +19,7 @@ namespace GridDomain.Node.Akka.Cluster
     {
         private readonly ActorSystem _system;
         readonly Dictionary<string, IActorRef> _aggregatesRegions = new Dictionary<string, IActorRef>();
-        private Dictionary<Type, object> _commandHandlerProxies = new Dictionary<Type,object>();
+        private readonly Dictionary<Type, object> _commandHandlerProxies = new Dictionary<Type,object>();
         private readonly ContainerBuilder _containerBuilder;
 
         private static readonly OneForOneStrategy _supervisorStrategy

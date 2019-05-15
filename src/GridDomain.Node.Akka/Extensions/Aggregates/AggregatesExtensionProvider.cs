@@ -1,7 +1,7 @@
 using Akka.Actor;
 using Autofac;
 
-namespace GridDomain.Node.Akka.AggregatesExtension {
+namespace GridDomain.Node.Akka.Extensions.Aggregates {
     public class AggregatesExtensionProvider : ExtensionIdProvider<AggregatesExtension>
     {
         private readonly IContainer _container;

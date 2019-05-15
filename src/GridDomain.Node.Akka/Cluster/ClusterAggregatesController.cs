@@ -10,11 +10,9 @@ namespace GridDomain.Node.Akka.Cluster
     public class ClusterAggregatesController : IAggregatesController
     {
         private readonly IActorRef _aggregatesRouter;
-        private readonly ActorSystem _system;
 
         public ClusterAggregatesController(ActorSystem system, IActorRef aggregatesRouter)
         {
-            _system = system;
             _aggregatesRouter = aggregatesRouter;
         }
 

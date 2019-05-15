@@ -1,4 +1,4 @@
-namespace GridDomain.Node.Akka
+namespace GridDomain.Node.Akka.Cluster
 {
     public class ShardEnvelop : IShardEnvelop
     {

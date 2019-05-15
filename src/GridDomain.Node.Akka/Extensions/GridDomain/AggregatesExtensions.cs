@@ -1,9 +1,8 @@
 using System;
 using Akka.Actor;
-using Autofac;
 using GridDomain.Domains;
 
-namespace GridDomain.Node.Akka.GridDomainNodeExtension {
+namespace GridDomain.Node.Akka.Extensions.GridDomain {
     public static class AggregatesExtensions
     {
 

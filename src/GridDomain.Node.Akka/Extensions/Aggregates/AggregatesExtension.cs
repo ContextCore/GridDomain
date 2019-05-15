@@ -3,7 +3,7 @@ using Autofac;
 using GridDomain.Aggregates;
 using GridDomain.Common;
 
-namespace GridDomain.Node.Akka.AggregatesExtension {
+namespace GridDomain.Node.Akka.Extensions.Aggregates {
 
     
     public class AggregatesExtension : IExtension

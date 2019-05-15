@@ -5,9 +5,9 @@ using GridDomain.Aggregates;
 
 namespace GridDomain.Node.Akka.Actors.Aggregates
 {
-    public class CommandIdempotentActor : ReceiveActor
+    public class CommandIdempotencyActor : ReceiveActor
     {
-        public CommandIdempotentActor()
+        public CommandIdempotencyActor()
         {
             var writerGuid = Guid.NewGuid().ToString();
             var journal = Persistence.Instance.Apply(Context.System).JournalFor(null);

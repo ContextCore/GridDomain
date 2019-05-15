@@ -66,7 +66,7 @@ namespace GridDomain.Scenarios
                 commandAggregateId = command.Recipient.Id;
 
                 if (givenCommands.Any(c => c.Recipient.Id != commandAggregateId))
-                    throw new CommandsBelongToDifferentAggregateIdsException();
+                    throw new CommandsBelongToDifferentAggregateTypesException(givenCommands);
 
                 if (givenCommands.Any(c => c.Recipient.Name != command.Recipient.Name))
                     throw new CommandsBelongToDifferentAggregateTypesException(givenCommands);

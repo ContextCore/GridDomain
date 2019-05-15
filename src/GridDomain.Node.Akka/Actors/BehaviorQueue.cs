@@ -7,7 +7,7 @@ namespace GridDomain.Node.Akka.Actors {
         private readonly Queue<string> _behaviorHistory;
         private readonly Action<Action> _become;
         private readonly int _historyLimit;
-        public string Current { get; protected set; }
+        public string Current { get; private set; }
         public IReadOnlyCollection<string> History => _behaviorHistory;
 
         public BehaviorQueue(Action<Action> become, int historyLimit = 10)
@@ -18,14 +18,14 @@ namespace GridDomain.Node.Akka.Actors {
             _become = become;
         }
 
-        public virtual void Become(Action act, string name)
+        public void Become(Action act, string name)
         {
             Current = name;
             Remember(name);
             _become(act);
         }
 
-        protected void Remember(string name)
+        private void Remember(string name)
         {
             _behaviorHistory.Enqueue(name);
             if (_behaviorHistory.Count >= _historyLimit)

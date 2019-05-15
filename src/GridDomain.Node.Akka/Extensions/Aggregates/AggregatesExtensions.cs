@@ -2,7 +2,7 @@ using System;
 using Akka.Actor;
 using Autofac;
 
-namespace GridDomain.Node.Akka.AggregatesExtension {
+namespace GridDomain.Node.Akka.Extensions.Aggregates {
     public static class AggregatesExtensions
     {
 

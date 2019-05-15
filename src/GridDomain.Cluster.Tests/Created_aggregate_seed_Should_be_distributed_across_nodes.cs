@@ -13,7 +13,7 @@ using Akka.TestKit;
 using GridDomain.Domains;
 using GridDomain.Node;
 using GridDomain.Node.Akka.Cluster.Hocon;
-using GridDomain.Node.Akka.GridDomainNodeExtension;
+using GridDomain.Node.Akka.Extensions.GridDomain;
 using GridDomain.Node.Tests;
 using GridDomain.Node.Tests.TestJournals.Hocon;
 using Microsoft.Extensions.Logging;

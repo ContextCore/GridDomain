@@ -1,4 +1,5 @@
 using GridDomain.Node.Akka;
+using GridDomain.Node.Akka.Cluster;
 using Newtonsoft.Json;
 using Xunit;
 
