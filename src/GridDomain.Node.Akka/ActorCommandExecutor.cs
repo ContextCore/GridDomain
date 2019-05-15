@@ -1,12 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Cluster.Sharding;
 using Akka.Event;
 using GridDomain.Aggregates;
 using GridDomain.Node.Akka.Actors.Aggregates;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka
 {
     public class ActorCommandExecutor : ICommandHandler<ICommand>
     {

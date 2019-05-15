@@ -22,6 +22,7 @@
     <ItemGroup>
       <ProjectReference Include="..\GridDomain.Aggregates\GridDomain.Aggregates.csproj" />
       <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
+      <ProjectReference Include="..\GridDomain.Node.Akka\GridDomain.Node.Akka.csproj" />
       <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
       <ProjectReference Include="..\GridDomain.Query\GridDomain.Query.csproj" />
     </ItemGroup>

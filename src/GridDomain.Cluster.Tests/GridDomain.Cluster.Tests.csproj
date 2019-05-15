@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GridDomain.Node.Akka\GridDomain.Node.Akka.csproj" />
       <ProjectReference Include="..\GridDomain.Node.Tests\GridDomain.Node.Tests.csproj" />
       <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
     </ItemGroup>

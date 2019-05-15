@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
-using Akka.Cluster;
 using Autofac;
-using DotNetty.Common.Concurrency;
-using GridDomain.Aggregates;
 using GridDomain.Domains;
-using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Cluster;
-using GridDomain.Node.Akka.Configuration;
-using GridDomain.Node.Tests;
-using Microsoft.Extensions.Logging;
 
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka
 {
     public class GridDomainNode : INode, IExtension
     {

@@ -67,7 +67,7 @@ namespace GridDomain.Node.Tests
         }
         
         [Fact]
-        public async Task Node_can_provide_custom_command_executor()
+        public void Node_can_provide_custom_command_executor()
         {
             Assert.NotNull(_domain.CommandHandler<CatCommandsHandler>());
         }

@@ -1,6 +1,6 @@
 using Akka.Actor;
 
-namespace GridDomain.Node.Tests {
+namespace GridDomain.Node.Akka {
     public static class ActorSystemExtensions
     {
         public static Address GetAddress(this ActorSystem sys)
@@ -8,7 +8,6 @@ namespace GridDomain.Node.Tests {
             return ((ExtendedActorSystem) sys).Provider?.DefaultAddress;
         }
 
-        private static int _counter = 0;
         public static string GetDefaultLogFileName(this ActorSystem s)
         {
             var address = s.GetAddress();

@@ -1,8 +1,4 @@
-using System;
-using System.Security.Cryptography.X509Certificates;
-using GridDomain.Node.Akka.Actors;
-
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka
 {
     public class ShardEnvelop : IShardEnvelop
     {

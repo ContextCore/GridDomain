@@ -1,13 +1,13 @@
 using Akka.Actor;
 using Akka.Configuration;
 using Akka.Persistence.Query;
+using GridDomain.Node.Akka;
 
 namespace GridDomain.Node.Tests.TestJournals
 {
     public class TestReadJournalProvider : IReadJournalProvider
     {
         private readonly ExtendedActorSystem _system;
-        private readonly Config _config;
 
         public TestReadJournalProvider(ExtendedActorSystem system, Config config)
         {

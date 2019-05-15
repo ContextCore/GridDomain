@@ -1,4 +1,4 @@
-namespace GridDomain.Node
+namespace GridDomain.Node.Akka
 {
     public interface IShardEnvelop
     {

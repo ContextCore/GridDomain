@@ -39,7 +39,7 @@ namespace GridDomain.Scenarios.Runners
                         events = await aggregate.Execute(cmd);
 
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         Log.LogError("failed to execute an aggregate command {cmd}");
                         throw;

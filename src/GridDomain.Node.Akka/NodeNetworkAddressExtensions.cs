@@ -1,4 +1,4 @@
-namespace GridDomain.Node {
+namespace GridDomain.Node.Akka {
     public static class NodeNetworkAddressExtensions
     {
         public static string ToTcpAddress(this NodeNetworkAddress conf)

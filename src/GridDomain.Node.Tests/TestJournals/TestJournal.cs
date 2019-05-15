@@ -9,6 +9,7 @@ using Akka.Persistence;
 using Akka.Persistence.Journal;
 using Akka.Util.Internal;
 using GridDomain.Aggregates;
+using GridDomain.Node.Akka;
 
 namespace GridDomain.Node.Tests.TestJournals
 {

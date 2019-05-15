@@ -33,9 +33,8 @@ namespace GridDomain.Node.Akka.Cluster
                         await _aggregatesRouter.Ask<AggregateHealthReport>(message, timeout ?? TimeSpan.FromSeconds(2));
                     return report;
                 }
-                catch (AskTimeoutException ex)
+                catch (AskTimeoutException)
                 {
-                    continue;
                 }
             }
 

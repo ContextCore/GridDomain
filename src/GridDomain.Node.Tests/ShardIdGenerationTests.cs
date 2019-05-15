@@ -1,4 +1,5 @@
 ﻿using System;
+using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Cluster;
 using Xunit;
 

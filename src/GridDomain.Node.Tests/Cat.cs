@@ -60,7 +60,6 @@ namespace GridDomain.Node.Tests
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    break;
                 default:
                     throw new UnknownCommandException();
             }
