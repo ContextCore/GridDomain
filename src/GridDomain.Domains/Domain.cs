@@ -7,7 +7,7 @@ namespace GridDomain.Domains
 {
     public class Domain:IDomain
     {
-        private IDictionary<Type, object> _customCommandHandlers;
+        private readonly IDictionary<Type, object> _customCommandHandlers;
 
         public Domain(ICommandHandler<ICommand> commandExecutor, 
                       IAggregatesController aggregatesController,
@@ -22,11 +22,11 @@ namespace GridDomain.Domains
         public T CommandHandler<T>() where T : ICommandHandler<ICommand>
         {
             if (!_customCommandHandlers.ContainsKey(typeof(T)))
-                throw new UknownCommandExecutorException();
+                throw new UnknownCommandExecutorException();
 
             var func = _customCommandHandlers[typeof(T)] as Func<ICommandHandler<ICommand>, T>;
             if(func == null)
-                throw new UknownCommandExecutorProviderException();
+                throw new UnknownCommandExecutorProviderException();
             
             return func.Invoke(CommandExecutor);
         }
@@ -34,11 +34,11 @@ namespace GridDomain.Domains
         public IAggregatesController AggregatesController { get; }
     }
 
-    public class UknownCommandExecutorProviderException : Exception
+    public class UnknownCommandExecutorProviderException : Exception
     {
     }
 
-    public class UknownCommandExecutorException : Exception
+    public class UnknownCommandExecutorException : Exception
     {
     }
 }

@@ -4,13 +4,13 @@
       "src": [
         {
           "files": [ "**.csproj" ],
-          "exclude": [ "**/bin/**", "**/obj/**" ],
+          "exclude": [ "**/bin/**", "**/obj/**", "**.Tests/**" ],
           "src": "../src"
         }
       ],
       "dest": "api",
       "disableGitFeatures": false,
-      "disableDefaultFilter": false
+      "filter": "filterConfig.yml"
     }
   ],
   "build": {

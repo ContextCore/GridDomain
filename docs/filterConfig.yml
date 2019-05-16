@@ -1,0 +1,16 @@
+apiRules:
+- include:
+    uidRegex: ^GridDomain.*$
+    type: Namespace
+- exclude:
+    uidRegex: ^GridDomain.Aggregate.Tests$
+    type: Namespace
+- exclude:
+    uidRegex: ^GridDomain.Cluster.Tests$
+    type: Namespace
+- exclude:
+    uidRegex: ^GridDomain.Node.Tests$
+    type: Namespace
+- exclude:
+    uidRegex: ^GridDomain.Scenarios.Tests$
+    type: Namespace
