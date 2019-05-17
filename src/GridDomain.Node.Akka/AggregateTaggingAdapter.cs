@@ -1,5 +1,6 @@
 using Akka.Persistence.Journal;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 
 namespace GridDomain.Node.Akka
 {

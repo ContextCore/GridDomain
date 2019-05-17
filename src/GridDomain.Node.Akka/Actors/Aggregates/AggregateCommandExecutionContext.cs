@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Akka.Actor;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 
 namespace GridDomain.Node.Akka.Actors.Aggregates {
     class AggregateCommandExecutionContext

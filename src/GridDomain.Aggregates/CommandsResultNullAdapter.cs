@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GridDomain.Aggregates.Abstractions;
 
 namespace GridDomain.Aggregates
 {

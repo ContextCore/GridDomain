@@ -1,4 +1,5 @@
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Node.Akka.Actors.Aggregates;
 
 namespace GridDomain.Node.Akka.Cluster

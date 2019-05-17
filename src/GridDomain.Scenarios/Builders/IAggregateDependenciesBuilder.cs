@@ -1,5 +1,6 @@
 
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 
 namespace GridDomain.Scenarios.Builders {
     public interface IAggregateDependenciesBuilder<T> where T : IAggregate

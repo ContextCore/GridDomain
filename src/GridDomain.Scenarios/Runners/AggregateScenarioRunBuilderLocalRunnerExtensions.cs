@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Scenarios.Builders;
 using Microsoft.Extensions.Logging;
 

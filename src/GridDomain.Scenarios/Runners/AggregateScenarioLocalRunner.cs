@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace GridDomain.Scenarios.Runners

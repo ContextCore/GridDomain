@@ -2,6 +2,7 @@ using System;
 using Akka.Actor;
 using Akka.Persistence;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 
 namespace GridDomain.Node.Akka.Actors.Aggregates
 {

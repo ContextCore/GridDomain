@@ -10,6 +10,7 @@ using Akka.Streams.Dsl;
 using Akka.TestKit.Xunit2;
 using Autofac;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
 using GridDomain.Domains;
 using GridDomain.Node.Akka;

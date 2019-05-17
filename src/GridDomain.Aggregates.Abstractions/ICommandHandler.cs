@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace GridDomain.Aggregates
+namespace GridDomain.Aggregates.Abstractions
 {
     public interface ICommandHandler<in TCommand, TResult>
     {

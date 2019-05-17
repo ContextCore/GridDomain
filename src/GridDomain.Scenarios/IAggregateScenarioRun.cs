@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace GridDomain.Scenarios {

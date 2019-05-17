@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Event;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Node.Akka.Actors.Aggregates;
 using GridDomain.Node.Akka.Cluster;
 

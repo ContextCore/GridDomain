@@ -1,3 +1,5 @@
+using GridDomain.Aggregates.Abstractions;
+
 namespace GridDomain.Aggregates
 {
     public class AggregateConfiguration<TAggregate>:IAggregateConfiguration<TAggregate> where TAggregate : IAggregate

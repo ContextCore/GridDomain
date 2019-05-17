@@ -3,6 +3,7 @@ using System.Linq;
 using Akka.Actor;
 using Akka.Routing;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 
 namespace GridDomain.Node.Akka.Cluster.CommandGrouping
 {

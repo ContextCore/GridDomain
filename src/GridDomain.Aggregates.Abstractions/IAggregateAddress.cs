@@ -1,6 +1,4 @@
-using System;
-
-namespace GridDomain.Aggregates
+namespace GridDomain.Aggregates.Abstractions
 {
     /// <summary>
     /// Represents an aggregate instance location in the abstract aggregate pool inside the domain

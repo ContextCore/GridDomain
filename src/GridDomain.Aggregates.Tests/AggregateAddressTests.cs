@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GridDomain.Aggregates.Abstractions;
 using Xunit;
 
 namespace GridDomain.Aggregates.Tests

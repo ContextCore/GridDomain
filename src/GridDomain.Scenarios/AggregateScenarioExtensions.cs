@@ -1,4 +1,5 @@
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Scenarios.Builders;
 
 namespace GridDomain.Scenarios {

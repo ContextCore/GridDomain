@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using KellermanSoftware.CompareNetObjects;
 using KellermanSoftware.CompareNetObjects.TypeComparers;
 

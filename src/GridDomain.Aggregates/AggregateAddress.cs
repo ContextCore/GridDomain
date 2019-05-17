@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
 
 namespace GridDomain.Aggregates

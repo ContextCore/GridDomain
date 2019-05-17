@@ -1,6 +1,6 @@
 using System;
 
-namespace GridDomain.Aggregates
+namespace GridDomain.Aggregates.Abstractions
 {
     /// <summary>
     ///     Represents an event message.

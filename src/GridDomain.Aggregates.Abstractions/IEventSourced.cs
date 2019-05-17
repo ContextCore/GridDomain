@@ -1,4 +1,4 @@
-namespace GridDomain.Aggregates
+namespace GridDomain.Aggregates.Abstractions
 {
     public interface IEventSourced
     {

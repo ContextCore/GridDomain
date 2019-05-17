@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GridDomain.Aggregates
+namespace GridDomain.Aggregates.Abstractions
 {
     public interface ICommandsResultAdapter
     {

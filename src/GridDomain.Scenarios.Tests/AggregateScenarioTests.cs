@@ -2,6 +2,7 @@
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Scenarios;
 using GridDomain.Scenarios.Builders;
 using GridDomain.Scenarios.Runners;

@@ -9,6 +9,7 @@ using Akka.Persistence.Query;
 using Akka.Streams;
 using Akka.Streams.Dsl;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Node.Akka.Actors;
 using GridDomain.Query;
 using Xunit;

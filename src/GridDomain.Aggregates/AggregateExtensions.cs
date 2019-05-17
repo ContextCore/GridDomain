@@ -1,3 +1,5 @@
+using GridDomain.Aggregates.Abstractions;
+
 namespace GridDomain.Aggregates
 {
     public static class AggregateExtensions

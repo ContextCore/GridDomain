@@ -1,6 +1,7 @@
 using Akka.Actor;
 using Autofac;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
 
 namespace GridDomain.Node.Akka.Extensions.Aggregates {

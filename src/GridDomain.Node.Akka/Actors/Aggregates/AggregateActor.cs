@@ -6,6 +6,7 @@ using Akka.Cluster.Sharding;
 using Akka.Event;
 using Akka.Persistence;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
 using GridDomain.Domains;
 using GridDomain.Node.Akka.Extensions.Aggregates;

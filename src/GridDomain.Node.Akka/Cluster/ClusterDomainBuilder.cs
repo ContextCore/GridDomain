@@ -5,6 +5,7 @@ using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Autofac;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
 using GridDomain.Domains;
 using GridDomain.Node.Akka.Actors;

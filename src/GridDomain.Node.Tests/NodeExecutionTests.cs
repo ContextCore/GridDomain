@@ -8,6 +8,7 @@ using Akka.Streams;
 using Akka.Streams.Dsl;
 using Akka.TestKit;
 using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Domains;
 using GridDomain.Node.Akka;
 using GridDomain.Node.Akka.Cluster.Hocon;
