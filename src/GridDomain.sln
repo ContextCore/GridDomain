@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E436E3D6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Node.Akka", "GridDomain.Node.Akka\GridDomain.Node.Akka.csproj", "{0A5B4B59-545F-449A-80F4-11DC9FD5E283}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Aggregates.Abstractions", "GridDomain.Aggregates.Abstractions\GridDomain.Aggregates.Abstractions.csproj", "{A531BEF0-0454-4584-8970-C88216FEBE70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{0A5B4B59-545F-449A-80F4-11DC9FD5E283}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A5B4B59-545F-449A-80F4-11DC9FD5E283}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A5B4B59-545F-449A-80F4-11DC9FD5E283}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A531BEF0-0454-4584-8970-C88216FEBE70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A531BEF0-0454-4584-8970-C88216FEBE70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A531BEF0-0454-4584-8970-C88216FEBE70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A531BEF0-0454-4584-8970-C88216FEBE70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FB8B9415-958B-431F-9B42-FACDF70780BC} = {E436E3D6-BBEE-410E-ABD9-D62A11F6E760}

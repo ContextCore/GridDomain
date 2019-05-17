@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GridDomain.Aggregates.Abstractions\GridDomain.Aggregates.Abstractions.csproj" />
       <ProjectReference Include="..\GridDomain.Common\GridDomain.Common.csproj" />
     </ItemGroup>
 

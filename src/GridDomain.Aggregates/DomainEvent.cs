@@ -20,7 +20,7 @@ namespace GridDomain.Aggregates
 
         //Source of the event - aggregate that created it
         //private setter for serializers
-        public AggregateAddress Source { get; private set; }
+        public IAggregateAddress Source { get; private set; }
         /// <summary>
         /// Version of the Aggregate by the moment of event occurrence
         /// </summary>

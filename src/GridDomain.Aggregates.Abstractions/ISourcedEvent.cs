@@ -10,7 +10,7 @@ namespace GridDomain.Aggregates
         /// <summary>
         ///     Gets the identifier of the source originating the event.
         /// </summary>
-        AggregateAddress Source { get; }
+        IAggregateAddress Source { get; }
         DateTimeOffset Occured { get; }
     }
 }
