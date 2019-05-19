@@ -1,5 +1,5 @@
 ---
-uid: projections
+uid: projections-concept
 title: Projections
 ---
 

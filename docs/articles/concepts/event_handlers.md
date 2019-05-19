@@ -1,5 +1,5 @@
 ---
-uid: event-handlers
+uid: event-handlers-concept
 title: Event Handlers
 ---
 

@@ -1,5 +1,5 @@
 ---
-uid: process-managers
+uid: process-managers-concept
 title: Process Managers
 ---
 

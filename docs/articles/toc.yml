@@ -6,17 +6,19 @@
     href: concepts/overview.md
   - name: Domains
     href: concepts/domains.md
-  - name: Commands
-    href: concepts/commands.md
   - name: Aggregates
     href: concepts/aggregates.md
+  - name: Commands
+    href: concepts/commands.md
   - name: Events 
     href: concepts/events.md
+  - name: Snapshots
+    href: concepts/snapshots.md
   - name: Event Handlers
     href: concepts/event_handlers.md
   - name: Projections
     href: concepts/projections.md
   - name: Process Managers
-    href: concepts/aggregates.md
+    href: concepts/process_managers.md
 
 

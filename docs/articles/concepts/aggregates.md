@@ -1,5 +1,5 @@
 ---
-uid: aggregates
+uid: aggregates-concept
 title: Aggregates
 ---
 
@@ -22,72 +22,61 @@ there is a lot of books and articles about it.
 
 Aggregates always have a behavior and can survive application restarts, e.g. could be persisted. An Aggregate lifetime is binded to lifetime of a business entity it plays. 
 
-# Implementation 
-
-There are a lot of different implementation of aggregates and how frameworks treat them. The classic one is via ORM and Repository patterns. Additional patterns like CQRS and Event Sourcing could be applied to.
-
-The main point of any implementation is the separation of aggregates with business logic from details of the implementation - the application framework. 
-Any framework will bring additional dependencies and pollute the idea of aggregates as a pure source of the domain behavior.
-
-GridDomain follows this separation and uses interface-based aggregates. 
-Any class implementing an [IAggregate](xref:GridDomain.Aggregates.Abstractions.IAggregate) interface could be used. 
 
 ## Aggregate operations flow
 
-Aggregates in GridDomain accept commands as external input and produce events as an execution result. Events will be persisted and be passed back to the aggregate to modify its internal state. Then the cicle will repeat.
+Aggregates in GridDomain accept commands as external input and produce events as an execution result. Events will be persisted by a journal and be passed back to the aggregate to modify its internal state. Then the cicle will repeat again.
 
 ![Aggregate operation flow](../../images/Aggregate_flow.png)
 
-The commands and events are defined by the aggregate itself and form a major part of domain model. 
+The commands and events are defined by the aggregate itself and form a major part of domain model. To improve performance, an aggregate can emit snapshots in addition to events. 
 
-## Aggregates pool
+Read more about each stage: 
 
-  GridDomain thinks about Aggregates as entities, living somewhere in the abstract Aggregates pool. The user is not bothered with manual aggregates creation, it is handled by the framework, as well as aggregate lifecycle.
+*[Aggregate commands](xref:commands-concept)
+*[Aggregate events](xref:events-concept)
+ 
 
-  To identify aggregates inside the pool, GridDomain uses an [aggregate address](xref:GridDomain.Aggregates.Abstractions.IAggregateAddress?title=IAggregateAddress) abstraction.  
+## Address and Domain
 
-  The address consist of the aggregate name, witch will be binded to a C# type, and the aggregate instance Id. Different aggregate names can reuse the same Ids. It is recommended to take business identifiers instead of artificial ones like GUID
+  GridDomain thinks about aggregates as entities, living somewhere in the abstract space with individual lifecycles. The user is not bothered with manual aggregates creation and destruction, it is handled by the framework as a reaction to commands. GridDomain uses [IDomain interface](xref:GridDomain.Domains.IDomain) to represent this abstract space. 
 
-## Commands 
+  Aggregates instances inside a [domain](xref:domains-concept) are identified by [aggregate address](xref:GridDomain.Aggregates.Abstractions.IAggregateAddress?title=IAggregateAddress) abstraction.  
 
-  GridDomain uses term "command" with a specific meaning of "an aggregate command". A command is a request for an aggregate internal state modification. Aggregates define their commands, and have full control of the execution behavior. So a command belongs to the only one aggregate type and cannot be shared between different aggregate types. 
-  GridDomain uses [ICommand](xref:GridDomain.Aggregates.Abstractions.ICommand?title=ICommand) interface to represent an aggregate command.  
+  The address consist of an aggregate type name and the aggregate instance id. Different aggregate types can reuse the same ids. It is recommended to take business ids instead of artificial ones like GUID
 
-## Executing commands 
-
-  In normal flow, the aggregate will execute the incoming command and produce some events 
-  as a result. If aggregate is not happy with the command it is free to throw business exceptions. These exceptions will be passed back to the command sender. In case of command error any changes to the aggregate are discarded and it is reverted to the state after the last sucessfull command. 
-
-### Commands concurrency
-Any aggregate can expect a single-threaded, not-concurrent execution of incoming commands. Commands targeting a single aggregate will be delivered to the aggregate one by one, waiting for produced events persistence and apply. 
-Incoming commands will stack up in a in-memory queue and passed for the execution when the aggregate is ready. 
-
-### Commands idempotency
-  
-  Each command have an unique, auto-generated Id. It is used to support command idemponetce, 
-  a guarantee that any command will be executed at most one by the target aggregate. Only successfully command executions counts. So a failing command could be sent many times for the execution. For example, in case of command execution timeout, it is safe to resend the command few times until a sucessfull execution or "[already executed](xref:GridDomain.Aggregates.Abstractions.CommandAlreadyExecutedException)" error.  
-
-## Raising events 
-
-  An aggregate can raise any number of [events](xref:GridDomain.Aggregates.Abstractions.IDomainEvent) as a result of command execution. 
-  The meaning of the events and content is determined by the aggregate. 
-### Command result
-### Version conventions
-### Applying events before persistence 
+  The aggregate address is unique inside a domain, and will always refer to a single aggregate instance. 
 
 ## Building the internal state
 
-### Events apply contract
-### Events auto-apply after persistence
-### Snapshots
-### Aggregate creation
+   An aggregate uses raised events to build the internal state. 
+   There is not other way to mutate the state except of applying an event. The internal state implementation is totaly up to the aggregate, GridDomain does not enforce any design for this.
+   
+   Due to high level of aggregates isolation, hard-accessible internal states and for the sake of simplicity, GridDomain does not uses a dedicated abstraction for AggregateRoot and ValueObject.
 
-## Persistence contract
+   From pure DDD point of view, an IAggregate plays the AggregateRoot role, and any additional classes inside its state should be treated as Aggregates with ValueObject properties. 
 
-###All-or-nothing
-###Handling the event apply errors
+## Aggregate instance lifecycle
 
+   GridDomain uses a stateful approach to aggregates hosting. It means once created, an aggregate will exist in memory for a time, serving additional requests without fetching any data from the persistence storage (the journal)
 
-## Aggregates lifetime
+   An aggregate instance lifecycle constist of several steps:
+
+   1) A command is ussued for a aggregate address
+
+   2) GridDomain looks for an existing running aggregate instance on this address. 
+   3) If the instance is presented, jump to step 9) 
+     
+   4) GridDomain begin the aggregate instance creation process, the lifecycle begins.
+
+   5) An [IAggregateFactory](xref:GridDomain.Aggregates.Abstractions.IAggregateFactory) is  used to create an empty aggregate instance
+   6) The aggregate receives a stream of events and snapshots from the journal, if any.
+   7) The aggregate builds its internal state from the stream received. 
+   
+   8) The aggregate instance becomes active and ready to accept commands 
+   9) If there are pending incoming commands, the next incoming command is passed to the instance. If no, go to 11)
+   
+   10) Result events and snapshots produced are sent to journal for pesistence. The process repeats from 7)
+   11) If there was no activity for the aggregate instace for a some period, it is unloaded from memory, the lifecycle ends. 
 
 
