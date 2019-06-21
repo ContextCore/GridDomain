@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventHandlers", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventHandlers.Akka", "GridDomain.EventHandlers.Akka\GridDomain.EventHandlers.Akka.csproj", "{25581B74-E684-46F8-BFE7-7D5ABD3F2FC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventHandlers.Akka.Tests", "GridDomain.EventHandlers.Akka.Tests\GridDomain.EventHandlers.Akka.Tests.csproj", "{0F07CF5E-59E6-4520-BBE0-7FE5AC4CC056}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,11 +112,16 @@ Global
 		{25581B74-E684-46F8-BFE7-7D5ABD3F2FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25581B74-E684-46F8-BFE7-7D5ABD3F2FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25581B74-E684-46F8-BFE7-7D5ABD3F2FC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F07CF5E-59E6-4520-BBE0-7FE5AC4CC056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F07CF5E-59E6-4520-BBE0-7FE5AC4CC056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F07CF5E-59E6-4520-BBE0-7FE5AC4CC056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F07CF5E-59E6-4520-BBE0-7FE5AC4CC056}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FB8B9415-958B-431F-9B42-FACDF70780BC} = {E436E3D6-BBEE-410E-ABD9-D62A11F6E760}
 		{FA20EB77-11DE-42C0-83E8-737F1D94529F} = {E436E3D6-BBEE-410E-ABD9-D62A11F6E760}
 		{723268F2-33D4-4913-9BCF-8C8146C99A2E} = {E436E3D6-BBEE-410E-ABD9-D62A11F6E760}
 		{2766E519-EE7C-4C5C-BC43-F49AAA1627F9} = {E436E3D6-BBEE-410E-ABD9-D62A11F6E760}
+		{0F07CF5E-59E6-4520-BBE0-7FE5AC4CC056} = {E436E3D6-BBEE-410E-ABD9-D62A11F6E760}
 	EndGlobalSection
 EndGlobal

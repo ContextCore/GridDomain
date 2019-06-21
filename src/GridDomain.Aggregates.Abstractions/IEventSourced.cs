@@ -4,6 +4,6 @@ namespace GridDomain.Aggregates.Abstractions
     {
         string Id { get; }
         void Apply(IDomainEvent @event);
-        int Version { get; }
+        long Version { get; }
     }
 }

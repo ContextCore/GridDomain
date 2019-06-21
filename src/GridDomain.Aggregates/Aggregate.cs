@@ -13,7 +13,7 @@ namespace GridDomain.Aggregates
         }
 
         public string Id { get; protected set; }
-        public int Version { get; protected set; }
+        public long Version { get; protected set; }
 
         void IEventSourced.Apply(IDomainEvent @event)
         {

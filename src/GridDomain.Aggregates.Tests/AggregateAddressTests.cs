@@ -15,7 +15,7 @@ namespace GridDomain.Aggregates.Tests
                 throw new System.NotImplementedException();
             }
 
-            public int Version { get; }
+            public long Version { get; }
             public Task<IReadOnlyCollection<IDomainEvent>> Execute(ICommand command)
             {
                 throw new System.NotImplementedException();

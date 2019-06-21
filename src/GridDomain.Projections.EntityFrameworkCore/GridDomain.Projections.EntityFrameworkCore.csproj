@@ -4,4 +4,13 @@
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GridDomain.EventHandlers\GridDomain.EventHandlers.csproj" />
+      <ProjectReference Include="..\GridDomain.Projections\GridDomain.Projections.csproj" />
+    </ItemGroup>
+
 </Project>

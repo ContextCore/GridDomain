@@ -5,5 +5,6 @@ namespace GridDomain.Query
     public interface ISingleQuery<TParam, TReturn> : IGenericQuery<TParam, TReturn> {}
 
     public interface ISingleQuery<TParam1, TParam2, TReturn> : IGenericQuery<TParam1, TParam2, TReturn> {}
+    public interface ISingleQuery<TParam1, TParam2, TParam3, TReturn> : IGenericQuery<TParam1, TParam2, TReturn> {}
 
 }

@@ -48,7 +48,7 @@ namespace GridDomain.Scenarios.Tests
             Version++;
         }
 
-        public int Version { get; private set; }
+        public long Version { get; private set; }
         public Task<IReadOnlyCollection<IDomainEvent>> Execute(ICommand command)
         {
             switch (command)

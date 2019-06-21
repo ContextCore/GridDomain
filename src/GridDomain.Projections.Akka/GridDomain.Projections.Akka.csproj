@@ -4,4 +4,10 @@
         <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GridDomain.EventHandlers.Akka\GridDomain.EventHandlers.Akka.csproj" />
+      <ProjectReference Include="..\GridDomain.EventHandlers\GridDomain.EventHandlers.csproj" />
+      <ProjectReference Include="..\GridDomain.Projections\GridDomain.Projections.csproj" />
+    </ItemGroup>
+
 </Project>

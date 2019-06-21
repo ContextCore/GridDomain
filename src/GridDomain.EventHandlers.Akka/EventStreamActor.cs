@@ -9,18 +9,38 @@ using GridDomain.Node.Akka.Actors;
 
 namespace GridDomain.EventHandlers.Akka
 {
-    public abstract class EventStreamActor<TEvent, THandler>:ReceiveActor where TEvent : class, IDomainEvent where THandler : IEventHandler<TEvent>
+
+    public static class EventStreamActor
+    {
+        public class Start
+        {
+            private Start()
+            {
+            }
+
+            public static readonly Start Instance = new Start();
+        }
+        public class Started
+        {
+            private Started()
+            {
+            }
+
+            public static readonly Started Instance = new Started();
+        }
+    }
+    public abstract class EventStreamActor<TEvent, THandler>:ReceiveActor where THandler : IEventHandler<TEvent> where TEvent : class
     {
         protected readonly ILoggingAdapter Log;
         private ActorMaterializer _materializer;
         protected abstract Source<EventEnvelope,NotUsed> GetSource();
 
-        protected virtual Flow<EventEnvelope, TEvent, NotUsed> GetFlow()
+        protected virtual Flow<EventEnvelope, Sequenced<TEvent>, NotUsed> GetFlow()
         {
             return EventsFlow.Create<TEvent>();
         }
 
-        protected virtual Sink<TEvent, NotUsed> GetSink()
+        protected virtual Sink<Sequenced<TEvent>, NotUsed> GetSink()
         {
             return EventHandlerSink.Create<TEvent, THandler>(Context);
         }
@@ -35,7 +55,7 @@ namespace GridDomain.EventHandlers.Akka
         
         protected virtual void Initializing()
         {
-            Receive<EventHandlerActor.Start>(s =>
+            Receive<EventStreamActor.Start>(s =>
             {
                 var source = GetSource();
                 var sink = GetSink();
@@ -46,6 +66,7 @@ namespace GridDomain.EventHandlers.Akka
                 projectionGraph.Run(_materializer);
 
                 Behavior.Become(Working, nameof(Working));
+                Sender.Tell(EventStreamActor.Started.Instance);
             });
         }
 

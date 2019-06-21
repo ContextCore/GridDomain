@@ -3,6 +3,7 @@
 namespace GridDomain.EventHandlers
 {
 
+    
     public class Sequenced<T>
     {
         public T Message { get; }
