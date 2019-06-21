@@ -5,28 +5,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Projections.EntityFrameworkCore
 {
-    public abstract class Projector<TEvent,TContext>:IEventHandler<TEvent> where TContext:DbContext,IProjectionDbContext
+    public class SyncProjectionCommand
     {
-        private readonly Func<IProjectionDbContext,IFindProjectionQuery> _queryFactory;
+        private readonly Func<IProjectionDbContext, IFindProjectionQuery> _queryFactory;
         private readonly string _projectorName;
-        private readonly Func<TContext> _contextFactory;
 
-        protected Projector(string projectorName, Func<TContext> contextFactory, Func<IProjectionDbContext, IFindProjectionQuery> queryFactory)
+        public SyncProjectionCommand(string projectorName, IProjectionDbContext context,
+            Func<IProjectionDbContext, IFindProjectionQuery> queryFactory = null)
         {
+            _context = context;
             _projectorName = projectorName;
-            _contextFactory = contextFactory;
-            _queryFactory = queryFactory;
+            _queryFactory = queryFactory ?? (c => new FindProjectionQuery(c));
         }
 
-        protected async Task UpdateProjection(TContext context, string projectionName, string eventName, long sequence)
+        private readonly IProjectionDbContext _context;
+
+        public async Task Execute(string projectionName, string eventName, long sequence)
         {
-            var projection = await _queryFactory(context)
+            var projection = await _queryFactory(_context)
                 .Execute(projectionName,
                     _projectorName,
                     eventName);
 
             if (projection == null)
-                context.Projections.Add(new Projection
+                _context.Projections.Add(new Projection
                 {
                     Event = eventName,
                     Name = projectionName,
@@ -36,15 +38,5 @@ namespace GridDomain.Projections.EntityFrameworkCore
             else
                 projection.Sequence = sequence;
         }
-
-        public async Task Handle(Sequenced<TEvent>[] evt)
-        {
-            using (var context = _contextFactory())
-            {
-                await Project(evt,context);
-            }
-        }
-
-        protected abstract Task Project(Sequenced<TEvent>[] evt, TContext context);
     }
 }
