@@ -1,6 +1,5 @@
 using Akka.Actor;
 using Akka.Event;
-using GridDomain.Node.Akka.Extensions.Aggregates;
 
 namespace GridDomain.EventHandlers.Akka
 {

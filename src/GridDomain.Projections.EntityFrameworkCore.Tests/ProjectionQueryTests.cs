@@ -34,7 +34,7 @@ namespace GridDomain.Projections.EntityFrameworkCore.Tests
             var query = new FindProjectionQuery(context);
             
             var projection = new Projection
-                {Event = "testEvent", Name = "testName", Projector = "projector", Sequence = 10};
+                {Event = "testEvent", Name = "testName", Projector = "projector", Offset = 10};
             context.Projections.Add(projection);
             await context.SaveChangesAsync();
 

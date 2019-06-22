@@ -4,8 +4,7 @@ using Akka.Event;
 using Akka.Persistence.Query;
 using Akka.Streams;
 using Akka.Streams.Dsl;
-using GridDomain.Aggregates.Abstractions;
-using GridDomain.Node.Akka.Actors;
+using GridDomain.Common.Akka;
 
 namespace GridDomain.EventHandlers.Akka
 {
@@ -29,7 +28,7 @@ namespace GridDomain.EventHandlers.Akka
             public static readonly Started Instance = new Started();
         }
     }
-    public abstract class EventStreamActor<TEvent, THandler>:ReceiveActor where THandler : IEventHandler<TEvent> where TEvent : class
+    public abstract class EventStreamActor<TEvent>:ReceiveActor where TEvent : class
     {
         protected readonly ILoggingAdapter Log;
         private ActorMaterializer _materializer;
@@ -40,10 +39,8 @@ namespace GridDomain.EventHandlers.Akka
             return EventsFlow.Create<TEvent>();
         }
 
-        protected virtual Sink<Sequenced<TEvent>, NotUsed> GetSink()
-        {
-            return EventHandlerSink.Create<TEvent, THandler>(Context);
-        }
+        protected abstract Sink<Sequenced<TEvent>, NotUsed> GetSink();
+        
         private BehaviorQueue Behavior { get; }
         
         public EventStreamActor()

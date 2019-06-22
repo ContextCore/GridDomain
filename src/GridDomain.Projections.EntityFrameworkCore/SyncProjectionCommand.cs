@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GridDomain.Projections.EntityFrameworkCore
 {
+    
     public class SyncProjectionCommand
     {
         private readonly Func<IProjectionDbContext, IFindProjectionQuery> _queryFactory;
@@ -20,7 +21,7 @@ namespace GridDomain.Projections.EntityFrameworkCore
 
         private readonly IProjectionDbContext _context;
 
-        public async Task Execute(string projectionName, string eventName, long sequence)
+        public async Task Execute(string projectionName, string eventName, long sequence, long version)
         {
             var projection = await _queryFactory(_context)
                 .Execute(projectionName,
@@ -33,10 +34,14 @@ namespace GridDomain.Projections.EntityFrameworkCore
                     Event = eventName,
                     Name = projectionName,
                     Projector = _projectorName,
-                    Sequence = sequence
+                    Offset = sequence,
+                    Version = version
                 });
             else
-                projection.Sequence = sequence;
+            {
+                projection.Offset = sequence;
+                projection.Version = version;
+            }
         }
     }
 }

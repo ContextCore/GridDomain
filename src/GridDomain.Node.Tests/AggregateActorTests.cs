@@ -24,17 +24,16 @@ namespace GridDomain.Node.Tests
     public class AggregateActorTests : TestKit
     {
         private static readonly Config _config = new ActorSystemConfigBuilder().Add(LogConfig.All()).Add(new TestJournalConfig()).Build();
-        private readonly AggregateConfiguration<Cat> _aggregateConfiguration = new AggregateConfiguration<Cat>();
-
         public AggregateActorTests(ITestOutputHelper helper) : base(_config, "aggregateTests",helper)
         {
             var container = new ContainerBuilder();
             container.RegisterInstance<ICommandsResultAdapter>(new CatCommandsResultAdapter())
                      .Named<ICommandsResultAdapter>(typeof(Cat).BeautyName());
             
-            container.RegisterInstance<IAggregateConfiguration<Cat>>(_aggregateConfiguration);
-            var c = container.Build();
-            Sys.InitAggregatesExtension(c);
+            container.RegisterInstance<IAggregateConfiguration<Cat>>(new AggregateConfiguration<Cat>());
+            
+            var ext = Sys.InitAggregatesExtension(container);
+            ext.CompleteRegistration();
         }
 
         

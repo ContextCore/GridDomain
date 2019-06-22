@@ -8,6 +8,7 @@ namespace GridDomain.Projections
         public string Name { get; set; }
         public string Projector { get; set; }
         public string Event { get; set; }
-        public long Sequence { get; set; }
+        public long Offset { get; set; }
+        public long Version { get; set; }
     }
 }

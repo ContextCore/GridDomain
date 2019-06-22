@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GridDomain.EventHandlers.Akka\GridDomain.EventHandlers.Akka.csproj" />
+      <ProjectReference Include="..\GridDomain.Projections.EntityFrameworkCore\GridDomain.Projections.EntityFrameworkCore.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Akka.Persistence.Query.Sql" Version="1.3.13" />
+    </ItemGroup>
+
+</Project>

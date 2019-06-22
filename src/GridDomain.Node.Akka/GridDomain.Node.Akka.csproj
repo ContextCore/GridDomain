@@ -6,6 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GridDomain.Common.Akka\GridDomain.Common.Akka.csproj" />
+      <ProjectReference Include="..\GridDomain.EventHandlers.Akka\GridDomain.EventHandlers.Akka.csproj" />
       <ProjectReference Include="..\GridDomain.Node\GridDomain.Node.csproj" />
        
     </ItemGroup>

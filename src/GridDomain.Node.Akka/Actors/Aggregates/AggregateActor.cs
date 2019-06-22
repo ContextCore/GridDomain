@@ -8,6 +8,7 @@ using Akka.Persistence;
 using GridDomain.Aggregates;
 using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
+using GridDomain.Common.Akka;
 using GridDomain.Domains;
 using GridDomain.Node.Akka.Extensions.Aggregates;
 

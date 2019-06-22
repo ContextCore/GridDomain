@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace GridDomain.Node.Akka.Actors {
+namespace GridDomain.Common.Akka {
     public class BehaviorQueue
     {
         private readonly Queue<string> _behaviorHistory;

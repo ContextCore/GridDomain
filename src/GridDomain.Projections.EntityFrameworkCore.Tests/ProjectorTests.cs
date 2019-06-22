@@ -24,7 +24,7 @@ namespace GridDomain.Projections.EntityFrameworkCore.Tests
             using var context = new ProjectionDbContext(options);
             var projection = await context.Projections.FirstAsync();
                 
-            Assert.Equal(10, projection.Sequence);
+            Assert.Equal(10, projection.Offset);
             Assert.Equal("sequenced", projection.Event);
             Assert.Equal(nameof(TestProjector), projection.Projector);
             Assert.Equal("testProjection", projection.Name);
@@ -38,7 +38,7 @@ namespace GridDomain.Projections.EntityFrameworkCore.Tests
             
             using var contextInit = new ProjectionDbContext(options);
             contextInit.Messages.Add(new TestMessage("a",10));
-            contextInit.Projections.Add(new Projection(){Event="sequenced",Name="testProjection",Projector = nameof(TestProjector),Sequence = 5});
+            contextInit.Projections.Add(new Projection(){Event="sequenced",Name="testProjection",Projector = nameof(TestProjector),Offset = 5});
             
             var projector = new TestProjector("testProjector",()=>new ProjectionDbContext(options));
 
@@ -49,7 +49,7 @@ namespace GridDomain.Projections.EntityFrameworkCore.Tests
             using var context = new ProjectionDbContext(options);
             var projection = await context.Projections.FirstAsync();
                 
-            Assert.Equal(7, projection.Sequence);
+            Assert.Equal(7, projection.Offset);
             Assert.Equal("sequenced", projection.Event);
             Assert.Equal(nameof(TestProjector), projection.Projector);
             Assert.Equal("testProjection", projection.Name);
@@ -95,7 +95,7 @@ namespace GridDomain.Projections.EntityFrameworkCore.Tests
                     else
                         existing.Value = m.Message.Value;
 
-                    await syncProjectionCommand.Execute("testProjection", "sequenced", m.Sequence);
+                    await syncProjectionCommand.Execute("testProjection", "sequenced", m.Sequence,0);
                 }
 
                 await context.SaveChangesAsync();

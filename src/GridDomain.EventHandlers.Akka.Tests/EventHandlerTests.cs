@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -8,7 +7,6 @@ using Akka.TestKit.Xunit2;
 using Autofac;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace GridDomain.EventHandlers.Akka.Tests
 {

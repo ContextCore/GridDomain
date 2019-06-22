@@ -8,110 +8,57 @@ using GridDomain.Aggregates;
 using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
 using GridDomain.Domains;
-using GridDomain.Node.Akka.Actors;
+using GridDomain.EventHandlers;
+using GridDomain.EventHandlers.Akka;
 using GridDomain.Node.Akka.Actors.Aggregates;
 using GridDomain.Node.Akka.Cluster.CommandGrouping;
 using GridDomain.Node.Akka.Extensions.Aggregates;
 
 namespace GridDomain.Node.Akka.Cluster
 {
-    
+
+
     public class ClusterDomainBuilder : IDomainBuilder
     {
         private readonly ActorSystem _system;
-        readonly Dictionary<string, IActorRef> _aggregatesRegions = new Dictionary<string, IActorRef>();
-        private readonly Dictionary<Type, object> _commandHandlerProxies = new Dictionary<Type,object>();
         private readonly ContainerBuilder _containerBuilder;
 
-        private static readonly OneForOneStrategy _supervisorStrategy
-            = new OneForOneStrategy(ex =>
-            {
-                switch (ex)
-                {
-                    case AggregateActor.CommandExecutionException cf:
-                        return Directive.Restart;
-                    case CommandAlreadyExecutedException cae:
-                        return Directive.Restart;
-                    default:
-                        return Directive.Stop;
-                }
-            });
-
+ 
         public ClusterDomainBuilder(ActorSystem system, ContainerBuilder containerBuilder)
         {
             _containerBuilder = containerBuilder;
             _system = system;
+            _system.InitAggregatesExtension();
         }
 
-        public async Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> configuration)
+        public Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> configuration)
             where TAggregate : class, IAggregate
         {
-            _containerBuilder.RegisterInstance(configuration);
+            return _system.GetAggregatesExtension().RegisterAggregate(configuration);
+        }
 
-
-            var clusterSharding = ClusterSharding.Get(_system);
-            var regionName = AggregateAddress.New<TAggregate>("regionOnly").Name;
-
-            if (_aggregatesRegions.ContainsKey(regionName))
-                throw new InvalidOperationException("Cannot add duplicate region with name: " + regionName);
-
-            var aggregateProps = Props.Create<AggregateActor<TAggregate>>()
-                .WithSupervisorStrategy(_supervisorStrategy);
-
-            _system.Log.Info("Starting new shard region {regionName}", regionName);
-
-            var setting = ClusterShardingSettings.Create(_system);
-            if (!string.IsNullOrEmpty(configuration.Settings.HostRole))
-                setting = setting.WithRole(configuration.Settings.HostRole);
-            
-            var region = await clusterSharding.StartAsync(regionName,
-                aggregateProps,setting,
-                new ShardedMessageMetadataExtractor()); 
-
-            _aggregatesRegions.Add(regionName, region);
+        public Task RegisterEventHandler<TEvent, THandler>() where THandler : IEventHandler<TEvent>
+        {
+            throw new NotImplementedException();
         }
 
         public Task<IDomain> Build()
         {
             var container = _containerBuilder.Build();
-            _system.InitAggregatesExtension(container);
-
-            return BuildCommandExecutor();
+            _system.InitEventHandlersExtension(container);
+            _system.GetAggregatesExtension().CompleteRegistration();
+            return _system.GetAggregatesExtension().Start();
         }
 
         public void RegisterCommandHandler<T>(Func<ICommandHandler<ICommand>, T> proxyBuilder)
         {
-            _commandHandlerProxies[typeof(T)] = proxyBuilder;
+             _system.GetAggregatesExtension().RegisterCommandHandler(proxyBuilder);
         }
 
         public void RegisterCommandsResultAdapter<TAggregate>(ICommandsResultAdapter adapter) where TAggregate : IAggregate
         {
-            _containerBuilder.RegisterInstance(adapter).Named<ICommandsResultAdapter>(typeof(TAggregate).BeautyName());
+            _system.GetAggregatesExtension().RegisterCommandsResultAdapter<TAggregate>(adapter);
         }
 
-        private Task<IDomain> BuildCommandExecutor()
-        {
-            var routingGroup = new ConsistentMapGroup(_aggregatesRegions)
-                .WithMapping(m =>
-                {
-                    if (!(m is IShardEnvelop env)) throw new UnknownShardMessageException();
-                    if (!_aggregatesRegions.ContainsKey(env.Region)) throw new CannotFindRequestedRegion();
-                    return env.Region;
-                });
-
-
-            var commandActor = _system.ActorOf(Props.Empty.WithRouter(routingGroup), "Aggregates");
-
-            return Task.FromResult<IDomain>(new Domain(new ActorCommandExecutor(commandActor, _system.Log),
-                new ClusterAggregatesController(_system, commandActor),_commandHandlerProxies));
-        }
-
-        public class UnknownShardMessageException : Exception
-        {
-        }
-
-        public class CannotFindRequestedRegion : Exception
-        {
-        }
     }
 }

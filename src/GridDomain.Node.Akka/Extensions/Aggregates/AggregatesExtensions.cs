@@ -12,13 +12,12 @@ namespace GridDomain.Node.Akka.Extensions.Aggregates {
         }
 
             
-        public static AggregatesExtension InitAggregatesExtension(this ActorSystem system,
-                                                                  IContainer container)
+        public static AggregatesExtension InitAggregatesExtension(this ActorSystem system, ContainerBuilder builder=null)
         {
             if(system == null)
                 throw new ArgumentNullException(nameof(system));
 
-            return (AggregatesExtension)system.RegisterExtension(new AggregatesExtensionProvider(container));
+            return (AggregatesExtension)system.RegisterExtension(new AggregatesExtensionProvider(builder));
         }
     }
 }

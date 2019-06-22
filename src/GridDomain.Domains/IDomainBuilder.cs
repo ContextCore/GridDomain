@@ -13,7 +13,7 @@ namespace GridDomain.Domains
     {
         Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> configuration) where TAggregate : class,IAggregate;
 
-        //void RegisterEventHandler<TEvent, THandler>() where THandler : IEventHandler<TEvent>;
+        Task RegisterEventHandler<TEvent, THandler>() where THandler : IEventHandler<TEvent>;
 
         Task<IDomain> Build();
 

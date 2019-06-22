@@ -13,15 +13,9 @@ namespace GridDomain.EventHandlers.Akka {
         {
             _container = container;
         }
-
-        public IAggregateConfiguration<T> GetConfiguration<T>() where T : IAggregate
-        {
-            return _container.Resolve<IAggregateConfiguration<T>>();
-        }
-
+     
         public T GetHandler<T>()
         {
-            
             _container.TryResolve(typeof(T), out var handler);
             return (T)handler;
         }

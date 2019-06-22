@@ -4,16 +4,15 @@ using Autofac;
 namespace GridDomain.Node.Akka.Extensions.Aggregates {
     public class AggregatesExtensionProvider : ExtensionIdProvider<AggregatesExtension>
     {
-        private readonly IContainer _container;
+        private readonly ContainerBuilder _builder;
 
-        public AggregatesExtensionProvider(IContainer container)
+        public AggregatesExtensionProvider(ContainerBuilder builder = null)
         {
-            _container = container;
+            _builder = builder;
         }
-
         public override AggregatesExtension CreateExtension(ExtendedActorSystem system)
         {
-            return new AggregatesExtension(_container);
+            return new AggregatesExtension(system,_builder);
         }
     }
 }
