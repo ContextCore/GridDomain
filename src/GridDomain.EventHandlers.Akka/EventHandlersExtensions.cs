@@ -13,7 +13,7 @@ namespace GridDomain.EventHandlers.Akka {
 
             
         public static EventHandlersExtension InitEventHandlersExtension(this ActorSystem system,
-                                                                  IContainer container)
+                                                                        ContainerBuilder container=null)
         {
             if(system == null)
                 throw new ArgumentNullException(nameof(system));

@@ -35,7 +35,9 @@ namespace GridDomain.EventHandlers.Akka.Tests
             var containerBuilder = new ContainerBuilder();
                 containerBuilder.RegisterInstance(testEventHandler);
                 
-            Sys.InitEventHandlersExtension(containerBuilder.Build());
+            var ext =Sys.InitEventHandlersExtension(containerBuilder);
+            ext.FinishRegistration();
+            
             var streamActor = Sys.ActorOf(Props.Create(() => new TestEventStreamActor(source)), "StreamActor");
             
             streamActor.Tell(EventStreamActor.Start.Instance);

@@ -33,7 +33,7 @@ namespace GridDomain.Node.Tests
             container.RegisterInstance<IAggregateConfiguration<Cat>>(new AggregateConfiguration<Cat>());
             
             var ext = Sys.InitAggregatesExtension(container);
-            ext.CompleteRegistration();
+            ext.FinishRegistration();
         }
 
         

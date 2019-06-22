@@ -4,16 +4,16 @@ using Autofac;
 namespace GridDomain.EventHandlers.Akka {
     public class EventHandlersExtensionProvider : ExtensionIdProvider<EventHandlersExtension>
     {
-        private readonly IContainer _container;
+        private readonly ContainerBuilder _container;
 
-        public EventHandlersExtensionProvider(IContainer container)
+        public EventHandlersExtensionProvider(ContainerBuilder container=null)
         {
             _container = container;
         }
 
         public override EventHandlersExtension CreateExtension(ExtendedActorSystem system)
         {
-            return new EventHandlersExtension(_container);
+            return new EventHandlersExtension(system, _container);
         }
     }
 }

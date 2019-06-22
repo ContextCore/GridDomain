@@ -92,7 +92,7 @@ namespace GridDomain.Node.Akka.Extensions.Aggregates {
             _commandHandlerProxies[typeof(T)] = proxyBuilder;
         }
 
-        public void CompleteRegistration()
+        public void FinishRegistration()
         {
             _container = _containerBuilder.Build();
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Akka.Actor;
 
 namespace GridDomain.Common.Akka {
     public class BehaviorQueue
@@ -30,6 +31,14 @@ namespace GridDomain.Common.Akka {
             _behaviorHistory.Enqueue(name);
             if (_behaviorHistory.Count >= _historyLimit)
                 _behaviorHistory.Dequeue();
+        }
+    }
+
+    public static class ActorSystemExtensions
+    {
+        public static Address GetAddress(this ActorSystem system)
+        {
+            return ((ExtendedActorSystem) system).Provider.DefaultAddress;
         }
     }
 }

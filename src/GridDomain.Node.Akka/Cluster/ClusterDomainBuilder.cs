@@ -17,7 +17,6 @@ using GridDomain.Node.Akka.Extensions.Aggregates;
 namespace GridDomain.Node.Akka.Cluster
 {
 
-
     public class ClusterDomainBuilder : IDomainBuilder
     {
         private readonly ActorSystem _system;
@@ -29,6 +28,7 @@ namespace GridDomain.Node.Akka.Cluster
             _containerBuilder = containerBuilder;
             _system = system;
             _system.InitAggregatesExtension();
+            _system.InitEventHandlersExtension(_containerBuilder);
         }
 
         public Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> configuration)
@@ -44,9 +44,8 @@ namespace GridDomain.Node.Akka.Cluster
 
         public Task<IDomain> Build()
         {
-            var container = _containerBuilder.Build();
-            _system.InitEventHandlersExtension(container);
-            _system.GetAggregatesExtension().CompleteRegistration();
+            _system.GetEventHandlersExtension().FinishRegistration();
+            _system.GetAggregatesExtension().FinishRegistration();
             return _system.GetAggregatesExtension().Start();
         }
 

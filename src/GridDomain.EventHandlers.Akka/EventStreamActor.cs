@@ -28,6 +28,8 @@ namespace GridDomain.EventHandlers.Akka
             public static readonly Started Instance = new Started();
         }
     }
+
+
     public abstract class EventStreamActor<TEvent>:ReceiveActor where TEvent : class
     {
         protected readonly ILoggingAdapter Log;

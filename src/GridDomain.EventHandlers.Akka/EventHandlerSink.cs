@@ -6,11 +6,12 @@ namespace GridDomain.EventHandlers.Akka
 {
     public static class EventHandlerSink
     {
-        public static Sink<Sequenced<TEvent>, NotUsed> Create<TEvent,THandler>(IActorRefFactory system) where THandler : IEventHandler<TEvent>
+        public static Sink<Sequenced<TEvent>, NotUsed> Create<TEvent, THandler>(IActorRefFactory system)
+            where THandler : IEventHandler<TEvent>
         {
             var actorName = $"{typeof(THandler).Name}_{typeof(TEvent).Name}";
-                
-            var actorRef = system.ActorOf(Props.Create<EventHandlerActor<TEvent,THandler>>(), actorName);
+
+            var actorRef = system.ActorOf(Props.Create<EventHandlerActor<TEvent, THandler>>(), actorName);
 
             return Sink.ActorRefWithAck<Sequenced<TEvent>>(
                 actorRef,
