@@ -29,7 +29,7 @@ namespace GridDomain.Node.Tests
         private readonly NodeNetworkAddress NodeNetworkAddress =
             new NodeNetworkAddress("127.0.0.1", Network.FreeTcpPort(), "127.0.0.1", nodeName);
 
-        private readonly IDomain _domain;
+        private readonly IAggregatesGateway _aggregatesGateway;
         private readonly ActorSystem _actorSystem;
 
 
@@ -38,7 +38,7 @@ namespace GridDomain.Node.Tests
             Serilog.Log.Logger = new LoggerConfiguration().WriteTo.TestOutput(helper)
                 .CreateLogger();
          
-            var catDomainConfiguration = new CatDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
+            var catDomainConfiguration = new CatAggregatesDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
 
             var config = new ActorSystemConfigBuilder()
                 .Add(LogConfig.All(typeof(SerilogLogger)))
@@ -50,9 +50,11 @@ namespace GridDomain.Node.Tests
                 .Build().WithFallback(TestKitBase.FullDebugConfig);
             
             _actorSystem = ActorSystem.Create(nodeName,config);
+            
+            
             var node = _actorSystem.InitGridDomainExtension(catDomainConfiguration);
             var clusterReady = new TaskCompletionSource<bool>();
-            _domain = node.Start().Result;
+            _aggregatesGateway = node.Start().Result.Aggregates();
 
             Cluster.Get(_actorSystem).RegisterOnMemberUp(() => clusterReady.SetResult(true));
             clusterReady.Task.Wait(TimeSpan.FromSeconds(5));
@@ -61,19 +63,19 @@ namespace GridDomain.Node.Tests
         [Fact]
         public async Task Node_can_execute_commands()
         {
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
         }
         
         [Fact]
         public void Node_can_provide_custom_command_executor()
         {
-            Assert.NotNull(_domain.CommandHandler<CatCommandsHandler>());
+            Assert.NotNull(_aggregatesGateway.CommandHandler<CatCommandsHandler>());
         }
         
         [Fact]
         public async Task Node_custom_command_executor_works()
         {
-            var handler = _domain.CommandHandler<CatCommandsHandler>();
+            var handler = _aggregatesGateway.CommandHandler<CatCommandsHandler>();
             var name = await handler.Execute(new Cat.GetNewCatCommand("myCat"));
             Assert.Equal("myCat",name);
         }
@@ -81,7 +83,7 @@ namespace GridDomain.Node.Tests
         [Fact]
         public async Task Node_can_execute_commands_and_persist_events()
         {
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
 
             var query = PersistenceQuery.Get(_actorSystem);
             var journal = query.ReadJournalFor<TestReadJournal>(TestReadJournal.Identifier);
@@ -107,10 +109,10 @@ namespace GridDomain.Node.Tests
         [Fact]
         public async Task Node_can_propagate_commands_exceptions_back()
         {
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
 
             await Assert.ThrowsAsync<Cat.IsUnhappyException>(async ()=> await 
-                _domain.CommandExecutor.Execute(new Cat.PetCommand("myCat")));
+                _aggregatesGateway.CommandExecutor.Execute(new Cat.PetCommand("myCat")));
         }
     }
 }

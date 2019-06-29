@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\GridDomain.EventHandlers.Akka\GridDomain.EventHandlers.Akka.csproj" />
       <ProjectReference Include="..\GridDomain.EventHandlers\GridDomain.EventHandlers.csproj" />
+      <ProjectReference Include="..\GridDomain.Node.Akka\GridDomain.Node.Akka.csproj" />
     </ItemGroup>
 
 </Project>

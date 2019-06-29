@@ -2,7 +2,7 @@ using Akka.Actor;
 using Autofac;
 
 namespace GridDomain.EventHandlers.Akka {
-    public class EventHandlersExtensionProvider : ExtensionIdProvider<EventHandlersExtension>
+    public class EventHandlersExtensionProvider : ExtensionIdProvider<EventHandlersDomainExtension>
     {
         private readonly ContainerBuilder _container;
 
@@ -11,9 +11,9 @@ namespace GridDomain.EventHandlers.Akka {
             _container = container;
         }
 
-        public override EventHandlersExtension CreateExtension(ExtendedActorSystem system)
+        public override EventHandlersDomainExtension CreateExtension(ExtendedActorSystem system)
         {
-            return new EventHandlersExtension(system, _container);
+            return new EventHandlersDomainExtension(system, _container);
         }
     }
 }

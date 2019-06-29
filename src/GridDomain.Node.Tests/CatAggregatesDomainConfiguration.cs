@@ -6,9 +6,9 @@ using GridDomain.Domains;
 
 namespace GridDomain.Node.Tests
 {
-    public class CatDomainConfiguration : IDomainConfiguration, IAggregateConfiguration<Cat>, IAggregateSettings
+    public class CatAggregatesDomainConfiguration : IAggregatesDomainConfiguration, IAggregateConfiguration<Cat>, IAggregateSettings
     {
-        public async Task Register(IDomainBuilder builder)
+        public async Task Register(IAggregatesDomainBuilder builder)
         {
             await builder.RegisterAggregate(this);
             builder.RegisterCommandHandler(handler => new CatCommandsHandler(handler));

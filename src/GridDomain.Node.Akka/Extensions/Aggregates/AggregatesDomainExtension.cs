@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.Cluster.Sharding;
 using Autofac;
+using GridDomain.Abstractions;
 using GridDomain.Aggregates;
 using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
@@ -15,15 +16,15 @@ using GridDomain.Node.Akka.Cluster.CommandGrouping;
 namespace GridDomain.Node.Akka.Extensions.Aggregates {
 
     
-    public class AggregatesExtension : IExtension
+    public class AggregatesDomainExtension : IExtension,IAggregatesDomainBuilder
     {
         
         readonly Dictionary<string, IActorRef> _aggregatesRegions = new Dictionary<string, IActorRef>();
         private readonly Dictionary<Type, object> _commandHandlerProxies = new Dictionary<Type,object>();
-        private IContainer _container;
-        private readonly ContainerBuilder _containerBuilder;
+        private IContainer _aggregateConfigurationsContainer;
+        private readonly ContainerBuilder _aggregateConfigurationsContainerBuilder;
         private readonly ActorSystem _system;
-
+        public IAggregatesController Controller { get; private set; }
         private static readonly OneForOneStrategy SupervisorStrategy
             = new OneForOneStrategy(ex =>
             {
@@ -39,24 +40,21 @@ namespace GridDomain.Node.Akka.Extensions.Aggregates {
             });
 
         
-        public AggregatesExtension(ActorSystem system, ContainerBuilder builder = null)
+        public AggregatesDomainExtension(ActorSystem system, ContainerBuilder builder = null)
         {
             _system = system;
-            _containerBuilder = builder ?? new ContainerBuilder();
+            _aggregateConfigurationsContainerBuilder = builder ?? new ContainerBuilder();
         }
 
         public IAggregateConfiguration<T> GetConfiguration<T>() where T : IAggregate
         {
-            return _container.Resolve<IAggregateConfiguration<T>>();
+            return _aggregateConfigurationsContainer.Resolve<IAggregateConfiguration<T>>();
         }
-
-        public IDictionary<string, IActorRef> Regions => _aggregatesRegions;
-
-    
+        
         public async Task RegisterAggregate<TAggregate>(IAggregateConfiguration<TAggregate> configuration)
             where TAggregate : class, IAggregate
         {
-            _containerBuilder.RegisterInstance(configuration);
+            _aggregateConfigurationsContainerBuilder.RegisterInstance(configuration);
 
 
             var clusterSharding = ClusterSharding.Get(_system);
@@ -83,7 +81,7 @@ namespace GridDomain.Node.Akka.Extensions.Aggregates {
         
         public ICommandsResultAdapter GetAdapter<T>() where T : IAggregate
         {
-            _container.TryResolveNamed(typeof(T).BeautyName(),typeof(ICommandsResultAdapter), out var adapter);
+            _aggregateConfigurationsContainer.TryResolveNamed(typeof(T).BeautyName(),typeof(ICommandsResultAdapter), out var adapter);
             return (adapter as ICommandsResultAdapter) ?? CommandsResultNullAdapter.Instance;
         }
         
@@ -94,12 +92,13 @@ namespace GridDomain.Node.Akka.Extensions.Aggregates {
 
         public void FinishRegistration()
         {
-            _container = _containerBuilder.Build();
+            _aggregateConfigurationsContainer = _aggregateConfigurationsContainerBuilder.Build();
         }
-        
-        public Task<IDomain> Start()
-        {
 
+        public async Task<IDomainPart> Build()
+        {
+            FinishRegistration();
+            
             var routingGroup = new ConsistentMapGroup(_aggregatesRegions)
                 .WithMapping(m =>
                 {
@@ -110,15 +109,15 @@ namespace GridDomain.Node.Akka.Extensions.Aggregates {
 
 
             var commandActor = _system.ActorOf(Props.Empty.WithRouter(routingGroup), "Aggregates");
-
-            return Task.FromResult<IDomain>(new Domain(new ActorCommandExecutor(commandActor, _system.Log),
-                new ClusterAggregatesController(_system, commandActor),_commandHandlerProxies));
+            Controller = new ClusterAggregatesController(_system, commandActor);
+            var aggregatesGateway = new AggregatesGateway(new ActorCommandExecutor(commandActor, _system.Log),_commandHandlerProxies);
+            return await Task.FromResult<IAggregatesGateway>(aggregatesGateway);
         }
 
 
         public void RegisterCommandsResultAdapter<TAggregate>(ICommandsResultAdapter adapter) where TAggregate : IAggregate
         {
-            _containerBuilder.RegisterInstance(adapter).Named<ICommandsResultAdapter>(typeof(TAggregate).BeautyName());
+            _aggregateConfigurationsContainerBuilder.RegisterInstance(adapter).Named<ICommandsResultAdapter>(typeof(TAggregate).BeautyName());
         }
         
         

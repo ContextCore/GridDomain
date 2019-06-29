@@ -6,17 +6,15 @@ using GridDomain.Aggregates.Abstractions;
 
 namespace GridDomain.Domains
 {
-    public class Domain:IDomain
+    public class AggregatesGateway:IAggregatesGateway
     {
         private readonly IDictionary<Type, object> _customCommandHandlers;
 
-        public Domain(ICommandHandler<ICommand> commandExecutor, 
-                      IAggregatesController aggregatesController,
-                      IDictionary<Type,object> customCommandHandlers)
+        public AggregatesGateway(ICommandHandler<ICommand> commandExecutor,
+                      IDictionary<Type,object> customCommandHandlers=null)
         {
-            _customCommandHandlers = customCommandHandlers;
+            _customCommandHandlers = customCommandHandlers ?? new Dictionary<Type, object>();
             CommandExecutor = commandExecutor;
-            AggregatesController = aggregatesController;
         }
 
         public ICommandHandler<ICommand> CommandExecutor { get; }
@@ -31,8 +29,6 @@ namespace GridDomain.Domains
             
             return func.Invoke(CommandExecutor);
         }
-
-        public IAggregatesController AggregatesController { get; }
     }
 
     public class UnknownCommandExecutorProviderException : Exception

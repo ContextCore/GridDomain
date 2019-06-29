@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
 using Autofac;
+using GridDomain.Abstractions;
 using GridDomain.Domains;
 using GridDomain.Node.Akka.Cluster;
 
@@ -10,21 +11,24 @@ namespace GridDomain.Node.Akka
 {
     public class GridDomainNode : INode, IExtension
     {
-        public ActorSystem System;
+        private ActorSystem System;
         private IContainer Container { get; set; }
         private readonly IDomainConfiguration[] _domainConfigurations;
         public TimeSpan DefaultTimeout { get; }
         public string Name;
+        private readonly IDomainBuilder _domainBuilder;
 
-        public GridDomainNode(ActorSystem system, params IDomainConfiguration[] domains) : this(system,
-            TimeSpan.FromSeconds(5), domains)
+        public GridDomainNode(ActorSystem system, IDomainBuilder domainBuilder, params IDomainConfiguration[] aggregatesDomains) : this(system, domainBuilder,
+            TimeSpan.FromSeconds(5), aggregatesDomains)
         {
         }
 
         public GridDomainNode(ActorSystem actorSystem,
+                                IDomainBuilder domainBuilder,
                               TimeSpan defaultTimeout,
                               params IDomainConfiguration[] domains)
         {
+            _domainBuilder = domainBuilder;
             _domainConfigurations = domains;
             if (!_domainConfigurations.Any())
                 throw new NoDomainConfigurationException();
@@ -48,14 +52,13 @@ namespace GridDomain.Node.Akka
 
             System.Log.Info("Starting GridDomain node {Id}", Name);
 
-            var containerBuilder = new ContainerBuilder();
-            var domainBuilder = new ClusterDomainBuilder(System, containerBuilder);
+            
             foreach (var configuration in _domainConfigurations)
             {
-                await configuration.Register(domainBuilder);
+                await configuration.Configure(_domainBuilder);
             }
 
-            var domain = await domainBuilder.Build();
+            var domain = await _domainBuilder.Build();
             return domain;
         }
 

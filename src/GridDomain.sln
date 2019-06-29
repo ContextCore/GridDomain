@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "Integra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.EventHandlers.Akka.IntegrationTests", "GridDomain.EventHandlers.Akka.IntegrationTests\GridDomain.EventHandlers.Akka.IntegrationTests.csproj", "{C8094D7F-EDF7-4E8B-B061-5B6B7CAA3FC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridDomain.Abstractions", "GridDomain.Abstractions\GridDomain.Abstractions.csproj", "{CC06FA78-7D61-4B0D-BA41-131C8073B685}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -146,6 +148,10 @@ Global
 		{C8094D7F-EDF7-4E8B-B061-5B6B7CAA3FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8094D7F-EDF7-4E8B-B061-5B6B7CAA3FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8094D7F-EDF7-4E8B-B061-5B6B7CAA3FC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC06FA78-7D61-4B0D-BA41-131C8073B685}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC06FA78-7D61-4B0D-BA41-131C8073B685}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC06FA78-7D61-4B0D-BA41-131C8073B685}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC06FA78-7D61-4B0D-BA41-131C8073B685}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FB8B9415-958B-431F-9B42-FACDF70780BC} = {E436E3D6-BBEE-410E-ABD9-D62A11F6E760}

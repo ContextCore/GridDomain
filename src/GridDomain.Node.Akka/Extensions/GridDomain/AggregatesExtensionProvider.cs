@@ -1,19 +1,34 @@
+using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Akka.Actor;
+using Autofac;
+using GridDomain.Abstractions;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Domains;
 
 namespace GridDomain.Node.Akka.Extensions.GridDomain {
-    public class GridDomainExtensionProvider : ExtensionIdProvider<GridDomainNode>
+    public class GridDomainExtensionProvider : ExtensionIdProvider<GridDomainNodeExtension>
     {
-        private readonly IDomainConfiguration[] _domainConfigurations;
-
-        public GridDomainExtensionProvider(params IDomainConfiguration[] domainConfigurations)
+        public override GridDomainNodeExtension CreateExtension(ExtendedActorSystem system)
         {
-            _domainConfigurations = domainConfigurations;
+            return new GridDomainNodeExtension(system);
+        }
+    }
+
+    public class AggregateDomainConfigurationAdapter : IDomainConfiguration
+    {
+        private readonly IAggregatesDomainConfiguration _cfg;
+
+        public AggregateDomainConfigurationAdapter(IAggregatesDomainConfiguration cfg)
+        {
+            _cfg = cfg;
         }
 
-        public override GridDomainNode CreateExtension(ExtendedActorSystem system)
-        {
-            return new GridDomainNode(system, _domainConfigurations);
+        public async Task Configure(IDomainBuilder builder)
+        { 
+            await  _cfg.Register(builder.GetAggregatesBuilder());
         }
     }
 }

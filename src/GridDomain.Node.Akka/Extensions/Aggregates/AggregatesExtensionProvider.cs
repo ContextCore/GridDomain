@@ -2,7 +2,7 @@ using Akka.Actor;
 using Autofac;
 
 namespace GridDomain.Node.Akka.Extensions.Aggregates {
-    public class AggregatesExtensionProvider : ExtensionIdProvider<AggregatesExtension>
+    public class AggregatesExtensionProvider : ExtensionIdProvider<AggregatesDomainExtension>
     {
         private readonly ContainerBuilder _builder;
 
@@ -10,9 +10,9 @@ namespace GridDomain.Node.Akka.Extensions.Aggregates {
         {
             _builder = builder;
         }
-        public override AggregatesExtension CreateExtension(ExtendedActorSystem system)
+        public override AggregatesDomainExtension CreateExtension(ExtendedActorSystem system)
         {
-            return new AggregatesExtension(system,_builder);
+            return new AggregatesDomainExtension(system,_builder);
         }
     }
 }

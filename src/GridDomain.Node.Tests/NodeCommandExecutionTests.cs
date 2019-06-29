@@ -18,6 +18,7 @@ using GridDomain.Node.Akka.Actors;
 using GridDomain.Node.Akka.Actors.Aggregates;
 using GridDomain.Node.Akka.Cluster.Hocon;
 using GridDomain.Node.Akka.Configuration.Hocon;
+using GridDomain.Node.Akka.Extensions.Aggregates;
 using GridDomain.Node.Akka.Extensions.GridDomain;
 using GridDomain.Node.Tests.TestJournals;
 using GridDomain.Node.Tests.TestJournals.Hocon;
@@ -46,7 +47,8 @@ namespace GridDomain.Node.Tests
             .Add(new AggregateTaggingConfig(TestJournalConfig.JournalId))
             .Build();
 
-        private readonly IDomain _domain;
+        private readonly IAggregatesGateway _aggregatesGateway;
+        private readonly IAggregatesController _aggregatesController;
 
 
         public NodeCommandExecutionTests(ITestOutputHelper helper) : base(_config, nodeName, helper)
@@ -54,28 +56,29 @@ namespace GridDomain.Node.Tests
             Serilog.Log.Logger = new LoggerConfiguration().WriteTo.TestOutput(helper)
                                                           .CreateLogger();
 
-            var catDomainConfiguration = new CatDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
+            var catDomainConfiguration = new CatAggregatesDomainConfiguration {MaxInactivityPeriod = TimeSpan.FromSeconds(1)};
 
             var node = Sys.InitGridDomainExtension(catDomainConfiguration);
-            _domain = node.Start().Result;
+            _aggregatesGateway = node.Start().Result.Aggregates();
+            _aggregatesController = Sys.GetAggregatesExtension().Controller;
         }
 
         [Fact]
         public async Task Node_can_execute_commands()
         {
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
         }
         
         [Fact]
         public void Node_can_provide_custom_command_executor()
         {
-            Assert.NotNull(_domain.CommandHandler<CatCommandsHandler>());
+            Assert.NotNull(_aggregatesGateway.CommandHandler<CatCommandsHandler>());
         }
         
         [Fact]
         public async Task Node_custom_command_executor_works()
         {
-            var handler = _domain.CommandHandler<CatCommandsHandler>();
+            var handler = _aggregatesGateway.CommandHandler<CatCommandsHandler>();
             var name = await handler.Execute(new Cat.GetNewCatCommand("myCat"));
             Assert.Equal("myCat",name);
         }
@@ -83,7 +86,7 @@ namespace GridDomain.Node.Tests
         [Fact]
         public async Task Node_can_execute_commands_and_persist_events()
         {
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
 
             var query = PersistenceQuery.Get(Sys);
             var journal = query.ReadJournalFor<TestReadJournal>(TestReadJournal.Identifier);
@@ -109,24 +112,24 @@ namespace GridDomain.Node.Tests
         public async Task Node_can_restore_aggregate_from_persistence()
         {
             var catName = "myCat";
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            await _domain.CommandExecutor.Execute(new Cat.FeedCommand(catName));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.FeedCommand(catName));
           
-            var report = await _domain.AggregatesController.GetHealth(AggregateAddress.New<Cat>(catName));
+            var report = await _aggregatesController.GetHealth(AggregateAddress.New<Cat>(catName));
             var actor = await Sys.ActorSelection(report.Path).ResolveOne(TimeSpan.FromSeconds(2));
             Watch(actor);
             ExpectTerminated(actor);
             
             //no exception - means we've pet the cat already fed
-            await _domain.CommandExecutor.Execute(new Cat.PetCommand(catName));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.PetCommand(catName));
         }
 
         [Fact]
         public async Task Node_will_shutdown_an_aggregate_on_inactivity()
         {
             var catName = "myCat";
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            var report = await _domain.AggregatesController.GetHealth(catName.AsAddressFor<Cat>());
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
+            var report = await _aggregatesController.GetHealth(catName.AsAddressFor<Cat>());
             var actor = await Sys.ActorSelection(report.Path).ResolveOne(TimeSpan.FromSeconds(2));
             Watch(actor);
             ExpectTerminated(actor);
@@ -137,17 +140,17 @@ namespace GridDomain.Node.Tests
         public async Task AggregateLifetime_can_locate_aggregates()
         {
             var catName = "myCat";
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
-            Assert.NotNull(await _domain.AggregatesController.GetHealth(typeof(Cat).AsAddress(catName)));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName));
+            Assert.NotNull(await _aggregatesController.GetHealth(typeof(Cat).AsAddress(catName)));
         }
         
         [Fact]
         public async Task Node_can_propagate_commands_exceptions_back()
         {
-            await _domain.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
+            await _aggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand("myCat"));
 
             await Assert.ThrowsAsync<Cat.IsUnhappyException>(async ()=> await 
-                _domain.CommandExecutor.Execute(new Cat.PetCommand("myCat")));
+                _aggregatesGateway.CommandExecutor.Execute(new Cat.PetCommand("myCat")));
         }
     }
 }

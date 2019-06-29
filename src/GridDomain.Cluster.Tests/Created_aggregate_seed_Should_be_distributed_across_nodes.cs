@@ -10,9 +10,12 @@ using Akka.Configuration;
 using Akka.Remote;
 using Akka.Remote.TestKit;
 using Akka.TestKit;
+using GridDomain.Aggregates;
+using GridDomain.Aggregates.Abstractions;
 using GridDomain.Domains;
 using GridDomain.Node;
 using GridDomain.Node.Akka.Cluster.Hocon;
+using GridDomain.Node.Akka.Extensions.Aggregates;
 using GridDomain.Node.Akka.Extensions.GridDomain;
 using GridDomain.Node.Tests;
 using GridDomain.Node.Tests.TestJournals.Hocon;
@@ -39,8 +42,10 @@ namespace GridDomain.Cluster.Tests
              [MultiNodeFact]
             public void Aggregate_lifetime_provides_information_about_aggregate_from_any_node()
             {
-                IDomain seedDomain = null;
-                IDomain workerDomain = null;
+                IAggregatesGateway seedAggregatesGateway = null;
+                IAggregatesGateway workerAggregatesGateway = null;
+                IAggregatesController seedAggregatesController = null;
+                IAggregatesController workerAggregatesController = null;
                 
                 RunOn(StartClusterNode, _config.Seed);
             
@@ -52,8 +57,9 @@ namespace GridDomain.Cluster.Tests
                 {
                     Log.Info("from log: Starting seed grid node");
 
-                    var seedNode = Cluster.System.InitGridDomainExtension(new CatDomainConfiguration());
-                    seedDomain = seedNode.Start().Result;
+                    var seedNode = Cluster.System.InitGridDomainExtension(new CatAggregatesDomainConfiguration());
+                    seedAggregatesGateway = seedNode.Start().Result.Aggregates(); 
+                    seedAggregatesController = Cluster.System.GetAggregatesExtension().Controller;
                     
                     Log.Info("from log: Started seed");
                 }, _config.Seed);
@@ -61,8 +67,9 @@ namespace GridDomain.Cluster.Tests
                 RunOn(() =>
                 {
                     Log.Info("Starting worker");
-                    var workerNode = Cluster.System.InitGridDomainExtension(new CatDomainConfiguration());
-                    workerDomain = workerNode.Start().Result;
+                    var workerNode = Cluster.System.InitGridDomainExtension(new CatAggregatesDomainConfiguration());
+                    workerAggregatesGateway = workerNode.Start().Result.Aggregates();
+                    workerAggregatesController = Cluster.System.GetAggregatesExtension().Controller;
                     Log.Info("Started worker");
                 }, _config.Worker);
 
@@ -74,7 +81,7 @@ namespace GridDomain.Cluster.Tests
                     for (int i = 0; i < 4; i++)
                     {
                         var catName = "cat-" + i;
-                        workerDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName)).Wait();
+                        workerAggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName)).Wait();
                     }  
                 }, _config.Worker);
                 
@@ -84,7 +91,7 @@ namespace GridDomain.Cluster.Tests
                     for (int i = 0; i < 4; i++)
                     {
                         var catName = "cat-" + i;
-                        var report = seedDomain.AggregatesController.GetHealth<Cat>(catName).Result;
+                        var report = seedAggregatesController.GetHealth<Cat>(catName).Result;
                         Assert.NotNull(report.Path);
                     }  
                 }, _config.Seed);
@@ -110,8 +117,10 @@ namespace GridDomain.Cluster.Tests
             [MultiNodeFact]
             public void Created_aggregate_seed_Should_be_distributed_across_nodes()
             {
-                IDomain seedDomain = null;
-                IDomain workerDomain = null;
+                IAggregatesGateway seedAggregatesGateway = null;
+                IAggregatesGateway workerAggregatesGateway = null;
+                IAggregatesController seedAggregatesController = null;
+                IAggregatesController workerAggregatesController = null;
                 
                 RunOn(StartClusterNode, _config.Seed);
             
@@ -123,8 +132,9 @@ namespace GridDomain.Cluster.Tests
                 {
                     Log.Info("Starting seed grid node");
                     
-                    var seedNode = Cluster.System.InitGridDomainExtension(new CatDomainConfiguration());
-                    seedDomain = seedNode.Start().Result;
+                    var seedNode = Cluster.System.InitGridDomainExtension(new CatAggregatesDomainConfiguration());
+                    seedAggregatesGateway = seedNode.Start().Result.Aggregates();
+                    seedAggregatesController = Cluster.System.GetAggregatesExtension().Controller;
                     Log.Info("Started seed");
                 }, _config.Seed);
                 
@@ -132,8 +142,9 @@ namespace GridDomain.Cluster.Tests
                 {
                     Log.Info("Starting worker");
             
-                    var workerNode = Cluster.System.InitGridDomainExtension(new CatDomainConfiguration());
-                    workerDomain = workerNode.Start().Result;
+                    var workerNode = Cluster.System.InitGridDomainExtension(new CatAggregatesDomainConfiguration());
+                    workerAggregatesGateway = workerNode.Start().Result.Aggregates();
+                    workerAggregatesController = Cluster.System.GetAggregatesExtension().Controller;
                     
                     Log.Info("Started worker");
                 }, _config.Worker);
@@ -147,8 +158,8 @@ namespace GridDomain.Cluster.Tests
                     for (int i = 0; i < 4; i++)
                     {
                         var catName = "cat-" + i;
-                        workerDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName)).Wait();
-                        var report = workerDomain.AggregatesController.GetHealth<Cat>(catName).Result;
+                        workerAggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName)).Wait();
+                        var report = workerAggregatesController.GetHealth<Cat>(catName).Result;
                         Log.Info("Got report from " + report.NodeAddress);
                         knownAddresses.Add(report.NodeAddress);
                     }  
@@ -163,8 +174,8 @@ namespace GridDomain.Cluster.Tests
                     for (int i = 0; i < 4; i++)
                     {
                         var catName = "cat-" + i;
-                        workerDomain.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName)).Wait();
-                        var report = seedDomain.AggregatesController.GetHealth<Cat>(catName).Result;
+                        workerAggregatesGateway.CommandExecutor.Execute(new Cat.GetNewCatCommand(catName)).Wait();
+                        var report = seedAggregatesController.GetHealth<Cat>(catName).Result;
                         Log.Info("Got report from " + report.NodeAddress);
                         knownAddresses.Add(report.NodeAddress);
                     }  

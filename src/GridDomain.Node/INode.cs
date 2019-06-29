@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GridDomain.Abstractions;
 using GridDomain.Domains;
 
 namespace GridDomain.Node

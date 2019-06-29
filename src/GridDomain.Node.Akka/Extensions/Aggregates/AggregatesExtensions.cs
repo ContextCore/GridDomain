@@ -6,18 +6,17 @@ namespace GridDomain.Node.Akka.Extensions.Aggregates {
     public static class AggregatesExtensions
     {
 
-        public static AggregatesExtension GetAggregatesExtension(this ActorSystem sys)
+        public static AggregatesDomainExtension GetAggregatesExtension(this ActorSystem sys)
         {
-            return sys.GetExtension<AggregatesExtension>();
+            return sys.GetExtension<AggregatesDomainExtension>();
         }
-
             
-        public static AggregatesExtension InitAggregatesExtension(this ActorSystem system, ContainerBuilder builder=null)
+        public static AggregatesDomainExtension InitAggregatesExtension(this ActorSystem system, ContainerBuilder builder=null)
         {
             if(system == null)
                 throw new ArgumentNullException(nameof(system));
 
-            return (AggregatesExtension)system.RegisterExtension(new AggregatesExtensionProvider(builder));
+            return (AggregatesDomainExtension)system.RegisterExtension(new AggregatesExtensionProvider(builder));
         }
     }
 }

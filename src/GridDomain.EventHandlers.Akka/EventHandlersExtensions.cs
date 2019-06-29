@@ -6,19 +6,19 @@ namespace GridDomain.EventHandlers.Akka {
     public static class EventHandlersExtensions
     {
 
-        public static EventHandlersExtension GetEventHandlersExtension(this ActorSystem sys)
+        public static EventHandlersDomainExtension GetEventHandlersExtension(this ActorSystem sys)
         {
-            return sys.GetExtension<EventHandlersExtension>();
+            return sys.GetExtension<EventHandlersDomainExtension>();
         }
 
             
-        public static EventHandlersExtension InitEventHandlersExtension(this ActorSystem system,
-                                                                        ContainerBuilder container=null)
+        public static EventHandlersDomainExtension InitEventHandlersExtension(this ActorSystem system,
+                                                                               ContainerBuilder container=null)
         {
             if(system == null)
                 throw new ArgumentNullException(nameof(system));
 
-            return (EventHandlersExtension)system.RegisterExtension(new EventHandlersExtensionProvider(container));
+            return (EventHandlersDomainExtension)system.RegisterExtension(new EventHandlersExtensionProvider(container));
         }
     }
 }

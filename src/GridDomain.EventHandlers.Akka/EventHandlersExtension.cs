@@ -8,13 +8,18 @@ using Akka.Cluster.Tools.Singleton;
 using Akka.Persistence.Query;
 using Akka.Streams.Dsl;
 using Autofac;
+using GridDomain.Abstractions;
 using GridDomain.Aggregates.Abstractions;
 using GridDomain.Common;
 
 namespace GridDomain.EventHandlers.Akka {
 
-    
-    public class EventHandlersExtension : IExtension
+    class EventHandlersGateway : IDomainPart
+    {
+        
+    }
+
+    public class EventHandlersDomainExtension : IExtension, IEventHandlersDomainBuilder
     {
         private readonly ContainerBuilder _containerBuilder;
         private IContainer _container;
@@ -47,7 +52,7 @@ namespace GridDomain.EventHandlers.Akka {
             }
         }
         
-        public EventHandlersExtension(ActorSystem system, ContainerBuilder container=null)
+        public EventHandlersDomainExtension(ActorSystem system, ContainerBuilder container=null)
         {
             _system = system;
             _containerBuilder = container ?? new ContainerBuilder();
@@ -72,10 +77,14 @@ namespace GridDomain.EventHandlers.Akka {
             _containerBuilder.RegisterInstance(source).Named<Source<EventEnvelope, NotUsed>>(sourceName);
         }
 
-        public Task Start()
+        public async Task<IDomainPart> Build()
         {
-            return Task.WhenAll(_eventStreamActors.Select(s => s.Start())).TimeoutAfter(TimeSpan.FromSeconds(5));
+            FinishRegistration();
+            await Task.WhenAll(_eventStreamActors.Select(s => s.Start())).TimeoutAfter(TimeSpan.FromSeconds(5));
+            return new EventHandlersGateway();
         }
+        
+        
         public void RegisterEventHandler<TEvent, THandler>(string name=null, string nodeRole=null) where THandler:IEventHandler<TEvent> where TEvent : class
         {
             var streamName = name ?? typeof(THandler).GetStreamName<TEvent>();
@@ -96,7 +105,7 @@ namespace GridDomain.EventHandlers.Akka {
             
             _eventStreamActors.Add(new StreamActorStarter(streamActor,EventStreamActor.Start.Instance, o => o is EventStreamActor.Started));
         }
-        
+
         public void RegisterEventHandler<TEventA, TEventB, THandler>() where THandler:IEventHandler<TEventA>,IEventHandler<TEventB>
         {
             throw new NotImplementedException();
