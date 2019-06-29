@@ -32,10 +32,8 @@ install:
 build_script:
 - sh: |
     cd ./src 
-    dotnet build GridDomain.sln /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet 
-#/l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
-    dotnet pack GridDomain.sln  /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet --include-symbols --include-source --no-build 
-#/l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
+    dotnet build GridDomain.sln /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet /l:"/opt/appveyor/build-agent/Appveyor.MSBuildLogger.dll"
+    dotnet pack GridDomain.sln  /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/Appveyor.MSBuildLogger.dll"
     cd ..
 test_script:
 - sh: |
