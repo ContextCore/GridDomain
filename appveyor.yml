@@ -11,7 +11,7 @@ environment:
   MINIKUBE_HOME: "/home/appveyor/kubernetes"
   MINIKUBE_WANTUPDATENOTIFICATION: "false"
   MINIKUBE_WANTREPORTERRORPROMPT: "false"
-  APPVEYOR_SSH_BLOCK: true
+  #APPVEYOR_SSH_BLOCK: true
   APPVEYOR_SSH_KEY: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCmgZMwyHhjf+VteXZ9yVDNPjttoXwY9guLrknAsoQAAOKyMkLck3HgrT/ZARg/hmDAlEIxG504Xb6wBGJpLjxWA0WlSBuk86I9ejnnsEUOu9zSZHXXYYsoR7lhIdOP05Ifs8aYCpONYZkWSzee9cwZlLehHPwLXzM6FcJbaYoXZlGLuxzg3J5MY5MPnFi6uj3h0lJRIfbclU15RT3fNIp9olOUg8WpzqYJWNdv9AZQvF9z+WugVUw9grGrpXbOH7iK+FFN1IgTdiLYrh1SHOi9fGLA4BrOYcyclAvuFryy4t2Wu6wFcm1rZR5sCsEbXRYB3ZheiHeVJd3QWGDjser1u7A5kv391iyiOQSvQBkNWt1t6LYnH5fOL5+6vZMAGm/od7+M8F4ozpeA79opXcn8pHbK9uH8Dw2+/vgJ1BfiL32OCbn/Fby/hyxfwnT6SBllwz2UcNBx6tzCCZAXjugPr2kUvpE100a9Xc7czLOk7KIjznV5gKHnjGP+27q6SDIwN58sSw0R//MqbavhXeenLe/eZ7HU0/l/q6jCdcq2Vay1pyNI+Uga1PuKH/BO8bMseWr0/1Z5TMt3z0lFwCTHBjtgPOj8VCgV8oBOza1+5rxw0rdWrsuBACmJFzduhldCYK4M5gYehb4ZAJyg7U2XL/FuDD8fcw+5dO+Z1YLW3w== openpgp:0x0A2ADCAF"
 #services:
 # - docker
@@ -32,12 +32,14 @@ install:
 build_script:
 - sh: |
     cd ./src 
-    dotnet build GridDomain.sln /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
-    dotnet pack GridDomain.sln  /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet --include-symbols --include-source --no-build /l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
+    dotnet build GridDomain.sln /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet 
+#/l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
+    dotnet pack GridDomain.sln  /p:Version=$APP_VERSION /p:FileVersion=$FILE_VERSION /p:InformationVersion="$INFORMATIONAL_VERSION"  -c Release -v Quiet --include-symbols --include-source --no-build 
+#/l:"/opt/appveyor/build-agent/AppVeyor.MSBuildLogger.dll"
     cd ..
 test_script:
 - sh: |
-    curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
+    #curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-ssh.sh' | bash -e -
     cd ./test
     ./test.sh
 artifacts:
