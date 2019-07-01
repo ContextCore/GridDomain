@@ -4,7 +4,7 @@ using Akka.Streams.Dsl;
 
 namespace GridDomain.EventHandlers.Akka
 {
-    public class HandlerEventStreamActor<TEvent, THandler> : EventStreamActor<TEvent> where TEvent : class where THandler : IEventHandler<TEvent>
+    public class HandlerEventStreamActor<TEvent, THandler> : EventStreamActor where TEvent : class where THandler : IEventHandler<TEvent>
     {
         private readonly string _eventSourceName;
 
@@ -17,13 +17,13 @@ namespace GridDomain.EventHandlers.Akka
             return Context.System.GetEventHandlersExtension().GetSource(_eventSourceName);
         }
 
-        protected override Sink<Sequenced<TEvent>, NotUsed> GetSink()
+        protected override Sink<Sequenced, NotUsed> GetSink()
         {
             return EventHandlerSink.Create<TEvent, THandler>(Context);
         }
     }
     
-    public class HandlerEventStreamActor<TEventA, TEventB, THandler> : MultiEventStreamActor where TEventA : class where TEventB:class
+    public class HandlerEventStreamActor<TEventA, TEventB, THandler> : EventStreamActor where TEventA : class where TEventB:class
         where THandler : IEventHandler<TEventA>, IEventHandler<TEventB>
     {
         private readonly string _eventSourceName;

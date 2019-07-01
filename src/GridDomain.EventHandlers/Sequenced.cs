@@ -15,7 +15,6 @@ namespace GridDomain.EventHandlers
         }
     }
     
-    
     public class Sequenced<T>:Sequenced
     {
         public new T Message => (T) base.Message;

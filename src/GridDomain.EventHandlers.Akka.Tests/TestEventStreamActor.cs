@@ -4,7 +4,7 @@ using Akka.Streams.Dsl;
 
 namespace GridDomain.EventHandlers.Akka.Tests
 {
-    public class TestEventStreamActor : EventStreamActor<TestMessage>
+    public class TestEventStreamActor : EventStreamActor
     {
         private readonly Source<EventEnvelope, NotUsed> _testSource;
 
@@ -17,7 +17,7 @@ namespace GridDomain.EventHandlers.Akka.Tests
             return _testSource;
         }
 
-        protected override Sink<Sequenced<TestMessage>, NotUsed> GetSink()
+        protected override Sink<Sequenced, NotUsed> GetSink()
         {
             return EventHandlerSink.Create<TestMessage, TestEventHandler>(Context);
         }

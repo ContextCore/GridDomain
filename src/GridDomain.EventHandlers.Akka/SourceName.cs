@@ -31,4 +31,5 @@ namespace GridDomain.EventHandlers.Akka
             return string.Join("_", types.Select(t => TypeNameExtensions.BeautyName(t)));
         }
     }
+    
 }

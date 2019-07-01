@@ -9,8 +9,9 @@ using GridDomain.Common.Akka;
 namespace GridDomain.EventHandlers.Akka
 {
 
-    public static class EventStreamActor
+    public abstract class EventStreamActor:ReceiveActor 
     {
+        
         public class Start
         {
             private Start()
@@ -19,6 +20,7 @@ namespace GridDomain.EventHandlers.Akka
 
             public static readonly Start Instance = new Start();
         }
+        
         public class Started
         {
             private Started()
@@ -27,62 +29,12 @@ namespace GridDomain.EventHandlers.Akka
 
             public static readonly Started Instance = new Started();
         }
-    }
-
-
-    public abstract class EventStreamActor<TEvent>:ReceiveActor where TEvent : class
-    {
+        
         protected readonly ILoggingAdapter Log;
         private ActorMaterializer _materializer;
         protected abstract Source<EventEnvelope,NotUsed> GetSource();
 
-        protected virtual Flow<EventEnvelope, Sequenced<TEvent>, NotUsed> GetFlow()
-        {
-            return EventsFlow.Create<TEvent>();
-        }
-
-        protected abstract Sink<Sequenced<TEvent>, NotUsed> GetSink();
-        
-        private BehaviorQueue Behavior { get; }
-        
-        public EventStreamActor()
-        {
-            Behavior = new BehaviorQueue(Become);
-            Log = Context.GetLogger();
-            Behavior.Become(Initializing, nameof(Initializing));
-        }
-        
-        protected virtual void Initializing()
-        {
-            Receive<EventStreamActor.Start>(s =>
-            {
-                var source = GetSource();
-                var sink = GetSink();
-                var flow = GetFlow();
-                
-                var projectionGraph = source.Via(flow).To(sink);
-                _materializer = Context.System.Materializer();
-                projectionGraph.Run(_materializer);
-
-                Behavior.Become(Working, nameof(Working));
-                Sender.Tell(EventStreamActor.Started.Instance);
-            });
-        }
-
-
-        protected virtual void Working()
-        {
-            
-        }
-    }
-    
-    public abstract class MultiEventStreamActor:ReceiveActor 
-    {
-        protected readonly ILoggingAdapter Log;
-        private ActorMaterializer _materializer;
-        protected abstract Source<EventEnvelope,NotUsed> GetSource();
-
-        protected MultiEventStreamActor()
+        protected EventStreamActor()
         {
             Behavior = new BehaviorQueue(Become);
             Log = Context.GetLogger();
@@ -99,7 +51,7 @@ namespace GridDomain.EventHandlers.Akka
         
         protected virtual void Initializing()
         {
-            Receive<EventStreamActor.Start>(s =>
+            Receive<Start>(s =>
             {
                 var source = GetSource();
                 var sink = GetSink();
@@ -110,7 +62,7 @@ namespace GridDomain.EventHandlers.Akka
                 projectionGraph.Run(_materializer);
 
                 Behavior.Become(Working, nameof(Working));
-                Sender.Tell(EventStreamActor.Started.Instance);
+                Sender.Tell(Started.Instance);
             });
         }
 
