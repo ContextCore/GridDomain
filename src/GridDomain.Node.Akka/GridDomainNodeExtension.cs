@@ -23,14 +23,16 @@ namespace GridDomain.Node.Akka
             _domainBuilder.RegisterPartBuilder(() => (T)ex);
         }
         
-        public void Register<T>(Func<ActorSystem,T> domainPartFactory) where T : class, IDomainPartBuilder
+        public GridDomainNodeExtension Register<T>(Func<ActorSystem,T> domainPartFactory) where T : class, IDomainPartBuilder
         {
             _domainBuilder.RegisterPartBuilder(() => domainPartFactory(_system));
+            return this;
         }
 
-        public void Add(params IDomainConfiguration[] cfg)
+        public GridDomainNodeExtension Add(params IDomainConfiguration[] cfg)
         {
             _configurations.AddRange(cfg);
+            return this;
         }
         
         public INode Build()

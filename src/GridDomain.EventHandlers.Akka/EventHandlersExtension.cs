@@ -87,9 +87,9 @@ namespace GridDomain.EventHandlers.Akka {
         
         public void RegisterEventHandler<TEvent, THandler>(string name=null, string nodeRole=null) where THandler:IEventHandler<TEvent> where TEvent : class
         {
-            var streamName = name ?? typeof(THandler).GetStreamName<TEvent>();
+            var streamName = name ?? typeof(THandler).Get<TEvent>();
             var actorName = "Stream_" + streamName;
-            var props = Props.Create<SingleHandlerEventStreamActor<TEvent, THandler>>(streamName);
+            var props = Props.Create<HandlerEventStreamActor<TEvent, THandler>>(streamName);
             
             var dispatcher = _system.ActorOf(ClusterSingletonManager.Props(
                     props,
@@ -106,11 +106,27 @@ namespace GridDomain.EventHandlers.Akka {
             _eventStreamActors.Add(new StreamActorStarter(streamActor,EventStreamActor.Start.Instance, o => o is EventStreamActor.Started));
         }
 
-        public void RegisterEventHandler<TEventA, TEventB, THandler>() where THandler:IEventHandler<TEventA>,IEventHandler<TEventB>
+        public void RegisterEventHandler<TEventA, TEventB, THandler>(string name = null, string nodeRole = null) where TEventA : class where THandler : IEventHandler<TEventA>, IEventHandler<TEventB> where TEventB : class
         {
-            throw new NotImplementedException();
+            var source = name ?? SourceName.Get<THandler,TEventA,TEventB>();
+            var actorName = "Stream_" + source;
+            var props = Props.Create<HandlerEventStreamActor<TEventA,TEventB, THandler>>(source);
+            
+            var dispatcher = _system.ActorOf(ClusterSingletonManager.Props(
+                    props,
+                    PoisonPill.Instance,
+                    ClusterSingletonManagerSettings.Create(_system).WithRole(nodeRole)
+                ),
+                name: actorName);
+      
+            var streamActor = _system.ActorOf(ClusterSingletonProxy.Props(
+                    singletonManagerPath: "/user/"+actorName,
+                    settings: ClusterSingletonProxySettings.Create(_system).WithRole(nodeRole)),
+                name: actorName + "Proxy");
+            
+            _eventStreamActors.Add(new StreamActorStarter(streamActor,EventStreamActor.Start.Instance, o => o is EventStreamActor.Started));
         }
-        
+
         public void RegisterEventHandler<TEventA, TEventB, TEventC, THandler>()where THandler:IEventHandler<TEventA>,IEventHandler<TEventB>,IEventHandler<TEventC>
         {
             throw new NotImplementedException();

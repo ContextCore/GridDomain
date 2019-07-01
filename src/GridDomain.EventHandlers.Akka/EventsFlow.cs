@@ -1,3 +1,4 @@
+using System;
 using Akka;
 using Akka.Persistence.Query;
 using Akka.Streams.Dsl;
@@ -11,6 +12,12 @@ namespace GridDomain.EventHandlers.Akka
         {
             return Flow.Create<EventEnvelope>()
                        .Select(e => new Sequenced<TEvent>(e.Event as TEvent,e.SequenceNr));
+        }
+
+        public static Flow<EventEnvelope, Sequenced, NotUsed> Create()
+        {
+            return Flow.Create<EventEnvelope>()
+                       .Select(e => new Sequenced(e.Event,e.SequenceNr));
         }
     }
 }
